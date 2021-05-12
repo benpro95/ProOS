@@ -1,0 +1,13 @@
+  [Unit]
+Description=GPIO shutdown button
+Conflicts=shutdown.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/usr/bin/python3 /opt/rpi/wifiswitch.py
+
+[Install]
+#WantedBy=multi-user.target

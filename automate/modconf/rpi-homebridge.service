@@ -1,0 +1,14 @@
+[Unit]
+Description=Apple HomeKit Server
+Conflicts=shutdown.target
+
+[Service]
+User=root
+ExecStartPre=sh -c 'rm -rf /var/lock/rpi/*'
+ExecStart=/usr/bin/homebridge -U /var/lib/homebridge -I
+WorkingDirectory=/var/lib/homebridge
+Restart=always
+RestartSec=5
+
+[Install]
+#WantedBy=multi-user.target

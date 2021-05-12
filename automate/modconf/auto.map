@@ -1,0 +1,1 @@
+Media         -fstype=cifs,ro,guest ://10.177.1.4/Media

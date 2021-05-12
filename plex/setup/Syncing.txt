@@ -1,0 +1,18 @@
+Plex sync music to iPhone instructions, first time / re-sync.
+
+Sign out of Plex app on iPhone
+Delete Plex app and data
+On the Plex web server remove the iPhone from authorized devices list
+Download Plex app on the iPhone and sign-in (skip the first 3 steps if first sync)
+Force quit the Plex app on the iPhone
+Select the entire music library and select sync to iPhone, change max file limit to unlimited, set quality to 128KB/s (ONLY DO THIS IN THE PLEX SERVER SITE NOT ON THE IPHONE)
+The conversion to MP3 will start it will cache the converted files on the server until done
+Wait for the conversion the finish (took 3 hours for 7000+ songs) (DO NOT OPEN THE PLEX APP ON THE IPHONE UNTIL THIS FINISHES)
+Set the screen on the iPhone to never lock to keep the app open while syncing, plug into power
+Start playing a song in the Plex app on repeat to keep the app responding
+Go to the Downloads & Sync side tab and select manage, touch (Sync)
+Wait for the files to download to the iPhone took (2-3 hours for 7000+ songs)
+Music should be synced, done!
+
+If some songs show up as Untilted go switch the Artist agent (by dragging the item to the top of the list) to Local Media Assets,
+and in the Library->Advanced settings select the 'Prefer local metadata' check box, then select refresh metadata on the Music library.

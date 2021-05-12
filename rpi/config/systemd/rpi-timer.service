@@ -1,0 +1,7 @@
+[Unit]
+Description=5min Timer
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+ExecStart=/opt/rpi/main timer > /dev/null 2>&1 &

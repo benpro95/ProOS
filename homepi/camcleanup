@@ -1,0 +1,57 @@
+#!/bin/bash
+
+## Cameras Cleanup Script for Pi
+### run as root user only!
+
+## Only allow one instance
+stoproc=camcleanup.lock
+exec 200>/tmp/${stoproc}
+flock -n 200 || exit 1
+stoppid=$$
+echo $stoppid 1>&200
+
+## Check if Google Drive connected, exit if not attached.
+if [ ! -e /mnt/gsync/Current ]; then
+   echo "Google Drive not connected."
+   exit
+else
+   echo "Google Drive connected."
+fi
+
+## Remove duplicates from Google Drive
+#/usr/bin/rclone --config /root/.config/rclone/rclone.conf dedupe gsync:/ --dedupe-mode newest
+
+## Delete archived videos, when larger than 14GB
+rm -f /tmp/camcleanup.vars
+du -sh -t14000000000 /mnt/gsync | awk -F" " '{print $2}' > /tmp/camcleanup.vars
+if [[ -s /tmp/camcleanup.vars ]] ; then
+	echo "Google Drive above 14GB limit deleting archived video files..."
+	service motion stop
+	rm -rf /mnt/gsync/Archive/Driveway
+	rm -rf /mnt/gsync/Archive/Porch
+	mkdir -p /mnt/gsync/Archive/Driveway
+	mkdir -p /mnt/gsync/Archive/Porch
+	service motion start
+else
+    echo "Google Drive under 14GB."
+fi
+rm -f /tmp/camcleanup.vars
+
+## Move videos to archive when Google Drive is larger than 6GB
+rm -f /tmp/camcleanup.vars
+du -sh -t6000000000 /mnt/gsync/Current | awk -F" " '{print $2}' > /tmp/camcleanup.vars
+if [[ -s /tmp/camcleanup.vars ]] ; then
+	echo "Google Drive current folder above 6GB limit moving video files..."
+	service motion stop
+	mkdir -p /mnt/gsync/Archive
+	mkdir -p /mnt/gsync/Archive/Driveway
+	mkdir -p /mnt/gsync/Archive/Porch
+	mv /mnt/gsync/Current/Driveway/* /mnt/gsync/Archive/Driveway/
+	mv /mnt/gsync/Current/Porch/* /mnt/gsync/Archive/Porch/
+	service motion start
+else
+    echo "Google Drive current folder under 6GB."
+fi
+rm -f /tmp/camcleanup.vars
+
+exit

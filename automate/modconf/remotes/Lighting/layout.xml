@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <row>
+        <button icon="off" ontap="mainloff" color="black" />
+        <button text="Main Light" ontap="mainl" color="#00004c" />
+        <button icon="on" ontap="mainlon" color="#00004c" />
+    </row>
+    <row>
+        <button icon="off" ontap="dresseroff" color="black" />
+        <button text="Dresser Light" ontap="dresser" color="#000045" />
+        <button icon="on" ontap="dresseron" color="#000045" />
+    </row>
+    <row>
+        <button icon="off" ontap="ceilingoff" color="black" />
+        <button text="Ceiling Lamp" ontap="ceiling" color="#00003e" />
+        <button icon="on" ontap="ceilingon" color="#00003e" /> 
+    </row>  
+    <row>
+        <button icon="off" ontap="deskoff" color="black" />
+        <button text="Desk Light" ontap="desk" color="#00003e" />
+        <button icon="on" ontap="deskon" color="#00003e" />	
+    </row>
+    <row>
+        <button icon="off" ontap="nightoff" color="black" />
+        <button text="Backlight" ontap="night" color="#000037" />
+        <button icon="on" ontap="nighton" color="#000037" /> 
+    </row>
+    <row>
+        <button icon="off" ontap="lightsoff" color="black" />
+        <button text="Lights" ontap="" color="#000035" />
+    	<button icon="on" ontap="lightson" color="#000035" />	
+    </row>
+    <row>
+        <button icon="off" ontap="alloff" color="black" />
+        <button text="All Lights" ontap="" color="#000030" />
+        <button icon="on" ontap="allon" color="#000030" />   
+    </row>
+</layout>

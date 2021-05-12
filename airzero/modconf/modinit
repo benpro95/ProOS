@@ -1,0 +1,42 @@
+#!/bin/bash
+## Portable Pi Zero Speaker Configuration Setup Script v6.0
+##
+
+# Import Host name
+HOSTNAME=`cat /opt/rpi/config/hostname`
+## Module Path
+BIN=/opt/rpi
+# Import Module Name
+MODNAME=`cat $BIN/modconf/brand.txt`
+
+if [ ! -e /opt/rpi/init ]; then
+echo "Core components missing or corrupted."
+echo "Exiting..."
+sleep 1
+exit
+else
+echo "Components integrity verified."
+fi
+
+echo "Starting $MODNAME configuration..."
+
+## Copy Boot Config
+mount -o remount,rw /boot
+sleep 1.25
+cp -r $BIN/modconf/config.txt /boot/
+mount -o remount,ro /boot
+
+## lighttpd Configuration
+cp -f $BIN/modconf/lighttpd.conf /etc/lighttpd/
+chmod 644 /etc/lighttpd/lighttpd.conf
+chown root:root /etc/lighttpd/lighttpd.conf
+
+## ALSA Configuration
+cp -f $BIN/modconf/asound.conf /etc
+chmod 644 /etc/asound.conf
+chown root:root /etc/asound.conf
+
+## Link RPi to global commands library
+ln -sf /opt/rpi/main /usr/bin/main
+
+exit

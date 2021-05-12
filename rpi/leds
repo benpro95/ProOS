@@ -1,0 +1,409 @@
+#!/bin/bash
+###########################################################
+####### LED parser script by Ben Provenzano III v12 #######
+###########################################################
+
+## Read Input Arguments
+VARA=$1
+VARB=$2
+
+############### FUNCTIONS ###############
+
+## Stop LED processes
+LEDSTOP(){
+/usr/bin/curl --silent --output /dev/null -X POST http://127.0.0.1:9387/api/anim/stop
+killall -q -s KILL -w pythproc java perl Xvfb
+echo "Paused effects"
+}
+
+## RGB color
+COLOR_FUNC(){
+LEDSTOP
+if [ -f "/tmp/ledstate.lock" ]; then
+    echo "already running"
+    exit
+else
+    touch /tmp/ledstate.lock
+fi
+/usr/bin/screen -dm nice -n 10 /opt/rpi/pythproc /opt/rpi/color.py $RGB
+echo "Set LEDs to RGB values: $RGB"
+rm -f /tmp/ledstate.lock
+}
+
+## Perl effects
+PERL_FUNC(){
+LEDSTOP
+if [ -f "/tmp/ledstate.lock" ]; then
+    echo "already running"
+    exit
+else
+    touch /tmp/ledstate.lock
+fi
+export PERL5LIB=/opt/rpi
+/usr/bin/screen -dm /usr/bin/perl /opt/rpi/$VARA.pl
+echo "Set LEDs to perl program $VARA"
+rm -f /tmp/ledstate.lock
+}
+
+## Python effects
+PYTH_FUNC(){
+LEDSTOP
+if [ -f "/tmp/ledstate.lock" ]; then
+    echo "already running"
+    exit
+else
+    touch /tmp/ledstate.lock
+fi
+if [ "$VARA" = "rave"  ] || [ "$VARA" = "chase" ]; then
+	/usr/bin/screen -dm /usr/bin/nice -n 10 /opt/rpi/pythproc /opt/rpi/$VARA.py
+else
+	/usr/bin/screen -dm /usr/bin/nice -n 10 /opt/rpi/pythproc /opt/rpi/$VARA.py --layout /opt/rpi/wall.json	
+fi
+echo "Set LEDs to python program $VARA"
+rm -f /tmp/ledstate.lock
+}
+
+############### START OF MAIN PROCESS ###############
+
+## Read LED Type
+if [ ! -e /opt/rpi/ledtype.txt ]; then
+  echo "LEDtype not defined."
+  exit
+else
+  echo ""  > /dev/null 2>&1
+fi
+LEDTYPE=`cat /opt/rpi/ledtype.txt`
+
+## LEDsync Command Dispatcher (make sure .txt file has newline at end)
+if [ ! -e /tmp/global-fc.lock ]; then
+  echo ""  > /dev/null 2>&1
+else
+  LEDFILE='/opt/rpi/ledsync.txt'
+  exec 4<$LEDFILE
+  while read -u4 PSYNC ; do
+      echo "Sending $VARA command to $PSYNC LED server..."
+      /usr/bin/screen -dm /usr/bin/curl -N -f -m 10 --silent --data "var=$VARB&arg=$VARA&action=leds" http://$PSYNC:9300/exec.php
+  done
+fi
+
+## If file exists run Node.js effect parser
+if [ ! -e /opt/rpi/effects/$LEDTYPE/$VARA.opc ]; then
+  echo "Node effect not found looking for others.."
+else
+  LEDSTOP
+  if [ -f "/tmp/ledstate.lock" ]; then
+      echo "already running"
+      exit
+  else
+      touch /tmp/ledstate.lock
+  fi
+  ln -sf /opt/rpi/effects/$LEDTYPE/$VARA.opc /opt/rpi/nodeopc/server/animations/opc
+  /usr/bin/curl --silent --output /dev/null -d '{"playlistname":"Playlist"}' -H "Content-Type: application/json" -X POST http://127.0.0.1:9387/api/playlists/play
+  echo "Set LEDs to node.js effect"
+  rm -f /tmp/ledstate.lock
+  exit
+fi
+
+############ THIS SECTION RAN IF NODE EFFECT NOT FOUND ###########
+
+case "$1" in
+
+fc)
+LEDSTOP
+if [ -f "/tmp/fcstate.lock" ]; then
+    echo "already running"
+    exit
+else
+    touch /tmp/fcstate.lock
+fi
+ln -sf /opt/rpi/effects/$LEDTYPE/fcbin/fc$VARB.json /opt/rpi/effects/fc.json
+systemctl restart rpi-fcserver
+systemctl restart rpi-nodeopc
+echo "LEDs brightness changed to $VARB%"
+rm -f /tmp/fcstate.lock
+exit
+;;
+
+stop)
+LEDSTOP
+if [ -f "/tmp/ledstate.lock" ]; then
+    echo "already running"
+    exit
+else
+    touch /tmp/ledstate.lock
+fi
+export PERL5LIB=/opt/rpi
+/usr/bin/perl /opt/rpi/blank.pl
+sleep 0.15
+/usr/bin/perl /opt/rpi/blank.pl
+killall -s KILL -w perl
+echo "LEDs blanked"
+rm -f /tmp/ledstate.lock
+exit
+;;
+
+pause)
+LEDSTOP
+exit
+;;
+
+## Toggle Global Network Effects
+global)
+if [ ! -e /opt/rpi/ledsync.txt ]; then
+  echo "LEDsync disabled."
+else
+  if [ ! -e /tmp/global-fc.lock ]; then
+    touch /tmp/global-fc.lock
+  else
+    rm -f /tmp/global-fc.lock
+  fi
+fi
+exit
+;;
+
+## Solid Colors
+
+red)
+RGB="255 0 0"
+COLOR_FUNC
+exit
+;;
+
+maroon)
+RGB="178 34 34"
+COLOR_FUNC
+exit
+;;
+
+pink)
+RGB="255 25 147"
+COLOR_FUNC
+exit
+;;
+
+lavender)
+RGB="255 192 203"
+COLOR_FUNC
+exit
+;;
+
+forest)
+RGB="68 180 57"
+COLOR_FUNC
+exit
+;;
+
+green)
+RGB="0 255 0"
+COLOR_FUNC
+exit
+;;
+
+blue)
+RGB="0 0 255"
+COLOR_FUNC
+exit
+;;
+
+indigo)
+RGB="75 0 230"
+COLOR_FUNC
+exit
+;;
+
+yellow)
+RGB="255 255 0"
+COLOR_FUNC
+exit
+;;
+
+purple)
+RGB="167 0 220"
+COLOR_FUNC
+exit
+;;
+
+violet)
+RGB="255 6 255"
+COLOR_FUNC
+exit
+;;
+
+plum)
+RGB="208 122 208"
+COLOR_FUNC
+exit
+;;
+
+salmon)
+RGB="238 130 98"
+COLOR_FUNC
+exit
+;;
+
+orange)
+RGB="242 109 1"
+COLOR_FUNC
+exit
+;;
+
+candle)
+RGB="255 147 41"
+COLOR_FUNC
+exit
+;;
+
+halogen)
+RGB="255 240 221"
+COLOR_FUNC
+exit
+;;
+
+tungsten)
+RGB="255 197 143"
+COLOR_FUNC
+exit
+;;
+
+sodium)
+RGB="255 183 76"
+COLOR_FUNC
+exit
+;;
+
+sunlight)
+RGB="255 247 255"
+COLOR_FUNC
+exit
+;;
+
+sky)
+RGB="64 156 255"
+COLOR_FUNC
+exit
+;;
+
+overcast)
+RGB="201 226 255"
+COLOR_FUNC
+exit
+;;
+
+## Python LED Effects
+
+rave)
+PYTH_FUNC
+exit
+;;
+
+chase)
+PYTH_FUNC
+exit
+;;
+
+miami)
+PYTH_FUNC
+exit
+;;
+
+spark)
+PYTH_FUNC
+exit
+;;
+
+stripes)
+PYTH_FUNC
+exit
+;;
+
+lava)
+PYTH_FUNC
+exit
+;;
+
+## Java LED Effect Modifiers (Local)
+# spectro = gain adjust
+
+plus)
+export DISPLAY=":1"
+xdotool key plus
+exit
+;;
+
+minus)
+export DISPLAY=":1"
+xdotool key minus
+exit
+;;
+
+## Java LED Effects
+
+spectro)
+LEDSTOP
+if [ -f "/tmp/ledstate.lock" ]; then
+    echo "already running"
+    exit
+else
+    touch /tmp/ledstate.lock
+fi
+/usr/bin/screen -dm /usr/bin/Xvfb :1 -screen 0 640x640x24
+sleep 1.0
+/usr/bin/screen -dm sh /opt/rpi/effects/spectro/SpectroGraph
+rm -f /tmp/ledstate.lock
+exit
+;;
+
+rainbow)
+LEDSTOP
+if [ -f "/tmp/ledstate.lock" ]; then
+    echo "already running"
+    exit
+else
+    touch /tmp/ledstate.lock
+fi
+/usr/bin/screen -dm /usr/bin/Xvfb :1 -screen 0 640x640x24
+sleep 1.0
+/usr/bin/screen -dm sh /opt/rpi/effects/rainbow/rainbow
+rm -f /tmp/ledstate.lock
+exit
+;;
+
+## Perl Effects
+
+noise3)
+PERL_FUNC
+exit
+;;
+
+blocks)
+PERL_FUNC
+exit
+;;
+
+mandelbrot)
+PERL_FUNC
+exit
+;;
+
+multitomaton)
+PERL_FUNC
+exit
+;;
+
+ripple)
+PERL_FUNC
+exit
+;;
+
+random)
+PERL_FUNC
+exit
+;;
+
+############ END OF ARGUMENT PARSING ############
+
+*)
+    echo "No effect found, exiting."
+	exit 1
+	;;
+esac

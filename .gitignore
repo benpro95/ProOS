@@ -1,0 +1,10 @@
+rpi/urserver
+rpi/manager
+rpi/BaseOS.zip
+sources
+z97mx
+pve/netconf.7z
+pve/vmbkps
+unifi/siteconf.unf
+*authorized_keys*
+*id_rsa*

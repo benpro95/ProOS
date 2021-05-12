@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+	<row>
+        <button icon="vdown" ontap="vdwn" color="#00004c" />
+        <button icon="vup" ontap="vup" color="#00004c" />
+    </row>
+    <row>
+        <button text="Rainforest" ontap="amazon" color="#000045" />
+	    <button text="Campfire" ontap="campfire" color="#000045" />
+	    <button text="Forest" ontap="forest" color="#000045" />
+    </row>
+    <row>
+        <button text="Harbour" ontap="harbour" color="#00003e" />
+        <button text="Wind" ontap="wind" color="#00003e" />
+        <button text="Jungle" ontap="jungle" color="#00003e" />
+	    <button text="Meadow" ontap="meadow" color="#00003e" />
+    </row>
+    <row>
+    	<button text="Thunder" ontap="thunder" color="#000037" />
+        <button text="Waterfall" ontap="waterfall" color="#000037" />
+        <button text="Stream" ontap="stream" color="#000037" />
+    </row>
+    <row>
+        <button text="Rain" ontap="rainii" color="#000030" />
+        <button text="Storm" ontap="storm" color="#000030" />
+        <button text="River" ontap="river" color="#000030" />
+        <button text="Ocean" ontap="ocean" color="#000030" />
+    </row>
+    <row>
+        <button text="Beach" ontap="beach" color="#000020" />
+        <button text="Traffic" ontap="traffic" color="#000020" />
+        <button text="Warp" ontap="warp" color="#000020" />
+    </row>
+    <row>
+        <button icon="pause" ontap="stop" color="#000000" />
+    </row>
+</layout>

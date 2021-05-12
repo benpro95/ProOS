@@ -1,0 +1,69 @@
+#!/bin/bash
+#### Pi to Arduino Serial Communcation Script
+## by Ben Provenzano III
+## run ./xmit SERIALCMD (no state file created)
+## run ./xmit SERIALCMD toggle (toggle on/off state & append on/off to end of serial command)
+## run ./xmit SERIALCMD on (create state file & append on to end of serial command then send)
+## run ./xmit SERIALCMD off (delete state file & append off to end of serial command then send)
+## run ./xmit SERIALCMD fakeon (create state file, lock, delete then send serial command, for homebridge)
+## run ./xmit SERIALCMD fakeoff (lock, delete state file then send serial command, for homebridge)
+CMD=$1
+
+XMIT(){
+/usr/bin/python2 - <<END
+import serial
+import termios
+port = '/dev/ttyACM0'
+f = open(port)
+attrs = termios.tcgetattr(f)
+attrs[2] = attrs[2] & ~termios.HUPCL
+termios.tcsetattr(f, termios.TCSAFLUSH, attrs)
+f.close()
+se = serial.Serial()
+se.baudrate = 9600
+se.port = port
+se.open()
+se.write(str.encode('$CMD'))
+END
+##echo "$CMD"
+}      
+
+case "$2" in
+## Toggle / create state files if second argument found then transmit
+
+on)
+touch /var/lock/rpi/$CMD.save
+CMD=$CMD"on"
+XMIT
+exit
+;;
+
+off)
+rm -f /var/lock/rpi/$CMD.save
+CMD=$CMD"off"
+XMIT
+exit
+;;
+
+toggle)
+if [ ! -e /var/lock/rpi/$CMD.save ]; then
+   touch /var/lock/rpi/$CMD.save
+   CMD=$CMD"on"
+   XMIT
+else
+   rm -f /var/lock/rpi/$CMD.save
+   CMD=$CMD"off"
+   XMIT
+fi
+exit
+;;
+
+
+   *)
+        ### Transmit first arg to serial port
+        XMIT
+        exit 1
+        ;;
+   esac
+
+

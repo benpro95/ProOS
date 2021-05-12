@@ -1,0 +1,89 @@
+## Created by Ben Provenzano III for RPi ProOS
+
+# uncomment if you get no picture on HDMI for a default "safe" mode
+#hdmi_safe=1
+
+# Set to 1 if your display has a black border of unused pixels visible
+disable_overscan=1
+
+# uncomment the following to adjust overscan. Use positive numbers if console
+# goes off screen, and negative if there is too much border
+#overscan_left=16
+#overscan_right=16
+#overscan_top=16
+#overscan_bottom=16
+
+# Console rotation
+display_rotate=0
+lcd_rotate=0
+
+# Force a console size
+#framebuffer_width=1280
+#framebuffer_height=720
+
+# uncomment if hdmi display is not detected and composite is being output
+#hdmi_force_hotplug=1
+
+# uncomment to force a specific HDMI mode (this will force VGA)
+#hdmi_group=1
+#hdmi_mode=1
+
+# uncomment to force a HDMI mode rather than DVI. This can make audio work in
+# DMT (computer monitor) modes
+#hdmi_drive=2
+
+# uncomment to increase signal to HDMI, if you have interference, blanking, or
+# no display
+#config_hdmi_boost=4
+
+# uncomment for composite PAL
+#sdtv_mode=2
+
+#-------RPi Camera Module-------
+start_x=0
+disable_camera_led=0
+
+#-------GPU memory Splits-------
+gpu_mem_256=16
+gpu_mem_512=32
+gpu_mem_1024=64
+
+#-------Max USB Current -------
+max_usb_current=1
+
+#-------Disable Ram temp refresh every 500ms---------------
+disable_pvt=1
+
+#-------Disable Pi Splash screen on boot-------------
+disable_splash=1
+
+# --------- Disable ACT LED ---------
+#dtparam=act_led_trigger=none
+# -- Pi 2-3 --
+#dtparam=act_led_activelow=off
+# -- Pi Zero --
+#dtparam=act_led_activelow=on
+
+# --------- Disable PWR LED ---------
+#dtparam=pwr_led_trigger=none
+#dtparam=pwr_led_activelow=off
+
+#-------Built-in Audio-------
+#dtparam=audio=on
+#disable_audio_dither=1
+
+#-------i2c-------------
+dtparam=i2c_arm=off
+dtparam=i2c1=off
+i2c_arm_baudrate=100000
+
+#-------spi-------------
+dtparam=spi=off
+
+#------Reboot when exceeds-----
+temp_limit=78
+
+#------Disable Bluetooth-----
+dtoverlay=pi3-disable-bt
+
+#Note To Self, NEVER enable L2 cache, breaks most X based applications that were not compiled with L2 cache enabled.

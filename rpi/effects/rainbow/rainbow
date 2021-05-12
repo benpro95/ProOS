@@ -1,0 +1,6 @@
+#!/bin/sh
+export DISPLAY=":1"
+APPDIR=$(readlink -f "$0")
+APPDIR=$(dirname "$APPDIR")
+nice -n 10 /opt/rpi/java/bin/java -Xss128k -Xmx128m -Djna.nosys=true -Djava.library.path="$APPDIR:$APPDIR/lib" -cp "$APPDIR:$APPDIR/lib/rainbow.jar:$APPDIR/lib/core.jar:$APPDIR/lib/jogl-all.jar:$APPDIR/lib/gluegen-rt.jar:$APPDIR/lib/jogl-all-natives-linux-armv6hf.jar:$APPDIR/lib/gluegen-rt-natives-linux-armv6hf.jar" rainbow "$@"
+exit 0

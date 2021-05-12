@@ -1,0 +1,44 @@
+#!/bin/bash
+##
+## Cameras by Ben Provenzano III v1.0 #############
+##################################################
+case "$1" in
+
+boot)
+## Samba Server
+if [ ! -e /media/usb0/shared ]; then
+   echo "Flash drive not connected."
+else
+   ## Samba Server
+   systemctl start nmbd
+   systemctl start smbd
+fi
+sleep 2.5
+## Attach SMB Shares
+systemctl start autofs
+## Video RAM Disk
+mkdir -p /mnt/ramdisk
+chmod 777 /mnt/ramdisk
+mount -t tmpfs -o size=256m ramdisk /mnt/ramdisk
+## Google Drive
+systemctl start rpi-rclone
+sleep 5.75
+## Motion Server
+systemctl start motion
+## Cameras Cleanup Timer
+systemctl start rpi-camcleanup.timer
+## Disable HDMI
+/usr/bin/tvservice -o
+exit
+;;
+
+
+    
+        *)
+	      echo "  Cameras v1"
+	      echo "  by Ben Provenzano III"
+	      echo " "
+	      echo "Enter a valid command line argument."
+        exit 1
+        ;;
+    esac   

@@ -1,0 +1,59 @@
+#!/bin/bash
+##
+## RPi Server v5 for Raspberry Pi by Ben Provenzano III
+#### 2nd Stage ####
+
+case "$1" in
+
+boot)
+## Light Web Server
+systemctl restart lighttpd
+## Unified Web Server
+systemctl restart rpi-urserver
+## Loop Movies from USB Drive
+#systemctl restart rpi-vidlooper
+## Start X11 Server
+#su -c "/opt/rpi/init x11" -s /bin/sh pi
+## Start Web Kiosk Interface
+#su -c "/opt/rpi/init kiosk" -s /bin/sh pi
+## Start On-Screen Keyboard
+#su -c "/opt/rpi/init osk" -s /bin/sh pi
+## Bluetooth Driver
+#systemctl start hciuart
+#systemctl start bluetooth
+exit
+;;
+
+usbplug)
+## This script is ran after USB drive attached and when its removed.
+echo "no function assigned"
+exit
+;;
+
+timer)
+## This script is ran every 5min after rpi-timer.timer is enabled.
+echo "no function assigned"
+exit
+;;
+
+example)
+### Place command in subscript if calling from exec.php over network.
+(
+### COMMAND HERE ###
+exit
+) > /dev/null 2>&1 &
+;;
+
+
+
+
+
+
+        *)
+          echo "RPi Server v3 for Raspberry Pi"
+	      echo "  by Ben Provenzano III"
+	      echo " "
+	      echo "Enter a valid command line argument."
+          exit 1
+          ;;
+    esac

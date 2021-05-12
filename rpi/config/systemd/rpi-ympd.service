@@ -1,0 +1,12 @@
+[Unit]
+Description=Web Interface for MPD
+Conflicts=shutdown.target
+
+[Service]
+User=root
+ExecStart=/opt/rpi/ympd -w 3001
+Restart=always
+RestartSec=5
+
+[Install]
+#WantedBy=multi-user.target

@@ -1,0 +1,40 @@
+#!/bin/bash
+###########################################################
+####### Motion copy script by Ben Provenzano III v1 #######
+###########################################################
+
+## Read Camera Name
+VARA=$1
+## Read File Name
+VARB=$2
+
+## Test File Names
+#touch /tmp/motioncam.log
+#echo "$VARA" | tee -a /tmp/motioncam.log
+#touch /tmp/motionfile.log
+#echo "$VARB" | tee -a /tmp/motionfile.log
+
+## Copy Video to Google Drive
+if [ ! -e /mnt/gsync/Current ]; then
+   echo "Google Drive not connected."
+else
+   ## Standalone Copy
+   #/usr/bin/rclone --config /root/.config/rclone/rclone.conf copy $VARB.mp4 gsync:/Current/$VARA/
+   ## FUSE Filesystem Copy
+   mkdir -p /mnt/gsync/Current/$VARA
+   cp -f $VARB.mp4 /mnt/gsync/Current/$VARA/
+fi
+
+## Copy Video to Server
+if [ ! -e /mnt/smb/Cameras/Current ]; then
+   echo "Server not connected."
+else
+   ## Copy Video to Server (SMB)
+   mkdir -p /mnt/smb/Cameras/Current/$VARA
+   cp -f $VARB.mp4 /mnt/smb/Cameras/Current/$VARA/
+fi
+
+## Delete Original from RAM Disk
+rm -f $VARB.mp4
+
+exit

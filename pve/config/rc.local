@@ -1,0 +1,50 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+## Disable IPv6
+sysctl -w net.ipv6.conf.all.disable_ipv6=1
+sysctl -w net.ipv6.conf.default.disable_ipv6=1
+
+## Enable Jumbo Frames
+#ip link set enp5s0f0 mtu 9000
+#ip link set enp5s0f1 mtu 9000
+#ip link set enp4s0f0 mtu 9000
+#ip link set enp4s0f1 mtu 9000
+#ip link set bond0 mtu 9000
+
+## Nuvoton SuperIO Sensors Driver
+modprobe coretemp || :
+modprobe nct6775 || :
+
+## Block Plex VM from accessing PVE
+iptables -A OUTPUT -d 192.168.1.5 -j DROP || :
+
+## Enable Swapfile
+if [ ! -e /mnt/pve/scratch/swapfile ]; then
+  echo "Swap file not found."
+else
+  swapon /mnt/pve/scratch/swapfile || :
+  ## Use virtual memory less
+  sysctl vm.swappiness=10
+fi
+
+## Check for backup files every 60 seconds
+killall -w zfs-extbkps
+/usr/bin/screen -dm -t zfs-extbkps -L -Logfile /mnt/extbkps/keytmp/status.txt /usr/bin/zfs-extbkps
+
+echo "*"
+echo " Welcome to ProOS Server!"
+echo " by Ben Provenzano III"
+echo "*"
+
+exit 0

@@ -1,0 +1,242 @@
+#!/bin/bash
+################################
+#### External Drives Backup ####
+################################
+################################
+
+#### 256GB Drives ####
+USB256DRV1="usb256-01"
+USB256DRV2=""
+USB256DRV3=""
+USB256DRV4=""
+#### 128GB Drives ####
+USB128DRV1="usb128-01"
+USB128DRV2="usb128-02"
+USB128DRV3="usb128-03"
+USB128DRV4=""
+#### 4TB Drives ####
+HDDRV1="hdd4tb-01"
+HDDRV2="hdd4tb-02"
+HDDRV3="hdd4tb-03"
+HDDRV4=""
+
+### Remove Lock Manually
+if [ "$1" = "rmlock" ] ; then
+    ## Unlock State File
+    rm -f /tmp/backupsvr.lock
+    echo "Removed lockfile."
+    exit 0
+else
+    echo ""  > /dev/null 2>&1
+fi
+
+### Check Status
+if [ "$1" = "status" ] ; then
+    cat /mnt/extbkps/keytmp/status.txt
+    exit 0
+else
+    echo ""  > /dev/null 2>&1
+fi
+
+### Lock State File
+if [ -f "/tmp/backupsvr.lock" ]; then
+    echo "already running!"
+    echo "run 'backupsvr rmlock' to manually remove lock if program failed"
+    exit
+else
+    touch /tmp/backupsvr.lock
+fi
+
+echo " "
+echo "######################################"
+echo "###### ProServer Backup Utility ######"
+echo "#### by Ben Provenzano III - v2.5 ####"
+echo "######################################"
+echo " "
+echo "press ctrl+a then ctrl+d to detach terminal"
+echo "run 'screen -r -p bkp' to reattach to backup terminal"
+echo " "
+
+## Just detach drives
+if [ "$1" = "unmount" ] ; then
+    echo "Waiting one-minute for drives to detach."
+    touch /mnt/extbkps/keytmp/unmount.txt
+    sleep 60
+    echo ""
+    echo "Proxmox output log."
+    cat /mnt/extbkps/keytmp/status.txt
+    ## Unlock State File
+    rm -f /tmp/backupsvr.lock
+    exit 0
+else
+    echo ""  > /dev/null 2>&1
+fi
+
+## Just show status of last backup
+if [ "$1" = "status" ] ; then
+    echo "Proxmox output log of last backup."
+    cat /mnt/extbkps/keytmp/status.txt
+    ## Unlock State File
+    rm -f /tmp/backupsvr.lock
+    exit 0
+else
+    echo ""  > /dev/null 2>&1
+fi
+
+rm -f /mnt/extbkps/keytmp/pass.txt
+read -s -p "Enter Backup Password: " keyvar
+echo "$keyvar" >> /mnt/extbkps/keytmp/pass.txt
+keyvar=000000000000000000000
+echo " "
+### Don't sync just mount drives
+if [ "$1" = "mount" ] ; then
+    echo "Mounting drives wait one-minute..."
+    ## Unlock State File
+    rm -f /tmp/backupsvr.lock
+    exit 0
+else
+    echo "Waiting one-minute for timer to trigger..."
+    sleep 60
+fi
+
+### Set rsync to compare checksums on all data
+if [ "$1" = "checksum" ] || [ "$1" = "chk" ] ; then
+    echo "compare files checksum option selected!"
+    CHECKSUM="--checksum"
+else
+    echo "checksum compare disabled"
+    echo "run command with 'backupsvr chk' to enable"
+    CHECKSUM=""
+fi
+echo " "
+
+###################################
+## 256GB Backup Drives Loop #######
+for ((i=1; i<5; i++))
+do
+  USB256VAR="USB256DRV$i"
+  if [ "${!USB256VAR}" = "" ] ; then
+    echo "no drive specified."
+    echo " "
+  else
+    if [ ! -e /mnt/extbkps/${!USB256VAR}/Ben ] ; then
+      echo "drive not connected ${!USB256VAR}"
+      echo " "
+    else
+      ##### BEGIN BACKUP #####
+      #### Ben Share ####
+      if [ ! -e /mnt/datastore/Ben/ProOS ]; then
+        echo "//files/Ben not connected."
+      else
+        echo "syncing 'Ben' share to ${!USB256VAR} drive..."
+        rsync --progress $CHECKSUM -aP --exclude="Software/WindowsImageBackup/z97mx/Backup**" \
+        --exclude='Software/Nintendo' --exclude='Software/Playstation' --exclude='Software/**.ipsw' \
+        --exclude='Software/**VM.zip' --exclude='Software/**HD.zip' \
+        /mnt/datastore/Ben/ /mnt/extbkps/${!USB256VAR}/Ben/ -delete --delete-excluded
+      fi
+      #### Archive Share ####
+      if [ ! -e /mnt/datastore/.Archive/Saved ]; then
+        echo "//files/Archive not connected."
+      else
+        echo "syncing 'Archive' share to ${!USB256VAR} drive..."
+        rsync --progress -aP --exclude="Movies/" \
+        /mnt/datastore/.Archive/ /mnt/extbkps/${!USB256VAR}/.Archive/ -delete --delete-excluded
+      fi
+      ##### END BACKUP #####
+    fi
+  fi  
+done
+
+###################################
+## 128GB Backup Drives Loop #######
+for ((i=1; i<5; i++))
+do
+  USB128VAR="USB128DRV$i"
+  if [ "${!USB128VAR}" = "" ] ; then
+    echo "no drive specified."
+    echo " "
+  else
+    if [ ! -e /mnt/extbkps/${!USB128VAR}/Ben ]; then
+      echo "drive not connected ${!USB128VAR}"
+      echo " "
+    else
+      ##### BEGIN BACKUP #####
+      #### Ben Share ####
+      if [ ! -e /mnt/datastore/Ben/ProOS ]; then
+        echo "//files/Ben not connected."
+      else
+        echo "syncing 'Ben' share to ${!USB128VAR} drive..."
+        rsync --progress $CHECKSUM -aP --exclude="Software/WindowsImageBackup/z97mx/Backup**" \
+        --exclude='Software/Nintendo' --exclude='Software/Playstation' --exclude='Software/**.ipsw' \
+        --exclude='Software/**.img' --exclude='Software/**.iso'  --exclude='Software/**HD.zip' \
+        --exclude='Software/**VM.zip' --exclude='Software/**USB.zip' --exclude='Documents/Family/Media-**.zip' \
+        /mnt/datastore/Ben/ /mnt/extbkps/${!USB128VAR}/Ben/ -delete --delete-excluded
+      fi
+      #### Archive Share ####
+      if [ ! -e /mnt/datastore/.Archive/Saved ]; then
+        echo "//files/Archive not connected."
+      else
+        echo "syncing 'Archive' share to ${!USB128VAR} drive..."
+        rsync --progress -aP --exclude="Movies/" \
+        /mnt/datastore/.Archive/ /mnt/extbkps/${!USB128VAR}/.Archive/ -delete --delete-excluded
+      fi
+      ##### END BACKUP #####
+    fi
+  fi  
+done
+
+###################################
+## Hard Disk Backup Drives Loop ###
+for ((i=1; i<5; i++))
+do
+  HDDVAR="HDDRV$i"
+  if [ "${!HDDVAR}" = "" ] ; then
+    echo "no drive specified."
+    echo " "
+  else
+    if [ ! -e /mnt/extbkps/${!HDDVAR}/Ben ]; then
+      echo "drive not connected ${!HDDVAR}"
+      echo " "
+    else
+      ##### BEGIN BACKUP #####
+      #### Ben Share ####
+      if [ ! -e /mnt/datastore/Ben/ProOS ]; then
+        echo "//files/Ben not connected."
+      else
+        echo "syncing 'Ben' share to ${!HDDVAR} drive..."
+        rsync --progress $CHECKSUM -aP /mnt/datastore/Ben/ /mnt/extbkps/${!HDDVAR}/Ben/ -delete --delete-excluded
+      fi
+      #### Archive Share ####
+      if [ ! -e /mnt/datastore/.Archive/Saved ]; then
+        echo "//files/Archive not connected."
+      else
+        echo "syncing 'Archive' share to ${!HDDVAR} drive..."
+        rsync --progress -aP /mnt/datastore/.Archive/ /mnt/extbkps/${!HDDVAR}/.Archive/ -delete --delete-excluded
+      fi
+      #### Media Share ####
+      if [ ! -e /mnt/datastore/Media/Music ]; then
+        echo "//files/Media not connected."
+      else
+        echo "syncing 'Media' share to ${!HDDVAR} drive..."
+        rsync --progress -aP /mnt/datastore/Media/ /mnt/extbkps/${!HDDVAR}/Media/ -delete --delete-excluded
+      fi
+      ##### END BACKUP #####
+    fi
+  fi  
+done
+################################
+################################
+
+echo "Detaching backup disks..."
+echo ""
+echo "Run 'backupsvr status' to make sure detach completed."
+touch /mnt/extbkps/keytmp/unmount.txt
+
+## Unlock State File
+rm -f /tmp/backupsvr.lock
+
+echo ""
+echo "Press ctrl+c to exit now, will quit in one-minute."
+sleep 60
+
+exit 0

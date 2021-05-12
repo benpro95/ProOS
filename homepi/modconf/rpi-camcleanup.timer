@@ -1,0 +1,9 @@
+[Unit]
+Description=Runs script every 5 hours.
+
+[Timer]
+OnBootSec=1h
+OnUnitActiveSec=5h
+
+[Install]
+WantedBy=timers.target

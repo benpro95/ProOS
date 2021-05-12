@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <row>
+        <button text="Clouds" ontap="neo23" color="#00004c" />
+        <button text="Rave" ontap="neo7" color="#00004c" />
+        <button text="Stripe" ontap="neo8" color="#00004c" />
+        <button text="Lava" ontap="neo6" color="#00004c" />
+    </row>
+    <row>
+        <button text="Miami" ontap="neo9" color="#000045" />
+        <button text="Noise I" ontap="neo2" color="#000045" />
+        <button text="Noise II" ontap="neo5" color="#000045" />
+        <button text="Noise III" ontap="noise3" color="#000045" />
+    </row>
+    <row>
+        <button text="Water" ontap="neo24" color="#00003e" />
+        <button text="Random" ontap="neo15" color="#00003e" />
+        <button text="Orbits" ontap="neo21" color="#00003e" />
+        <button text="Spark" ontap="neo12" color="#00003e" />
+    </row>
+    <row>
+        <button text="Flames" ontap="flames" color="#000037" />
+        <button text="Tunnel" ontap="tunnel" color="#000037" />
+        <button text="Strobe" ontap="strobe" color="#000037" />
+        <button text="Rainbow" ontap="neo20" color="#000037" />
+    </row>
+    <row>
+        <button text="Spotlight" ontap="spotlight" color="#000030" />
+        <button text="Flash" ontap="flash" color="#000030" />
+        <button text="Spectro" ontap="spectro" color="#000030" />
+        <button text="Fireworks" ontap="fireworks" color="#000030" />
+    </row>
+    <row>
+        <button text="LEDSync" ontap="global" color="#000037" />
+        <button icon="pause" ontap="neo0" color="#252629" />
+        <button icon="off" ontap="neo14" color="#000000" />
+    </row>
+</layout>
+

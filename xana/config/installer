@@ -1,0 +1,175 @@
+#!/bin/bash
+### ONLY RUN ON THE SERVER!!
+### AutoConfig - ProOS for Xana KVM
+### by Ben Provenzano III
+### Install PIA-VPN manually and start on boot
+
+echo "Installing..."
+
+## Source List
+cp -f /tmp/config/aptsources.list /etc/apt/sources.list.d/
+chmod 644 /etc/apt/sources.list.d/aptsources.list
+chown root:root /etc/apt/sources.list.d/aptsources.list
+
+## Update Sources
+apt-get --yes update
+
+## Support Packages
+#apt-get install -y --no-upgrade build-essential g++ gcc
+apt-get install -y --no-upgrade dirmngr ca-certificates apt-transport-https wget 
+apt-get install -y --no-upgrade unzip gnupg htop rsync curl screen parallel ethtool neofetch
+apt-get install -y --no-upgrade libdbus-1-dev libdbus-glib-1-dev locales cifs-utils iptables
+apt-get install -y --no-upgrade aptitude sudo gnupg mailutils scrub seahorse avahi-daemon avahi-utils
+
+## 3D Virtualization Support
+apt-get install -y --no-upgrade libvirglrenderer0
+
+## X Packages
+apt-get install -y --no-upgrade libnotify-bin libxext6 libxtst6 xvfb wipe scrub
+apt-get install -y --no-upgrade xfce4-goodies crystalcursors gnome-colors-common
+apt-get install -y --no-upgrade mate-themes gnome-icon-theme gnome-human-icon-theme
+apt-get install -y --no-upgrade audacity dosbox blender transmission wxhexeditor
+apt-get install -y --no-upgrade xchm scribus kazam medit luckybackup inkscape meld
+apt-get install -y --no-upgrade gimp gnumeric geany gtkhash git vlc clamtk gdebi
+apt-get install -y --no-upgrade lightdm-gtk-greeter-settings xserver-xorg-input-evdev
+apt-get install -y --no-upgrade qt5-style-plugins qt4-qtconfig
+apt-get --yes remove --purge libreoffice libreoffice-avmedia-backend-gstreamer \
+libreoffice-calc libreoffice-draw libreoffice-impress libreoffice-librelogo \
+libreoffice-nlpsolver libreoffice-script-provider-bsh libreoffice-script-provider-js \
+libreoffice-script-provider-python libreoffice-wiki-publisher
+#apt-get install -y --no-upgrade xdotool
+
+## Set Passwords
+if [ ! -e /etc/passwds.set ]; then
+  echo ""
+  echo "Set ben user password."
+  passwd ben
+  echo ""
+  touch /etc/passwds.set
+else
+  echo ""  > /dev/null 2>&1
+fi
+
+## Remove Root Password
+passwd -d root
+
+## Set Locale
+if [ ! -e /etc/locales.generated ]; then
+  dpkg-reconfigure locales
+  touch /etc/locales.generated
+else
+  echo ""  > /dev/null 2>&1
+fi
+
+## Auto SSH Login Key for root
+mkdir -p /root/.ssh
+cp -f /tmp/config/authorized_keys /root/.ssh/
+
+## SSH Configuration
+cp -f /tmp/config/sshd_config /etc/ssh
+chmod 644 /etc/ssh/sshd_config
+chown root:root /etc/ssh/sshd_config
+
+## System Configuration
+cp -f /tmp/config/sysctl.conf /etc/
+chmod 644 /etc/sysctl.conf
+chown root:root /etc/sysctl.conf
+
+## Startup Configuration
+cp -f /tmp/config/rc-local.service /etc/systemd/system/
+chmod 644 /etc/systemd/system/rc-local.service
+chown root:root /etc/systemd/system/rc-local.service
+cp -f /tmp/config/rc.local /etc/
+chmod 755 /etc/rc.local
+chown root:root /etc/rc.local
+systemctl enable rc-local
+
+## VNC Support
+apt-get --yes install tigervnc-standalone-server tigervnc-common
+cp -f /tmp/config/vncserver.service /etc/systemd/system/
+chmod 644 /etc/systemd/system/vncserver.service
+chown root:root /etc/systemd/system/vncserver.service
+if [ ! -e /etc/vncserver.installed ]; then
+  echo ""
+  systemctl enable vncserver
+  echo "Login to user 'ben' and run 'vncserver' initially to set password."
+  touch /etc/vncserver.installed
+  echo ""
+else
+  echo ""  > /dev/null 2>&1
+fi
+echo "Login to user 'ben' and run 'vncpasswd' to change VNC password."
+systemctl disable lightdm
+
+## Firejail Sandbox
+apt-get install -y --no-upgrade firejail firejail-profiles
+cp -f /tmp/config/firejail.config /etc/firejail/
+chmod 644 /etc/firejail/firejail.config
+chown root:root /etc/firejail/firejail.config
+cp -f /tmp/config/firefox-common.local /etc/firejail/
+chmod 644 /etc/firejail/firefox-common.local
+chown root:root /etc/firejail/firefox-common.local
+cp -f /tmp/config/globals.local /etc/firejail/
+chmod 644 /etc/firejail/globals.local
+chown root:root /etc/firejail/globals.local
+
+## Application Shortcuts
+cp -f /tmp/config/transmission-gtk.desktop /usr/share/applications/
+chmod 644 /usr/share/applications/transmission-gtk.desktop
+chown root:root /usr/share/applications/transmission-gtk.desktop
+cp -f /tmp/config/firefox-esr.desktop /usr/share/applications/
+chmod 644 /usr/share/applications/firefox-esr.desktop
+chown root:root /usr/share/applications/firefox-esr.desktop
+cp -f /tmp/config/exo-web-browser.desktop /usr/share/applications/
+chmod 644 /usr/share/applications/exo-web-browser.desktop
+chown root:root /usr/share/applications/exo-web-browser.desktop
+cp -f /opt/tor-browser_en-US/start-tor-browser.desktop /usr/share/applications/
+chmod 644 /usr/share/applications/start-tor-browser.desktop
+chown root:root /usr/share/applications/start-tor-browser.desktop
+
+## AutoFS Configuration
+apt-get install -y --no-upgrade autofs
+cp -f /tmp/config/auto.master /etc/
+chmod 644 /etc/auto.master
+chown root:root /etc/auto.master
+cp -f /tmp/config/auto.map /etc/
+chmod 644 /etc/auto.map
+chown root:root /etc/auto.map
+cp -f /tmp/config/auto.creds /etc/
+chmod 400 /etc/auto.creds
+chown root:root /etc/auto.creds
+mkdir -p /mnt/smb
+
+## Profile Configuration
+cp -f /tmp/config/profile /root/.profile
+chmod 755 /root/.profile
+chown root:root /root/.profile
+
+## Fonts
+cp -r /tmp/config/fonts/* /usr/share/fonts/opentype/
+chmod -R 777 /usr/share/fonts/opentype/
+
+## Themes
+if [ ! -e /etc/themes.installed ]; then
+  tar -Jxvf /tmp/config/icons/Bluecurve.txz -C /tmp/config/icons/
+  cp -r /tmp/config/icons/BluecurveRH /usr/share/icons/
+  chmod -R 777 /usr/share/icons/
+  tar -xvf /tmp/config/themes/Bluecurve.tar -C /tmp/config/themes/
+  cp -r /tmp/config/themes/Bluecurve /usr/share/themes/
+  tar -xvf /tmp/config/themes/Platinum.tar -C /tmp/config/themes/
+  cp -r /tmp/config/themes/Platinum /usr/share/themes/
+  tar -xvf /tmp/config/themes/Piranha.tar -C /tmp/config/themes/
+  cp -r /tmp/config/themes/Piranha /usr/share/themes/
+  chmod -R 777 /usr/share/themes/
+  touch /etc/themes.installed
+else
+  echo ""  > /dev/null 2>&1
+fi
+
+## Clean-up
+systemctl daemon-reload
+rm -rf /tmp/config/
+apt-get autoremove -y
+apt-get clean -y
+apt-get autoclean -y
+exit

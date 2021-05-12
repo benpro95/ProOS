@@ -1,0 +1,520 @@
+#!/bin/bash
+## ProOS for RPi, INIT Script by Ben Provenzano III
+
+case "$1" in
+
+##############################################
+########### SYSTEM PROGRAMS ##################
+
+x11)
+## Desktop environment
+## Start as pi user!
+export DISPLAY=":0"
+pkill Xorg; sleep 1.25
+rm -rf /home/pi/.cache/menus
+rm -rf /home/pi/.cache/lxsession
+mkdir -p /home/pi/.cache/lxsession/LXDE
+ln -sf /dev/null /home/pi/.cache/lxsession/LXDE/run.log
+rm -rf /home/pi/.cache/openbox
+mkdir -p /home/pi/.cache/openbox
+ln -sf /dev/null /home/pi/.cache/openbox/openbox.log
+echo "Starting X11-LXDE..."
+startx > /dev/null 2>&1 &
+sleep 4.25
+## Disable Screen Blanking
+xset s 0 0 s noblank s noexpose
+xset -dpms
+exit
+;;
+
+wifistats)
+## Displays realtime Wi-Fi signal stats
+watch -n 1 cat /proc/net/wireless
+exit
+;;
+
+active)
+echo "Active services."
+systemctl list-units --type=service --state=active
+exit
+;;
+
+running)
+echo "Running services."
+systemctl list-units --type=service --state=running
+exit
+;;
+
+gpumem)
+echo "GPU memory."
+/opt/vc/bin/vcdbg reloc stats
+exit
+;;
+
+timers)
+## List Active Timers
+systemctl list-timers --all
+exit
+;;
+
+loadtimes)
+## Display list of system daemons and startup times
+systemd-analyze blame
+exit
+;;
+
+ftp)
+## List FTP Transfer Command
+echo 'ncftpput -R -v -u "ben" z97mx.home / local-folder'
+exit
+;;
+
+osk)
+## X11 On-Screen Keyboard
+killall florence
+sleep 1.25
+## Connect to X
+export DISPLAY=":0"
+florence --use-config /usr/share/florence/florence.conf &
+exit
+;;
+
+processing)
+## Connect to X
+export DISPLAY=":0"
+/opt/rpi/processing/processing > /dev/null 2>&1 &
+exit
+;;
+
+kiosk)
+## X11 Web Kiosk
+killall chromium-browser
+sleep 1.25
+## Connect to X
+export DISPLAY=":0"
+## Clear Web Cache
+rm -r ~/.cache/chromium
+chromium-browser --kiosk --no-first-run --disable-plugins --disk-cache-size=800000 --media-cache-size=800000 --incognito --disable-session-crashed-bubble --noerrdialogs --disable-infobars localhost/ &
+exit
+;;
+
+keycap)
+## Capture Keystrokes and Events
+echo "List of all known events"
+thd --listevents
+echo "Press Ctrl+C to exit"
+/usr/sbin/thd --dump /dev/input/*
+exit
+;;
+
+xkeycap)
+## List X11 keycodes 'run as user'
+#keycode 162 = XF86AudioPlay
+#keycode 164 = XF86AudioStop
+#keycode 153 = XF86AudioNext
+#keycode 144 = XF86AudioPrev
+#keycode 115 = F13
+#keycode 117 = F35
+#keycode 234 = F19
+#keycode 233 = F20
+export XDG_RUNTIME_DIR=/run/user/1000
+export DISPLAY=:0
+/usr/bin/xev
+exit
+;;
+
+ufs)
+## USB File Server
+systemctl stop nmbd
+systemctl stop smbd
+rm -rf /var/cache/samba/*
+rm -rf /var/log/samba/*
+sleep 1.25
+echo "Starting samba file server."
+systemctl start nmbd
+systemctl start smbd
+exit
+;;
+
+alsa)
+## Restart ALSA Audio Subsystems
+/etc/init.d/alsa-utils stop
+alsactl kill quit
+alsactl restore
+/etc/init.d/alsa-utils start
+exit
+;;
+
+temp)
+## Read System CPU Temp
+tm=`/opt/vc/bin/vcgencmd measure_temp`
+tc=`echo $tm| cut -d '=' -f2 | sed 's/..$//'`
+tf=$(echo "scale=2;((9/5) * $tc) + 32" |bc)
+echo temp = $tf\'F \($tc\'C\)
+exit
+;;
+
+overtemp)
+## Over Temperature Action #######################
+##################################################
+if [ ! -e /tmp/pitemp.log ]; then
+  echo ""  > /dev/null 2>&1
+else
+  rm -f /tmp/pitemp.log
+fi
+echo "Recording system temperature."
+cpuTemp0=$(cat /sys/class/thermal/thermal_zone0/temp)
+cpuTemp1=$(($cpuTemp0/1000))
+cpuTemp2=$(($cpuTemp0/100))
+cpuTempM=$(($cpuTemp2 % $cpuTemp1))
+function writeToLog() {
+file="/tmp/pitemp.log"
+if [ ! -f "$file" ] ; then
+  touch "$file"
+fi
+  echo "$1" >> "$file"
+  }
+  writeToLog "$(date): CPU temp - $cpuTemp1.$cpuTempM'C;"
+if [ "$cpuTemp1" -gt  "75" ] ## Temp Limit
+  then writeToLog "Limiting Max Temperature..;"; `/opt/rpi/main overtemp`
+fi
+exit
+;;
+
+rw)
+## Enable Read/Write Mode
+echo 'Rebooting in read/write mode...'
+killall Xorg
+/opt/rpi/leds stop
+sleep 1.25
+mount -o remount,rw /boot
+cp -f /boot/cmdline.rw /boot/cmdline.txt
+mount -o remount,ro /boot
+sleep 1.25
+shutdown -r now
+exit
+;;
+
+ro)
+## Enable Read/Only Mode
+echo 'Rebooting in read/only mode...'
+killall Xorg
+/opt/rpi/leds stop
+sleep 1.25
+mount -o remount,rw /boot
+cp -f /boot/cmdline.ro /boot/cmdline.txt
+mount -o remount,ro /boot
+sleep 1.25
+shutdown -r now
+exit
+;;
+
+update)
+### Debian System Update
+echo " "
+echo "System must be in read-write mode."
+echo " "
+df
+read -p "Are you sure? " -n 1 -r
+echo    # (optional) move to a new line
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+    exit 1
+fi
+mount -o remount,rw /boot
+apt-get -y update --allow-releaseinfo-change
+apt-get upgrade
+apt-get dist-upgrade
+apt-get autoremove -y
+apt-get clean -y
+#pip install --upgrade pip
+echo " "
+echo "Re-enable read-only mode after rebooting!"
+exit
+;;
+
+expand)
+## Expand filesystem on reboot
+echo " "
+echo "System must be in read-write mode."
+echo " "
+df
+read -p "Are you sure? " -n 1 -r
+echo    # (optional) move to a new line
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+    exit 1
+fi
+mount -o remount,rw /boot
+raspi-config --expand-rootfs
+echo " "
+echo "Re-enable read-only mode after reboot!"
+exit
+;;
+
+cpwifi)
+echo 'Copying WiFi configuration...'
+sleep 1.25
+mount -o remount,rw /boot
+cp -f /tmp/wifidata /boot/wpa.conf
+mount -o remount,ro /boot
+exit
+;;
+
+delwifi)
+echo "Resetting Wi-Fi Settings..."
+/usr/bin/screen -dm /bin/bash /etc/netmode.sh delwifi || :
+exit
+;;
+
+client)
+echo 'Enabling client network mode...'
+/usr/bin/screen -dm /bin/bash /etc/netmode.sh client || :
+exit
+;;
+
+apd)
+echo 'Enabling access point mode...'
+/usr/bin/screen -dm /bin/bash /etc/netmode.sh apd || :
+exit
+;;
+
+togglenet)
+## Toggle between hostspot and client mode
+if pgrep -x "hostapd" > /dev/null
+then
+  echo "APD running, switching to client..."
+  /usr/bin/screen -dm /bin/bash /etc/netmode.sh client || :
+else
+  echo "APD not running, switching to hotspot..."
+  /usr/bin/screen -dm /bin/bash /etc/netmode.sh apd || :
+fi
+exit
+;;
+
+##############################################
+#### END MAINTENANCE SCRIPT ##################
+
+### Web Server Themes
+
+blue)
+rm -f /opt/rpi/manager/client.css
+cp -r /opt/rpi/manager/client.orig.css /opt/rpi/manager/client.css
+sed -i 's/HoverOverTop/2361dd/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonShadowFrame/7F83D1/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonColour/042244/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuTop/008de0/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuBtm/115170/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundTop/03449b/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundMid/023375/g' /opt/rpi/manager/client.css
+exit
+;;
+
+red)
+rm -f /opt/rpi/manager/client.css
+cp -r /opt/rpi/manager/client.orig.css /opt/rpi/manager/client.css
+sed -i 's/HoverOverTop/dd2342/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonShadowFrame/D17F84/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonColour/440415/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuTop/E00000/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuBtm/701120/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundTop/9b0324/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundMid/750213/g' /opt/rpi/manager/client.css
+exit
+;;
+
+green)
+rm -f /opt/rpi/manager/client.css
+cp -r /opt/rpi/manager/client.orig.css /opt/rpi/manager/client.css
+sed -i 's/HoverOverTop/1dc479/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonShadowFrame/7ed198/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonColour/044412/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuTop/09bc5c/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuBtm/117022/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundTop/029158/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundMid/015b37/g' /opt/rpi/manager/client.css
+exit
+;;
+
+purple)
+rm -f /opt/rpi/manager/client.css
+cp -r /opt/rpi/manager/client.orig.css /opt/rpi/manager/client.css
+sed -i 's/HoverOverTop/ab23dd/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonShadowFrame/b77ed1/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonColour/410444/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuTop/9104ce/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuBtm/6d1069/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundTop/750589/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundMid/580163/g' /opt/rpi/manager/client.css
+exit
+;;
+
+orange)
+rm -f /opt/rpi/manager/client.css
+cp -r /opt/rpi/manager/client.orig.css /opt/rpi/manager/client.css
+sed -i 's/HoverOverTop/dd6d23/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonShadowFrame/d1aa7e/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonColour/442504/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuTop/cc6d0e/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuBtm/704611/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundTop/d66011/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundMid/af4701/g' /opt/rpi/manager/client.css
+exit
+;;
+
+## Light Themes
+
+lblue)
+rm -f /opt/rpi/manager/client.css
+cp -r /opt/rpi/manager/client.orig.css /opt/rpi/manager/client.css
+sed -i 's/HoverOverTop/5485e5/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonShadowFrame/8b8fd3/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonColour/104d93/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuTop/268fe5/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuBtm/1d86a3/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundTop/519adb/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundMid/296fad/g' /opt/rpi/manager/client.css
+exit
+;;
+
+lred)
+rm -f /opt/rpi/manager/client.css
+cp -r /opt/rpi/manager/client.orig.css /opt/rpi/manager/client.css
+sed -i 's/HoverOverTop/d84e65/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonShadowFrame/d1989c/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonColour/93203f/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuTop/d34747/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuBtm/7c2734/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundTop/ea385f/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundMid/ba2848/g' /opt/rpi/manager/client.css
+exit
+;;
+
+lgreen)
+rm -f /opt/rpi/manager/client.css
+cp -r /opt/rpi/manager/client.orig.css /opt/rpi/manager/client.css
+sed -i 's/HoverOverTop/3db57f/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonShadowFrame/a4d6b4/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonColour/168e46/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuTop/64efa5/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuBtm/3ac153/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundTop/48dba0/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundMid/048752/g' /opt/rpi/manager/client.css
+exit
+;;
+
+lpurple)
+rm -f /opt/rpi/manager/client.css
+cp -r /opt/rpi/manager/client.orig.css /opt/rpi/manager/client.css
+sed -i 's/HoverOverTop/c76de8/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonShadowFrame/c4a2d3/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonColour/75127a/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuTop/b84ae8/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuBtm/a03e9b/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundTop/d75aed/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundMid/9204a5/g' /opt/rpi/manager/client.css
+exit
+;;
+
+lorange)
+rm -f /opt/rpi/manager/client.css
+cp -r /opt/rpi/manager/client.orig.css /opt/rpi/manager/client.css
+sed -i 's/HoverOverTop/d38b5b/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonShadowFrame/ccb192/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonColour/87541f/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuTop/e09c2f/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuBtm/aa712a/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundTop/ff8c20/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundMid/d17d00/g' /opt/rpi/manager/client.css
+exit
+;;
+
+## Dark Themes
+
+dblue)
+rm -f /opt/rpi/manager/client.css
+cp -r /opt/rpi/manager/client.orig.css /opt/rpi/manager/client.css
+sed -i 's/HoverOverTop/271689/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonShadowFrame/424575/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonColour/070321/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuTop/012189/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuBtm/0c0b44/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundTop/110160/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundMid/030833/g' /opt/rpi/manager/client.css
+exit
+;;
+
+dred)
+rm -f /opt/rpi/manager/client.css
+cp -r /opt/rpi/manager/client.orig.css /opt/rpi/manager/client.css
+sed -i 's/HoverOverTop/891c2f/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonShadowFrame/703b3e/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonColour/470415/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuTop/8e0202/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuBtm/440b14/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundTop/5e0115/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundMid/230106/g' /opt/rpi/manager/client.css
+exit
+;;
+
+dgreen)
+rm -f /opt/rpi/manager/client.css
+cp -r /opt/rpi/manager/client.orig.css /opt/rpi/manager/client.css
+sed -i 's/HoverOverTop/158452/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonShadowFrame/416b4e/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonColour/021907/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuTop/016037/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuBtm/0c4717/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundTop/024228/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundMid/00160d/g' /opt/rpi/manager/client.css
+exit
+;;
+
+dpurple)
+rm -f /opt/rpi/manager/client.css
+cp -r /opt/rpi/manager/client.orig.css /opt/rpi/manager/client.css
+sed -i 's/HoverOverTop/6f188e/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonShadowFrame/714e82/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonColour/260428/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuTop/58047c/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuBtm/420a3f/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundTop/460451/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundMid/240128/g' /opt/rpi/manager/client.css
+exit
+;;
+
+dorange)
+rm -f /opt/rpi/manager/client.css
+cp -r /opt/rpi/manager/client.orig.css /opt/rpi/manager/client.css
+sed -i 's/HoverOverTop/964b19/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonShadowFrame/82511a/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonColour/2d1903/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuTop/b7580b/g' /opt/rpi/manager/client.css
+sed -i 's/ActiveMenuBtm/442a0a/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundTop/914605/g' /opt/rpi/manager/client.css
+sed -i 's/BackgroundMid/683204/g' /opt/rpi/manager/client.css
+exit
+;;
+
+        *)
+          echo "RPi Init Script v15"
+	      echo "by Ben Provenzano III"
+	      echo " "
+	      echo "Enter Valid Arguments."
+          echo " "
+          echo "ro - Enable Read/Only Mode"
+          echo "rw - Enable Read/Write Mode"
+          echo "update - Update/Upgrade System"
+          echo "loadtimes - Startup Services"
+          echo "active - Active Services"
+          echo "running - Running Services"
+          echo "timers - Active Timers"
+          echo "wifistats - Wi-Fi Statistics"
+          echo "togglenet - Toggle Hotspot/Client Network"
+          echo "gpumem - Free GPU Memory"
+          echo "ftp - List File Transfer Command"
+          echo "temp - Display System Temperature"
+          echo " "
+          exit 1
+          ;;
+    esac   

@@ -1,0 +1,73 @@
+#!/bin/bash
+### ONLY RUN ON THE SERVER!!
+### AutoConfig - ProOS for Plex Container
+### by Ben Provenzano III
+###
+
+echo "Installing..."
+
+## Support Packages
+apt-get --yes update
+apt-get install -y --no-upgrade unzip wget htop rsync curl screen parallel ethtool aptitude sudo gnupg iptables
+
+## Add Plex Repo
+if [ ! -e /etc/apt/sources.list.d/plexmediaserver.list ]; then
+   echo deb https://downloads.plex.tv/repo/deb public main | tee /etc/apt/sources.list.d/plexmediaserver.list
+   curl "https://downloads.plex.tv/plex-keys/PlexSign.key" | apt-key add -
+else
+  echo ""  > /dev/null 2>&1
+fi
+
+## Support Packages
+apt-get install -y --no-upgrade libdbus-1-dev libdbus-glib-1-dev locales apt-transport-https
+
+## Plex Media Server
+apt-get install -y --no-upgrade plexmediaserver
+mkdir -p /etc/systemd/system/plexmediaserver.service.d
+cp -r /tmp/config/override.conf /etc/systemd/system/plexmediaserver.service.d/
+chmod 644 /etc/systemd/system/plexmediaserver.service.d/override.conf
+chown root:root /etc/systemd/system/plexmediaserver.service.d/override.conf
+systemctl disable plexmediaserver.service
+
+## Remove Web Management
+apt-get --yes remove --purge nginx nginx-common nginx-full
+apt-get --yes remove --purge webmin shellinabox
+rm -r /var/www/; mkdir /var/www
+
+## Set Locale
+if [ ! -e /etc/locales.generated ]; then
+  dpkg-reconfigure locales
+  touch /etc/locales.generated
+else
+  echo ""  > /dev/null 2>&1
+fi
+
+## Auto SSH Login Key for root
+mkdir -p /root/.ssh
+cp -r /tmp/config/authorized_keys /root/.ssh/
+
+## SSH Configuration
+cp -r /tmp/config/sshd_config /etc/ssh
+chmod 644 /etc/ssh/sshd_config
+chown root:root /etc/ssh/sshd_config
+
+## System Configuration
+cp -r /tmp/config/sysctl.conf /etc
+chmod 644 /etc/sysctl.conf
+chown root:root /etc/sysctl.conf
+
+## Startup Configuration
+cp -r /tmp/config/rc-local.service /etc/systemd/system/
+chmod 644 /etc/systemd/system/rc-local.service
+chown root:root /etc/systemd/system/rc-local.service
+cp -r /tmp/config/rc.local /etc/
+chmod 755 /etc/rc.local
+chown root:root /etc/rc.local
+systemctl enable rc-local
+
+## Clean-up
+systemctl daemon-reload
+rm -r /tmp/config/
+apt-get clean -y
+apt-get autoclean -y
+exit

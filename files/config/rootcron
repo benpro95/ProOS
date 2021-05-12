@@ -1,0 +1,9 @@
+# Main root cron timer file.
+# for Files VM
+# Feel free to adapt it to your needs.
+# by Ben Provenzano III
+################################################
+# Activation Time ##### User ###### Command ####
+
+15 18 * * *      cameras    /usr/bin/camcleanup
+

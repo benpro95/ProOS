@@ -1,0 +1,15 @@
+# ~/.profile: executed by Bourne-compatible login shells.
+
+if [ "$BASH" ]; then
+  if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+  fi
+fi
+
+mesg n || true
+
+######## Custom login scripts below ###########
+
+echo " "
+echo "Welcome to ProOS !!!"
+echo " "

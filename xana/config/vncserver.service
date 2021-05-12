@@ -1,0 +1,17 @@
+[Unit]
+Description=Start TightVNC server at startup
+After=syslog.target network.target
+
+[Service]
+Type=forking
+User=ben
+Group=ben
+WorkingDirectory=/home/ben
+
+PIDFile=/home/ben/.vnc/xana.home:1.pid
+ExecStartPre=-/usr/bin/vncserver -kill :1 > /dev/null 2>&1
+ExecStart=/usr/bin/vncserver -localhost no -depth 24 -geometry 750x1330 :1
+ExecStop=/usr/bin/vncserver -kill :1
+
+[Install]
+WantedBy=multi-user.target

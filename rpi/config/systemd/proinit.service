@@ -1,0 +1,14 @@
+[Unit]
+Description=ProOS Init Service by Ben Provenzano III
+DefaultDependencies=no
+After=sysinit.target local-fs.target
+Before=basic.target
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/screen -dm /bin/bash /etc/preinit
+TimeoutSec=1
+RemainAfterExit=yes
+
+[Install]
+WantedBy=basic.target

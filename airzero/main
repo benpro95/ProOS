@@ -1,0 +1,47 @@
+#!/bin/bash
+##
+## Portable Pi Zero Speaker by Ben Provenzano III v2.2 #########
+################################################################
+case "$1" in
+
+boot)
+## Pop Eliminator
+/usr/bin/amixer set PCM 0%; sleep 1.25
+systemctl start rpi-zeroaudio
+## AirPlay Support
+systemctl start rpi-airplay
+## Startup Sound / Set Volume
+/usr/bin/amixer set PCM 60%
+/usr/bin/aplay /opt/rpi/sounds/ds.wav
+sleep 1.25; /usr/bin/amixer set PCM 100%
+## Light Web Server
+systemctl start lighttpd
+## Disable HDMI
+/usr/bin/tvservice -o
+## Start 5-min Timer
+systemctl start rpi-timer.timer
+exit
+;;
+
+timer)
+## This script is ran every 5-min
+/usr/bin/screen -dm /bin/bash /etc/netmode.sh netdetect || :
+exit
+;;
+
+usbplug)
+## This script is ran after USB drive attached
+echo "no function assigned"
+exit
+;;
+
+
+    
+        *)
+	      echo "  Pi Zero II"
+	      echo "  by Ben Provenzano III"
+	      echo " "
+	      echo "Enter a valid command line argument."
+          exit 1
+        ;;
+    esac   

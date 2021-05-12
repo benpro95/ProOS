@@ -1,0 +1,166 @@
+#!/bin/bash
+### ONLY RUN ON THE SERVER!!
+### AutoConfig - ProOS for Proxmox
+### by Ben Provenzano III
+###
+
+## PVE Support Packages
+cp -f /tmp/config/pve-enterprise.list /etc/apt/sources.list.d/
+chmod 644 /etc/apt/sources.list.d/pve-enterprise.list
+chown root:root /etc/apt/sources.list.d/pve-enterprise.list
+
+apt-get --yes update
+echo "Installing..."
+
+## Support Packages
+apt-get --yes install rsync cron zip screen libsasl2-modules
+apt-get --yes install postfix ethtool htop apt-transport-https
+
+## Bonded Trunk 802.3ad Network Config
+cp -f /tmp/config/interfaces /etc/network/interfaces
+chmod 644 /etc/network/interfaces
+chown root:root /etc/network/interfaces
+
+## SSH Configuration
+mkdir -p /root/.ssh
+cp -f /tmp/config/authorized_keys /root/.ssh/
+chmod 644 /root/.ssh/authorized_keys > /dev/null 2>&1
+chown root:root /root/.ssh/authorized_keys > /dev/null 2>&1
+cp -f /tmp/config/sshd_config /etc/ssh/
+chmod 644 /etc/ssh/sshd_config
+chown root:root /etc/ssh/sshd_config
+
+## Startup Configuration
+cp -f /tmp/config/rc-local.service /etc/systemd/system/
+chmod 644 /etc/systemd/system/rc-local.service
+chown root:root /etc/systemd/system/rc-local.service
+cp -f /tmp/config/rc.local /etc/
+chmod 755 /etc/rc.local
+chown root:root /etc/rc.local
+systemctl enable rc-local
+
+## Hosts Configuration
+cp -f /tmp/config/hosts /etc/hosts
+chmod 644 /etc/hosts
+chown root:root /etc/hosts
+
+## DNS Configuration
+echo "DNS settings set manually in PVE web UI."
+cat /etc/resolv.conf
+
+## Enable PCI-e Passthrough / GRUB Settings
+if [ ! -e /etc/iommu.enabled ]; then
+  echo "Enabling PCI-e passthrough."
+  ## Blacklist Onboard Ethernet Ports
+  cp -f /tmp/config/blacklist.conf /etc/modprobe.d/
+  chmod 644 /etc/modprobe.d/blacklist.conf
+  chown root:root /etc/modprobe.d/blacklist.conf
+  update-initramfs -u
+  ## Enable Intel IO-MMU (MUST BE USING ZFS RPOOL AS ROOT !!)
+  cp -f /tmp/config/grub /etc/default/
+  chmod +x /etc/default/grub
+  chown root:root /etc/default/grub
+  update-grub
+  touch /etc/iommu.enabled
+else
+  echo ""  > /dev/null 2>&1
+fi
+
+## Move Swapfile to Scratch Drive
+if [ ! -e /dev/zvol/rpool/swap ]; then
+  echo "Swap file already moved."
+else
+  echo "Moving Swapfile to Scratch Drive..."
+  swapoff /dev/zvol/rpool/swap
+  zfs destroy rpool/swap
+  cp -f /tmp/config/fstab /etc/
+  chmod 644 /etc/fstab
+  chown root:root /etc/fstab
+  fallocate -l 10G /mnt/pve/scratch/swapfile
+  chmod 0600 /mnt/pve/scratch/swapfile
+  chown root:root /mnt/pve/scratch/swapfile
+  mkswap /mnt/pve/scratch/swapfile
+  swapon /mnt/pve/scratch/swapfile
+fi
+
+## Backup Mountpoints
+if [ ! -e /mnt/extbkps ]; then
+  mkdir -p /mnt/extbkps
+  mkdir -p /mnt/extbkps/keytmp
+  chmod -R 777 /mnt/extbkps/keytmp
+else
+  echo "Backup mountpoints exist."
+fi
+cp -f /tmp/config/zfs-extbkps /usr/bin/
+chmod +x /usr/bin/zfs-extbkps
+chown root:root /usr/bin/zfs-extbkps
+
+## System Check Script
+cp -f /tmp/config/sys-check /usr/bin/
+chmod 755 /usr/bin/sys-check
+chown root:root /usr/bin/sys-check
+
+## Virtual Machines Backup Script
+cp -f /tmp/config/backupvms /usr/bin/
+chmod +x /usr/bin/backupvms
+chown root:root /usr/bin/backupvms
+
+## APC UPS Configuration
+apt-get --yes install apcupsd
+cp -f /tmp/config/apcupsd.conf /etc/apcupsd/
+chmod 644 /etc/apcupsd/apcupsd.conf
+chown root:root /etc/apcupsd/apcupsd.conf
+
+## HD Temperature Configuration
+apt-get --yes install hddtemp
+cp -f /tmp/config/hddtemp.db /etc/
+chmod 644 /etc/hddtemp.db
+chown root:root /etc/hddtemp.db
+
+## Sensors Configuration
+apt-get --yes install lm-sensors
+cp -f /tmp/config/sensors3.conf /etc/
+chmod 644 /etc/sensors3.conf
+chown root:root /etc/sensors3.conf
+
+## Cron Timer
+cp -f /tmp/config/rootcron /etc/cron.d/
+chmod 644 /etc/cron.d/rootcron
+chown root:root /etc/cron.d/rootcron
+rm -f /etc/cron.d/rsnapshot
+systemctl restart cron
+
+## ZFS Snapshot Configuration
+if [ ! -e /etc/zfsautosnap.enabled ]; then
+  apt-get --yes install zfs-auto-snapshot
+  zfs set com.sun:auto-snapshot=false rpool
+  zfs set com.sun:auto-snapshot=false rpool/ROOT
+  zfs set com.sun:auto-snapshot=false rpool/data
+  zfs set com.sun:auto-snapshot=false tank
+  zfs set com.sun:auto-snapshot=true tank/datastore
+  ## Disable 15-min Snapshots ###
+  zfs set com.sun:auto-snapshot:frequent=false tank/datastore
+  rm -f /etc/cron.d/zfs-auto-snapshot
+  ###############################
+  touch /etc/zfsautosnap.enabled
+  echo "ZFS Auto-Snapshot Enabled."
+else
+  echo ""  > /dev/null 2>&1
+fi
+
+## Check for backup files every 60 seconds
+killall -w zfs-extbkps
+/usr/bin/screen -dm -t zfs-extbkps -L -Logfile /mnt/extbkps/keytmp/status.txt /usr/bin/zfs-extbkps
+
+## Disable PVE Replication Service
+systemctl stop pvesr.timer
+systemctl disable pvesr.timer
+systemctl mask pvesr.timer
+rm -f /lib/systemd/system/pvesr.timer
+
+## Clean-up
+systemctl daemon-reload
+apt-get --yes autoremove
+apt-get --yes clean
+rm -r /tmp/config
+exit

@@ -1,0 +1,36 @@
+## Created by Ben Provenzano III for LEDwall Servers
+
+#-------GPU memory-------
+gpu_mem=16
+
+#-------Max USB Current-------
+max_usb_current=1
+
+#-------Disable Ram temp refresh every 500ms---------
+disable_pvt=1
+
+#-------Disable Pi Splash screen on boot-------------
+disable_splash=1
+
+#-------Audio support-------
+dtparam=audio=on
+
+#-------Remove dedicated pll for PWM audio-------
+avoid_pwm_pll=1
+
+#-------Hardware interfaces-------
+dtparam=i2c_arm=off
+dtparam=i2c1=off
+i2c_arm_baudrate=100000
+dtparam=spi=off
+
+#------Disable Bluetooth-----
+dtoverlay=pi3-disable-bt
+
+#------Camera (disabled)------
+#start_x=1
+#disable_camera_led=1
+
+#------Reboot when exceeds-----
+temp_limit=75
+

@@ -1,0 +1,50 @@
+#!/bin/bash
+## NES Pi Configuration Script v7.0
+
+# Import Host name
+HOSTNAME=`cat /opt/rpi/config/hostname`
+## Set Module Path
+BIN=/opt/rpi
+# Import Brand name
+MODNAME=`cat $BIN/modconf/brand.txt`
+
+if [ ! -e /opt/rpi/init ]; then
+echo "Core components missing or corrupted."
+echo "Exiting..."
+sleep 1
+exit
+else
+echo "Components integrity verified."
+fi
+echo "Starting $MODNAME configuration..."
+
+## Copy Boot Config
+mount -o remount,rw /boot
+sleep 1.25
+cp -f $BIN/modconf/config.txt /boot/
+mount -o remount,ro /boot
+
+## RetroPie Setup
+if [ ! -e /usr/bin/emulationstation ]; then
+  git clone https://github.com/RetroPie/RetroPie-Setup.git /home/pi/RetroPie-Setup
+  chmod +x /home/pi/RetroPie-Setup/retropie_setup.sh
+  chown -R pi:pi /home/pi/RetroPie-Setup
+  mv /home/pi/RetroPie /home/pi/RetroPie.orig
+  mv /opt/retropie/configs /home/pi/RetroPie.orig/
+  ln -sf /home/pi/RetroPie/configs /opt/retropie/configs
+  mkdir -p /home/pi/RetroPie
+  chown -R pi:pi /home/pi/RetroPie
+  echo " "
+  echo "Login to pi user and run 'sudo ./RetroPie-Setup/retropie_setup.sh'"
+  echo "Copy contents of '/home/pi/RetroPie.orig/*' to a USB flash drive"
+  echo " "
+else
+  echo "RetroPie already installed."
+fi
+
+## USB Drive Setup
+cp -f $BIN/modconf/usbmount.conf /etc/usbmount/
+chmod 644 /etc/usbmount/usbmount.conf
+chown root:root /etc/usbmount/usbmount.conf
+
+exit

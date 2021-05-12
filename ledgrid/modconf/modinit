@@ -1,0 +1,59 @@
+#!/bin/sh
+## LEDwall Configuration Script v7.0
+
+# Import Host name
+HOSTNAME=`cat /opt/rpi/config/hostname`
+## Set Module Path
+BIN=/opt/rpi
+# Import Brand name
+MODNAME=`cat $BIN/modconf/brand.txt`
+
+if [ ! -e /opt/rpi/init ]; then
+echo "Core components missing or corrupted."
+echo "Exiting..."
+sleep 1
+exit
+else
+echo "Components integrity verified."
+fi
+echo "Starting $MODNAME configuration..."
+
+## Copy Boot Config
+mount -o remount,rw /boot
+sleep 1.25
+cp -r $BIN/modconf/config.txt /boot/
+mount -o remount,ro /boot
+
+## Enable LED remotes
+ln -sf /opt/rpi/effects/remotes /opt/rpi/remotes/leds
+
+## Disable 5-min Timer
+systemctl disable rpi-timer.timer
+systemctl disable rpi-timer.service
+
+## Stage II - Set module name to configs
+if [ ! -e $BIN/modconf/brand.txt ]; then
+echo "Skip module naming."
+else
+echo "Setting module name."
+## Module specific home page
+cp -f $BIN/modconf/client.html /opt/rpi/manager/
+chmod 644 /opt/rpi/manager/client.html
+chown root:root /opt/rpi/manager/client.html
+## Set module name to unified server
+sed -i "s/RaspberryPi/$MODNAME/g" /opt/rpi/manager/client.html
+sed -i "s/raspberrypi/$HOSTNAME/g" /opt/rpi/manager/client.html
+fi
+
+## Link RPi to global commands library
+ln -sf /opt/rpi/main /usr/bin/main
+
+## Routed Hotspot Configuration
+#cp -f /etc/dnsmasq.routed /etc/dnsmasq.conf
+#chmod 644 /etc/dnsmasq.conf
+#chown root:root /etc/dnsmasq.conf
+
+## Change Web Server Default Theme
+/opt/rpi/init dgreen
+
+exit

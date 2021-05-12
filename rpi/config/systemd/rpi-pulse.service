@@ -1,0 +1,12 @@
+[Unit]
+Description=PulseAudio Server (Custom)
+Conflicts=shutdown.target
+
+[Service]
+User=root
+ExecStart=/usr/bin/pulseaudio -vvv --daemonize=no --system --high-priority
+Restart=always
+RestartSec=5
+
+[Install]
+#WantedBy=multi-user.target

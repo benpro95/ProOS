@@ -1,0 +1,13 @@
+[Unit]
+Description=Play Zero Audio (Fixes I2S Pops)
+Conflicts=shutdown.target
+
+[Service]
+User=root
+Type=forking
+ExecStart=/usr/bin/screen -dm /usr/bin/aplay -i
+Restart=always
+RestartSec=5
+
+[Install]
+#WantedBy=multi-user.target

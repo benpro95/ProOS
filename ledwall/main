@@ -1,0 +1,70 @@
+#!/bin/bash
+###########################################################
+## LEDwall main script by Ben Provenzano III v7 ###########
+###########################################################
+###########################################################
+
+case "$1" in
+
+boot)
+## Set GPIO's
+gpio mode 26 out
+gpio write 26 0
+gpio mode 25 out
+gpio write 25 0
+## Light Web Server
+systemctl start lighttpd
+## Unified Web Server
+systemctl start rpi-urserver
+## WiFi Toggle Switch
+systemctl start rpi-wifiswitch
+## LED Controller
+/opt/rpi/leds fc norm
+## Flash LED
+gpio write 26 1
+sleep 1.25
+gpio write 26 0
+exit
+;;
+
+apdled-on)
+## Turn WiFi LED On
+gpio write 25 1
+exit
+;;
+
+apdled-off)
+## Turn WiFi LED Off
+gpio write 25 0
+exit
+;;
+
+lamp)
+## White Front LED Toggle
+if [ ! -e /tmp/fntled.save ]; then
+   ## White Front LED On
+   touch /tmp/fntled.save
+   gpio write 26 1
+else
+   ## White Front LED Off
+   rm -f /tmp/fntled.save
+   gpio write 26 0
+fi
+exit
+;;
+
+usbplug)
+## This script is ran after USB drive attached
+echo "no function assigned"
+exit
+;;
+
+	    
+    *)
+      echo "LEDwall Server v6 for Raspberry Pi"
+	    echo "  by Ben Provenzano III"
+	    echo " "
+	    echo "Enter a valid command line argument."
+          exit 1
+          ;;
+    esac

@@ -1,0 +1,10 @@
+[Unit]
+Description=USB Flash Drive Detector
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+ExecStart=/opt/rpi/main usbplug > /dev/null 2>&1 &
+
+[Install]
+WantedBy=multi-user.target

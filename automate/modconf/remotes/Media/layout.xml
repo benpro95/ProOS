@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <row>
+	    <button icon="vdown" ontap="vdwn" />
+	    <button icon="vup" ontap="vup" />
+    </row>
+    <row>
+	    <button text="-5dB" ontap="vdwnc" />    
+	    <button icon="vmute" ontap="mute" />
+	    <button text="+5dB" ontap="vupc" />	
+    </row>
+    <row>
+        <button icon="vmute" ontap="submute" />   	
+        <button text="Subs" ontap="subs" />
+        <button icon="vdown" ontap="subdwn" />
+        <button icon="vup" ontap="subup" />
+    </row>
+    <row>
+        <button text="Aux" ontap="aux" />
+    	<button text="PC" ontap="pcin" />
+	    <button text="NES Pi" ontap="nespi" />
+	</row>
+	<row>
+    	<button text="Coaxial" ontap="coax" />
+        <button text="USB" ontap="usb" />
+        <button text="Optical" ontap="opt" />
+        <button text="Auto" ontap="autodac" />
+    </row>
+    <row>
+	    <button text="Audio - on" ontap="hifion" />
+	    <button text="Audio - off" ontap="hifioff" />
+	    <button text="TV - on/off" ontap="tv" />
+    </row>
+    <row>
+	    <button text="System / PC" icon="power" ontap="sys" />
+    </row>
+</layout>
+
+

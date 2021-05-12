@@ -1,0 +1,52 @@
+#!/bin/bash
+### ONLY RUN ON THE SERVER!!
+### AutoConfig - ProOS for Unifi KVM
+### by Ben Provenzano III
+
+echo "Installing..."
+
+## Support Packages
+apt-get --yes update
+apt-get install -y --no-upgrade dirmngr ca-certificates apt-transport-https wget 
+apt-get install -y --no-upgrade unzip gnupg htop rsync curl screen parallel ethtool 
+apt-get install -y --no-upgrade libdbus-1-dev libdbus-glib-1-dev locales cifs-utils iptables
+apt-get install -y --no-upgrade aptitude sudo gnupg mailutils scrub avahi-daemon
+
+## Set Passwords
+if [ ! -e /etc/passwds.set ]; then
+  echo ""
+  echo "Set root password."
+  passwd root
+  touch /etc/passwds.set
+else
+  echo ""  > /dev/null 2>&1
+fi
+
+## Auto SSH Login Key for root
+mkdir -p /root/.ssh
+cp -f /tmp/config/authorized_keys /root/.ssh/
+
+## SSH Configuration
+cp -f /tmp/config/sshd_config /etc/ssh/
+chmod 644 /etc/ssh/sshd_config
+chown root:root /etc/ssh/sshd_config
+
+## Unifi Configuration
+if [ ! -e /usr/lib/unifi/bin/unifi.init ]; then
+  cp -f /tmp/config/unifi-5.13.32.sh /usr/bin/
+  chmod +x /usr/bin/unifi-5.13.32.sh
+  chown root:root /usr/bin/unifi-5.13.32.sh
+  /usr/bin/unifi-5.13.32.sh
+else
+  echo ""  > /dev/null 2>&1
+fi
+echo "Do not upgrade UniFi controller, v5.13 is last to support original UniFi AP."
+apt-mark hold unifi
+
+## Clean-up
+systemctl daemon-reload
+rm -rf /tmp/config/
+apt-get autoremove -y
+apt-get clean -y
+apt-get autoclean -y
+exit

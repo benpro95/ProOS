@@ -1,0 +1,450 @@
+#!/bin/bash
+##
+###########################################################
+## Main Home Automation Script by Ben Provenzano III v17 ##
+###########################################################
+######################## 04/05/21 #########################
+###########################################################
+
+## Read the 2nd Argument
+ARG2=$2
+
+## Read the 1st Argument
+case "$1" in
+
+boot)
+## State Folder
+rm -rf /var/lock/rpi
+mkdir -p /var/lock/rpi
+chmod -R 777 /var/lock/rpi
+## Light Web Server
+systemctl restart lighttpd
+## Unified Web Server
+systemctl restart rpi-urserver
+## LED Controller (LEDsync Mode)
+rm -f /tmp/global-fc.lock
+/opt/rpi/leds fc norm
+touch /tmp/global-fc.lock
+## Reset IR-Xmit
+/opt/rpi/xmit init
+## Automount Network Shares
+systemctl restart autofs
+## iOS Home Support
+#systemctl restart rpi-homebridge
+## AirPlay Support
+systemctl restart rpi-airplay
+exit
+;;
+
+usbplug)
+## This script is ran after USB drive attached
+echo "no function assigned"
+exit
+;;
+
+updateavr)
+## Arduino Uno firmware upload
+#avrdude -v -p atmega328p -c arduino -P /dev/ttyUSB0 -D -U flash:w:/opt/rpi/avr-xmit.hex:i
+## Arduino Micro firmware upload
+/usr/bin/python2 - <<END
+import serial
+com = serial.Serial('/dev/ttyACM0', 1200)
+com.dtr=False
+com.close()
+END
+sleep 1.25
+avrdude -v -p atmega32u4 -c avr109 -P /dev/ttyACM0 -b 57600 -D -U flash:w:/opt/rpi/avr-xmit.hex:i
+exit
+;;
+
+timer)
+## Enable fan if temperature high ################
+##################################################
+cpuTemp0=$(cat /sys/class/thermal/thermal_zone0/temp)
+cpuTemp1=$(($cpuTemp0/1000))
+cpuTemp2=$(($cpuTemp0/100))
+cpuTempM=$(($cpuTemp2 % $cpuTemp1))
+if [ "$cpuTemp1" -gt  "53" ]; then ## Temp Limit (Celsius)
+   echo "Fan Enabled"
+   /opt/rpi/xmit fet2on
+else
+   echo "Fan Disabled"
+   /opt/rpi/xmit fet2off
+fi
+exit
+;;
+
+### Relaxation Sound Playback
+
+stoprelax)
+killall -s KILL -w mpv
+## USB Decoder Input
+/opt/rpi/xmit usb
+sleep 0.5
+## Preamp DAC Input
+/opt/rpi/xmit dac
+exit
+;;
+
+relax)
+killall -s KILL -w mpv
+## Capatialize first letter of second argument
+ARG2="${ARG2^}"
+## Play Audio in Loop
+/usr/bin/screen -dm /usr/bin/mpv --no-video --gapless-audio=yes --loop-file "/mnt/smb/Media/Sounds/Relaxation/$ARG2"
+## Optical Decoder Input
+/opt/rpi/xmit coaxial
+sleep 0.5
+## Preamp DAC Input
+/opt/rpi/xmit dac
+exit
+;;
+
+rebootnet)
+echo "Rebooting Network Switch..."
+/usr/bin/screen -dm /opt/rpi/main rebootnet-bkg
+exit
+;;
+
+rebootnet-bkg)
+## Reboot Network Switch
+/opt/rpi/xmit fet1 off
+sleep 5.25
+/opt/rpi/xmit fet1 on
+exit
+;;
+
+## Automated Multi-Functions
+
+lightson)
+touch /var/lock/rpi/lights.save
+## Main Light On
+/opt/rpi/xmit fet0 on
+## Dresser Lamp
+/opt/rpi/xmit rfa1 on
+## Ceiling Lamp
+/opt/rpi/xmit rfa2 on
+## Desk Light
+/opt/rpi/xmit rfb1 on
+exit
+;;
+
+lightsoff)
+## Turn all lights off
+rm -f /var/lock/rpi/lights.save
+## Main Light Off
+/opt/rpi/xmit fet0 off
+## Dresser Lamp
+/opt/rpi/xmit rfa1 off
+## Ceiling Lamp
+/opt/rpi/xmit rfa2 off
+## Desk Light
+/opt/rpi/xmit rfb1 off
+exit
+;;
+
+allon)
+/opt/rpi/main lightson
+## LEDwalls
+touch /tmp/global-fc.lock
+sh -c '/opt/rpi/leds fc 60'
+sleep 3.5
+sh -c '/opt/rpi/leds candle'
+exit
+;;
+
+alloff)
+/opt/rpi/main lightsoff
+## Blank LEDwalls
+/opt/rpi/leds stop
+exit
+;;
+
+screensoff)
+## TV Power
+/opt/rpi/xmit pwrtv
+## PC Off
+/opt/rpi/xmit rfb3
+## Desktop Off
+/opt/rpi/xmit rfb2 off
+exit
+;;
+
+hifion)
+if ping -c 1 nespi &> /dev/null
+then
+  echo "Host is up"
+else
+  ## Power Audio System
+  /opt/rpi/xmit pwrhifi
+  ## Reset volume tokens
+  rm -f /var/lock/rpi/subs.enabled
+  ### Stop Relax Sounds
+  /opt/rpi/main stopsnd
+  sleep 2.5
+  ## USB Decoder Input
+  /opt/rpi/xmit usb
+  sleep 8.0
+  ## Preamp DAC Input
+  /opt/rpi/xmit dac
+fi
+exit
+;;
+
+hifioff)
+if ping -c 1 nespi &> /dev/null
+then
+  ## Power Audio System
+  /opt/rpi/xmit pwrhifi
+  ## Reset volume tokens
+  rm -f /var/lock/rpi/subs.enabled
+  ### Stop Relax Sounds
+  /opt/rpi/main stopsnd
+  sleep 2.5
+  ## USB Decoder Input
+  /opt/rpi/xmit usb
+  sleep 8.0
+  ## Preamp DAC Input
+  /opt/rpi/xmit dac
+else
+  echo "Host is down"
+fi
+exit
+;;
+
+## Audio Power
+pwrhifi)
+## Power Audio System
+/opt/rpi/xmit pwrhifi
+## Reset volume tokens
+rm -f /var/lock/rpi/subs.enabled
+### Stop Relax Sounds
+/opt/rpi/main stopsnd
+sleep 2.5
+## USB Decoder Input
+/opt/rpi/xmit usb
+sleep 8.0
+## Preamp DAC Input
+/opt/rpi/xmit dac
+exit
+;;
+
+## System Power
+pwrsys)
+## Power PC
+/opt/rpi/xmit rfb3
+sleep 0.5
+## Power TV
+/opt/rpi/xmit pwrtv
+sleep 0.5
+## Power Audio System
+/opt/rpi/xmit pwrhifi
+## Reset volume tokens
+rm -f /var/lock/rpi/subs.enabled
+### Stop Relax Sounds
+/opt/rpi/main stopsnd
+sleep 2.5
+## USB Decoder Input
+/opt/rpi/xmit usb
+sleep 8.0
+## Preamp DAC Input
+/opt/rpi/xmit dac
+exit
+;;
+
+pcon)
+if ping -c 1 z97mx &> /dev/null
+then
+  echo "Host is up"
+else
+  /opt/rpi/xmit rfb3
+fi
+exit
+;;
+
+pcoff)
+if ping -c 1 z97mx &> /dev/null
+then
+  /opt/rpi/xmit rfb3
+else
+  echo "Host is down"
+fi
+exit
+;;
+
+submute)
+if [ ! -e /var/lock/rpi/subs.enabled ]; then
+  echo ""  > /dev/null 2>&1
+else
+  ### Subwoofer mute/disable
+  /opt/rpi/xmit subpwr
+fi
+exit
+;;
+
+subup)
+if [ ! -e /var/lock/rpi/subs.enabled ]; then
+  echo ""  > /dev/null 2>&1
+else
+  ### Subwoofer volume up
+  /opt/rpi/xmit subup
+fi
+exit
+;;
+
+subdwn)
+if [ ! -e /var/lock/rpi/subs.enabled ]; then
+  echo ""  > /dev/null 2>&1
+else
+  ### Subwoofer volume down
+  /opt/rpi/xmit subdwn
+fi
+exit
+;;
+
+subs)
+## Toggle volume control to subwoofers
+if [ ! -e /var/lock/rpi/subs.enabled ]; then
+   touch /var/lock/rpi/subs.enabled
+else
+   rm -f /var/lock/rpi/subs.enabled
+fi
+exit
+;;
+
+autodac)
+## Reset volume tokens
+rm -f /var/lock/rpi/subs.enabled
+## Auto Decoder Input
+/opt/rpi/xmit inauto
+sleep 0.5
+## Preamp DAC Input
+/opt/rpi/xmit dac
+exit
+;;
+
+usb)
+## Reset volume tokens
+rm -f /var/lock/rpi/subs.enabled
+## USB Decoder Input
+/opt/rpi/xmit usb
+sleep 0.5
+## Preamp DAC Input
+/opt/rpi/xmit dac
+exit
+;;
+
+## Coax Input
+coax)
+## Reset volume tokens
+rm -f /var/lock/rpi/subs.enabled
+## Coaxial Decoder Input
+/opt/rpi/xmit coaxial
+sleep 0.5
+## Preamp DAC Input
+/opt/rpi/xmit dac
+exit
+;;
+
+## Optical Input
+opt)
+## Reset volume tokens
+rm -f /var/lock/rpi/subs.enabled
+## Optical Decoder Input
+/opt/rpi/xmit optical
+sleep 0.5
+## Preamp DAC Input
+/opt/rpi/xmit dac
+exit
+;;
+
+## PC Input
+pcin)
+## Reset volume tokens
+rm -f /var/lock/rpi/subs.enabled
+## USB Decoder Input
+/opt/rpi/xmit usb
+sleep 0.5
+## Preamp DAC Input
+/opt/rpi/xmit dac
+sleep 0.5
+## HDMI II on TV
+/opt/rpi/xmit hdmi2
+exit
+;;
+
+## NES Pi Input
+nespi)
+## Reset volume tokens
+rm -f /var/lock/rpi/subs.enabled
+## Optical Decoder Input
+/opt/rpi/xmit optical
+sleep 0.5
+## Preamp DAC Input
+/opt/rpi/xmit dac
+sleep 0.5
+## HDMI I on TV
+/opt/rpi/xmit hdmi1
+exit
+;;
+
+
+roomon)
+## Main Light On
+/opt/rpi/xmit fet0 on
+## Dresser Lamp
+/opt/rpi/xmit rfa1 on
+## Ceiling Lamp
+/opt/rpi/xmit rfa2 on
+## Desk Light
+/opt/rpi/xmit rfb1 on
+## Desktop Power
+/opt/rpi/xmit rfb2 on
+## PC Power On
+/opt/rpi/main pcon
+## HiFi Power On
+/opt/rpi/main hifion
+## LEDwalls
+touch /tmp/global-fc.lock
+/opt/rpi/leds fc norm
+sleep 0.35
+/opt/rpi/leds video prism
+exit
+;;
+
+roomoff)
+## Main Light Off
+/opt/rpi/xmit fet0 off
+## Dresser Lamp
+/opt/rpi/xmit rfa1 off
+## Ceiling Lamp
+/opt/rpi/xmit rfa2 off
+## Desk Light
+/opt/rpi/xmit rfb1 off
+## Desktop Power
+/opt/rpi/xmit rfb2 off
+## PC Power Off
+/opt/rpi/main pcoff
+## HiFi Power Off
+/opt/rpi/main hifioff
+## Blank LEDwalls
+touch /tmp/global-fc.lock
+/opt/rpi/leds stop
+exit
+;;
+
+### Examples of URL strings ###
+# http://automate:9300/exec.php?var=&arg=lightson&action=main
+# http://automate:9300/exec.php?var=&arg=lightsoff&action=main
+# http://automate:9300/exec.php?var=prism&arg=video&action=leds
+###############################
+
+
+        *)
+          echo "Automate Server for Raspberry Pi"
+	        echo "  by Ben Provenzano III "
+	        echo " "
+	        echo "Enter a valid command line argument."
+          exit 1
+          ;;
+    esac   

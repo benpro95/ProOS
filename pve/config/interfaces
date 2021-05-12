@@ -1,0 +1,36 @@
+# Network interface settings; by Ben Provenzano III
+# please do NOT modify this file directly, unless you know what
+# you're doing.
+#
+# If you want to manage part of the network configuration manually,
+# please utilize the 'source' or 'source-directory' directives to do
+# so.
+# PVE will preserve these directives, but will NOT its network
+# configuration from sourced files, so do not attempt to move any of
+# the PVE managed interfaces into external files!
+
+auto lo
+iface lo inet loopback
+
+iface enp5s0f0 inet manual
+iface enp5s0f1 inet manual
+iface enp4s0f0 inet manual
+iface enp4s0f1 inet manual
+
+auto bond0
+iface bond0 inet manual
+        slaves enp5s0f0 enp5s0f1 enp4s0f0 enp4s0f1
+        bond_miimon 100
+        bond_mode 802.3ad
+        bond-downdelay 200
+        bond-updelay 200
+        bond-lacp-rate 1
+        bond-xmit-hash-policy layer2+3
+
+auto vmbr0
+iface vmbr0 inet static
+        address 10.177.1.8/24
+        gateway 10.177.1.1
+        bridge-ports bond0
+        bridge-stp off
+        bridge-fd 0

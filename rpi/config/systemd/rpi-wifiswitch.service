@@ -1,0 +1,13 @@
+[Unit]
+Description=WiFi Mode Select
+
+[Service]
+ExecStart=/opt/rpi/wifiswitch.py
+TimeoutSec=0
+Restart=always
+RestartSec=1
+StartLimitInterval=30
+StartLimitBurst=20
+
+[Install]
+WantedBy=multi-user.target

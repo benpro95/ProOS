@@ -1,0 +1,13 @@
+[Unit]
+Description=AirPlay Server
+Conflicts=shutdown.target
+
+[Service]
+User=pi
+ExecStart=/usr/bin/shairport-sync -a 'RaspberryPi' -o alsa
+WorkingDirectory=/home/pi
+Restart=always
+RestartSec=5
+
+[Install]
+#WantedBy=multi-user.target

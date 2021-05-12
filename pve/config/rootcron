@@ -1,0 +1,13 @@
+# This is a cron timer file.
+# There you can set the backup points and many other things.
+# Feel free to adapt it to your needs.
+# by Ben Provenzano III
+
+## Write server log everyday at 2:00 PM
+MAILTO=""
+0 14 * * *    root    /usr/bin/sys-check > /mnt/datastore/Ben/Documents/Server.log 2>&1
+
+## Trim root pool at 04:00 AM on the 10th every month from January-December
+MAILTO=""
+0 4 10 1-12 *    root    /sbin/zpool trim rpool
+

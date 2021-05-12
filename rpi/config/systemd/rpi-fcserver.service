@@ -1,0 +1,13 @@
+[Unit]
+Description=Fadecandy Server
+Conflicts=shutdown.target
+
+[Service]
+User=root
+ExecStart=/opt/rpi/fcserver /opt/rpi/effects/fc.json
+WorkingDirectory=/opt/rpi/effects
+Restart=always
+RestartSec=5
+
+[Install]
+#WantedBy=multi-user.target

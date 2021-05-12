@@ -1,0 +1,94 @@
+#!/bin/bash
+###########################################################
+## AirZero II main script by Ben Provenzano III v1 ########
+###########################################################
+###########################################################
+
+case "$1" in
+
+boot)
+## Light Web Server
+systemctl start lighttpd
+## Unified Web Server
+systemctl start rpi-urserver
+## Startup Sound
+/usr/bin/amixer set PCM 30%; sleep 0.35
+/usr/bin/aplay /opt/rpi/sounds/ps1.wav
+## Set Volume
+/usr/bin/amixer set PCM 100%
+## AirPlay Support
+systemctl start rpi-airplay
+## Disable HDMI
+/usr/bin/tvservice -o
+## Start 5-min Timer
+systemctl start rpi-timer.timer
+exit
+;;
+
+timer)
+## This script is ran every 5-min
+/usr/bin/screen -dm /bin/bash /etc/netmode.sh netdetect || :
+exit
+;;
+
+usbplug)
+## This script is ran after USB drive attached
+echo "no function assigned"
+exit
+;;
+
+300sine)
+killall -s KILL -w mpv
+screen -dm /usr/bin/mpv --no-video --loop-file '/opt/rpi/300hz-sine.wav'
+exit
+;;
+
+600sine)
+killall -s KILL -w mpv
+screen -dm /usr/bin/mpv --no-video --loop-file '/opt/rpi/600hz-sine.wav'
+;;
+
+1ksine)
+killall -s KILL -w mpv
+screen -dm /usr/bin/mpv --no-video --loop-file '/opt/rpi/1khz-sine.wav'
+exit
+;;
+
+300square)
+killall -s KILL -w mpv
+screen -dm /usr/bin/mpv --no-video --loop-file '/opt/rpi/300hz-square.wav'
+exit
+;;
+
+600square)
+killall -s KILL -w mpv
+screen -dm /usr/bin/mpv --no-video --loop-file '/opt/rpi/600hz-square.wav'
+exit
+;;
+
+1ksquare)
+killall -s KILL -w mpv
+screen -dm /usr/bin/mpv --no-video --loop-file '/opt/rpi/1khz-square.wav'
+exit
+;;
+
+stop)
+## Stop audio player
+killall -s KILL -w mpv
+exit
+;;
+
+skip)
+## Skip to next video
+killall omxplayer.bin 
+exit
+;;
+	    
+    *)
+      echo "AirGrid Server for Raspberry Pi"
+	  echo "  by Ben Provenzano III"
+	  echo " "
+	  echo "Enter a valid command line argument."
+      exit 1
+      ;;
+    esac

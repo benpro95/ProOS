@@ -1,0 +1,34 @@
+#!/bin/bash
+###########################################################
+## NES Pi main script by Ben Provenzano III ###############
+###########################################################
+###########################################################
+
+case "$1" in
+
+boot)
+## RetroPie will autostart on boot
+exit
+;;
+
+usbplug)
+## This script is ran after USB drive attached
+echo "no function assigned"
+exit
+;;
+
+timer)
+## 5-min timer
+echo "no function assigned"
+exit
+;;
+
+	    
+    *)
+      echo "NES Pi"
+	  echo "  by Ben Provenzano III"
+	  echo " "
+	  echo "Enter a valid command line argument."
+      exit 1
+      ;;
+    esac

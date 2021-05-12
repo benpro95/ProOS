@@ -1,0 +1,121 @@
+#!/bin/bash
+### ONLY RUN ON THE SERVER!!
+### AutoConfig - ProOS for Files Container
+### by Ben Provenzano III
+###
+
+echo "Installing..."
+apt-get --yes update
+
+## Support Packages
+apt-get install -y --no-upgrade unzip wget htop rsync curl screen scrub ethtool aptitude sudo samba sshpass
+apt-get install -y --no-upgrade libdbus-1-dev libdbus-glib-1-dev locales apt-transport-https mailutils
+
+## Set Locale
+if [ ! -e /etc/locales.generated ]; then
+  dpkg-reconfigure locales
+  touch /etc/locales.generated
+else
+  echo ""  > /dev/null 2>&1
+fi
+
+## SSH key for root user
+mkdir -p /root/.ssh
+cp /tmp/config/authorized_keys /root/.ssh/
+chown root:root /root/.ssh/authorized_keys
+chmod 644 /root/.ssh/authorized_keys
+
+## SSH key for server user
+if [ ! -e /home/server ]; then
+  echo "Creating Server Home Directory..."
+  mkdir -p /home/server
+  mkdir -p /home/server/.ssh
+  chown -R server:server /home/server
+else
+  echo ""  > /dev/null 2>&1
+fi
+cp /tmp/config/authorized_keys.server /home/server/.ssh/authorized_keys
+chmod 644 /home/server/.ssh/authorized_keys
+chown server:server /home/server/.ssh/authorized_keys
+touch /home/server/.hushlogin
+chmod 644 /home/server/.hushlogin
+chown server:server /home/server/.hushlogin
+
+## Server Login Script
+cp /tmp/config/profile.server /home/server/.profile
+chown server:server /home/server/.profile
+chmod +x /home/server/.profile
+
+## Remove Passwords
+passwd -d root
+passwd -d server
+
+## SSH Configuration
+cp /tmp/config/sshd_config /etc/ssh
+chmod 644 /etc/ssh/sshd_config
+chown root:root /etc/ssh/sshd_config
+
+## System Configuration
+cp /tmp/config/sysctl.conf /etc
+chmod 644 /etc/sysctl.conf
+chown root:root /etc/sysctl.conf
+
+## Startup Configuration
+cp /tmp/config/rc-local.service /etc/systemd/system/
+chmod 644 /etc/systemd/system/rc-local.service
+chown root:root /etc/systemd/system/rc-local.service
+cp /tmp/config/rc.local /etc/
+chmod 755 /etc/rc.local
+chown root:root /etc/rc.local
+systemctl enable rc-local
+
+## Main Cron Timer
+cp /tmp/config/rootcron /etc/cron.d/
+chmod 644 /etc/cron.d/rootcron
+chown root:root /etc/cron.d/rootcron
+systemctl restart cron
+
+## External Backup Script
+rm -f /usr/bin/backupsvrbkg
+cp /tmp/config/backupsvr /usr/bin/
+chmod 755 /usr/bin/backupsvr
+chown root:root /usr/bin/backupsvr
+cp /tmp/config/backupsvr.bin /usr/bin/
+chmod 755 /usr/bin/backupsvr.bin
+chown root:root /usr/bin/backupsvr.bin
+
+## Camera Cleanup Script
+cp /tmp/config/camcleanup /usr/bin/
+chmod 755 /usr/bin/camcleanup
+chown root:root /usr/bin/camcleanup
+
+## Samba Configuration
+cp /tmp/config/smb.conf /etc/samba
+chmod 644 /etc/samba/smb.conf
+chown root:root /etc/samba/smb.conf
+
+## Hosts Configuration
+cp /tmp/config/hosts.allow /etc/
+chmod 644 /etc/hosts.allow
+chown root:root /etc/hosts.allow
+cp /tmp/config/hosts.deny /etc/
+chmod 644 /etc/hosts.deny
+chown root:root /etc/hosts.deny
+
+## Clean-up
+apt-get remove -y --purge rclone motion
+systemctl stop motion
+systemctl disable motion
+rm -f /etc/default/motion
+rm -rf /etc/motion
+rm -f /usr/bin/motionclean
+rm -f /usr/bin/motionlog
+rm -f /opt/motion.sh
+rm -f /mnt/cameras/.rclone/rclone.conf
+rm -f /root/.config/rclone/rclone.conf
+systemctl daemon-reload
+rm -r /tmp/config/
+apt-get autoremove -y
+apt-get autoclean -y
+apt-get clean -y
+exit

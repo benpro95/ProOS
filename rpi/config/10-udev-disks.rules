@@ -1,0 +1,1 @@
+ACTION=="add", KERNEL=="sd?", SUBSYSTEM=="block", SUBSYSTEMS=="usb", TAG+="systemd", ENV{SYSTEMD_WANTS}="usbplug.service"

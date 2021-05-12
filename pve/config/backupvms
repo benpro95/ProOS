@@ -1,0 +1,39 @@
+#!/bin/bash
+###### Server VM Backup Script by Ben Provenzano III ######
+###########################################################
+###
+echo "Backing-up Files LXC 101..."
+vzdump 101 --mode snapshot --compress 0 --node pve --storage local --remove 1
+cp -rv /var/lib/vz/dump/vzdump-lxc-101-* /mnt/datastore/Ben/ProOS/pve/vmbkps/
+chmod -R 777 /mnt/datastore/Ben/ProOS/pve/vmbkps/vzdump-lxc-101-*
+cp -v /etc/pve/lxc/101.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-101.conf
+chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-101.conf
+###
+echo "Backing-up Plex LXC 104..."
+vzdump 104 --mode snapshot --compress 0 --node pve --storage local --remove 1
+cp -rv /var/lib/vz/dump/vzdump-lxc-104-* /mnt/datastore/Ben/ProOS/pve/vmbkps/
+chmod -R 777 /mnt/datastore/Ben/ProOS/pve/vmbkps/vzdump-lxc-104-*
+cp -v /etc/pve/lxc/104.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-104.conf
+chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-104.conf
+###
+echo "Backing-up Router KVM 100..."
+vzdump 100 --mode snapshot --compress lzo --node pve --storage local --remove 1
+cp -rv /var/lib/vz/dump/vzdump-qemu-100-* /mnt/datastore/Ben/ProOS/pve/vmbkps/
+chmod -R 777 /mnt/datastore/Ben/ProOS/pve/vmbkps/vzdump-qemu-100-*
+cp -v /etc/pve/qemu-server/100.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-100.conf
+chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-100.conf
+###
+echo "Backing-up Unifi KVM 102..."
+vzdump 102 --mode snapshot --compress lzo --node pve --storage local --remove 1
+cp -rv /var/lib/vz/dump/vzdump-qemu-102-* /mnt/datastore/Ben/ProOS/pve/vmbkps/
+chmod -R 777 /mnt/datastore/Ben/ProOS/pve/vmbkps/vzdump-qemu-102-*
+cp -v /etc/pve/qemu-server/102.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-102.conf
+chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-102.conf
+###
+echo "Backing-up Xana KVM 105..."
+echo "Only Xana configuration is backed up."
+cp -v /etc/pve/qemu-server/105.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-105.conf
+chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-105.conf
+###
+echo "Backup Complete."
+exit

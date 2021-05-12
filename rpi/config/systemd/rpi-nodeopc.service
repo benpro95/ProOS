@@ -1,0 +1,13 @@
+[Unit]
+Description=Node.js Open Pixel Control Server
+Conflicts=shutdown.target
+
+[Service]
+User=root
+ExecStart=/usr/bin/node server.js
+WorkingDirectory=/opt/rpi/nodeopc/server
+Restart=always
+RestartSec=5
+
+[Install]
+#WantedBy=multi-user.target

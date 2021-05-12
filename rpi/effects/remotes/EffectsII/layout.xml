@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <row>
+        <button text="Abstract" ontap="abstract" color="#00004c" />
+        <button text="8-Bit" ontap="eightbit" color="#00004c" />
+        <button text="Hue" ontap="spectrum" color="#00004c" />
+        <button text="Ink" ontap="ink" color="#00004c" />
+    </row>
+    <row>
+        <button text="Lumin" ontap="lumin" color="#000045" />
+        <button text="Prism" ontap="prism" color="#000045" />	
+        <button text="Bubbles" ontap="bubbles" color="#000045" />
+        <button text="Plasma" ontap="plasma" color="#000045" />
+    </row>
+    <row>
+        <button text="Ripple" ontap="ripple" color="#00003e" />
+        <button text="Blur" ontap="blur" color="#00003e" />
+        <button text="Melt" ontap="melt" color="#00003e" />
+        <button text="Rings" ontap="rings" color="#00003e" />
+    </row>
+    <row>
+        <button text="Vibrant" ontap="vibrant" color="#000037" />
+        <button text="Rays" ontap="rays" color="#000037" />
+        <button text="Voltage" ontap="voltage" color="#000037" />
+        <button text="Paint" ontap="paint" color="#000037" />
+    </row>
+    <row>
+        <button text="Blocks" ontap="blocks" color="#000030" />
+        <button text="Gas" ontap="gas" color="#000030" />	
+        <button text="Warp" ontap="warp" color="#000030" />
+        <button text="Gold" ontap="gold" color="#000030" />
+    </row>
+    <row>
+        <button text="LEDSync" ontap="global" color="#000037" />
+        <button icon="pause" ontap="pause" color="#252629" />
+        <button icon="off" ontap="stop" color="#000000" />
+    </row>
+</layout>
+

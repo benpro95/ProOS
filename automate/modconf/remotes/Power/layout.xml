@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+	<row>
+        <button icon="off" ontap="roff" color="black" />
+	    <button text="Bedroom" color="#00004c" />
+	    <button icon="on" ontap="ron" color="#00004c" />
+    </row>
+	<row>
+	    <button icon="arrowdown" ontap="actmpdwn" color="black" />
+	    <button icon="rotateleft" ontap="acfandwn" color="black" />
+	    <button text="A/C" ontap="pwrac" color="#000047" />
+	    <button icon="rotateright" ontap="acfanup" color="#000047" />
+	    <button icon="arrowup" ontap="actmpup" color="#000047" />
+    </row>
+    <row>
+	    <button icon="off" ontap="oldmacoff" color="black" />
+	    <button text="Mac Classic" ontap="oldmac" color="#000043" />
+	    <button icon="on" ontap="oldmacon" color="#000043" />
+    </row>
+    <row>
+    	<button icon="off" ontap="pcoff" color="black" />
+	    <button text="PC" ontap="pc" color="#00003e" />
+	    <button icon="on" ontap="pcon" color="#00003e" />
+    </row>
+    <row>
+	    <button icon="off" ontap="desktopoff" color="black" />
+	    <button text="Desktop" ontap="desktop" color="#000039" />
+	    <button icon="on" ontap="desktopon" color="#000039" />
+    </row>
+    <row>
+        <button icon="off" ontap="lightsoff" color="black" />
+        <button text="All Lights" ontap="lights" color="#000030" />
+    	<button icon="on" ontap="lightson" color="#000030" />	
+    </row>
+</layout>

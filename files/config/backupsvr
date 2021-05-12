@@ -1,0 +1,12 @@
+#!/bin/bash
+### Run backup script in background
+
+if [ "$1" = "" ] ; then
+  /usr/bin/screen -dm -t bkp /usr/bin/backupsvr.bin $1
+  sleep 0.5
+  screen -r -p bkp
+else
+  /usr/bin/backupsvr.bin $1
+fi
+
+exit

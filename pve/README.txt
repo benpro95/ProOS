@@ -26,12 +26,6 @@ zpool export BKP-POOL
 zfs unload-key -a
 
 ####################################################################
-Super Micro IPMI Network Login
-
-Username: admin
-Password: password
-
-####################################################################
 Proxmox Web UI Firewall Rule (disables web interface by default)
 
 Use the commands 'pve-firewall stop' to allow login to Web UI

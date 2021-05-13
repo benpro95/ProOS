@@ -142,6 +142,14 @@ do
         rsync --progress -aP --exclude="Movies/" \
         /mnt/datastore/.Archive/ /mnt/extbkps/${!USB256VAR}/.Archive/ -delete --delete-excluded
       fi
+      #### Media Share ####
+      if [ ! -e /mnt/datastore/Media/Music ]; then
+        echo "//files/Media not connected."
+      else
+        echo "syncing 'Media' share to ${!USB256VAR} drive..."
+        rsync --progress -aP --exclude="Movies/" --exclude="Music/" --exclude="TV Shows/" \
+        /mnt/datastore/Media/ /mnt/extbkps/${!USB256VAR}/Media/ -delete --delete-excluded
+      fi
       ##### END BACKUP #####
     fi
   fi  
@@ -179,6 +187,14 @@ do
         echo "syncing 'Archive' share to ${!USB128VAR} drive..."
         rsync --progress -aP --exclude="Movies/" \
         /mnt/datastore/.Archive/ /mnt/extbkps/${!USB128VAR}/.Archive/ -delete --delete-excluded
+      fi
+      #### Media Share ####
+      if [ ! -e /mnt/datastore/Media/Music ]; then
+        echo "//files/Media not connected."
+      else
+        echo "syncing 'Media' share to ${!USB128VAR} drive..."
+        rsync --progress -aP --exclude="Movies/" --exclude="Music/" --exclude="TV Shows/" --exclude="Sounds/" \
+        /mnt/datastore/Media/ /mnt/extbkps/${!USB128VAR}/Media/ -delete --delete-excluded
       fi
       ##### END BACKUP #####
     fi
@@ -231,6 +247,7 @@ echo "Detaching backup disks..."
 echo ""
 echo "Run 'backupsvr status' to make sure detach completed."
 touch /mnt/extbkps/keytmp/unmount.txt
+sleep 30
 
 ## Unlock State File
 rm -f /tmp/backupsvr.lock

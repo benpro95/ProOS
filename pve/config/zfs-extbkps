@@ -6,9 +6,9 @@
 ################################
 ## /usr/bin/screen -dmS zfs-extbkps -L -Logfile /mnt/extbkps/keytmp/status.txt /usr/bin/zfs-extbkps
 
-ZFSPOOL1="usb256-01" # SanDisk Cruzer 256GB USB 3.0
-ZFSPOOL2="usb128-01" # SanDisk Cruzer 128GB USB 3.0
-ZFSPOOL3="usb128-02"
+ZFSPOOL1="usb256-01" # SanDisk Ultra 256GB USB 3.0
+ZFSPOOL2="usb128-01" # SanDisk Ultra 128GB USB 3.0
+ZFSPOOL3="usb128-02" # SanDisk Ultra 128GB USB 3.0
 ZFSPOOL4="usb128-03" # SanDisk Cruzer 128GB USB 2.0
 ZFSPOOL5="hdd4tb-01"
 ZFSPOOL6="hdd4tb-02"

@@ -5,6 +5,7 @@ sources
 z97mx
 pve/netconf.7z
 pve/vmbkps
+pve/photos
 unifi/siteconf.unf
 *authorized_keys*
 *id_rsa*

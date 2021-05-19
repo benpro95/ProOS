@@ -4,7 +4,7 @@
 #   info -f grub -n 'Simple configuration'
 
 GRUB_DEFAULT=0
-GRUB_TIMEOUT=5
+GRUB_TIMEOUT=4
 GRUB_DISTRIBUTOR="Proxmox Virtual Environment"
 GRUB_CMDLINE_LINUX_DEFAULT="intel_iommu=on"
 GRUB_CMDLINE_LINUX="root=ZFS=rpool/ROOT/pve-1 boot=zfs"
@@ -32,4 +32,4 @@ GRUB_DISABLE_OS_PROBER=true
 GRUB_DISABLE_RECOVERY="true"
 
 # Uncomment to get a beep at grub start
-#GRUB_INIT_TUNE="480 440 1"
+GRUB_INIT_TUNE="480 440 1"

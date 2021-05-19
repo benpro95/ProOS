@@ -12,8 +12,8 @@
 # By default this script does nothing.
 
 ## Disable IPv6
-sysctl -w net.ipv6.conf.all.disable_ipv6=1
-sysctl -w net.ipv6.conf.default.disable_ipv6=1
+#sysctl -w net.ipv6.conf.all.disable_ipv6=1
+#sysctl -w net.ipv6.conf.default.disable_ipv6=1
 
 ## Enable Jumbo Frames
 #ip link set enp5s0f0 mtu 9000
@@ -22,12 +22,19 @@ sysctl -w net.ipv6.conf.default.disable_ipv6=1
 #ip link set enp4s0f1 mtu 9000
 #ip link set bond0 mtu 9000
 
+## Disable firewall on boot
+#pve-firewall stop || :
+
 ## Nuvoton SuperIO Sensors Driver
 modprobe coretemp || :
 modprobe nct6775 || :
 
 ## Block Plex VM from accessing PVE
 iptables -A OUTPUT -d 192.168.1.5 -j DROP || :
+
+## Attach 2TB Single EXT4 Drive
+mount -t ext4 /dev/disk/by-id/ata-WDC_WD20EZAZ-00GGJB0_WD-WXK2A30CYK73-part1 /mnt/pve/scratch || :
+sleep 3.25
 
 ## Enable Swapfile
 if [ ! -e /mnt/pve/scratch/swapfile ]; then
@@ -39,7 +46,7 @@ else
 fi
 
 ## Check for backup files every 60 seconds
-killall -w zfs-extbkps
+killall -w zfs-extbkps || :
 /usr/bin/screen -dm -t zfs-extbkps -L -Logfile /mnt/extbkps/keytmp/status.txt /usr/bin/zfs-extbkps
 
 echo "*"

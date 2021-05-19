@@ -10,7 +10,7 @@ ZFSPOOL1="usb256-01" # SanDisk Ultra 256GB USB 3.0
 ZFSPOOL2="usb128-01" # SanDisk Ultra 128GB USB 3.0
 ZFSPOOL3="usb128-02" # SanDisk Ultra 128GB USB 3.0
 ZFSPOOL4="usb128-03" # SanDisk Cruzer 128GB USB 2.0
-ZFSPOOL5="hdd4tb-01"
+ZFSPOOL5="hdd4tb-01" # HGST 4GB Hard Drive
 ZFSPOOL6="hdd4tb-02"
 ZFSPOOL7="hdd4tb-03"
 ZFSPOOL8=""
@@ -47,6 +47,7 @@ do
       done
       echo ""
 	  zfs list
+	  zpool status
 	  echo ""
  	  shred -n 2 -z -u /mnt/extbkps/keytmp/pass.txt
   	  echo "imported ZFS backup volumes"
@@ -65,6 +66,7 @@ do
        else
        	echo "unmounting ZFS backup volume ${!ZFSVAR1}."
         zfs unmount /mnt/extbkps/${!ZFSVAR1}
+        sleep 10
         zpool export ${!ZFSVAR1}
         echo ""
        fi
@@ -72,6 +74,7 @@ do
       zfs unload-key -a
       echo ""
       zfs list
+      zpool status
       echo ""
       rm -f /mnt/extbkps/keytmp/unmount.txt
       echo "unmounted ZFS backup volumes"

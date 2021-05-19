@@ -1,31 +1,7 @@
-Proxmox Virtual Environment (pve) 10.177.1.8:8006 or :22 for SSH
-
 ####################################################################
-Create new encrypted ZFS backup drive (on PVE)
-BKP-VOL=BKP-POOL
-
-(Format/create a new ZFS dataset)
-wipefs -a /dev/disk/by-id/BACKUP-DRIVE
-zpool create -o ashift=12 -o feature@log_spacemap=disabled -O mountpoint=none BKP-POOL /dev/disk/by-id/BACKUP-DRIVE
-zfs create -o canmount=noauto -o encryption=aes-256-gcm -o keyformat=passphrase -o mountpoint=/mnt/extbkps/BKP-VOL BKP-POOL/extbkp
-
-(Import backup ZFS)
-zpool import BKP-POOL
-zfs load-key BKP-POOL/extbkp
-zfs mount BKP-POOL/extbkp
-
-(Run these in files VM as root)
-mkdir -p /mnt/extbkps/BKP-VOL/Ben
-mkdir -p /mnt/extbkps/BKP-VOL/Media
-mkdir -p /mnt/extbkps/BKP-VOL/.Archive
-chown -R server:server /mnt/extbkps/BKP-VOL/*
-
-(Export backup ZFS)
-zfs unmount /mnt/extbkps/BKP-VOL
-zpool export BKP-POOL
-zfs unload-key -a
-
+# Proxmox Virtual Environment (pve) 10.177.1.8:8006 or :22 for SSH #
 ####################################################################
+
 Proxmox Web UI Firewall Rule (disables web interface by default)
 
 Use the commands 'pve-firewall stop' to allow login to Web UI
@@ -48,119 +24,187 @@ nameserver 10.177.1.1
 nameserver 192.168.1.1
 
 ####################################################################
+UPS Battery Replacement
 
-To reattach ZFS drives after system restore,
-run these commands with all drives attached.
-
-zpool import tank
-zpool upgrade tank
+APC Smart-UPS SC620 4-Outlet 620VA 390W UPS
+Back-UPS Models SC620, SU620NET (RBC4)
+APC APCRBC4 Replacement Battery Cartridge #4
+https://www.amazon.com/APC-Replacement-Battery-Cartridge-RBC4/dp/B00004Z78V
 
 ####################################################################
-## Replace Faulted Drive 
 
+####################################################################
+################## ZFS Filesystem Instructions #####################
+####################################################################
+
+(To reattach ZFS data drives after system restore)
+zpool import -f tank
+
+####################################################################
+## Format a new drive, make ready to add to ZFS pool
+
+(Remove drive label, only if was a ZFS drive)
+zpool labelclear /dev/disk/by-id/DISK_NAME
+
+(Erase entire drive, randomize UUID and create new GPT table)
+wipefs -a /dev/disk/by-id/DISK_NAME
+sgdisk -G /dev/disk/by-id/DISK_NAME
+sgdisk -og /dev/disk/by-id/DISK_NAME
+
+####################################################################
+## Create a new mirror ZFS pool (RAID 1)
+
+# Find drive names
 cd /dev/disk/by-id/
 ls -la
-(Find new disk drive should be like 'ata-INTEL_SSDSC2KB480G8_PHYF00540242480BGN')
-(Only select the whole drive do not select ones with -part* on the end)
-(Replace 'NEW-DRIVE' with the name found with the ls command above do not use quotes)
+(Select the drive name without -part* on the end)
+(Use those names for *)
 
-(Erase entire drive and create new GPT table)
-sgdisk -og /dev/disk/by-id/'NEW-DRIVE'
+(Format both drives * using the above command)
 
-(Find the NAME of the old/bad drive should be to the left of the word FAULTED)
-(Replace the word 'OLD-DISK' in the next command with name found)
+zpool create -o ashift=12 POOL-NAME mirror /dev/disk/by-id/* /dev/disk/by-id/*
+zpool status
+zfs list
+zfs create -o mountpoint=/mnt/MNT-POINT POOL-NAME/MNT-POINT
+
+####################################################################
+## Create new encrypted ZFS backup drive (on PVE)
+
+(Format/create a new ZFS dataset)
+(Find disk name)
+cd /dev/disk/by-id/
+ls -la
+(Select the drive name without -part* on the end)
+(Use that name for BACKUP-DRIVE)
+
+(Format the BACKUP-DRIVE using the above command)
+
+(Create a new pool and dataset on the drive)
+(BKP-VOL=BKP-POOL volume and pool name should be the same) 
+zpool create -o ashift=12 -o feature@log_spacemap=disabled -O mountpoint=none BKP-POOL /dev/disk/by-id/BACKUP-DRIVE
+zfs create -o canmount=noauto -o encryption=aes-256-gcm -o keyformat=passphrase -o mountpoint=/mnt/extbkps/BKP-VOL BKP-POOL/extbkp
+
+(Attach backup ZFS)
+zpool import BKP-POOL
+zfs load-key BKP-POOL/extbkp
+zfs mount BKP-POOL/extbkp
+
+(Run these in files VM as root)
+mkdir -p /mnt/extbkps/BKP-VOL/Ben
+mkdir -p /mnt/extbkps/BKP-VOL/Media
+mkdir -p /mnt/extbkps/BKP-VOL/.Archive
+chown -R server:server /mnt/extbkps/BKP-VOL/*
+
+(Detach backup ZFS)
+zfs unmount /mnt/extbkps/BKP-VOL
+zpool export BKP-POOL
+zfs unload-key -a
+
+####################################################################
+## Replace Faulted Datastore Drive
+
+(Unplug the bad drive when server off, don't run the 'detach' command)
+
+(Find disk name)
+cd /dev/disk/by-id/
+ls -la
+(Select the drive name without -part* on the end)
+(Use that name for NEW-DRIVE)
+
+(Format the NEW-DRIVE using the above command)
+
+(Find the NAME of the bad drive should be to the left of the word FAULTED)
+(Replace the word 'BAD-DISK' in the next command with name found)
 zpool status
 
 (Add the new disk to the rpool ZFS mirror)
 (replace the word tank with the name of ZFS pool)
-zpool replace tank 'OLD-DISK' /dev/disk/by-id/'NEW-DRIVE'
+zpool replace POOL-NAME 'BAD-DISK' /dev/disk/by-id/NEW-DRIVE
 
 (Drive will resilver and be added to the mirror, check with the command below)
 (This may take a few hours DO NOT TURN OFF OR REBOOT)
 zpool status
 
 ####################################################################
+## Replace Faulted Boot Drive on Proxmox 'rpool'
 
-To merge a new drive to an existing mirrored pool
-make sure the tank pool is imported and mounted, and
-the new drive has a blank GPT partition table.
-Replace tank with the existing mirrored pool name.
-Replace NEW_DISK with path of the new blank disk.
-Use 'blkid' command to find UUID of disk.
-Can also add more drives to a 2 or more drive mirror pool.
-Do not use quotes in the actual commands.
+(Unplug the bad drive when server off, don't run the 'detach' command)
 
-zpool attach tank 'Any good drive in pool' /dev/disk/by-id/ata-NEW_DISK
-
-####################################################################
-## Remove drive and erase (new GPT partition table)
-
-zpool offline POOL_NAME /dev/disk/by-id/DISK_NAME
-zpool detach POOL_NAME /dev/disk/by-id/DISK_NAME
-zpool labelclear /dev/disk/by-id/DISK_NAME
-sgdisk -og /dev/disk/by-id/DISK_NAME
-
-####################################################################
-## Create a new mirror ZFS pool
-
-Find drive names in /dev/disk/by-id/*              
-zpool create -o ashift=12 tank mirror /dev/disk/by-id/* /dev/disk/by-id/*
-zpool status
-zfs list
-zfs create -o mountpoint=/mnt/datastore tank/datastore
-
-####################################################################
-
-Run the command 'pvereport' for a detailed
-system configuration and status
-
-####################################################################
-## Replace Boot Drive on Proxmox ZFS 'rpool'
-
+(Find disk name)
 cd /dev/disk/by-id/
 ls -la
-(Find new disk drive should be like 'ata-INTEL_SSDSC2KB480G8_PHYF00540242480BGN')
-(Only select the whole drive do not select ones with -part* on the end)
-(Replace 'NEW-DRIVE' with the name found with the ls command above do not use quotes)
+(Select the drive name without -part* on the end)
+(Some of the commands below require you to specify the -part*)
+(Use that name for NEW-DRIVE)
 
-(Erase entire drive and create new GPT table)
-sgdisk -og /dev/disk/by-id/'NEW-DRIVE'
+(Format the NEW-DRIVE using the above command)
 
-(Create boot partiton)
-sgdisk -n 1:2048:6140 -c 1:"BIOS Boot Partition" -t 1:ef02 /dev/disk/by-id/'NEW-DRIVE'
+(Create bootloader partition)
+sgdisk -n 1:2048:6140 -c 1:"BIOS Boot Partition" -t 1:ef02 /dev/disk/by-id/NEW-DRIVE
 
-(Install GRUB bootloader to new drive)
-grub-install /dev/disk/by-id/'NEW-DRIVE'
-update-grub
+(Create kernel partition)
+sgdisk -n 2:6144:1054719 -c 2:"EFI Partition" -t 2:ef00 /dev/disk/by-id/NEW-DRIVE
+
+(Install bootloader to new disk)
+proxmox-boot-tool format /dev/disk/by-id/NEW-DRIVE-part2
+proxmox-boot-tool init /dev/disk/by-id/NEW-DRIVE-part2
+
+(Check if both drives are listed here)
+proxmox-boot-tool status
 
 (Show to last sector of the new drive)
-sgdisk -E /dev/disk/by-id/'NEW-DRIVE'
+sgdisk -E /dev/disk/by-id/NEW-DRIVE
 
 (Subtract 20184 from the last sector number)
 Use that number to replace the word LAST-SECTOR in the next command
 
 (Create ZFS main partiton on the new drive)
-sgdisk -n 2:6144:LAST-SECTOR -c 2:"zfs" -t 2:bf01 /dev/disk/by-id/'NEW-DRIVE'
+sgdisk -n 3:1054720:LAST-SECTOR -c 3:"zfs" -t 3:bf01 /dev/disk/by-id/NEW-DRIVE
 
-(Check the new drives partition layout is 1-BIOS Boot and 2-ZFS)
-sgdisk -p /dev/disk/by-id/'NEW-DRIVE'
+(Check the new drives partition layout is 1-BIOS Boot, 2-EFI and 3-zfs)
+sgdisk -p /dev/disk/by-id/NEW-DRIVE
 
-(Find the NAME of the old/bad drive should be to the left of the word FAULTED)
+(Find the NAME of the bad drive should be to the left of the word FAULTED)
 zpool status
 
-(Add the new disk to the rpool ZFS mirror, replace the word 'OLD-DISK' with name found in the last command)
-zpool replace rpool 'OLD-DISK' /dev/disk/by-id/'NEW-DRIVE'-part2
+(Add the new disk to the rpool ZFS mirror with a FAULTED disk)
+(replace the word BAD-DISK with name found in the last command)
+zpool replace rpool BAD-DISK /dev/disk/by-id/NEW-DRIVE-part3
 
 (Drive will resilver and be added to the mirror, check with the command below)
 zpool status
 
-####################################################################
-## UPS Battery Replacement
+## Update boot partitions
+proxmox-boot-tool refresh
 
-APC Smart-UPS SC620 4-Outlet 620VA 390W UPS
-Back-UPS Models SC620, SU620NET (RBC4)
-APC APCRBC4 Replacement Battery Cartridge #4
-https://www.amazon.com/APC-Replacement-Battery-Cartridge-RBC4/dp/B00004Z78V
+####################################################################
+## Add another drive to an existing mirror pool or
+## convert a single drive pool to a mirrored pool
+
+(Find disk name)
+cd /dev/disk/by-id/
+ls -la
+(Select the drive name without -part* on the end)
+(Use that name for NEW_DISK)
+
+(Format the NEW_DISK using the above command)
+
+(Replace the word GOOD-DISK in the next command with name found in 'zpool status')
+
+zpool attach POOL-NAME GOOD-DISK /dev/disk/by-id/NEW_DISK
+
+####################################################################
+## Remove a drive from pool in mirror (DON'T USE TO REPLACE A BAD DRIVE)
+(after running this drive should be unplugged from system)
+
+(Find disk name)
+cd /dev/disk/by-id/
+ls -la
+(Select the drive name without -part* on the end)
+(Use that name for DISK_NAME)
+
+zpool offline POOL_NAME /dev/disk/by-id/DISK_NAME
+zpool detach POOL_NAME /dev/disk/by-id/DISK_NAME
 
 ####################################################################
 

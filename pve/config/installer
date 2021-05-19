@@ -55,12 +55,11 @@ if [ ! -e /etc/iommu.enabled ]; then
   cp -f /tmp/config/blacklist.conf /etc/modprobe.d/
   chmod 644 /etc/modprobe.d/blacklist.conf
   chown root:root /etc/modprobe.d/blacklist.conf
-  update-initramfs -u
   ## Enable Intel IO-MMU (MUST BE USING ZFS RPOOL AS ROOT !!)
   cp -f /tmp/config/grub /etc/default/
   chmod +x /etc/default/grub
   chown root:root /etc/default/grub
-  update-grub
+  proxmox-boot-tool refresh
   touch /etc/iommu.enabled
 else
   echo ""  > /dev/null 2>&1
@@ -81,7 +80,7 @@ else
   chown root:root /mnt/pve/scratch/swapfile
   mkswap /mnt/pve/scratch/swapfile
   swapon /mnt/pve/scratch/swapfile
-fi
+#fi
 
 ## Backup Mountpoints
 if [ ! -e /mnt/extbkps ]; then

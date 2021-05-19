@@ -29,7 +29,9 @@ iface bond0 inet manual
 
 auto vmbr0
 iface vmbr0 inet static
-        address 10.177.1.8/24
+        address 10.177.1.8
+        netmask 255.255.255.0
+        dns-nameservers 10.177.1.1
         gateway 10.177.1.1
         bridge-ports bond0
         bridge-stp off

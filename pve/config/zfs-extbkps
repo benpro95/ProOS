@@ -10,9 +10,9 @@ ZFSPOOL1="usb256-01" # SanDisk Ultra 256GB USB 3.0
 ZFSPOOL2="usb128-01" # SanDisk Ultra 128GB USB 3.0
 ZFSPOOL3="usb128-02" # SanDisk Ultra 128GB USB 3.0
 ZFSPOOL4="usb128-03" # SanDisk Cruzer 128GB USB 2.0
-ZFSPOOL5="hdd4tb-01" # HGST 4GB Hard Drive
-ZFSPOOL6="hdd4tb-02"
-ZFSPOOL7="hdd4tb-03"
+ZFSPOOL5="hdd4tb-01" # HGST 4GB Hard Drive (Oldest)
+ZFSPOOL6="hdd4tb-02" # HGST 4GB Hard Drive (2017)
+ZFSPOOL7="hdd4tb-03" # WD 4TB Blue Hard Drive (Newest)
 ZFSPOOL8=""
 ZFSPOOL9=""
 ZFSPOOL10=""
@@ -20,7 +20,7 @@ ZFSPOOL10=""
 while true
 do 
 ### WAIT ###
-    sleep 35
+    sleep 40
 ### IMPORT ZFS ########################################   
     if [ ! -e /mnt/extbkps/keytmp/pass.txt ]; then
       echo ""  > /dev/null 2>&1
@@ -40,13 +40,14 @@ do
        else
        	echo "importing ZFS backup volume ${!ZFSVAR0}."
         zpool import ${!ZFSVAR0}
- 	    zfs load-key -L file:///mnt/extbkps/keytmp/pass.txt ${!ZFSVAR0}/extbkp
-	    zfs mount ${!ZFSVAR0}/extbkp
-	    echo ""
+ 	      zfs load-key -L file:///mnt/extbkps/keytmp/pass.txt ${!ZFSVAR0}/extbkp
+	      zfs mount ${!ZFSVAR0}/extbkp
+	      echo ""
        fi
       done
       echo ""
 	  zfs list
+	  echo ""
 	  zpool status
 	  echo ""
  	  shred -n 2 -z -u /mnt/extbkps/keytmp/pass.txt
@@ -74,6 +75,7 @@ do
       zfs unload-key -a
       echo ""
       zfs list
+      echo ""
       zpool status
       echo ""
       rm -f /mnt/extbkps/keytmp/unmount.txt

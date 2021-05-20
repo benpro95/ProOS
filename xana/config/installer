@@ -33,10 +33,7 @@ apt-get install -y --no-upgrade xchm scribus kazam medit luckybackup inkscape me
 apt-get install -y --no-upgrade gimp gnumeric geany gtkhash git vlc clamtk gdebi
 apt-get install -y --no-upgrade lightdm-gtk-greeter-settings xserver-xorg-input-evdev
 apt-get install -y --no-upgrade qt5-style-plugins qt4-qtconfig
-apt-get --yes remove --purge libreoffice libreoffice-avmedia-backend-gstreamer \
-libreoffice-calc libreoffice-draw libreoffice-impress libreoffice-librelogo \
-libreoffice-nlpsolver libreoffice-script-provider-bsh libreoffice-script-provider-js \
-libreoffice-script-provider-python libreoffice-wiki-publisher
+apt-get --yes remove --purge libreoffice*
 #apt-get install -y --no-upgrade xdotool
 
 ## Set Passwords

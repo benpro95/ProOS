@@ -89,6 +89,10 @@ zpool import BKP-POOL
 zfs load-key BKP-POOL/extbkp
 zfs mount BKP-POOL/extbkp
 
+(Disable auto snapshots)
+zfs set com.sun:auto-snapshot=false BKP-POOL
+zfs set com.sun:auto-snapshot=false BKP-POOL/extbkp
+
 (Run these in files VM as root)
 mkdir -p /mnt/extbkps/BKP-VOL/Ben
 mkdir -p /mnt/extbkps/BKP-VOL/Media

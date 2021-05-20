@@ -4,13 +4,25 @@
 ### by Ben Provenzano III
 ###
 
-## PVE Support Packages
-cp -f /tmp/config/pve-enterprise.list /etc/apt/sources.list.d/
-chmod 644 /etc/apt/sources.list.d/pve-enterprise.list
-chown root:root /etc/apt/sources.list.d/pve-enterprise.list
+## PVE No-Subscription Enterprise Sources
+if [ ! -e /etc/apt/sources.list.d/pve-enterprise.list ]; then
+  echo ""
+  echo "Installing PVE enterprise source file..."
+  cp -f /tmp/config/pve-enterprise.list /etc/apt/sources.list.d/
+  chmod 644 /etc/apt/sources.list.d/pve-enterprise.list
+  chown root:root /etc/apt/sources.list.d/pve-enterprise.list
+  echo "PVE debian version set to buster."
+  echo "Make sure this is correct before updating!"
+  echo "Source File: /etc/apt/sources.list.d/pve-enterprise.list"
+  cat /etc/apt/sources.list.d/pve-enterprise.list
+  echo ""
+  echo "" 
+else
+  echo "PVE enterprise sources already added."
+fi
 
+## Update Sources
 apt-get --yes update
-echo "Installing..."
 
 ## Support Packages
 apt-get --yes install rsync cron zip screen libsasl2-modules
@@ -55,6 +67,7 @@ if [ ! -e /etc/iommu.enabled ]; then
   cp -f /tmp/config/blacklist.conf /etc/modprobe.d/
   chmod 644 /etc/modprobe.d/blacklist.conf
   chown root:root /etc/modprobe.d/blacklist.conf
+  update-initramfs -u  
   ## Enable Intel IO-MMU (MUST BE USING ZFS RPOOL AS ROOT !!)
   cp -f /tmp/config/grub /etc/default/
   chmod +x /etc/default/grub
@@ -80,7 +93,7 @@ else
   chown root:root /mnt/pve/scratch/swapfile
   mkswap /mnt/pve/scratch/swapfile
   swapon /mnt/pve/scratch/swapfile
-#fi
+fi
 
 ## Backup Mountpoints
 if [ ! -e /mnt/extbkps ]; then
@@ -122,9 +135,9 @@ cp -f /tmp/config/sensors3.conf /etc/
 chmod 644 /etc/sensors3.conf
 chown root:root /etc/sensors3.conf
 
-## Cron Timer
+## Root Cron Timer
 cp -f /tmp/config/rootcron /etc/cron.d/
-chmod 644 /etc/cron.d/rootcron
+chmod 755 /etc/cron.d/rootcron
 chown root:root /etc/cron.d/rootcron
 rm -f /etc/cron.d/rsnapshot
 systemctl restart cron
@@ -142,10 +155,23 @@ if [ ! -e /etc/zfsautosnap.enabled ]; then
   rm -f /etc/cron.d/zfs-auto-snapshot
   ###############################
   touch /etc/zfsautosnap.enabled
-  echo "ZFS Auto-Snapshot Enabled."
+  echo "Enabling ZFS auto-snapshot..."
 else
-  echo ""  > /dev/null 2>&1
+  echo "ZFS snapshot already enabled."
 fi
+## Automatic Snapshot Configurations
+cp -f /tmp/config/zfs-snap-daily /etc/cron.daily/zfs-auto-snapshot
+chmod 755 /etc/cron.daily/zfs-auto-snapshot
+chown root:root /etc/cron.daily/zfs-auto-snapshot
+cp -f /tmp/config/zfs-snap-hourly /etc/cron.hourly/zfs-auto-snapshot
+chmod 755 /etc/cron.hourly/zfs-auto-snapshot
+chown root:root /etc/cron.hourly/zfs-auto-snapshot
+cp -f /tmp/config/zfs-snap-monthly /etc/cron.monthly/zfs-auto-snapshot
+chmod 755 /etc/cron.monthly/zfs-auto-snapshot
+chown root:root /etc/cron.monthly/zfs-auto-snapshot
+cp -f /tmp/config/zfs-snap-weekly /etc/cron.weekly/zfs-auto-snapshot
+chmod 755 /etc/cron.weekly/zfs-auto-snapshot
+chown root:root /etc/cron.weekly/zfs-auto-snapshot
 
 ## Check for backup files every 60 seconds
 killall -w zfs-extbkps

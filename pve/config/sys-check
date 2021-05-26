@@ -13,7 +13,7 @@ hostname
 
 echo ""
 echo "** Public IP **"
-dig +short myip.opendns.com @resolver1.opendns.com
+wget -qO- http://ipecho.net/plain | xargs echo
 
 echo ""
 echo "** Temperatures **"
@@ -26,18 +26,23 @@ echo "** Memory Usage **"
 
 echo ""
 echo "** Internal Drives **"
-/usr/sbin/smartctl --all --quietmode=errorsonly /dev/sda
-/usr/sbin/hddtemp --unit=F /dev/sda
-/usr/sbin/smartctl --all --quietmode=errorsonly /dev/sdb
-/usr/sbin/hddtemp --unit=F /dev/sdb
-/usr/sbin/smartctl --all --quietmode=errorsonly /dev/sdc
-/usr/sbin/hddtemp --unit=F /dev/sdc
-/usr/sbin/smartctl --all --quietmode=errorsonly /dev/sdd
-/usr/sbin/hddtemp --unit=F /dev/sdd
-/usr/sbin/smartctl --all --quietmode=errorsonly /dev/sde
-/usr/sbin/hddtemp --unit=F /dev/sde
-/usr/sbin/smartctl --all --quietmode=errorsonly /dev/sdf
-/usr/sbin/hddtemp --unit=F /dev/sdf
+/usr/sbin/hddtemp --unit=F /dev/disk/by-id/ata-INTEL_SSDSC2KB480G8_PHYF00540242480BGN | grep -oP '(/dev/disk/by-id/ata-INTEL_SSDSC2KB480G8_PHYF00540242480BGN: )\K.*' 
+/usr/sbin/smartctl --all --quietmode=errorsonly /dev/disk/by-id/ata-INTEL_SSDSC2KB480G8_PHYF00540242480BGN
+##
+/usr/sbin/hddtemp --unit=F /dev/disk/by-id/ata-Samsung_SSD_850_EVO_M.2_250GB_S33CNX0J314914T | grep -oP '(/dev/disk/by-id/ata-Samsung_SSD_850_EVO_M.2_250GB_S33CNX0J314914T: )\K.*' 
+/usr/sbin/smartctl --all --quietmode=errorsonly /dev/disk/by-id/ata-Samsung_SSD_850_EVO_M.2_250GB_S33CNX0J314914T
+##
+/usr/sbin/hddtemp --unit=F /dev/disk/by-id/ata-WDC_WD40EFRX-68N32N0_WD-WCC7K0STZ3HS | grep -oP '(/dev/disk/by-id/ata-WDC_WD40EFRX-68N32N0_WD-WCC7K0STZ3HS: )\K.*' 
+/usr/sbin/smartctl --all --quietmode=errorsonly /dev/disk/by-id/ata-WDC_WD40EFRX-68N32N0_WD-WCC7K0STZ3HS
+##
+/usr/sbin/hddtemp --unit=F /dev/disk/by-id/ata-WDC_WD40EFRX-68N32N0_WD-WCC7K6XY9HTC | grep -oP '(/dev/disk/by-id/ata-WDC_WD40EFRX-68N32N0_WD-WCC7K6XY9HTC: )\K.*' 
+/usr/sbin/smartctl --all --quietmode=errorsonly /dev/disk/by-id/ata-WDC_WD40EFRX-68N32N0_WD-WCC7K6XY9HTC
+##
+/usr/sbin/hddtemp --unit=F /dev/disk/by-id/ata-WDC_WD40EFZX-68AWUN0_WD-WX32D80CF0LE | grep -oP '(/dev/disk/by-id/ata-WDC_WD40EFZX-68AWUN0_WD-WX32D80CF0LE: )\K.*' 
+/usr/sbin/smartctl --all --quietmode=errorsonly /dev/disk/by-id/ata-WDC_WD40EFZX-68AWUN0_WD-WX32D80CF0LE
+##
+/usr/sbin/hddtemp --unit=F /dev/disk/by-id/ata-WDC_WD20EZAZ-00GGJB0_WD-WXK2A30CYK73 | grep -oP '(/dev/disk/by-id/ata-WDC_WD20EZAZ-00GGJB0_WD-WXK2A30CYK73: )\K.*' 
+/usr/sbin/smartctl --all --quietmode=errorsonly /dev/disk/by-id/ata-WDC_WD20EZAZ-00GGJB0_WD-WXK2A30CYK73
 
 echo ""
 echo "** Drive Usage **"

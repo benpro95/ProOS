@@ -131,7 +131,7 @@ do
         echo "syncing 'Ben' share to ${!USB256VAR} drive..."
         rsync --progress $CHECKSUM -aP --exclude="Software/WindowsImageBackup/z97mx/Backup**" \
         --exclude='Software/Nintendo' --exclude='Software/Playstation' --exclude='Software/**.ipsw' \
-        --exclude='Software/**VM.zip' --exclude='Software/**HD.zip' \
+        --exclude='Software/**VM.zip' --exclude='Software/**HD.zip' --exclude='Software/**HD.7z' \
         /mnt/datastore/Ben/ /mnt/extbkps/${!USB256VAR}/Ben/ -delete --delete-excluded
       fi
       #### Archive Share ####
@@ -176,7 +176,7 @@ do
         echo "syncing 'Ben' share to ${!USB128VAR} drive..."
         rsync --progress $CHECKSUM -aP --exclude="Software/WindowsImageBackup/z97mx/Backup**" \
         --exclude='Software/Nintendo' --exclude='Software/Playstation' --exclude='Software/**.ipsw' \
-        --exclude='Software/**.img' --exclude='Software/**.iso'  --exclude='Software/**HD.zip' \
+        --exclude='Software/**.img' --exclude='Software/**.iso'  --exclude='Software/**HD.zip' --exclude='Software/**HD.7z' \
         --exclude='Software/**VM.zip' --exclude='Software/**USB.zip' --exclude='Documents/Family/Media-**.zip' \
         /mnt/datastore/Ben/ /mnt/extbkps/${!USB128VAR}/Ben/ -delete --delete-excluded
       fi

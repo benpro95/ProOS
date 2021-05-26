@@ -183,6 +183,9 @@ systemctl disable pvesr.timer
 systemctl mask pvesr.timer
 rm -f /lib/systemd/system/pvesr.timer
 
+## Disable Automatic SMART Monitoring 
+systemctl disable smartmontools
+
 ## Clean-up
 systemctl daemon-reload
 apt-get --yes autoremove

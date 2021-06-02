@@ -45,7 +45,7 @@ else
   sysctl vm.swappiness=10
 fi
 
-## Check for backup files every 60 seconds
+## External Backup Drives Script
 killall -w zfs-extbkps || :
 /usr/bin/screen -dm -t zfs-extbkps -L -Logfile /mnt/extbkps/keytmp/status.txt /usr/bin/zfs-extbkps
 

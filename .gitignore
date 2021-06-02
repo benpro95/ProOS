@@ -3,7 +3,8 @@ rpi/manager
 rpi/BaseOS.zip
 sources
 z97mx
-pve/netconf.7z
+pve/router.xml
+pve/switch.tar.gz
 pve/vmbkps
 pve/photos
 unifi/siteconf.unf

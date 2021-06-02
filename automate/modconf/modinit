@@ -47,38 +47,6 @@ sed -i "s/RaspberryPi/$MODNAME/g" /opt/rpi/manager/client.html
 sed -i "s/raspberrypi/$HOSTNAME/g" /opt/rpi/manager/client.html
 fi
 
-## Homebridge Setup
-HOMEBRIDGE="no"
-#HOMEBRIDGE="" # uncomment to install
-if [ -z "$HOMEBRIDGE" ]; then
-  if [ ! -e /usr/bin/homebridge ]; then
-  echo "Installing Homebridge..."
-  npm install -g --unsafe-perm homebridge
-  npm install -g --unsafe-perm homebridge-script2@latest
-  mkdir -p /var/lib/homebridge
-  mkdir -p /var/lib/homebridge/persist
-  mkdir -p /var/lib/homebridge/accessories
-  else
-  echo "Homebridge already installed."
-  cp -f $BIN/modconf/config.json /var/lib/homebridge/
-  chmod 644 /var/lib/homebridge/config.json
-  chown root:root /var/lib/homebridge/config.json
-  echo "To add to Home app in iOS"
-  echo "run 'systemctl stop rpi-homebridge'"
-  echo "then 'homebridge -U /var/lib/homebridge -I'"
-  echo "to get QR code to add bridge."
-  fi
-  cp -f $BIN/modconf/rpi-homebridge.service /etc/systemd/system/
-  chmod -f 644 /etc/systemd/system/rpi-homebridge.service
-  chown -f root:root /etc/systemd/system/rpi-homebridge.service
-  systemctl disable rpi-homebridge
-else
-  rm -f /opt/rpi/hbapi
-  rm -f /usr/bin/homebridge
-  rm -rf /var/lib/homebridge
-  rm -f /etc/systemd/system/rpi-homebridge.service
-fi 
-
 ## ALSA Configuration
 cp -f $BIN/modconf/asound.conf /etc/
 chmod 644 /etc/asound.conf

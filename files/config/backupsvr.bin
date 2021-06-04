@@ -53,18 +53,12 @@ echo "###### ProServer Backup Utility ######"
 echo "#### by Ben Provenzano III - v2.5 ####"
 echo "######################################"
 echo " "
-echo "press ctrl+a then ctrl+d to detach terminal"
-echo "run 'screen -r -p bkp' to reattach to backup terminal"
-echo " "
 
 ## Just detach drives
 if [ "$1" = "unmount" ] ; then
-    echo "Waiting one-minute for drives to detach."
+    echo "detaching backup disks..."
+    echo "run 'backupsvr status' to make sure detach completed."
     touch /mnt/extbkps/keytmp/unmount.txt
-    sleep 60
-    echo ""
-    echo "Proxmox output log."
-    cat /mnt/extbkps/keytmp/status.txt
     ## Unlock State File
     rm -f /tmp/backupsvr.lock
     exit 0
@@ -83,20 +77,30 @@ else
     echo ""  > /dev/null 2>&1
 fi
 
-rm -f /mnt/extbkps/keytmp/pass.txt
-read -s -p "Enter Backup Password: " keyvar
-echo "$keyvar" >> /mnt/extbkps/keytmp/pass.txt
-keyvar=000000000000000000000
-echo " "
-### Don't sync just mount drives
-if [ "$1" = "mount" ] ; then
-    echo "Mounting drives wait one-minute..."
-    ## Unlock State File
-    rm -f /tmp/backupsvr.lock
-    exit 0
+read -p "are the backup drives unlocked? " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Nn]$ ]]
+then
+  echo "starting backup..."
+  echo "*****************************************************"
+  echo "press ctrl+a then ctrl+d to detach terminal"
+  echo "run 'screen -r -p bkp' to reattach to backup terminal"
+  echo "*****************************************************"
 else
-    echo "Waiting one-minute for timer to trigger..."
-    sleep 60
+  echo "unlocking drives."
+  ## Read password then attach drives  
+  rm -f /mnt/extbkps/keytmp/pass.txt
+  read -s -p "enter backup password: " keyvar
+  echo "$keyvar" >> /mnt/extbkps/keytmp/pass.txt
+  keyvar=000000000000000000000
+  echo " "
+  echo "mounting drives wait one-minute..."
+  echo "check status by running 'backupsvr status'"
+  ## Unlock State File
+  rm -f /tmp/backupsvr.lock
+  echo "press ctrl+c to exit now, will quit in 30 seconds."
+  sleep 30
+  exit 0
 fi
 
 ### Set rsync to compare checksums on all data
@@ -235,17 +239,16 @@ done
 ################################
 ################################
 
-echo "Detaching backup disks..."
+echo "detaching backup disks..."
 echo ""
-echo "Run 'backupsvr status' to make sure detach completed."
+echo "run 'backupsvr status' to make sure detach completed."
 touch /mnt/extbkps/keytmp/unmount.txt
 sleep 30
 
 ## Unlock State File
 rm -f /tmp/backupsvr.lock
 
-echo ""
-echo "Press ctrl+c to exit now, will quit in one-minute."
+echo "press ctrl+c to exit now, will quit in one-minute."
 sleep 60
 
 exit 0

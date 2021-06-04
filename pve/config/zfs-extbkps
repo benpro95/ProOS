@@ -40,9 +40,9 @@ do
        else
        	echo "importing ZFS backup volume ${!ZFSVAR0}."
         zpool import ${!ZFSVAR0}
- 	      zfs load-key -L file:///mnt/extbkps/keytmp/pass.txt ${!ZFSVAR0}/extbkp
-	      zfs mount ${!ZFSVAR0}/extbkp
-	      echo ""
+ 	    zfs load-key -L file:///mnt/extbkps/keytmp/pass.txt ${!ZFSVAR0}/extbkp
+	    zfs mount ${!ZFSVAR0}/extbkp
+	    echo ""
        fi
       done
       echo ""
@@ -67,7 +67,6 @@ do
        else
        	echo "unmounting ZFS backup volume ${!ZFSVAR1}."
         zfs unmount /mnt/extbkps/${!ZFSVAR1}
-        sleep 10
         zpool export ${!ZFSVAR1}
         echo ""
        fi

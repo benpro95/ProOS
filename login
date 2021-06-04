@@ -185,7 +185,7 @@ else
   echo "*** ProOS NetInstall ***"
   echo ""
   echo "System must be in read-write mode."
-  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "df"
+  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "df -h"
   read -p "Do you want to reboot in read-write mode? " -n 1 -r
   echo
   if [[ ! $REPLY =~ ^[Nn]$ ]]

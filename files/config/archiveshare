@@ -1,0 +1,25 @@
+#!/bin/bash
+##### Attach/Detach Archive Share
+
+if [ ! "$USER" = server ]; then
+    echo "This script should only be ran by server user, aborting."
+    exit 1
+fi
+
+read -p "Press (a) to attach archive, or enter to detach. " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Aa]$ ]]
+then
+  echo "Detaching share..."
+  rm -f /mnt/backup/Archive
+else
+  echo ""
+  if [ -e "/mnt/backup/Archive" ]; then
+    echo "Already attached!"  	
+  else
+    echo "Attaching share..."
+    ln -s /mnt/datastore/.Archive /mnt/backup/Archive
+  fi
+fi
+echo ""
+exit

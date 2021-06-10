@@ -20,6 +20,11 @@ HDDRV2="hdd4tb-02"
 HDDRV3="hdd4tb-03"
 HDDRV4=""
 
+if [ ! "$USER" = server ]; then
+    echo "This script should only be ran by server user, aborting."
+    exit 1
+fi
+
 ### Remove Lock Manually
 if [ "$1" = "rmlock" ] ; then
     ## Unlock State File
@@ -50,58 +55,76 @@ fi
 echo " "
 echo "######################################"
 echo "###### ProServer Backup Utility ######"
-echo "#### by Ben Provenzano III - v2.5 ####"
+echo "#### by Ben Provenzano III - v2.8 ####"
 echo "######################################"
 echo " "
+echo "(a) attach drives / backup"
+echo "(d) detach drives then exit"
+echo "(s) show drives status"
+echo "(enter) start backup"
+echo " "
+
+read -p "select mode: " -n 1 -r
+echo
 
 ## Just detach drives
-if [ "$1" = "unmount" ] ; then
-    echo "detaching backup disks..."
-    echo "run 'backupsvr status' to make sure detach completed."
-    touch /mnt/extbkps/keytmp/unmount.txt
-    ## Unlock State File
-    rm -f /tmp/backupsvr.lock
-    exit 0
-else
-    echo ""  > /dev/null 2>&1
+if [[ $REPLY =~ ^[Dd]$ ]]
+then
+echo "detaching backup disks..."
+touch /mnt/extbkps/keytmp/unmount.txt
+## Unlock State File
+rm -f /tmp/backupsvr.lock
+echo "waiting one-minute for drives to detach..."
+sleep 60
+cat /mnt/extbkps/keytmp/status.txt
+echo "press ctrl+c to exit now, will quit in 30 seconds."
+sleep 30
+exit 0
 fi
 
 ## Just show status of last backup
-if [ "$1" = "status" ] ; then
-    echo "Proxmox output log of last backup."
-    cat /mnt/extbkps/keytmp/status.txt
-    ## Unlock State File
-    rm -f /tmp/backupsvr.lock
-    exit 0
-else
-    echo ""  > /dev/null 2>&1
+if [[ $REPLY =~ ^[Ss]$ ]]
+then
+cat /mnt/extbkps/keytmp/status.txt
+## Unlock State File
+rm -f /tmp/backupsvr.lock
+echo "press ctrl+c to exit now, will quit in one-minute."
+sleep 60
+exit 0
 fi
 
-read -p "are the backup drives unlocked? " -n 1 -r
-echo
-if [[ ! $REPLY =~ ^[Nn]$ ]]
+if [[ $REPLY =~ ^[Aa]$ ]]
 then
-  echo "starting backup..."
-  echo "*****************************************************"
-  echo "press ctrl+a then ctrl+d to detach terminal"
-  echo "run 'screen -r -p bkp' to reattach to backup terminal"
-  echo "*****************************************************"
-else
-  echo "unlocking drives."
-  ## Read password then attach drives  
-  rm -f /mnt/extbkps/keytmp/pass.txt
-  read -s -p "enter backup password: " keyvar
-  echo "$keyvar" >> /mnt/extbkps/keytmp/pass.txt
-  keyvar=000000000000000000000
-  echo " "
-  echo "mounting drives wait one-minute..."
-  echo "check status by running 'backupsvr status'"
+echo "unlocking drives."
+## Read password then attach drives  
+rm -f /mnt/extbkps/keytmp/pass.txt
+read -s -p "enter backup password: " keyvar
+echo "$keyvar" >> /mnt/extbkps/keytmp/pass.txt
+keyvar=000000000000000000000
+echo " "
+## Unlock State File
+rm -f /tmp/backupsvr.lock
+echo "waiting one-minute for drives to attach..."
+sleep 60
+cat /mnt/extbkps/keytmp/status.txt
+echo " "
+## Start Backup
+read -p "begin backup copy? (y/n): " -n 1 -r
+echo
+  if [[ $REPLY =~ ^[Nn]$ ]]
+  then
   ## Unlock State File
   rm -f /tmp/backupsvr.lock
-  echo "press ctrl+c to exit now, will quit in 30 seconds."
-  sleep 30
   exit 0
+  fi
 fi
+
+echo " "
+echo "starting backup..."
+echo "*****************************************************"
+echo "press ctrl+a then ctrl+d to detach terminal"
+echo "run 'screen -r -p bkp' to reattach to backup terminal"
+echo "*****************************************************"
 
 ### Set rsync to compare checksums on all data
 if [ "$1" = "checksum" ] || [ "$1" = "chk" ] ; then
@@ -112,7 +135,7 @@ else
     echo "run command with 'backupsvr chk' to enable"
     CHECKSUM=""
 fi
-echo " "
+echo "*****************************************************"
 
 ###################################
 ## 256GB Backup Drives Loop #######
@@ -240,15 +263,12 @@ done
 ################################
 
 echo "detaching backup disks..."
-echo ""
-echo "run 'backupsvr status' to make sure detach completed."
 touch /mnt/extbkps/keytmp/unmount.txt
-sleep 30
-
 ## Unlock State File
 rm -f /tmp/backupsvr.lock
-
-echo "press ctrl+c to exit now, will quit in one-minute."
+echo "waiting one-minute for drives to detach..."
 sleep 60
-
+cat /mnt/extbkps/keytmp/status.txt
+echo "press ctrl+c to exit now, will quit in 30 seconds."
+sleep 30
 exit 0

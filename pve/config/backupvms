@@ -4,13 +4,13 @@
 ###
 echo ""
 echo "Backing-up Files LXC 101..."
-vzdump 101 --mode snapshot --compress 0 --node pve --storage local --maxfiles 1 --remove 1
+vzdump 101 --mode snapshot --compress 0 --node pve --storage local --maxfiles 1 --remove 1 --exclude-path /mnt/backup --exclude-path /mnt/extbkps
 cp -v /etc/pve/lxc/101.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-101.conf
 chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-101.conf
 ###
 echo ""
 echo "Backing-up Plex LXC 104..."
-vzdump 104 --mode snapshot --compress 0 --node pve --storage local --maxfiles 1 --remove 1
+vzdump 104 --mode snapshot --compress 0 --node pve --storage local --maxfiles 1 --remove 1 --exclude-path /mnt/transcoding
 cp -v /etc/pve/lxc/104.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-104.conf
 chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-104.conf
 ###

@@ -76,13 +76,30 @@ chown root:root /etc/cron.d/rootcron
 systemctl restart cron
 
 ## External Backup Script
-rm -f /usr/bin/backupsvrbkg
 cp /tmp/config/backupsvr /usr/bin/
 chmod 755 /usr/bin/backupsvr
 chown root:root /usr/bin/backupsvr
 cp /tmp/config/backupsvr.bin /usr/bin/
 chmod 755 /usr/bin/backupsvr.bin
 chown root:root /usr/bin/backupsvr.bin
+
+## Share Attach/Detach Scripts
+cp /tmp/config/archiveshare /usr/bin/
+chmod 755 /usr/bin/archiveshare
+chown root:root /usr/bin/archiveshare
+cp /tmp/config/snapshare /usr/bin/
+chmod 755 /usr/bin/snapshare
+chown root:root /usr/bin/snapshare
+
+## Snapshot Mountpoint
+if [ ! -e /mnt/backup ]; then
+  echo "Creating Backup Directory..."
+  mkdir -p /mnt/backup
+  chmod 755 /mnt/backup
+  chmod server:server /mnt/backup
+else
+  echo ""  > /dev/null 2>&1
+fi
 
 ## Camera Cleanup Script
 cp /tmp/config/camcleanup /usr/bin/
@@ -103,16 +120,6 @@ chmod 644 /etc/hosts.deny
 chown root:root /etc/hosts.deny
 
 ## Clean-up
-apt-get remove -y --purge rclone motion
-systemctl stop motion
-systemctl disable motion
-rm -f /etc/default/motion
-rm -rf /etc/motion
-rm -f /usr/bin/motionclean
-rm -f /usr/bin/motionlog
-rm -f /opt/motion.sh
-rm -f /mnt/cameras/.rclone/rclone.conf
-rm -f /root/.config/rclone/rclone.conf
 systemctl daemon-reload
 rm -r /tmp/config/
 apt-get autoremove -y

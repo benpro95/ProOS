@@ -29,8 +29,6 @@ touch /tmp/global-fc.lock
 /opt/rpi/xmit init
 ## Automount Network Shares
 systemctl restart autofs
-## iOS Home Support
-#systemctl restart rpi-homebridge
 ## AirPlay Support
 systemctl restart rpi-airplay
 exit

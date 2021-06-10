@@ -1,0 +1,9 @@
+[Unit]
+Description=Action Trigger Script.
+
+[Service]
+LogLevelMax=notice
+StandardOutput=append:/mnt/extbkps/keytmp/status.txt
+Type=oneshot
+RemainAfterExit=no
+ExecStart=/usr/bin/actiontrig

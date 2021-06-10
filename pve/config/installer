@@ -51,6 +51,18 @@ chmod 755 /etc/rc.local
 chown root:root /etc/rc.local
 systemctl enable rc-local
 
+## Action Script Timer
+cp -f /tmp/config/actiontrig.timer /etc/systemd/system/
+chmod 644 /etc/systemd/system/actiontrig.timer
+chown root:root /etc/systemd/system/actiontrig.timer
+cp -f /tmp/config/actiontrig.service /etc/systemd/system/
+chmod 644 /etc/systemd/system/actiontrig.service
+chown root:root /etc/systemd/system/actiontrig.service
+cp -f /tmp/config/actiontrig /usr/bin/
+chmod 755 /usr/bin/actiontrig
+chown root:root /usr/bin/actiontrig
+systemctl enable actiontrig.timer
+
 ## Hosts Configuration
 cp -f /tmp/config/hosts /etc/hosts
 chmod 644 /etc/hosts
@@ -103,9 +115,6 @@ if [ ! -e /mnt/extbkps ]; then
 else
   echo "Backup mountpoints exist."
 fi
-cp -f /tmp/config/zfs-extbkps /usr/bin/
-chmod +x /usr/bin/zfs-extbkps
-chown root:root /usr/bin/zfs-extbkps
 
 ## System Check Script
 cp -f /tmp/config/sys-check /usr/bin/
@@ -122,6 +131,9 @@ apt-get --yes install apcupsd
 cp -f /tmp/config/apcupsd.conf /etc/apcupsd/
 chmod 644 /etc/apcupsd/apcupsd.conf
 chown root:root /etc/apcupsd/apcupsd.conf
+cp -f /tmp/config/apcupsd.service /lib/systemd/system/
+chmod 644 /lib/systemd/system/apcupsd.service
+chown root:root /lib/systemd/system/apcupsd.service
 
 ## HD Temperature Configuration
 apt-get --yes install hddtemp
@@ -134,6 +146,11 @@ apt-get --yes install lm-sensors
 cp -f /tmp/config/sensors3.conf /etc/
 chmod 644 /etc/sensors3.conf
 chown root:root /etc/sensors3.conf
+
+## Less Logging
+cp -f /tmp/config/journald.conf /etc/systemd/
+chmod 644 /etc/systemd/journald.conf
+chown root:root /etc/systemd/journald.conf
 
 ## Root Cron Timer
 cp -f /tmp/config/rootcron /etc/cron.d/
@@ -172,10 +189,6 @@ chown root:root /etc/cron.monthly/zfs-auto-snapshot
 cp -f /tmp/config/zfs-snap-weekly /etc/cron.weekly/zfs-auto-snapshot
 chmod 755 /etc/cron.weekly/zfs-auto-snapshot
 chown root:root /etc/cron.weekly/zfs-auto-snapshot
-
-## Check for backup files every 60 seconds
-killall -w zfs-extbkps
-/usr/bin/screen -dm -t zfs-extbkps -L -Logfile /mnt/extbkps/keytmp/status.txt /usr/bin/zfs-extbkps
 
 ## Disable PVE Replication Service
 systemctl stop pvesr.timer

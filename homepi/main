@@ -19,7 +19,7 @@ systemctl start autofs
 ## Video RAM Disk
 mkdir -p /mnt/ramdisk
 chmod 777 /mnt/ramdisk
-mount -t tmpfs -o size=256m ramdisk /mnt/ramdisk
+mount -t tmpfs -o size=284m ramdisk /mnt/ramdisk
 ## Google Drive
 systemctl start rpi-rclone
 sleep 5.75
@@ -27,12 +27,35 @@ sleep 5.75
 systemctl start motion
 ## Cameras Cleanup Timer
 systemctl start rpi-camcleanup.timer
+## 5-min Timer
+systemctl start rpi-timer.timer
 ## Disable HDMI
 /usr/bin/tvservice -o
 exit
 ;;
 
-
+timer)
+## This is ran every 5min
+#########################
+## Detect if Driveway Camera is connected
+if ping -c 1 10.177.1.6 &> /dev/null
+then
+  echo "Host is up"
+else
+  echo "Host is down restarting motion..."
+  systemctl restart motion
+fi
+sleep 5.25
+## Detect if Porch Camera is connected
+if ping -c 1 10.177.1.7 &> /dev/null
+then
+  echo "Host is up"
+else
+  echo "Host is down restarting motion..."
+  systemctl restart motion
+fi
+exit
+;;
     
         *)
 	      echo "  Cameras v1"

@@ -45,10 +45,6 @@ else
   sysctl vm.swappiness=10
 fi
 
-## External Backup Drives Script
-killall -w zfs-extbkps || :
-/usr/bin/screen -dm -t zfs-extbkps -L -Logfile /mnt/extbkps/keytmp/status.txt /usr/bin/zfs-extbkps
-
 echo "*"
 echo " Welcome to ProOS Server!"
 echo " by Ben Provenzano III"

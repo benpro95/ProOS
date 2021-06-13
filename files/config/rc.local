@@ -40,7 +40,5 @@ iptables -A OUTPUT -d 10.177.1.11 -j DROP
 iptables -A INPUT -d 10.177.1.11 -j DROP
 iptables -A OUTPUT -d 10.177.1.12 -j DROP
 iptables -A INPUT -d 10.177.1.12 -j DROP
-iptables -A OUTPUT -d 10.177.1.13 -j DROP
-iptables -A INPUT -d 10.177.1.13 -j DROP
 
 exit 0

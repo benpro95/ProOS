@@ -10,21 +10,15 @@ flock -n 200 || exit 1
 stoppid=$$
 echo $stoppid 1>&200
 
-## Check if Google Drive connected, exit if not attached.
+## Check if Google Drive connected before cleanup
 if [ ! -e /mnt/gsync/Current ]; then
-   echo "Google Drive not connected."
-   exit
+  echo "Google Drive not connected."
 else
-   echo "Google Drive connected."
-fi
-
-## Remove duplicates from Google Drive
-#/usr/bin/rclone --config /root/.config/rclone/rclone.conf dedupe gsync:/ --dedupe-mode newest
-
-## Delete archived videos, when larger than 14GB
-rm -f /tmp/camcleanup.vars
-du -sh -t14000000000 /mnt/gsync | awk -F" " '{print $2}' > /tmp/camcleanup.vars
-if [[ -s /tmp/camcleanup.vars ]] ; then
+  echo "Google Drive connected."
+  ## Delete archived videos, when larger than 14GB
+  rm -f /tmp/camcleanup.vars
+  du -sh -t14000000000 /mnt/gsync | awk -F" " '{print $2}' > /tmp/camcleanup.vars
+  if [[ -s /tmp/camcleanup.vars ]] ; then
 	echo "Google Drive above 14GB limit deleting archived video files..."
 	service motion stop
 	rm -rf /mnt/gsync/Archive/Driveway
@@ -32,15 +26,14 @@ if [[ -s /tmp/camcleanup.vars ]] ; then
 	mkdir -p /mnt/gsync/Archive/Driveway
 	mkdir -p /mnt/gsync/Archive/Porch
 	service motion start
-else
+  else
     echo "Google Drive under 14GB."
-fi
-rm -f /tmp/camcleanup.vars
-
-## Move videos to archive when Google Drive is larger than 6GB
-rm -f /tmp/camcleanup.vars
-du -sh -t6000000000 /mnt/gsync/Current | awk -F" " '{print $2}' > /tmp/camcleanup.vars
-if [[ -s /tmp/camcleanup.vars ]] ; then
+  fi
+  rm -f /tmp/camcleanup.vars
+  ## Move videos to archive when Google Drive is larger than 6GB
+  rm -f /tmp/camcleanup.vars
+  du -sh -t6000000000 /mnt/gsync/Current | awk -F" " '{print $2}' > /tmp/camcleanup.vars
+  if [[ -s /tmp/camcleanup.vars ]] ; then
 	echo "Google Drive current folder above 6GB limit moving video files..."
 	service motion stop
 	mkdir -p /mnt/gsync/Archive
@@ -49,9 +42,32 @@ if [[ -s /tmp/camcleanup.vars ]] ; then
 	mv /mnt/gsync/Current/Driveway/* /mnt/gsync/Archive/Driveway/
 	mv /mnt/gsync/Current/Porch/* /mnt/gsync/Archive/Porch/
 	service motion start
-else
+  else
     echo "Google Drive current folder under 6GB."
+  fi
+  rm -f /tmp/camcleanup.vars
 fi
-rm -f /tmp/camcleanup.vars
+
+## Check if flash drive is connected before cleanup
+if [ ! -e /media/usb0/cameras ]; then
+  echo "Flash drive not connected."
+else
+  echo "Flash drive connected."
+  ## Delete videos, when larger than 15GB
+  rm -f /tmp/camcleanup.vars
+  du -sh -t15000000000 /media/usb0/cameras | awk -F" " '{print $2}' > /tmp/camcleanup.vars
+  if [[ -s /tmp/camcleanup.vars ]] ; then
+	echo "Flash drive above 15GB limit deleting video files..."
+	service motion stop
+	rm -rf /media/usb0/cameras/Driveway
+	rm -rf /media/usb0/cameras/Porch
+	mkdir -p /media/usb0/cameras/Driveway
+	mkdir -p /media/usb0/cameras/Porch
+	service motion start
+  else
+    echo "Flash drive under 15GB."
+  fi
+  rm -f /tmp/camcleanup.vars
+fi
 
 exit

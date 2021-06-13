@@ -83,6 +83,11 @@ cp /tmp/config/backupsvr.bin /usr/bin/
 chmod 755 /usr/bin/backupsvr.bin
 chown root:root /usr/bin/backupsvr.bin
 
+## VM Utility Script
+cp /tmp/config/vmutil /usr/bin/
+chmod 755 /usr/bin/vmutil
+chown root:root /usr/bin/vmutil
+
 ## Share Attach/Detach Scripts
 cp /tmp/config/archiveshare /usr/bin/
 chmod 755 /usr/bin/archiveshare

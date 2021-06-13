@@ -31,10 +31,13 @@ apt-get install -y --no-upgrade rclone fuse
 cp -f $BIN/modconf/rpi-rclone.service /etc/systemd/system/
 chmod -f 644 /etc/systemd/system/rpi-rclone.service
 chown -f root:root /etc/systemd/system/rpi-rclone.service
-if [ ! -e /root/.config/rclone/rclone.conf ]; then
+rm -f /root/.config/rclone/rclone.conf
+if [ ! -e /media/usb0/rclone/rclone.conf ]; then
+  echo "API key not found on flash drive, running setup..."
   echo "Create new remote named 'gsync' and attach to Google Drive"
   rclone config
-  cat /root/.config/rclone/rclone.conf
+  cp -fv /root/.config/rclone/rclone.conf /media/usb0/rclone/
+  cat /media/usb0/rclone/rclone.conf
 else
   echo ""  > /dev/null 2>&1
 fi
@@ -69,19 +72,6 @@ chown -f root:root /etc/systemd/system/rpi-camcleanup.service
 cp -f $BIN/modconf/rpi-camcleanup.timer /etc/systemd/system/
 chmod -f 644 /etc/systemd/system/rpi-camcleanup.timer
 chown -f root:root /etc/systemd/system/rpi-camcleanup.timer
-
-## Samba Configuration
-cp -f $BIN/modconf/smb.conf /etc/samba/
-chmod 644 /etc/samba/smb.conf
-chown root:root /etc/samba/smb.conf
-groupadd shared
-useradd home -g shared --shell /bin/false
-echo "Use 'smbpasswd -a home' to set SMB password"
-if [ ! -e /media/usb0/shared ]; then
-   echo "Flash drive not connected."
-else
-  chown home:shared /media/usb0/shared
-fi
 
 ## AutoFS Configuration
 cp -f $BIN/modconf/auto.master /etc/

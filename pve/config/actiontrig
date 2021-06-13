@@ -1,8 +1,5 @@
 #!/bin/bash
-## Runs every 40 seconds
-################################
-#### External Drives Backup ####
-################################
+## Runs every 40 seconds on Proxmox
 ################################
 
 ZFSPOOL1="usb256-01" # SanDisk Ultra 256GB USB 3.0
@@ -73,7 +70,34 @@ if [ -e /mnt/extbkps/keytmp/unmount.txt ]; then
   date
   echo ""
 fi
+
+### START VMs #########################################   
+if [ -e /mnt/extbkps/keytmp/startunifi.txt ]; then
+###### Runs when file exists ##########################
+  if [ ! -e /mnt/extbkps/keytmp/vmlog.txt ]; then
+    touch /mnt/extbkps/keytmp/vmlog.txt
+  else
+    truncate -s 0 /mnt/extbkps/keytmp/vmlog.txt
+  fi
+  echo "Starting Unifi VM..." &>> /mnt/extbkps/keytmp/vmlog.txt
+  qm start 102 &>> /mnt/extbkps/keytmp/vmlog.txt
+  date &>> /mnt/extbkps/keytmp/vmlog.txt
+  rm -f /mnt/extbkps/keytmp/startunifi.txt
+fi
 #######################################################
+if [ -e /mnt/extbkps/keytmp/startxana.txt ]; then
+###### Runs when file exists ##########################
+  if [ ! -e /mnt/extbkps/keytmp/vmlog.txt ]; then
+    touch /mnt/extbkps/keytmp/vmlog.txt
+  else
+    truncate -s 0 /mnt/extbkps/keytmp/vmlog.txt
+  fi
+  echo "Starting Xana VM..." &>> /mnt/extbkps/keytmp/vmlog.txt
+  qm start 105 &>> /mnt/extbkps/keytmp/vmlog.txt
+  date &>> /mnt/extbkps/keytmp/vmlog.txt
+  rm -f /mnt/extbkps/keytmp/startxana.txt
+fi
+
 exit
 
 

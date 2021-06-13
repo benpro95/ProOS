@@ -1,67 +1,45 @@
 #!/bin/bash
 ##
-## Cameras by Ben Provenzano III v1.0 #############
-##################################################
+## Cameras by Ben Provenzano III v1.5 #############
+###################################################
 case "$1" in
 
 boot)
-## Samba Server
-if [ ! -e /media/usb0/shared ]; then
-   echo "Flash drive not connected."
-else
-   ## Samba Server
-   systemctl start nmbd
-   systemctl start smbd
-fi
-sleep 2.5
-## Attach SMB Shares
-systemctl start autofs
 ## Video RAM Disk
 mkdir -p /mnt/ramdisk
 chmod 777 /mnt/ramdisk
 mount -t tmpfs -o size=284m ramdisk /mnt/ramdisk
+sleep 25
+## Attach Server SMB Share
+if ping -c 1 10.177.1.4 &> /dev/null
+then
+  systemctl start autofs
+  sleep 5.75
+fi
 ## Google Drive
-systemctl start rpi-rclone
-sleep 5.75
+if [ ! -e /media/usb0/rclone ]; then
+  echo "Flash drive not connected, not starting rclone."
+else
+  systemctl start rpi-rclone
+  sleep 5.75
+fi
 ## Motion Server
 systemctl start motion
 ## Cameras Cleanup Timer
 systemctl start rpi-camcleanup.timer
-## 5-min Timer
-systemctl start rpi-timer.timer
+## Auto Restart Motion
+screen -dmS motionping /opt/rpi/motionping
 ## Disable HDMI
 /usr/bin/tvservice -o
 exit
 ;;
 
-timer)
-## This is ran every 5min
-#########################
-## Detect if Driveway Camera is connected
-if ping -c 1 10.177.1.6 &> /dev/null
-then
-  echo "Host is up"
-else
-  echo "Host is down restarting motion..."
-  systemctl restart motion
-fi
-sleep 5.25
-## Detect if Porch Camera is connected
-if ping -c 1 10.177.1.7 &> /dev/null
-then
-  echo "Host is up"
-else
-  echo "Host is down restarting motion..."
-  systemctl restart motion
-fi
-exit
-;;
     
         *)
 	      echo "  Cameras v1"
 	      echo "  by Ben Provenzano III"
 	      echo " "
 	      echo "Enter a valid command line argument."
-        exit 1
+          exit 1
         ;;
     esac   

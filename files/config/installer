@@ -8,8 +8,10 @@ echo "Installing..."
 apt-get --yes update
 
 ## Support Packages
-apt-get install -y --no-upgrade unzip wget htop rsync curl screen scrub ethtool aptitude sudo samba sshpass
-apt-get install -y --no-upgrade libdbus-1-dev libdbus-glib-1-dev locales apt-transport-https mailutils
+apt-get install -y --no-upgrade unzip wget htop rsync curl screen scrub 
+apt-get install -y --no-upgrade ethtool aptitude sudo samba sshpass neofetch
+apt-get install -y --no-upgrade libdbus-1-dev libdbus-glib-1-dev bc
+apt-get install -y --no-upgrade locales apt-transport-https mailutils
 
 ## Set Locale
 if [ ! -e /etc/locales.generated ]; then

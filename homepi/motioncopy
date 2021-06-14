@@ -3,18 +3,18 @@
 ####### Motion copy script by Ben Provenzano III v1 #######
 ###########################################################
 
-## Read Camera Name
+## Read camera name
 VARA=$1
-## Read File Name
+## Read file name
 VARB=$2
 
-## Test File Names
+## Test file names
 #touch /tmp/motioncam.log
 #echo "$VARA" | tee -a /tmp/motioncam.log
 #touch /tmp/motionfile.log
 #echo "$VARB" | tee -a /tmp/motionfile.log
 
-## Copy Video to Google Drive
+## Copy video to Google Drive
 if [ ! -e /mnt/gsync/Current ]; then
    echo "Google Drive not connected."
 else
@@ -37,7 +37,7 @@ else
   cp -f $VARB.mp4 /mnt/smb/Cameras/Current/$VARA/
 fi
 
-## Delete Original from RAM Disk
+## Delete video from RAM Disk
 rm -f $VARB.mp4
 
 exit

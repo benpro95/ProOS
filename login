@@ -1,5 +1,5 @@
 #!/bin/bash
-### Master Raspberry Pi / Server Communication Script - ProOS v18
+### Raspberry Pi / Server Communication Script - ProOS
 ### by Ben Provenzano III
 ###
 
@@ -30,8 +30,8 @@ TMPFLDR=$(mktemp -d /tmp/proostmp.XXXXXXXXX)
 ### ProServer Configuration
 if [ "$MODULE" = "" ]; then
 echo ""
-echo "Raspberry Pi / Server Login and Configuration Script"
-echo "by Ben Provenzano III - v18"
+echo "Pi / Server Configuration and Login Script"
+echo "by Ben Provenzano III"
 echo ""
 echo "Login to ProOS Pi / Server"
 echo "./login 'Hostname'"

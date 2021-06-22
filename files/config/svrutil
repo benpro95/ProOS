@@ -1,10 +1,12 @@
 #!/bin/bash
 ### Run PVE script in screen terminal
 
+SCRNVAR=$(echo $RANDOM)
+
 if [ "$1" = "" ] ; then
-  /usr/bin/screen -dm -t bkp /usr/bin/svrutil.bin $1
-  sleep 0.5
-  screen -r -p svrutil
+  /usr/bin/screen -dm -t $SCRNVAR /usr/bin/svrutil.bin $1
+  sleep 0.25
+  screen -r -p $SCRNVAR
 else
   /usr/bin/svrutil.bin $1
 fi

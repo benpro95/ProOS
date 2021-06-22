@@ -4,6 +4,24 @@
 #######################
 #######################
 
+## End Session Function
+ENDPGRM () {
+echo ""
+REPLY=""
+read -p "press enter for command shell or (r) to return: " -n 1 -r
+echo
+clear
+if [[ $REPLY =~ ^[Rr]$ ]]
+then
+ MAINPGRM
+else
+ exit
+fi
+}
+
+## Main Function
+MAINPGRM () {
+
 #### 256GB Drives ####
 USB256DRV1="usb256-01"
 USB256DRV2=""
@@ -20,6 +38,7 @@ HDDRV2="hdd4tb-02"
 HDDRV3="hdd4tb-03"
 HDDRV4=""
 
+### Only run if server user
 if [ ! "$USER" = server ]; then
     echo "this script should only be ran by server user, aborting."
     exit 1
@@ -29,11 +48,7 @@ fi
 if [ "$1" = "rmlock" ] ; then
 rm -f /tmp/backupsvr.lock
 echo "removed lockfile."
-fi
-
-### Check Backup Status
-if [ "$1" = "bkpstatus" ] ; then
-cat /mnt/extbkps/keytmp/status.txt
+exit
 fi
 
 uname -m -n -s -o -r
@@ -44,70 +59,74 @@ echo "  / /_/ / ___/ __ \/ / / /\__ \ "
 echo " / ____/ /  / /_/ / /_/ /___/ / "
 echo "/_/   /_/   \____/\____//____/  "
 echo " "
-echo "** Main Menu v1.0 **"
 echo "by Ben Provenzano III"
 echo " "
-echo "Last Login:"
 lastlog -u server
-echo " "
 echo ""
 echo "(l) Generate a server log"
-echo "(x) Xana VM (start/stop)"
-echo "(u) Unifi VM (start/stop)"
+echo "(v) start / stop a virtual machine"
 echo "(b) allow access to backup snapshots"
 echo "(r) remove access to backup snapshots"
 echo "(m) mount external drives / backup"
 echo "(j) just backup to external drives"
 echo "(d) detach external drives then exit"
-echo "(s) show external drives status"
-echo "(enter) command line"
+echo "(s) show backup drives status"
+echo "(enter) command shell"
 echo " "
 
 read -p "select mode: " -n 1 -r
 echo
 
+## Generate log file
 if [[ $REPLY =~ ^[Ll]$ ]]
 then
 touch /mnt/extbkps/keytmp/createlog.txt
 echo ""
 echo "Wait one-minute, server log will be created at"
 echo "SMB: \\files\Downloads\Server.log"
-echo ""
-sleep 3.25
-exit
+ENDPGRM
 fi
 
-if [[ $REPLY =~ ^[Xx]$ ]]
+if [[ $REPLY =~ ^[Vv]$ ]]
 then
-VMHOST="xana"
-fi
-
-if [[ $REPLY =~ ^[Uu]$ ]]
-then
-VMHOST="unifi"
-fi
-
-if [[ ! $VMHOST = "" ]]
-then
-  echo ""
-  read -p "select (b) to boot VM or (s) to shutdown VM: " -n 1 -r
+  echo ""	
+  echo "(x) Xana - 10.177.1.3"
+  echo "(u) Unifi - 10.177.1.13 "
+  REPLY=""
+  read -p "select VM: " -n 1 -r
   echo
-  if [[ $REPLY =~ ^[Bb]$ ]]
+  if [[ $REPLY =~ ^[Xx]$ ]]
   then
-   touch /mnt/extbkps/keytmp/start$VMHOST.txt
-   echo "waiting one-minute for startup to trigger..."
-   sleep 60
-   cat /mnt/extbkps/keytmp/vmlog.txt
+  VMHOST="xana"
   fi
-  if [[ $REPLY =~ ^[Ss]$ ]]
+  ##
+  if [[ $REPLY =~ ^[Uu]$ ]]
   then
-   echo "stopping $VMHOST virtual machine..."
-   ssh -t -i ~/ProOS/$VMHOST/id_rsa root@$VMHOST "shutdown -h now"
+  VMHOST="unifi"
   fi
-echo ""
-sleep 3.25
-exit
-fi
+  ##
+  if [[ ! $VMHOST = "" ]]
+  then
+    echo ""
+    echo "$VMHOST selected."
+    REPLY=""
+    read -p "select (b) to boot or (s) to shutdown: " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Bb]$ ]]
+    then
+     touch /mnt/extbkps/keytmp/start$VMHOST.txt
+     echo "waiting one-minute for startup to trigger..."
+     sleep 60
+     cat /mnt/extbkps/keytmp/vmlog.txt
+    fi
+    if [[ $REPLY =~ ^[Ss]$ ]]
+    then
+     echo "stopping $VMHOST virtual machine..."
+     ssh -t -i ~/ProOS/$VMHOST/id_rsa root@$VMHOST "shutdown -h now"
+    fi
+  fi
+ENDPGRM
+fi  
 
 ## Snapshot Share Access
 if [[ $REPLY =~ ^[Bb]$ ]]
@@ -119,8 +138,7 @@ else
   echo "attaching share..."
   ln -s /mnt/datastore/.zfs/snapshot /mnt/backup/Snapshots
 fi
-echo ""
-sleep 3.25
+ENDPGRM
 fi
 
 ## Archive Share Access
@@ -133,8 +151,7 @@ else
   echo "attaching share..."
   ln -s /mnt/datastore/.Archive /mnt/backup/Archive
 fi
-echo ""
-sleep 3.25
+ENDPGRM
 fi
 
 ## Remove Share Access
@@ -144,10 +161,12 @@ echo ""
 echo "detaching shares..."
 rm -fv /mnt/backup/Snapshots
 rm -fv /mnt/backup/Archive
-echo ""
-sleep 3.25
+ENDPGRM
 fi
 
+##### BEGIN BACKUP SECTION #####
+################################
+SERVERBKP="" 
 ## Just detach drives
 if [[ $REPLY =~ ^[Dd]$ ]]
 then
@@ -156,51 +175,33 @@ touch /mnt/extbkps/keytmp/unmount.txt
 echo "waiting one-minute for drives to detach..."
 sleep 60
 cat /mnt/extbkps/keytmp/status.txt
-echo "press ctrl+c to exit now, will quit in 30 seconds."
-sleep 30
+ENDPGRM
 fi
-
+##
 ## Just show status of last backup
 if [[ $REPLY =~ ^[Ss]$ ]]
 then
 cat /mnt/extbkps/keytmp/status.txt
-echo "press ctrl+c to exit now, will quit in one-minute."
-sleep 60
+ENDPGRM
 fi
-
+##
+## Just start Backup
 if [[ $REPLY =~ ^[Jj]$ ]]
 then
-### Lock file
-if [ -f "/tmp/backupsvr.lock" ]; then
-    echo "already running!"
-    echo "run 'backupsvr rmlock' to manually remove lock if program failed"
-    sleep 3.25
-else
-    touch /tmp/backupsvr.lock
-fi
-## Start Backup
+REPLY=""
 read -p "begin backup copy? (y/n): " -n 1 -r
 echo
-  if [[ $REPLY =~ ^[Nn]$ ]]
+  if [[ $REPLY =~ ^[Yy]$ ]]
   then
-  ## Unlock State File
-  rm -f /tmp/backupsvr.lock
-  else
   SERVERBKP="start" 
   fi
 fi
-
+##
+## Unlock and then backup
 if [[ $REPLY =~ ^[Mm]$ ]]
 then
+REPLY=""
 echo "unlocking drives."
-### Lock file
-if [ -f "/tmp/backupsvr.lock" ]; then
-    echo "already running!"
-    echo "run 'backupsvr rmlock' to manually remove lock if program failed"
-    sleep 3.25
-else
-    touch /tmp/backupsvr.lock
-fi
 ## Read password then mount drives  
 rm -f /mnt/extbkps/keytmp/pass.txt
 read -s -p "enter backup password: " keyvar
@@ -214,36 +215,41 @@ echo " "
 ## Start Backup
 read -p "begin backup copy? (y/n): " -n 1 -r
 echo
-  if [[ $REPLY =~ ^[Nn]$ ]]
+  if [[ $REPLY =~ ^[Yy]$ ]]
   then
-  ## Unlock State File
-  rm -f /tmp/backupsvr.lock
-  else
   SERVERBKP="start" 
   fi
 fi
-
+##
+#######################################################
 ## Start backup section when this variable is not empty
-if [[ ! $SERVERBKP = "" ]]
+if [[ $SERVERBKP = "start" ]]; then
+### Lock file
+if [ -f "/tmp/backupsvr.lock" ]; then
+  echo "already running!"
+  echo "run 'backupsvr rmlock' to manually remove lock if program failed"
+  ENDPGRM
+else
+  touch /tmp/backupsvr.lock
+fi
+##
+REPLY=""
+read -p "compare files checksum (c), enter for normal mode: " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Cc]$ ]]
 then
-echo " "
+  echo "checksum option selected!, this backup will take awhile"
+  CHECKSUM="--checksum"
+else
+  CHECKSUM=""
+fi
+##
 echo "starting backup..."
 echo "***************************************************"
 echo "press ctrl+a then ctrl+d to detach terminal"
-echo "run 'screen -r -p bkp' to reattach to this terminal"
+echo "run 'screen -r' to reattach to this terminal"
 echo "***************************************************"
-
-### Set rsync to compare checksums on all data
-if [ "$1" = "checksum" ] || [ "$1" = "chk" ] ; then
-    echo "compare files checksum option selected!"
-    CHECKSUM="--checksum"
-else
-    echo "checksum compare disabled"
-    echo "run command with 'backupsvr chk' to enable"
-    CHECKSUM=""
-fi
-echo "*****************************************************"
-
+###################################
 ###################################
 ## 256GB Backup Drives Loop #######
 for ((i=1; i<5; i++))
@@ -288,7 +294,7 @@ do
     fi
   fi  
 done
-
+###################################
 ###################################
 ## 128GB Backup Drives Loop #######
 for ((i=1; i<5; i++))
@@ -326,7 +332,7 @@ do
     fi
   fi  
 done
-
+###################################
 ###################################
 ## Hard Disk Backup Drives Loop ###
 for ((i=1; i<5; i++))
@@ -368,17 +374,20 @@ do
 done
 ################################
 ################################
-
 echo "detaching backup disks..."
 touch /mnt/extbkps/keytmp/unmount.txt
-## Unlock State File
-rm -f /tmp/backupsvr.lock
 echo "waiting one-minute for drives to detach..."
 sleep 60
 cat /mnt/extbkps/keytmp/status.txt
-echo "press ctrl+c to exit now, will quit in 30 seconds."
-sleep 30
+## Unlock State File
+rm -f /tmp/backupsvr.lock
+ENDPGRM
 fi
 ##### END BACKUP SECTION #####
 
+##### END MAIN FUNCTION #####
+}
+#### BEGIN MAIN SCRIPT #####
+MAINPGRM
+#### END MAIN SCRIPT #####
 exit

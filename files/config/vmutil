@@ -12,9 +12,10 @@ fi
 echo " "
 echo "######################################"
 echo "######## ProServer VM Utility ########"
-echo "#### by Ben Provenzano III - v1.0 ####"
+echo "#### by Ben Provenzano III - v1.1 ####"
 echo "######################################"
 echo " "
+echo "(l) Generate a server log"
 echo "(x) Xana VM (start/stop)"
 echo "(u) Unifi VM (start/stop)"
 echo "(enter) exit utility"
@@ -22,6 +23,16 @@ echo " "
 
 read -p "select a option: " -n 1 -r
 echo
+
+if [[ $REPLY =~ ^[Ll]$ ]]
+then
+touch /mnt/extbkps/keytmp/createlog.txt
+echo ""
+echo "Wait on-minute, server log will be written to."
+echo "SMB: \\files\Downloads\Server.log"
+echo ""
+exit
+fi
 
 if [[ $REPLY =~ ^[Xx]$ ]]
 then

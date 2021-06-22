@@ -152,13 +152,6 @@ cp -f /tmp/config/journald.conf /etc/systemd/
 chmod 644 /etc/systemd/journald.conf
 chown root:root /etc/systemd/journald.conf
 
-## Root Cron Timer
-cp -f /tmp/config/rootcron /etc/cron.d/
-chmod 755 /etc/cron.d/rootcron
-chown root:root /etc/cron.d/rootcron
-rm -f /etc/cron.d/rsnapshot
-systemctl restart cron
-
 ## ZFS Snapshot Configuration
 if [ ! -e /etc/zfsautosnap.enabled ]; then
   apt-get --yes install zfs-auto-snapshot
@@ -189,6 +182,12 @@ chown root:root /etc/cron.monthly/zfs-auto-snapshot
 cp -f /tmp/config/zfs-snap-weekly /etc/cron.weekly/zfs-auto-snapshot
 chmod 755 /etc/cron.weekly/zfs-auto-snapshot
 chown root:root /etc/cron.weekly/zfs-auto-snapshot
+## ZFS Scrub & Trim Timers
+cp -f /tmp/config/zfsutils-linux /etc/cron.d/
+chmod 755 /etc/cron.d/zfsutils-linux
+chown root:root /etc/cron.d/zfsutils-linux
+rm -f /etc/cron.d/rsnapshot
+systemctl restart cron
 
 ## Disable PVE Replication Service
 systemctl stop pvesr.timer

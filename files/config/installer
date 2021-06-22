@@ -119,6 +119,7 @@ chmod 644 /etc/hosts.deny
 chown root:root /etc/hosts.deny
 
 ## Clean-up
+rm -f /usr/bin/logutil
 rm -f /usr/bin/backupsvr
 rm -f /usr/bin/backupsvr.bin
 rm -f /usr/bin/archiveshare

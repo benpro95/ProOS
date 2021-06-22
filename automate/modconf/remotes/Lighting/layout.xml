@@ -21,11 +21,6 @@
         <button icon="on" ontap="deskon" color="#00003e" />	
     </row>
     <row>
-        <button icon="off" ontap="nightoff" color="black" />
-        <button text="Backlight" ontap="night" color="#000037" />
-        <button icon="on" ontap="nighton" color="#000037" /> 
-    </row>
-    <row>
         <button icon="off" ontap="lightsoff" color="black" />
         <button text="Lights" ontap="" color="#000035" />
     	<button icon="on" ontap="lightson" color="#000035" />	

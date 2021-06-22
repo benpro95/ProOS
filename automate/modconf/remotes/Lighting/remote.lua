@@ -68,18 +68,3 @@ actions.alloff = function ()
 script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/main alloff");
 end
 
-actions.night = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit fet1 toggle");
-end
-
-actions.nighton = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit fet1 on");
-end
-
-actions.nightoff = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit fet1 off");
-end
-
-actions.mode1 = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/main modesw");
-end

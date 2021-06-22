@@ -21,7 +21,7 @@ HDDRV3="hdd4tb-03"
 HDDRV4=""
 
 if [ ! "$USER" = server ]; then
-    echo "This script should only be ran by server user, aborting."
+    echo "this script should only be ran by server user, aborting."
     exit 1
 fi
 
@@ -29,7 +29,7 @@ fi
 if [ "$1" = "rmlock" ] ; then
     ## Unlock State File
     rm -f /tmp/backupsvr.lock
-    echo "Removed lockfile."
+    echo "removed lockfile."
     exit 0
 else
     echo ""  > /dev/null 2>&1
@@ -43,6 +43,67 @@ else
     echo ""  > /dev/null 2>&1
 fi
 
+echo " "
+echo "######################################"
+echo "###### ProServer Backup Utility ######"
+echo "#### by Ben Provenzano III - v2.8 ####"
+echo "######################################"
+echo " "
+echo ""
+echo "(b) allow access to backup snapshots"
+echo "(r) remove access to backup snapshots"
+echo "(m) mount external drives / backup"
+echo "(d) detach external drives then exit"
+echo "(s) show external drives status"
+echo "(enter) start backup"
+echo "(ctrl+c) exit"
+echo " "
+
+read -p "select mode: " -n 1 -r
+echo
+
+## Snapshot Share Access
+if [[ $REPLY =~ ^[Bb]$ ]]
+then
+echo ""
+if [ -e "/mnt/backup/Snapshots" ]; then
+  echo "already attached!"  	
+else
+  echo "attaching share..."
+  ln -s /mnt/datastore/.zfs/snapshot /mnt/backup/Snapshots
+fi
+echo ""
+sleep 1.25
+exit 0
+fi
+
+## Archive Share Access
+if [[ $REPLY =~ ^[Aa]$ ]]
+then
+echo ""
+if [ -e "/mnt/backup/Archive" ]; then
+  echo "already attached!"  	
+else
+  echo "attaching share..."
+  ln -s /mnt/datastore/.Archive /mnt/backup/Archive
+fi
+echo ""
+sleep 1.25
+exit 0
+fi
+
+## Remove Share Access
+if [[ $REPLY =~ ^[Rr]$ ]]
+then
+echo ""
+echo "detaching shares..."
+rm -fv /mnt/backup/Snapshots
+rm -fv /mnt/backup/Archive
+echo ""
+sleep 1.25
+exit 0
+fi
+
 ### Lock State File
 if [ -f "/tmp/backupsvr.lock" ]; then
     echo "already running!"
@@ -51,21 +112,6 @@ if [ -f "/tmp/backupsvr.lock" ]; then
 else
     touch /tmp/backupsvr.lock
 fi
-
-echo " "
-echo "######################################"
-echo "###### ProServer Backup Utility ######"
-echo "#### by Ben Provenzano III - v2.8 ####"
-echo "######################################"
-echo " "
-echo "(a) attach drives / backup"
-echo "(d) detach drives then exit"
-echo "(s) show drives status"
-echo "(enter) start backup"
-echo " "
-
-read -p "select mode: " -n 1 -r
-echo
 
 ## Just detach drives
 if [[ $REPLY =~ ^[Dd]$ ]]
@@ -93,10 +139,10 @@ sleep 60
 exit 0
 fi
 
-if [[ $REPLY =~ ^[Aa]$ ]]
+if [[ $REPLY =~ ^[Mm]$ ]]
 then
 echo "unlocking drives."
-## Read password then attach drives  
+## Read password then mount drives  
 rm -f /mnt/extbkps/keytmp/pass.txt
 read -s -p "enter backup password: " keyvar
 echo "$keyvar" >> /mnt/extbkps/keytmp/pass.txt
@@ -104,7 +150,7 @@ keyvar=000000000000000000000
 echo " "
 ## Unlock State File
 rm -f /tmp/backupsvr.lock
-echo "waiting one-minute for drives to attach..."
+echo "waiting one-minute for drives to mount..."
 sleep 60
 cat /mnt/extbkps/keytmp/status.txt
 echo " "
@@ -121,10 +167,10 @@ fi
 
 echo " "
 echo "starting backup..."
-echo "*****************************************************"
+echo "***************************************************"
 echo "press ctrl+a then ctrl+d to detach terminal"
-echo "run 'screen -r -p bkp' to reattach to backup terminal"
-echo "*****************************************************"
+echo "run 'screen -r -p bkp' to reattach to this terminal"
+echo "***************************************************"
 
 ### Set rsync to compare checksums on all data
 if [ "$1" = "checksum" ] || [ "$1" = "chk" ] ; then

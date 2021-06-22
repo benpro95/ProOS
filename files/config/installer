@@ -78,25 +78,17 @@ chown root:root /etc/cron.d/rootcron
 systemctl restart cron
 
 ## External Backup Script
-cp /tmp/config/backupsvr /usr/bin/
-chmod 755 /usr/bin/backupsvr
-chown root:root /usr/bin/backupsvr
-cp /tmp/config/backupsvr.bin /usr/bin/
-chmod 755 /usr/bin/backupsvr.bin
-chown root:root /usr/bin/backupsvr.bin
+cp /tmp/config/bkputil /usr/bin/
+chmod 755 /usr/bin/bkputil
+chown root:root /usr/bin/bkputil
+cp /tmp/config/bkputil.bin /usr/bin/
+chmod 755 /usr/bin/bkputil.bin
+chown root:root /usr/bin/bkputil.bin
 
 ## VM Utility Script
 cp /tmp/config/vmutil /usr/bin/
 chmod 755 /usr/bin/vmutil
 chown root:root /usr/bin/vmutil
-
-## Share Attach/Detach Scripts
-cp /tmp/config/archiveshare /usr/bin/
-chmod 755 /usr/bin/archiveshare
-chown root:root /usr/bin/archiveshare
-cp /tmp/config/snapshare /usr/bin/
-chmod 755 /usr/bin/snapshare
-chown root:root /usr/bin/snapshare
 
 ## Snapshot Mountpoint
 if [ ! -e /mnt/backup ]; then
@@ -127,6 +119,10 @@ chmod 644 /etc/hosts.deny
 chown root:root /etc/hosts.deny
 
 ## Clean-up
+rm -f /usr/bin/backupsvr
+rm -f /usr/bin/backupsvr.bin
+rm -f /usr/bin/archiveshare
+rm -f /usr/bin/snapshare
 systemctl daemon-reload
 rm -r /tmp/config/
 apt-get autoremove -y

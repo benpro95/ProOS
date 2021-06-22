@@ -77,18 +77,13 @@ chmod 644 /etc/cron.d/rootcron
 chown root:root /etc/cron.d/rootcron
 systemctl restart cron
 
-## External Backup Script
-cp /tmp/config/bkputil /usr/bin/
-chmod 755 /usr/bin/bkputil
-chown root:root /usr/bin/bkputil
-cp /tmp/config/bkputil.bin /usr/bin/
-chmod 755 /usr/bin/bkputil.bin
-chown root:root /usr/bin/bkputil.bin
-
-## VM Utility Script
-cp /tmp/config/vmutil /usr/bin/
-chmod 755 /usr/bin/vmutil
-chown root:root /usr/bin/vmutil
+## Main Menu Script
+cp /tmp/config/svrutil /usr/bin/
+chmod 755 /usr/bin/svrutil
+chown root:root /usr/bin/svrutil
+cp /tmp/config/svrutil.bin /usr/bin/
+chmod 755 /usr/bin/svrutil.bin
+chown root:root /usr/bin/svrutil.bin
 
 ## Snapshot Mountpoint
 if [ ! -e /mnt/backup ]; then
@@ -119,6 +114,9 @@ chmod 644 /etc/hosts.deny
 chown root:root /etc/hosts.deny
 
 ## Clean-up
+rm -f /usr/bin/vmutil
+rm -f /usr/bin/bkputil.bin
+rm -f /usr/bin/bkputil
 rm -f /usr/bin/logutil
 rm -f /usr/bin/backupsvr
 rm -f /usr/bin/backupsvr.bin

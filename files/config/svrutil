@@ -1,0 +1,12 @@
+#!/bin/bash
+### Run PVE script in screen terminal
+
+if [ "$1" = "" ] ; then
+  /usr/bin/screen -dm -t bkp /usr/bin/svrutil.bin $1
+  sleep 0.5
+  screen -r -p svrutil
+else
+  /usr/bin/svrutil.bin $1
+fi
+
+exit

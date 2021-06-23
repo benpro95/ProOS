@@ -16,23 +16,18 @@
         <button icon="vup" ontap="subup" />
     </row>
     <row>
+        <button text="Phono" ontap="phono" />
         <button text="Aux" ontap="aux" />
-    	<button text="PC" ontap="pcin" />
-	    <button text="NES Pi" ontap="nespi" />
+        <button text="DAC" ontap="aux" />
 	</row>
 	<row>
-    	<button text="Coaxial" ontap="coax" />
-        <button text="USB" ontap="usb" />
+    	<button text="AirPlay" ontap="coax" />
+        <button text="PC" ontap="usb" />
         <button text="Optical" ontap="opt" />
         <button text="Auto" ontap="autodac" />
     </row>
     <row>
-	    <button text="Audio - on" ontap="hifion" />
-	    <button text="Audio - off" ontap="hifioff" />
-	    <button text="TV - on/off" ontap="tv" />
-    </row>
-    <row>
-	    <button text="System / PC" icon="power" ontap="sys" />
+	    <button text="System" icon="power" ontap="audio" />
     </row>
 </layout>
 

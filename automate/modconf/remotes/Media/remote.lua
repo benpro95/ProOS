@@ -8,12 +8,8 @@ actions.phono = function ()
 script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit phono");
 end
 
-actions.pcin = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/main pcin");
-end
-
-actions.nespi = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/main nespi");
+actions.dac = function ()
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit dac");
 end
 
 actions.audio = function ()
@@ -26,10 +22,6 @@ end
 
 actions.hifioff = function ()
 script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/main hifioff");
-end
-
-actions.tv = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit pwrtv");
 end
 
 actions.vdwnc = function ()
@@ -82,10 +74,6 @@ end
 
 actions.autodac = function ()
 script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/main autodac");
-end
-
-actions.sys = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/main pwrsys");
 end
 
 

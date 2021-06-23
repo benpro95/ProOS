@@ -22,7 +22,7 @@ se.port = port
 se.open()
 se.write(str.encode('$SERCMD'))
 END
-echo "$SERCMD"
+##echo "$SERCMD"
 SERCMD=""
 }      
 
@@ -287,8 +287,7 @@ if [[ "$CMD" == "rfb3" ]]; then
    XMIT
 fi
 
-echo "$CMD"
-
+#echo "$CMD"
 exit
 
 

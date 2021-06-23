@@ -63,12 +63,11 @@ echo "by Ben Provenzano III"
 echo " "
 lastlog -u server
 echo ""
-echo "(l) Generate a server log"
+echo "(l) generate a server log"
 echo "(v) start / stop a virtual machine"
 echo "(b) allow access to backup snapshots"
 echo "(r) remove access to backup snapshots"
 echo "(m) mount external drives / backup"
-echo "(j) just backup to external drives"
 echo "(d) detach external drives then exit"
 echo "(s) show backup drives status"
 echo "(enter) command shell"
@@ -185,39 +184,34 @@ cat /mnt/extbkps/keytmp/status.txt
 ENDPGRM
 fi
 ##
-## Just start Backup
-if [[ $REPLY =~ ^[Jj]$ ]]
-then
-REPLY=""
-read -p "begin backup copy? (y/n): " -n 1 -r
-echo
-  if [[ $REPLY =~ ^[Yy]$ ]]
-  then
-  SERVERBKP="start" 
-  fi
-fi
-##
 ## Unlock and then backup
 if [[ $REPLY =~ ^[Mm]$ ]]
 then
 REPLY=""
-echo "unlocking drives."
-## Read password then mount drives  
-rm -f /mnt/extbkps/keytmp/pass.txt
-read -s -p "enter backup password: " keyvar
-echo "$keyvar" >> /mnt/extbkps/keytmp/pass.txt
-keyvar=000000000000000000000
-echo " "
-echo "waiting one-minute for drives to mount..."
-sleep 60
+read -p "unlock backup drives (y/n): " -n 1 -r
+echo
+  if [[ $REPLY =~ ^[Yy]$ ]]
+  then
+  ## Read password then mount drives  
+  rm -f /mnt/extbkps/keytmp/pass.txt
+  read -s -p "enter backup password: " KEYVAR
+  echo "$KEYVAR" >> /mnt/extbkps/keytmp/pass.txt
+  KEYVAR=000000000000000000000
+  echo " "
+  echo "waiting one-minute for drives to mount..."
+  sleep 60
+  fi
+## Backup Drives Status
 cat /mnt/extbkps/keytmp/status.txt
 echo " "
-## Start Backup
+REPLY=""
 read -p "begin backup copy? (y/n): " -n 1 -r
 echo
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
   SERVERBKP="start" 
+  else
+  ENDPGRM
   fi
 fi
 ##

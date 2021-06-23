@@ -17,8 +17,8 @@
     </row>
     <row>
         <button text="Phono" ontap="phono" />
+        <button text="DAC" ontap="dac" />
         <button text="Aux" ontap="aux" />
-        <button text="DAC" ontap="aux" />
 	</row>
 	<row>
     	<button text="AirPlay" ontap="coax" />

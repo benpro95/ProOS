@@ -166,62 +166,68 @@ SERVERBKP=""
 ## Only detach drives
 if [[ $REPLY =~ ^[Dd]$ ]]
 then
-echo "detaching backup disks..."
-touch /mnt/extbkps/keytmp/unmount.txt
-echo "waiting one-minute for drives to detach..."
-sleep 60
-cat /mnt/extbkps/keytmp/status.txt
-ENDPGRM
+  echo "detaching backup disks..."
+  touch /mnt/extbkps/keytmp/unmount.txt
+  echo "waiting one-minute for drives to detach..."
+  sleep 60
+  cat /mnt/extbkps/keytmp/status.txt
+  ENDPGRM
 fi
 ##
 ## Unlock / Backup
 if [[ $REPLY =~ ^[Mm]$ ]]
 then
-echo " "
-REPLY=""
-read -p "unlock backup drives (y/n): " -n 1 -r
-echo
+  echo " "
+  REPLY=""
+  read -p "unlock backup drives (y/n): " -n 1 -r
+  echo
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
-  echo " "
-  ## Read password then mount drives  
-  rm -f /mnt/extbkps/keytmp/pass.txt
-  read -s -p "enter backup password: " KEYVAR
-  echo "$KEYVAR" >> /mnt/extbkps/keytmp/pass.txt
-  KEYVAR=000000000000000000000
-  echo " "
-  echo "waiting one-minute for drives to mount..."
-  sleep 65
+    echo " "
+    ## Read password then mount drives  
+    rm -f /mnt/extbkps/keytmp/pass.txt
+    read -s -p "enter backup password: " KEYVAR
+    echo "$KEYVAR" >> /mnt/extbkps/keytmp/pass.txt
+    KEYVAR=000000000000000000000
+    echo " "
+    echo "waiting one-minute for drives to mount..."
+    sleep 65
   fi
-## Backup Drives Status
-cat /mnt/extbkps/keytmp/status.txt
-echo " "
-REPLY=""
-read -p "begin backup copy? (y/n) or (s) for status: " -n 1 -r
-echo
+  ## Backup Drives Status
+  cat /mnt/extbkps/keytmp/status.txt
+  echo " "
+  echo "(b) start standard backup"
+  echo "(c) start checksum compare backup"
+  echo "(s) re-check drives status"
+  echo "(enter) exit backup program"
+  REPLY=""
+  read -p "enter option: " -n 1 -r
+  echo
   if [[ $REPLY =~ ^[Ss]$ ]]
   then
     cat /mnt/extbkps/keytmp/status.txt
     echo " "
+    echo "(b) start standard backup"
+    echo "(c) start checksum compare backup"
+    echo "(enter) exit backup program"
     REPLY=""
-    read -p "begin backup copy? (y/n): " -n 1 -r
+    read -p "enter option: " -n 1 -r
     echo
-    if [[ $REPLY =~ ^[Yy]$ ]]
-    then
-      echo " "
-      SERVERBKP="start" 
-    else
-      ENDPGRM
-    fi
   fi
   ##
-  if [[ $REPLY =~ ^[Yy]$ ]]
+  if [[ $REPLY =~ ^[Bb]$ ]]
   then
     echo " "
+    CHECKSUM=""
     SERVERBKP="start" 
-  else
-    ENDPGRM
   fi
+  ##
+  if [[ $REPLY =~ ^[Cc]$ ]]
+  then
+    echo " "
+    SERVERBKP="start"
+    CHECKSUM="--checksum"
+  fi  
 fi
 ##
 #######################################################
@@ -236,23 +242,15 @@ else
   touch /tmp/backupsvr.lock
 fi
 ##
-REPLY=""
-read -p "compare files checksum (c), enter for normal mode: " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Cc]$ ]]
-then
-  echo "checksum option selected!, this backup will take awhile"
-  CHECKSUM="--checksum"
-  echo " "
-else
-  CHECKSUM=""
-fi
-##
 echo "starting backup..."
 echo "***************************************************"
 echo "press ctrl+a then ctrl+d to detach terminal"
 echo "run 'screen -r' to reattach to this terminal"
 echo "***************************************************"
+if [[ "$CHECKSUM" == "--checksum" ]]
+then
+  echo "checksum compare option selected, this backup will take awhile!"
+fi  
 ###################################
 ###################################
 ## 256GB Backup Drives Loop #######

@@ -8,14 +8,14 @@
 ENDPGRM () {
 echo " "
 REPLY=""
-read -p "press enter for command shell or (r) to return: " -n 1 -r
+read -p "select (s) for command shell or (enter) to return: " -n 1 -r
 echo
 clear
-if [[ $REPLY =~ ^[Rr]$ ]]
+if [[ $REPLY =~ ^[Ss]$ ]]
 then
- MAINPGRM
+  exit
 else
- exit
+  MAINPGRM
 fi
 }
 
@@ -178,6 +178,7 @@ fi
 if [[ $REPLY =~ ^[Mm]$ ]]
 then
   echo " "
+  SERVERBKP="end" 
   REPLY=""
   read -p "unlock backup drives (y/n): " -n 1 -r
   echo
@@ -227,12 +228,15 @@ then
     echo " "
     SERVERBKP="start"
     CHECKSUM="--checksum"
-  fi  
+  fi
 fi
 ##
 #######################################################
-## Start backup section when this variable is not empty
-if [[ $SERVERBKP = "start" ]]; then
+###### BACKUP SECTION ######
+if [[ $SERVERBKP == "end" ]]; then
+  ENDPGRM
+fi
+if [[ $SERVERBKP == "start" ]]; then
 ### Lock file
 if [ -f "/tmp/backupsvr.lock" ]; then
   echo "already running!"

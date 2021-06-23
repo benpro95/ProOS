@@ -12,4 +12,9 @@ alias l='ls $LS_OPTIONS -lA'
 ## Start Main Menu
 /usr/bin/svrutil
 
+uname -m -n -s -o -r
+echo "enter 'screen -r PID#' to resume detached menu"
+echo "enter 'svrutil' to return to main menu"
+echo " "
+
 cd ~/ProOS

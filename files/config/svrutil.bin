@@ -48,6 +48,7 @@ echo "/_/   /_/   \____/\____//____/  "
 echo " "
 echo "by Ben Provenzano III"
 echo " "
+echo "last login:"
 lastlog -u server
 echo " "
 echo "(l) list drive usage"
@@ -190,20 +191,36 @@ echo
   KEYVAR=000000000000000000000
   echo " "
   echo "waiting one-minute for drives to mount..."
-  sleep 75
+  sleep 65
   fi
 ## Backup Drives Status
 cat /mnt/extbkps/keytmp/status.txt
 echo " "
 REPLY=""
-read -p "begin backup copy? (y/n): " -n 1 -r
+read -p "begin backup copy? (y/n) or (s) for status: " -n 1 -r
 echo
+  if [[ $REPLY =~ ^[Ss]$ ]]
+  then
+    cat /mnt/extbkps/keytmp/status.txt
+    echo " "
+    REPLY=""
+    read -p "begin backup copy? (y/n): " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+      echo " "
+      SERVERBKP="start" 
+    else
+      ENDPGRM
+    fi
+  fi
+  ##
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
-  echo " "
-  SERVERBKP="start" 
+    echo " "
+    SERVERBKP="start" 
   else
-  ENDPGRM
+    ENDPGRM
   fi
 fi
 ##
@@ -366,8 +383,15 @@ touch /mnt/extbkps/keytmp/unmount.txt
 ## Unlock State File
 rm -f /tmp/backupsvr.lock
 echo "waiting one-minute for drives to detach..."
-sleep 75
+sleep 65
 cat /mnt/extbkps/keytmp/status.txt
+REPLY=""
+read -p "re-check drives status (s) or enter to skip: " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Ss]$ ]]
+then
+  cat /mnt/extbkps/keytmp/status.txt
+fi
 ENDPGRM
 fi
 ##### END BACKUP SECTION #####
@@ -382,6 +406,12 @@ if [ ! "$USER" = server ]; then
     exit 1
 fi
 ############################
+### Backup Drive Status
+if [ "$1" = "bkpstatus" ] ; then
+cat /mnt/extbkps/keytmp/status.txt
+echo " "
+exit
+fi
 ### Force Quit
 if [ "$1" = "kill" ] ; then
 /usr/bin/pkill svrutil.bin

@@ -6,7 +6,7 @@
 
 ## End Session Function
 ENDPGRM () {
-echo ""
+echo " "
 REPLY=""
 read -p "press enter for command shell or (r) to return: " -n 1 -r
 echo
@@ -38,19 +38,6 @@ HDDRV2="hdd4tb-02"
 HDDRV3="hdd4tb-03"
 HDDRV4=""
 
-### Only run if server user
-if [ ! "$USER" = server ]; then
-    echo "this script should only be ran by server user, aborting."
-    exit 1
-fi
-
-### Remove Lock Manually
-if [ "$1" = "rmlock" ] ; then
-rm -f /tmp/backupsvr.lock
-echo "removed lockfile."
-exit
-fi
-
 uname -m -n -s -o -r
 echo " "
 echo "    ____             ____  _____"
@@ -62,25 +49,34 @@ echo " "
 echo "by Ben Provenzano III"
 echo " "
 lastlog -u server
-echo ""
-echo "(l) generate a server log"
+echo " "
+echo "(l) list drive usage"
+echo "(g) generate a server log"
 echo "(v) start / stop a virtual machine"
 echo "(b) allow access to backup snapshots"
 echo "(r) remove access to backup snapshots"
-echo "(m) mount external drives / backup"
-echo "(d) detach external drives then exit"
-echo "(s) show backup drives status"
+echo "(m) mount / backup to external drives"
+echo "(d) detach external drives"
 echo "(enter) command shell"
 echo " "
 
 read -p "select mode: " -n 1 -r
 echo
 
-## Generate log file
+## List drive usage
 if [[ $REPLY =~ ^[Ll]$ ]]
 then
-touch /mnt/extbkps/keytmp/createlog.txt
+echo "drive usage for file server."
 echo ""
+df -h
+ENDPGRM
+fi
+
+## Generate log file
+if [[ $REPLY =~ ^[Gg]$ ]]
+then
+touch /mnt/extbkps/keytmp/createlog.txt
+echo " "
 echo "Wait one-minute, server log will be created at"
 echo "SMB: \\files\Downloads\Server.log"
 ENDPGRM
@@ -88,7 +84,7 @@ fi
 
 if [[ $REPLY =~ ^[Vv]$ ]]
 then
-  echo ""	
+  echo " "	
   echo "(x) Xana - 10.177.1.3"
   echo "(u) Unifi - 10.177.1.13 "
   REPLY=""
@@ -106,7 +102,7 @@ then
   ##
   if [[ ! $VMHOST = "" ]]
   then
-    echo ""
+    echo " "
     echo "$VMHOST selected."
     REPLY=""
     read -p "select (b) to boot or (s) to shutdown: " -n 1 -r
@@ -130,7 +126,7 @@ fi
 ## Snapshot Share Access
 if [[ $REPLY =~ ^[Bb]$ ]]
 then
-echo ""
+echo " "
 if [ -e "/mnt/backup/Snapshots" ]; then
   echo "already attached!"  	
 else
@@ -143,7 +139,7 @@ fi
 ## Archive Share Access
 if [[ $REPLY =~ ^[Aa]$ ]]
 then
-echo ""
+echo " "
 if [ -e "/mnt/backup/Archive" ]; then
   echo "already attached!"  	
 else
@@ -156,7 +152,7 @@ fi
 ## Remove Share Access
 if [[ $REPLY =~ ^[Rr]$ ]]
 then
-echo ""
+echo " "
 echo "detaching shares..."
 rm -fv /mnt/backup/Snapshots
 rm -fv /mnt/backup/Archive
@@ -166,7 +162,7 @@ fi
 ##### BEGIN BACKUP SECTION #####
 ################################
 SERVERBKP="" 
-## Just detach drives
+## Only detach drives
 if [[ $REPLY =~ ^[Dd]$ ]]
 then
 echo "detaching backup disks..."
@@ -177,21 +173,16 @@ cat /mnt/extbkps/keytmp/status.txt
 ENDPGRM
 fi
 ##
-## Just show status of last backup
-if [[ $REPLY =~ ^[Ss]$ ]]
-then
-cat /mnt/extbkps/keytmp/status.txt
-ENDPGRM
-fi
-##
-## Unlock and then backup
+## Unlock / Backup
 if [[ $REPLY =~ ^[Mm]$ ]]
 then
+echo " "
 REPLY=""
 read -p "unlock backup drives (y/n): " -n 1 -r
 echo
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
+  echo " "
   ## Read password then mount drives  
   rm -f /mnt/extbkps/keytmp/pass.txt
   read -s -p "enter backup password: " KEYVAR
@@ -199,7 +190,7 @@ echo
   KEYVAR=000000000000000000000
   echo " "
   echo "waiting one-minute for drives to mount..."
-  sleep 60
+  sleep 75
   fi
 ## Backup Drives Status
 cat /mnt/extbkps/keytmp/status.txt
@@ -209,6 +200,7 @@ read -p "begin backup copy? (y/n): " -n 1 -r
 echo
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
+  echo " "
   SERVERBKP="start" 
   else
   ENDPGRM
@@ -234,6 +226,7 @@ if [[ $REPLY =~ ^[Cc]$ ]]
 then
   echo "checksum option selected!, this backup will take awhile"
   CHECKSUM="--checksum"
+  echo " "
 else
   CHECKSUM=""
 fi
@@ -370,11 +363,11 @@ done
 ################################
 echo "detaching backup disks..."
 touch /mnt/extbkps/keytmp/unmount.txt
-echo "waiting one-minute for drives to detach..."
-sleep 60
-cat /mnt/extbkps/keytmp/status.txt
 ## Unlock State File
 rm -f /tmp/backupsvr.lock
+echo "waiting one-minute for drives to detach..."
+sleep 75
+cat /mnt/extbkps/keytmp/status.txt
 ENDPGRM
 fi
 ##### END BACKUP SECTION #####
@@ -382,6 +375,33 @@ fi
 ##### END MAIN FUNCTION #####
 }
 #### BEGIN MAIN SCRIPT #####
+############################
+### Only run if server user
+if [ ! "$USER" = server ]; then
+    echo "this script should only be ran by server user, aborting."
+    exit 1
+fi
+############################
+### Force Quit
+if [ "$1" = "kill" ] ; then
+/usr/bin/pkill svrutil.bin
+rm -f /tmp/backupsvr.lock
+echo "removed lockfile."
+exit
+fi
+if [ "$1" = "quit" ] ; then
+/usr/bin/pkill svrutil.bin
+rm -f /tmp/backupsvr.lock
+echo "removed lockfile."
+exit
+fi
+############################
+### Remove Lock Manually
+if [ "$1" = "rmlock" ] ; then
+rm -f /tmp/backupsvr.lock
+echo "removed lockfile."
+exit
+fi
 MAINPGRM
 #### END MAIN SCRIPT #####
 exit

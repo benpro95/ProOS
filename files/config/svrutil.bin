@@ -23,23 +23,50 @@ fi
 ##### BEGIN MAIN FUNCTION #####
 MAINPGRM () {
 uname -m -n -s -o -r
-echo " "
-echo "    ____             ____  _____"
-echo "   / __ \_________  / __ \/ ___/"
-echo "  / /_/ / ___/ __ \/ / / /\__ \ "
-echo " / ____/ /  / /_/ / /_/ /___/ / "
-echo "/_/   /_/   \____/\____//____/  "
-echo " "
+RANDOPT=$(( $RANDOM % 4 ))
+if [[ $RANDOPT == "0" || $RANDOPT == "3" ]]
+then
+  echo " "
+  echo "    ____             ____  _____"
+  echo "   / __ \_________  / __ \/ ___/"
+  echo "  / /_/ / ___/ __ \/ / / /\__ \ "
+  echo " / ____/ /  / /_/ / /_/ /___/ / "
+  echo "/_/   /_/   \____/\____//____/  "
+  echo " "
+fi
+if [[ $RANDOPT == "1" ]]
+then
+  echo " "
+  echo "  _____            ____   _____ "
+  echo " |  __ \          / __ \ / ____|"
+  echo " | |__) | __ ___ | |  | | (___  "
+  echo " |  ___/ '__/ _ \| |  | |\___ \ "
+  echo " | |   | | | (_) | |__| |____) |"
+  echo " |_|   |_|  \___/ \____/|_____/ "
+  echo " "
+fi
+if [[ $RANDOPT == "2" ]]
+then
+  echo " "
+  echo " ____  ____   ___   ___   _____"
+  echo "|    \|    \ /   \ /   \ / ___/"
+  echo "|  o  )  D  )     |     (   \_ "
+  echo "|   _/|    /|  O  |  O  |\__  |"
+  echo "|  |  |    \|     |     |/  \ |"
+  echo "|  |  |  .  \     |     |\    |"
+  echo "|__|  |__|\_|\___/ \___/  \___|"
+  echo " "
+fi
 echo "by Ben Provenzano III"
 echo " "
 echo "last login:"
 lastlog -u server
 echo " "
+echo "(b) backup utility"
 echo "(l) list drive usage"
-echo "(g) generate a server log"
+echo "(n) network access control"
 echo "(v) virtual machine control"
-echo "(s) shared drives access control"
-echo "(b) server backup utility"
+echo "(g) generate a server log"
 echo "(enter) exit to shell"
 echo " "
 
@@ -92,7 +119,6 @@ then
   if [[ ! $VMHOST = "" ]]
   then
     echo " "
-    echo "$VMHOST selected."
     REPLY=""
     read -p "select (b) to boot or (s) to shutdown: " -n 1 -r
     echo
@@ -112,17 +138,17 @@ then
   ENDPGRM
 fi  
 
-## File share access
-if [[ $REPLY =~ ^[Ss]$ ]]
+## Network share access
+if [[ $REPLY =~ ^[Nn]$ ]]
 then
   echo " "  
-  echo "(s) enable snapshots share access"
-  echo "(d) disable snapshots share access"
+  echo "(e) enable snapshots SMB share"
+  echo "(d) disable snapshots SMB share"
   REPLY=""
   read -p "select option: " -n 1 -r
   echo
   ## Snapshot share access
-  if [[ $REPLY =~ ^[Ss]$ ]]
+  if [[ $REPLY =~ ^[Ee]$ ]]
   then
     echo " "
     if [ -e "/mnt/backup/Snapshots" ]; then
@@ -202,6 +228,7 @@ then
   fi
   ## Backup Drives Status
   cat /mnt/extbkps/keytmp/status.txt
+  echo " "
   echo "(b) start standard backup"
   echo "(c) start checksum compare backup"
   echo "(s) re-check drives status"
@@ -212,6 +239,7 @@ then
   if [[ $REPLY =~ ^[Ss]$ ]]
   then
     cat /mnt/extbkps/keytmp/status.txt
+    echo " "
     echo "(b) start standard backup"
     echo "(c) start checksum compare backup"
     echo "(enter) exit backup program"

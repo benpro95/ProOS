@@ -211,4 +211,22 @@ zpool offline POOL_NAME /dev/disk/by-id/DISK_NAME
 zpool detach POOL_NAME /dev/disk/by-id/DISK_NAME
 
 ####################################################################
+## PVE Storage Configuration
 
+dir: local
+	path /var/lib/vz
+	content vztmpl,backup,iso
+	shared 0
+
+zfspool: local-zfs
+	pool rpool/data
+	content images,rootdir
+	sparse 1
+
+dir: scratch
+	path /mnt/pve/scratch
+	content images,rootdir
+	prune-backups keep-all=1
+	shared 0
+
+####################################################################

@@ -1,0 +1,1 @@
+Downloads         -fstype=cifs,rw,gid=1000,uid=1000,credentials=/etc/auto.creds ://10.177.1.4/Downloads

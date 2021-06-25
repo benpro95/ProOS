@@ -85,7 +85,7 @@ if [ -e /mnt/extbkps/keytmp/startunifi.txt ]; then
   else
     truncate -s 0 $VMLOGFILE
   fi
-  echo "Starting Unifi VM..." &>> $VMLOGFILE
+  echo "starting Unifi VM..." &>> $VMLOGFILE
   qm start 102 &>> $VMLOGFILE
   date &>> $VMLOGFILE
 fi
@@ -98,8 +98,21 @@ if [ -e /mnt/extbkps/keytmp/startxana.txt ]; then
   else
     truncate -s 0 $VMLOGFILE
   fi
-  echo "Starting Xana VM..." &>> $VMLOGFILE
+  echo "starting Xana VM..." &>> $VMLOGFILE
   qm start 105 &>> $VMLOGFILE
+  date &>> $VMLOGFILE
+fi
+#######################################################
+if [ -e /mnt/extbkps/keytmp/startdev.txt ]; then
+###### Runs when file exists ##########################
+  rm -f /mnt/extbkps/keytmp/startdev.txt
+  if [ ! -e $VMLOGFILE ]; then
+    touch $VMLOGFILE
+  else
+    truncate -s 0 $VMLOGFILE
+  fi
+  echo "starting Development VM..." &>> $VMLOGFILE
+  qm start 103 &>> $VMLOGFILE
   date &>> $VMLOGFILE
 fi
 

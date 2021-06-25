@@ -1,0 +1,17 @@
+# ~/.profile: executed by Bourne-compatible login shells.
+
+# You may uncomment the following lines if you want `ls' to be colorized:
+export LS_OPTIONS='--color=auto'
+eval "`dircolors`"
+alias ls='ls $LS_OPTIONS'
+alias ll='ls $LS_OPTIONS -l'
+alias l='ls $LS_OPTIONS -lA'
+
+mesg n || true
+
+######## Custom login scripts below ###########
+
+echo " "
+echo "Welcome to ProOS !!!"
+echo "Development Environment"
+echo " "

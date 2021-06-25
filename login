@@ -75,7 +75,7 @@ echo ""  > /dev/null 2>&1
 fi
 
 ### ProServer Configuration
-if [ "$MODULE" = "files" ] || [ "$MODULE" = "plex" ] || [ "$MODULE" = "pve" ] || [ "$MODULE" = "unifi" ] || [ "$MODULE" = "xana" ]; then
+if [ "$MODULE" = "files" ] || [ "$MODULE" = "plex" ] || [ "$MODULE" = "pve" ] || [ "$MODULE" = "unifi" ] || [ "$MODULE" = "xana" ] || [ "$MODULE" = "dev" ]; then
   echo "Attempting connection to server..."
   ## Copy SSH key
   cp -r $ROOTDIR/$MODULE/id_rsa $TMPFLDR/id_rsa

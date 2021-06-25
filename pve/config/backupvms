@@ -28,14 +28,20 @@ chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-102.conf
 ###
 echo ""
 echo "Backing-up Xana KVM 105..."
-echo "Only Xana configuration is backed up."
+echo "Only configuration is backed up."
 cp -v /etc/pve/qemu-server/105.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-105.conf
 chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-105.conf
 ###
 echo ""
+echo "Backing-up Development KVM 103..."
+echo "Only configuration is backed up."
+cp -v /etc/pve/qemu-server/103.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-103.conf
+chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-103.conf
+###
+echo ""
 echo "Copying VM's to Datastore..."
-cp -rv /var/lib/vz/dump/vzdump-* /mnt/datastore/Ben/ProOS/pve/vmbkps/
-chmod -R 777 /mnt/datastore/Ben/ProOS/pve/vmbkps/vzdump-*
+chmod -R 777 /var/lib/vz/dump/vzdump-*
+rsync --progress -a /var/lib/vz/dump/vzdump-* /mnt/datastore/Ben/ProOS/pve/vmbkps/
 echo "Backup Complete."
 echo ""
 exit

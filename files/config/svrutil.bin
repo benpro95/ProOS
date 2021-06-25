@@ -86,11 +86,17 @@ fi
 if [[ $REPLY =~ ^[Vv]$ ]]
 then
   echo " "	
-  echo "(x) Xana - 10.177.1.3"
-  echo "(u) Unifi - 10.177.1.13 "
+  echo "(d) Development VM - ssh://root@dev/"
+  echo "(x) Xana VPN VM - vnc://ben@xana:5091/"
+  echo "(u) Unifi AP Controller - https://unifi:8443/"
   REPLY=""
   read -p "select VM: " -n 1 -r
   echo
+  if [[ $REPLY =~ ^[Dd]$ ]]
+  then
+  VMHOST="dev"
+  fi
+  ##
   if [[ $REPLY =~ ^[Xx]$ ]]
   then
   VMHOST="xana"

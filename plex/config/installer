@@ -56,6 +56,11 @@ cp -r /tmp/config/sysctl.conf /etc
 chmod 644 /etc/sysctl.conf
 chown root:root /etc/sysctl.conf
 
+## Logrotate Fix for LXCs
+cp /tmp/config/logrotate.service /lib/systemd/system/
+chmod 644 /lib/systemd/system/logrotate.service
+chown root:root /lib/systemd/system/logrotate.service
+
 ## Startup Configuration
 cp -r /tmp/config/rc-local.service /etc/systemd/system/
 chmod 644 /etc/systemd/system/rc-local.service

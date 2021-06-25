@@ -4,9 +4,9 @@
 SCRNVAR=$(echo $RANDOM)
 
 if [ "$1" = "" ] ; then
-  /usr/bin/screen -dm -t $SCRNVAR /usr/bin/svrutil.bin $1
+  /usr/bin/screen -dmS $SCRNVAR /usr/bin/svrutil.bin $1
   sleep 0.25
-  screen -r -p $SCRNVAR
+  screen -rS $SCRNVAR
 else
   /usr/bin/svrutil.bin $1
 fi

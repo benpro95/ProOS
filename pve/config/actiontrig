@@ -85,7 +85,7 @@ if [ -e /mnt/extbkps/keytmp/startunifi.txt ]; then
   else
     truncate -s 0 $VMLOGFILE
   fi
-  echo "starting Unifi VM..." &>> $VMLOGFILE
+  echo "starting unifi VM..." &>> $VMLOGFILE
   qm start 102 &>> $VMLOGFILE
   date &>> $VMLOGFILE
 fi
@@ -98,7 +98,7 @@ if [ -e /mnt/extbkps/keytmp/startxana.txt ]; then
   else
     truncate -s 0 $VMLOGFILE
   fi
-  echo "starting Xana VM..." &>> $VMLOGFILE
+  echo "starting xana VM..." &>> $VMLOGFILE
   qm start 105 &>> $VMLOGFILE
   date &>> $VMLOGFILE
 fi
@@ -111,7 +111,7 @@ if [ -e /mnt/extbkps/keytmp/startdev.txt ]; then
   else
     truncate -s 0 $VMLOGFILE
   fi
-  echo "starting Development VM..." &>> $VMLOGFILE
+  echo "starting development VM..." &>> $VMLOGFILE
   qm start 103 &>> $VMLOGFILE
   date &>> $VMLOGFILE
 fi

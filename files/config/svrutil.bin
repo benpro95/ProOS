@@ -4,11 +4,11 @@
 #######################
 #######################
 
-## End Session Function
+##### END SESSION FUNCTION #####
 ENDPGRM () {
 echo " "
 REPLY=""
-read -p "select (s) for command shell or (enter) to return: " -n 1 -r
+read -p "select (s) for shell or (enter) to return: " -n 1 -r
 echo
 clear
 if [[ $REPLY =~ ^[Ss]$ ]]
@@ -17,27 +17,11 @@ then
 else
   MAINPGRM
 fi
+###############################
 }
 
-## Main Function
+##### BEGIN MAIN FUNCTION #####
 MAINPGRM () {
-
-#### 256GB Drives ####
-USB256DRV1="usb256-01"
-USB256DRV2=""
-USB256DRV3=""
-USB256DRV4=""
-#### 128GB Drives ####
-USB128DRV1="usb128-01"
-USB128DRV2="usb128-02"
-USB128DRV3="usb128-03"
-USB128DRV4=""
-#### 4TB Drives ####
-HDDRV1="hdd4tb-01"
-HDDRV2="hdd4tb-02"
-HDDRV3="hdd4tb-03"
-HDDRV4=""
-
 uname -m -n -s -o -r
 echo " "
 echo "    ____             ____  _____"
@@ -53,12 +37,11 @@ lastlog -u server
 echo " "
 echo "(l) list drive usage"
 echo "(g) generate a server log"
-echo "(v) start / stop a virtual machine"
-echo "(b) allow access to backup snapshots"
-echo "(r) remove access to backup snapshots"
-echo "(m) mount / backup to external drives"
+echo "(v) virtual machine control"
+echo "(s) shared drives access control"
+echo "(b) attach / backup to external drives"
 echo "(d) detach external drives"
-echo "(enter) command shell"
+echo "(enter) exit to shell"
 echo " "
 
 read -p "select mode: " -n 1 -r
@@ -67,8 +50,7 @@ echo
 ## List drive usage
 if [[ $REPLY =~ ^[Ll]$ ]]
 then
-echo "drive usage for file server."
-echo ""
+echo " "
 df -h
 ENDPGRM
 fi
@@ -83,6 +65,7 @@ echo "SMB: \\files\Downloads\Server.log"
 ENDPGRM
 fi
 
+## Virtual machine control
 if [[ $REPLY =~ ^[Vv]$ ]]
 then
   echo " "	
@@ -130,61 +113,76 @@ then
 ENDPGRM
 fi  
 
-## Snapshot Share Access
-if [[ $REPLY =~ ^[Bb]$ ]]
+## File share access
+if [[ $REPLY =~ ^[Ss]$ ]]
 then
-echo " "
-if [ -e "/mnt/backup/Snapshots" ]; then
-  echo "already attached!"  	
-else
-  echo "attaching share..."
-  ln -s /mnt/datastore/.zfs/snapshot /mnt/backup/Snapshots
-fi
-ENDPGRM
-fi
+  echo " "  
+  echo "(s) enable snapshots share access"
+  echo "(d) disable snapshots share access"
+  REPLY=""
+  read -p "select option: " -n 1 -r
+  echo
+  ## Snapshot share access
+  if [[ $REPLY =~ ^[Ss]$ ]]
+  then
+    echo " "
+    if [ -e "/mnt/backup/Snapshots" ]; then
+      echo "already attached!"  	
+    else
+      echo "attaching snapshots share..."
+      ln -s /mnt/datastore/.zfs/snapshot /mnt/backup/Snapshots
+    fi
+  fi
+  ##
+  ## Archive share access
+  if [[ $REPLY =~ ^[Aa]$ ]]
+  then
+    echo " "
+    if [ -e "/mnt/backup/Archive" ]; then
+      echo "already attached!"  	
+    else
+      echo "attaching archive share..."
+      ln -s /mnt/datastore/.Archive /mnt/backup/Archive
+    fi
+  fi
+  ##
+  ## Remove share access
+  if [[ $REPLY =~ ^[Dd]$ ]]
+  then
+    echo " "
+    echo "detaching shares..."
+    rm -fv /mnt/backup/Snapshots
+    rm -fv /mnt/backup/Archive
+  fi
+ENDPGRM  
+fi  
 
-## Archive Share Access
-if [[ $REPLY =~ ^[Aa]$ ]]
-then
-echo " "
-if [ -e "/mnt/backup/Archive" ]; then
-  echo "already attached!"  	
-else
-  echo "attaching share..."
-  ln -s /mnt/datastore/.Archive /mnt/backup/Archive
-fi
-ENDPGRM
-fi
-
-## Remove Share Access
-if [[ $REPLY =~ ^[Rr]$ ]]
-then
-echo " "
-echo "detaching shares..."
-rm -fv /mnt/backup/Snapshots
-rm -fv /mnt/backup/Archive
-ENDPGRM
-fi
-
-##### BEGIN BACKUP SECTION #####
-################################
-SERVERBKP="" 
-## Only detach drives
+## Only backup detach drives
 if [[ $REPLY =~ ^[Dd]$ ]]
 then
-  echo "detaching backup disks..."
+  echo " "
   touch /mnt/extbkps/keytmp/unmount.txt
   echo "waiting one-minute for drives to detach..."
   sleep 60
   cat /mnt/extbkps/keytmp/status.txt
+  echo " "
+  REPLY=""
+  read -p "(s) re-check drives status, (enter) to skip: " -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Ss]$ ]]
+  then
+    cat /mnt/extbkps/keytmp/status.txt
+  fi
   ENDPGRM
 fi
-##
-## Unlock / Backup
-if [[ $REPLY =~ ^[Mm]$ ]]
+
+## Backup to external drives
+if [[ $REPLY =~ ^[Bb]$ ]]
 then
   echo " "
-  SERVERBKP="end" 
+  echo "##################################"
+  echo "#### ProServer Backup Utility ####"
+  echo "##################################"
   REPLY=""
   read -p "unlock backup drives (y/n): " -n 1 -r
   echo
@@ -198,11 +196,10 @@ then
     KEYVAR=000000000000000000000
     echo " "
     echo "waiting one-minute for drives to mount..."
-    sleep 65
+    sleep 60
   fi
   ## Backup Drives Status
   cat /mnt/extbkps/keytmp/status.txt
-  echo " "
   echo "(b) start standard backup"
   echo "(c) start checksum compare backup"
   echo "(s) re-check drives status"
@@ -213,7 +210,6 @@ then
   if [[ $REPLY =~ ^[Ss]$ ]]
   then
     cat /mnt/extbkps/keytmp/status.txt
-    echo " "
     echo "(b) start standard backup"
     echo "(c) start checksum compare backup"
     echo "(enter) exit backup program"
@@ -226,23 +222,39 @@ then
   then
     echo " "
     CHECKSUM=""
-    SERVERBKP="start" 
+    BKPPGRM
   fi
   ##
   if [[ $REPLY =~ ^[Cc]$ ]]
   then
     echo " "
-    SERVERBKP="start"
     CHECKSUM="--checksum"
+    BKPPGRM
   fi
-fi
-##
-#######################################################
-###### BACKUP SECTION ######
-if [[ $SERVERBKP == "end" ]]; then
   ENDPGRM
 fi
-if [[ $SERVERBKP == "start" ]]; then
+##### END MAIN FUNCTION #####
+}
+
+BKPPGRM () {
+##### BEGIN BACKUP FUNCTION #####
+
+#### 256GB Drives ####
+USB256DRV1="usb256-01"
+USB256DRV2=""
+USB256DRV3=""
+USB256DRV4=""
+#### 128GB Drives ####
+USB128DRV1="usb128-01"
+USB128DRV2="usb128-02"
+USB128DRV3="usb128-03"
+USB128DRV4=""
+#### 4TB Drives ####
+HDDRV1="hdd4tb-01"
+HDDRV2="hdd4tb-02"
+HDDRV3="hdd4tb-03"
+HDDRV4=""
+
 ### Lock file
 if [ -f "/tmp/backupsvr.lock" ]; then
   echo "already running!"
@@ -251,16 +263,20 @@ if [ -f "/tmp/backupsvr.lock" ]; then
 else
   touch /tmp/backupsvr.lock
 fi
-##
+
 echo "starting backup..."
+echo " "
 echo "***************************************************"
 echo "press ctrl+a then ctrl+d to detach terminal"
 echo "run 'screen -r' to reattach to this terminal"
 echo "***************************************************"
+echo " "
 if [[ "$CHECKSUM" == "--checksum" ]]
 then
   echo "checksum compare option selected, this backup will take awhile!"
-fi  
+  echo " "
+fi
+
 ###################################
 ###################################
 ## 256GB Backup Drives Loop #######
@@ -384,14 +400,15 @@ do
     fi
   fi  
 done
-################################
+
 ################################
 echo "detaching backup disks..."
+sleep 25
 touch /mnt/extbkps/keytmp/unmount.txt
 ## Unlock State File
 rm -f /tmp/backupsvr.lock
 echo "waiting one-minute for drives to detach..."
-sleep 65
+sleep 60
 cat /mnt/extbkps/keytmp/status.txt
 REPLY=""
 read -p "re-check drives status (s) or enter to skip: " -n 1 -r
@@ -400,12 +417,10 @@ if [[ $REPLY =~ ^[Ss]$ ]]
 then
   cat /mnt/extbkps/keytmp/status.txt
 fi
-ENDPGRM
-fi
-##### END BACKUP SECTION #####
-
-##### END MAIN FUNCTION #####
+##### END BACKUP FUNCTION #####
 }
+
+
 #### BEGIN MAIN SCRIPT #####
 ############################
 ### Only run if server user

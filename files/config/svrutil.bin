@@ -39,8 +39,7 @@ echo "(l) list drive usage"
 echo "(g) generate a server log"
 echo "(v) virtual machine control"
 echo "(s) shared drives access control"
-echo "(b) attach / backup to external drives"
-echo "(d) detach external drives"
+echo "(b) server backup utility"
 echo "(enter) exit to shell"
 echo " "
 
@@ -50,19 +49,19 @@ echo
 ## List drive usage
 if [[ $REPLY =~ ^[Ll]$ ]]
 then
-echo " "
-df -h
-ENDPGRM
+  echo " "
+  df -h
+  ENDPGRM
 fi
 
 ## Generate log file
 if [[ $REPLY =~ ^[Gg]$ ]]
 then
-touch /mnt/extbkps/keytmp/createlog.txt
-echo " "
-echo "Wait one-minute, server log will be created at"
-echo "SMB: \\files\Downloads\Server.log"
-ENDPGRM
+  touch /mnt/extbkps/keytmp/createlog.txt
+  echo " "
+  echo "Wait one-minute, server log will be created at"
+  echo "SMB: \\files\Downloads\Server.log"
+  ENDPGRM
 fi
 
 ## Virtual machine control
@@ -110,7 +109,7 @@ then
      ssh -t -i ~/ProOS/$VMHOST/id_rsa root@$VMHOST "shutdown -h now"
     fi
   fi
-ENDPGRM
+  ENDPGRM
 fi  
 
 ## File share access
@@ -154,26 +153,7 @@ then
     rm -fv /mnt/backup/Snapshots
     rm -fv /mnt/backup/Archive
   fi
-ENDPGRM  
-fi  
-
-## Only backup detach drives
-if [[ $REPLY =~ ^[Dd]$ ]]
-then
-  echo " "
-  touch /mnt/extbkps/keytmp/unmount.txt
-  echo "waiting one-minute for drives to detach..."
-  sleep 60
-  cat /mnt/extbkps/keytmp/status.txt
-  echo " "
-  REPLY=""
-  read -p "(s) re-check drives status, (enter) to skip: " -n 1 -r
-  echo
-  if [[ $REPLY =~ ^[Ss]$ ]]
-  then
-    cat /mnt/extbkps/keytmp/status.txt
-  fi
-  ENDPGRM
+  ENDPGRM  
 fi
 
 ## Backup to external drives
@@ -183,13 +163,35 @@ then
   echo "##################################"
   echo "#### ProServer Backup Utility ####"
   echo "##################################"
+  echo " "
+  echo "(a) attach drives then start backup"
+  echo "(d) detach drives then exit"
+  echo "(enter) start backup" 
   REPLY=""
-  read -p "unlock backup drives (y/n): " -n 1 -r
+  read -p "enter option: " -n 1 -r
   echo
-  if [[ $REPLY =~ ^[Yy]$ ]]
+  ## Just detach drives
+  if [[ $REPLY =~ ^[Dd]$ ]]
   then
     echo " "
-    ## Read password then mount drives  
+    touch /mnt/extbkps/keytmp/unmount.txt
+    echo "waiting one-minute for drives to detach..."
+    sleep 60
+    cat /mnt/extbkps/keytmp/status.txt
+    echo " "
+    REPLY=""
+    read -p "(s) re-check drives status, (enter) to skip: " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Ss]$ ]]
+    then
+      cat /mnt/extbkps/keytmp/status.txt
+    fi
+    ENDPGRM
+  fi
+  ## Read password then mount drives
+  if [[ $REPLY =~ ^[Aa]$ ]]
+  then
+    echo " "
     rm -f /mnt/extbkps/keytmp/pass.txt
     read -s -p "enter backup password: " KEYVAR
     echo "$KEYVAR" >> /mnt/extbkps/keytmp/pass.txt

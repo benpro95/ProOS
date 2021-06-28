@@ -435,6 +435,7 @@ lighttpd-enable-mod fastcgi fastcgi-php; lighty-enable-mod fastcgi-php
 ln -sf /etc/lighttpd/conf-available/10-fastcgi.conf /etc/lighttpd/conf-enabled/
 ln -sf /etc/lighttpd/conf-available/15-fastcgi-php.conf /etc/lighttpd/conf-enabled/
 ln -sf /usr/share/lighttpd/create-mime.conf.pl /usr/share/lighttpd/create-mime.assign.pl
+systemctl enable lighttpd
 
 ## PHP Configuration v7.3
 cp -rf $BIN/php.cgi.ini /etc/php/7.3/cgi/php.ini
@@ -475,9 +476,6 @@ else
 sed -i "s/raspberrypi/$NEWHOST/g" /var/www/html/index.php
 sed -i "s/raspberrypi/$NEWHOST/g" /var/www/html/picker.html
 ## Set hostname to unified server
-sed -i "s/raspberrypi/$NEWHOST/g" /opt/rpi/manager/client.orig.css
-sed -i "s/raspberrypi/$NEWHOST/g" /opt/rpi/manager/default.html
-sed -i "s/raspberrypi/$NEWHOST/g" /opt/rpi/manager/default.css
 sed -i "s/raspberrypi/$NEWHOST/g" /opt/rpi/manager/client.html
 fi
 if [ ! -e /opt/rpi/modconf/brand.txt ]; then

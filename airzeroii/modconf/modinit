@@ -42,6 +42,11 @@ sed -i "s/RaspberryPi/$MODNAME/g" /opt/rpi/manager/client.html
 sed -i "s/raspberrypi/$HOSTNAME/g" /opt/rpi/manager/client.html
 fi
 
+## lighttpd Configuration
+cp -f $BIN/modconf/lighttpd.conf /etc/lighttpd/
+chmod 644 /etc/lighttpd/lighttpd.conf
+chown root:root /etc/lighttpd/lighttpd.conf
+
 ## Link RPi to global commands library
 ln -sf /opt/rpi/main /usr/bin/main
 

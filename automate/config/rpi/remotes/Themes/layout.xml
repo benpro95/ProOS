@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+  <grid>
+      <row weight="wrap">
+          <label color="#252629" text="- Light Themes -" />
+      </row>
+      <row>
+          <button text="Purple" ontap="lpurple" color="black" />
+          <button text="Red" ontap="lred" color="black" />
+          <button text="Orange" ontap="lorange" color="black" />
+          <button text="Green" ontap="lgreen" color="black" />
+          <button text="Blue" ontap="lblue" color="black" />
+      </row>
+      <row weight="wrap">
+          <label color="#252629" text="- Normal Themes -" />
+      </row>
+      <row>
+          <button text="Purple" ontap="purple" color="black" />
+          <button text="Red" ontap="red" color="black" />
+          <button text="Orange" ontap="orange" color="black" />
+          <button text="Green" ontap="green" color="black" />
+          <button text="Blue" ontap="blue" color="black" />
+      </row>
+      <row weight="wrap">
+          <label color="#252629" text="- Dark Themes -" />
+      </row>
+      <row>
+          <button text="Purple" ontap="dpurple" color="black" />
+          <button text="Red" ontap="dred" color="black" />
+          <button text="Orange" ontap="dorange" color="black" />
+          <button text="Green" ontap="dgreen" color="black" />
+          <button text="Blue" ontap="dblue" color="black" />
+      </row>
+  </grid>
+</layout>

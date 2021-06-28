@@ -64,8 +64,9 @@ lastlog -u server
 echo " "
 echo "(b) backup utility"
 echo "(l) list drive usage"
-echo "(n) network access control"
+echo "(a) update automate configuration"
 echo "(v) virtual machine control"
+echo "(n) network access control"
 echo "(g) generate a server log"
 echo "(enter) exit to shell"
 echo " "
@@ -88,6 +89,22 @@ then
   echo " "
   echo "Wait one-minute, server log will be created at"
   echo "SMB: \\files\Downloads\Server.log"
+  ENDPGRM
+fi
+
+## Update Automate Conf
+if [[ $REPLY =~ ^[Aa]$ ]]
+then
+  touch /mnt/extbkps/keytmp/createlog.txt
+  echo " "
+  echo "Updating Automate System Configuration..."
+  rsync -e "ssh -i ~/ProOS/automate/id_rsa" --progress --checksum -rtv ~/ProOS/automate/config/rpi/* root@automate.home:/opt/rpi/
+  echo " "
+  echo "Restarting Lighttpd Web Server..."
+  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i ~/ProOS/automate/id_rsa root@automate.home "systemctl restart lighttpd"
+  echo " "
+  echo "Restarting Unified Remote Server..."
+  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i ~/ProOS/automate/id_rsa root@automate.home "systemctl restart urserver"
   ENDPGRM
 fi
 

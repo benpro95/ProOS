@@ -40,10 +40,6 @@ actions.neo12 = function ()
 script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds spark");
 end
 
-actions.global = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds global");
-end
-
 actions.neo15 = function ()
 script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds random");
 end

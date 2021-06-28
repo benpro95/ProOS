@@ -1,0 +1,304 @@
+#!/bin/bash
+#### Main Transmit Script
+## by Ben Provenzano III
+## run ./xmit CMD (no state file created)
+## run ./xmit CMD toggle (toggle on/off state & append on/off to end of serial command)
+## run ./xmit CMD on (create state file & append on to end of serial command then send)
+## run ./xmit CMD off (delete state file & append off to end of serial command then send)
+
+## Set to "on" for HTML Xmit, or "off" for RS-232 Xmit
+HTML="on"
+
+XMIT(){
+if [[ "$HTML" == "on" ]]; then
+### Transmit to ESP32 WiFi MCU
+/usr/bin/curl -N -f -m 10 --silent http://esp32.home/xmit/$XMITCMD
+###  
+else
+### Transmit to RS-232 serial
+/usr/bin/python2 - <<END
+import serial
+import termios
+port = '/dev/ttyACM0'
+f = open(port)
+attrs = termios.tcgetattr(f)
+attrs[2] = attrs[2] & ~termios.HUPCL
+termios.tcsetattr(f, termios.TCSAFLUSH, attrs)
+f.close()
+se = serial.Serial()
+se.baudrate = 9600
+se.port = port
+se.open()
+se.write(str.encode('$XMITCMD'))
+END
+###
+fi
+##echo "$XMITCMD"
+XMITCMD=""
+}
+
+##### MAIN SECTION #####
+
+CMD=$1
+
+##### TOGGLE SECTION #####
+
+if [[ "$2" == "on" ]]; then
+  touch /var/lock/rpi/$CMD.save
+  CMD=$CMD"on"
+fi
+
+if [[ "$2" == "off" ]]; then
+  rm -f /var/lock/rpi/$CMD.save
+  CMD=$CMD"off"
+fi
+
+if [[ "$2" == "toggle" ]]; then
+  if [ ! -e /var/lock/rpi/$CMD.save ]; then
+   touch /var/lock/rpi/$CMD.save
+   CMD=$CMD"on"
+  else
+   rm -f /var/lock/rpi/$CMD.save
+   CMD=$CMD"off"
+  fi
+fi
+
+##### FUNCTIONS SECTION ######
+
+### HiFi Preamp 'Sony RMT-B118A Remote' Sony 20-bit
+
+## Power
+if [[ "$CMD" == "pwrhifi" ]]; then
+   XMITCMD="irtx.sony20.691015"
+   XMIT
+fi
+
+## Key 1
+if [[ "$CMD" == "dac" ]]; then
+   XMITCMD="irtx.sony20.2887"
+   XMIT
+fi
+
+## Key 2
+if [[ "$CMD" == "aux" ]]; then
+   XMITCMD="irtx.sony20.527175"
+   XMIT
+fi
+
+## Key 3
+if [[ "$CMD" == "phono" ]]; then
+   XMITCMD="irtx.sony20.265031"
+   XMIT
+fi
+
+## Key Stop
+if [[ "$CMD" == "mute" ]]; then
+   XMITCMD="irtx.sony20.101191"
+   XMIT
+fi
+
+## Key Rewind
+if [[ "$CMD" == "dwnf" ]]; then
+   XMITCMD="irtx.sony20.887623"
+   XMIT
+fi
+
+## Key Forward
+if [[ "$CMD" == "upf" ]]; then
+   XMITCMD="irtx.sony20.232263"
+   XMIT
+fi
+
+## Key Down
+if [[ "$CMD" == "dwnc" ]]; then
+   XMITCMD="irtx.sony20.379719"
+   XMIT
+fi
+
+## Key Up
+if [[ "$CMD" == "upc" ]]; then
+   XMITCMD="irtx.sony20.641863"
+   XMIT
+fi
+
+## Key Left
+if [[ "$CMD" == "preleft" ]]; then
+   XMITCMD="irtx.sony20.904007"
+   XMIT
+fi
+
+## Key Right
+if [[ "$CMD" == "preright" ]]; then
+   XMITCMD="irtx.sony20.248647"
+   XMIT
+fi
+
+## Key Display
+if [[ "$CMD" == "display" ]]; then
+   XMITCMD="irtx.sony20.535367"
+   XMIT
+fi
+
+## Key Backlight
+if [[ "$CMD" == "backlight" ]]; then
+   XMITCMD="irtx.sony20.813895"
+   XMIT
+fi
+
+## Key Menu
+if [[ "$CMD" == "menu" ]]; then
+   XMITCMD="irtx.sony20.609095"
+   XMIT
+fi
+
+### Class D Amp (Toshiba CT-90302 Remote) NEC 32-bit
+
+## Mute Key
+if [[ "$CMD" == "subpwr" ]]; then
+   XMITCMD="irtx.nec.50137335"
+   XMIT
+fi
+
+## (0) Key
+if [[ "$CMD" == "subon" ]]; then
+   XMITCMD="irtx.nec.50135295"
+   XMIT
+fi
+
+## (1) Key
+if [[ "$CMD" == "suboff" ]]; then
+   XMITCMD="irtx.nec.50167935"
+   XMIT
+fi
+
+## Vol (+) Key
+if [[ "$CMD" == "subup" ]]; then
+   XMITCMD="irtx.nec.50157735"
+   XMIT
+fi
+
+## Vol (-) Key
+if [[ "$CMD" == "subdwn" ]]; then
+   XMITCMD="irtx.nec.50165895"
+   XMIT
+fi
+
+### DAM1021 DAC (Onn Soundbar Remote) NEC 32-bit
+
+## USB Input (Music Button)
+if [[ "$CMD" == "usb" ]]; then
+   XMITCMD="irtx.nec.-300872971"
+   XMIT
+fi
+
+## Coaxial Input (Aux Button)
+if [[ "$CMD" == "coaxial" ]]; then
+   XMITCMD="irtx.nec.-300816361"
+   XMIT
+fi
+
+## Optical Input (TV Button)
+if [[ "$CMD" == "optical" ]]; then
+   XMITCMD="irtx.nec.-300813811"
+   XMIT
+fi
+
+## Auto Input (Play Button)
+if [[ "$CMD" == "inauto" ]]; then
+   XMITCMD="irtx.nec.-300833701"
+   XMIT
+fi
+
+### External Power Outputs
+
+## Main Light
+if [[ "$CMD" == "fet0on" ]]; then
+   XMITCMD="fet.on.6"
+   XMIT
+fi
+if [[ "$CMD" == "fet0off" ]]; then
+   XMITCMD="fet.off.6"
+   XMIT
+fi
+
+## Network Switch
+if [[ "$CMD" == "fet1on" ]]; then
+   XMITCMD="fet.on.7"
+   XMIT
+fi
+if [[ "$CMD" == "fet1off" ]]; then
+   XMITCMD="fet.off.7"
+   XMIT
+fi
+
+## Built-in Fan
+if [[ "$CMD" == "fet2on" ]]; then
+   XMITCMD="fet.on.5"
+   XMIT
+fi
+if [[ "$CMD" == "fet2off" ]]; then
+   XMITCMD="fet.off.5"
+   XMIT
+fi
+
+### 433MHz RF Controller
+
+if [[ "$CMD" == "rfa1on" ]]; then
+   XMITCMD="rftx.734735"
+   XMIT
+fi
+
+if [[ "$CMD" == "rfa1off" ]]; then
+   XMITCMD="rftx.734736"
+   XMIT
+fi
+
+if [[ "$CMD" == "rfa2on" ]]; then
+   XMITCMD="rftx.734731"
+   XMIT
+fi
+
+if [[ "$CMD" == "rfa2off" ]]; then
+   XMITCMD="rftx.734732"
+   XMIT
+fi
+
+if [[ "$CMD" == "rfa3on" ]]; then
+   XMITCMD="rftx.734733"
+   XMIT
+fi
+
+if [[ "$CMD" == "rfa3off" ]]; then
+   XMITCMD="rftx.734734"
+   XMIT
+fi
+
+if [[ "$CMD" == "rfb1on" ]]; then
+   XMITCMD="rftx.864341"
+   XMIT
+fi
+
+if [[ "$CMD" == "rfb1off" ]]; then
+   XMITCMD="rftx.864342"
+   XMIT
+fi
+
+if [[ "$CMD" == "rfb2on" ]]; then
+   XMITCMD="rftx.864345"
+   XMIT
+fi
+
+if [[ "$CMD" == "rfb2off" ]]; then
+   XMITCMD="rftx.864346"
+   XMIT
+fi
+
+if [[ "$CMD" == "rfb3" ]]; then
+   XMITCMD="rftx.864343"
+   XMIT
+fi
+
+#echo "$CMD"
+exit
+
+

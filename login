@@ -75,7 +75,7 @@ echo ""  > /dev/null 2>&1
 fi
 
 ### ProServer Configuration
-if [ "$MODULE" = "files" ] || [ "$MODULE" = "plex" ] || [ "$MODULE" = "pve" ] || [ "$MODULE" = "unifi" ] || [ "$MODULE" = "xana" ] || [ "$MODULE" = "dev" ]; then
+if [ "$MODULE" = "files" ] || [ "$MODULE" = "plex" ] || [ "$MODULE" = "pve" ] || [ "$MODULE" = "unifi" ] || [ "$MODULE" = "xana" ] || [ "$MODULE" = "dev" ] || [ "$MODULE" = "automate" ]; then
   echo "Attempting connection to server..."
   ## Copy SSH key
   cp -r $ROOTDIR/$MODULE/id_rsa $TMPFLDR/id_rsa
@@ -96,7 +96,7 @@ if [ "$MODULE" = "files" ] || [ "$MODULE" = "plex" ] || [ "$MODULE" = "pve" ] ||
     ## Downloading module bundle
     scp -i $TMPFLDR/id_rsa -p $TMPFLDR/config.tar root@$MODULE:/tmp/
     ## Install files
-    ssh -t -i $TMPFLDR/id_rsa root@$MODULE "cd /tmp/; tar -xvf config.tar; sleep 1; rm config.tar; chmod +x /tmp/config/installer; /tmp/config/installer"
+    ssh -t -i $TMPFLDR/id_rsa root@$MODULE "cd /tmp/; tar -xvf config.tar; rm -f config.tar; chmod +x /tmp/config/installer; /tmp/config/installer"
     ## Clean-up on logout
     ssh-add -D
     eval $(ssh-agent -k)
@@ -284,9 +284,9 @@ else
   echo
   if [[ ! $REPLY =~ ^[Yy]$ ]]
   then
-  	  ## Clean-up
-      rm -r $TMPFLDR
-      exit 1
+  	## Clean-up
+    rm -r $TMPFLDR
+    exit 1
   fi
   ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "/opt/rpi/init ro"
   ## Clean-up

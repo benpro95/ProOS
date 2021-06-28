@@ -1,0 +1,33 @@
+## Created by Ben Provenzano III for Automate Server
+
+#-------GPU memory-------
+gpu_mem=32
+
+#-------Max USB Current-------
+## max_usb_current=1
+
+#-------Disable Ram temp refresh every 500ms---------------
+disable_pvt=1
+
+#-------Disable Pi Splash screen on boot-------------
+disable_splash=1
+
+#-------HiFiBerry Coaxial Out -------
+dtparam=audio=off
+dtparam=i2c_arm=off
+dtoverlay=hifiberry-digi
+dtoverlay=i2s-mmap
+
+#------Disable Wi-Fi and Bluetooth-----
+dtoverlay=disable-bt
+
+#------Disable the Activity LED-------
+## dtparam=act_led_trigger=none
+## dtparam=act_led_activelow=off
+
+#------Disable the PWR LED-------
+## dtparam=pwr_led_trigger=none
+## dtparam=pwr_led_activelow=on
+
+#------Reboot when exceeds-----
+temp_limit=75

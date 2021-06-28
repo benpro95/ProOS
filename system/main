@@ -1,0 +1,71 @@
+#!/bin/bash
+##
+###########################################################
+###########################################################
+
+## Read the 2nd Argument
+ARG2=$2
+
+## Read the 1st Argument
+case "$1" in
+
+boot)
+## State Folder
+rm -rf /var/lock/rpi
+mkdir -p /var/lock/rpi
+chmod -R 777 /var/lock/rpi
+## Light Web Server
+systemctl restart lighttpd
+## Automount Network Shares
+systemctl restart autofs
+## AirPlay Support
+systemctl restart rpi-airplay
+exit
+;;
+
+usbplug)
+## This script is ran after USB drive attached
+echo "no function assigned"
+exit
+;;
+### Relaxation Sound Playback
+
+stoprelax)
+killall -s KILL -w mpv
+## USB Decoder Input
+/opt/rpi/xmit usb
+sleep 0.5
+## Preamp DAC Input
+/opt/rpi/xmit dac
+exit
+;;
+
+relax)
+killall -s KILL -w mpv
+## Capatialize first letter of second argument
+ARG2="${ARG2^}"
+## Play Audio in Loop
+/usr/bin/screen -dm /usr/bin/mpv --no-video --gapless-audio=yes --loop-file "/mnt/smb/Media/Sounds/Relaxation/$ARG2"
+## Optical Decoder Input
+/opt/rpi/xmit coaxial
+sleep 0.5
+## Preamp DAC Input
+/opt/rpi/xmit dac
+exit
+;;
+
+### Examples of URL strings ###
+# http://automate:9300/exec.php?var=&arg=lightson&action=main
+# http://automate:9300/exec.php?var=&arg=lightsoff&action=main
+# http://automate:9300/exec.php?var=prism&arg=video&action=leds
+###############################
+
+
+        *)
+          echo "System Server for Raspberry Pi"
+	      echo "  by Ben Provenzano III "
+	      echo " "
+	      echo "Enter a valid command line argument."
+          exit 1
+          ;;
+    esac   

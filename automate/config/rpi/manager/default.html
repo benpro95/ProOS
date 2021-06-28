@@ -1,0 +1,790 @@
+<html>
+<head>
+	<title>Unified Remote Server</title>
+
+	<!-- Optimize viewport for mobile devices -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+		<!-- Google Fonts -->
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
+
+	<!-- Stylesheets -->
+	<link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+	<link rel="Stylesheet" href="/codemirror/codemirror.css" />
+		<link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css" />
+	<link rel="stylesheet" href="/default.css" />
+
+	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+	  <script src="bootstrap3/assets/html5shiv.js"></script>
+	  <script src="bootstrap3/assets/respond.min.js"></script>
+	<![endif]-->
+</head>
+<body>
+
+	<!--[if lt IE 9]>
+	<div style="padding: 20px">
+		<p>Please update your browser. Supported browsers:</p>
+		<ul>
+			<li>All modern browsers (Chrome, Safari, Firefox, Opera, etc).</li>
+			<li>Internet Explorer 9+</li>
+		</ul>
+	</div>
+	<![endif]-->
+
+	<div id="container"></div>
+
+	<script id="tmain" type="text/ractive">
+		<div class="wrap"
+			on-drop="file-drag-drop"
+			on-dragover="file-drag-start"
+			on-mouseleave="file-drag-cancel"
+			on-dragenter="file-drag-start">
+			{{#view.dragdrop}}
+				<div class="dragdrop">
+					<div class="dragdrop-inner">
+						<div class="dragdrop-content">
+							{{>tdragdrop}}
+						</div>
+					</div>
+				</div>
+			{{/view.dragdrop}}
+			<div class="nav narrow">
+				<div class="nav-top">
+					<img src="/img/brand.png" />
+					<span class="nav-title">Unified Remote</span>
+				</div>
+				<div class="nav-middle">
+					<ul>
+						<li>
+							<a href="/web/#/status" on-click="navigate" class="{{ view.page.status ? 'active' : '' }}">
+								<i class="fa fa-dashboard"></i>
+								<span class="nav-title">Status</span>
+							</a>
+						</li>
+						<li>
+							<a href="/web/#/remotes" on-click="navigate" class="{{ view.page.remotes ? 'active' : '' }}">
+								<i class="fa fa-bars"></i>
+								<span class="nav-title">Remotes</span>
+							</a>
+						</li>
+						<li>
+							<a href="/web/#/log" on-click="navigate" class="{{ view.page.log ? 'active' : '' }}">
+								<i class="fa fa-file-text"></i>
+								<span class="nav-title">Log</span>
+							</a>
+						</li>
+						<li>
+							<a href="/web/#/settings" on-click="navigate" class="{{ view.page.settings ? 'active' : '' }}">
+								<i class="fa fa-gear"></i>
+								<span class="nav-title">Settings</span>
+							</a>
+						</li>
+						<li>
+							<a href="/web/#/about" on-click="navigate" class="{{ view.page.about ? 'active' : '' }}">
+								<i class="fa fa-question-circle"></i>
+								<span class="nav-title">About</span>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<div class="nav-bottom">
+					&copy; {{year}}
+				</div>
+			</div>
+			<div class="main">
+				<div class="tips">
+					<div class="tip">{{view.tip}}</div>
+				</div>
+
+				{{#view.connected && !view.restarting}}
+					{{#view.page.status}}
+						{{>tstatus}}
+					{{/view.page.status}}
+
+					{{#view.page.remotes}}
+						{{>tremotes}}
+					{{/view.page.remotes}}
+
+					{{#view.page.settings}}
+						{{>tconfig}}
+					{{/view.page.settings}}
+
+					{{#view.page.log}}
+						{{>tlog}}
+					{{/view.page.log}}
+
+					{{#view.page.about}}
+						{{>tabout}}
+					{{/view.page.about}}
+				{{else}}
+					{{>tconnecting}}
+				{{/view.connected}}
+			</div>
+		</div>
+		{{#if config.updates.pending}}
+			<div class="update">
+				<table>
+					<tr>
+						<td align="left">
+							<a href="{{config.updates.response.Link}}" target="_blank">A newer version of the server is available.</a>
+						</td>
+						<td align="right">
+							<button on-click="update-clear">Later</button>
+						</td>
+					</tr>
+				</table>
+			</div>
+		{{/if}}
+	</script>
+
+	<script id="tconnecting" type="text/ractive">
+		<div class="page">
+			<h2>
+				<i class="fa fa-refresh fa-spin" /> &nbsp;
+				{{#view.restarting}}
+					Restarting, please wait...
+				{{else}}
+					Connecting, please wait...
+				{{/view.restarting}}
+			</h2>
+		</div>
+	</script>
+
+	<script id="tremotes" type="text/ractive">
+		<div class="header">
+			<h1>Remotes</h1>
+			<!--<ul class="tabs">
+				<li><a href="#/remotes/ready" class="{{ view.tab.ready || view.tab.default ? 'active' : '' }}">Ready</a></li>
+				<li><a href="#/remotes/install" class="{{ view.tab.install ? 'active' : '' }}">Install</a></li>
+				<li><a href="#/remotes/find" class="{{ view.tab.find ? 'active' : '' }}">Find</a></li>
+				<li><a href="#/remotes/build" class="{{ view.tab.build ? 'active' : '' }}">Build</a></li>
+			</ul>-->
+			<div class="clear"></div>
+		</div>
+		<div class="page">
+
+			{{#view.remote}}
+			<h2>Settings</h2>
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Key</th>
+						<th>Value</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					{{#view.remote.settings:i}}
+					<tr>
+						<td><input type="text" placeholder="Key" value="{{key}}" /></td>
+						<td><input type="text" placeholder="Value" value="{{value}}" /></td>
+						<td><div class="button raised" on-click="remove-remote-setting" data-index="{{i}}">Remove</div></td>
+					</tr>
+					{{/view.remote.settings}}
+				</tbody>
+			</table>
+			<div class="button raised" on-click="add-remote-setting">Add</div>
+
+			<div class="buttons">
+				<div class="button raised" on-click="save-remote-settings">Save</div>
+				<div class="button raised" on-click="cancel-remote-settings">Cancel</div>
+			</div>
+
+			{{else}}
+
+			<h2>Available</h2>
+			<table class="table remotes">
+				<tbody>
+					{{#remotes:i}}
+						{{# !hidden || ../../view.showhidden}}
+						<tr class="{{ (isRemoteDisabled(id) ? 'disabled' : '') }}">
+							<td>
+								{{#icon}}
+									<img src="data:image/png;base64,{{icon}}" />
+								{{else}}
+									<img src="/img/noicon.png" />
+								{{/icon}}
+							</td>
+							<td>
+							   <div class="remotes-name"><abbr title="{{id}}">{{name}}</abbr></div>
+							   <div class="remotes-desc">{{description}}</div>
+							</td>
+							<td align="right">
+								{{#if isRemoteDisabled(id) }}
+								<div class="button raised" on-click="enable-remote" data-id="{{id}}">Enable {{#if isRemoteUnsaved(id) }} (unsaved) {{/if}}</div> &nbsp;
+								{{else}}
+								<div class="button raised" on-click="disable-remote" data-id="{{id}}">Disable {{#if isRemoteUnsaved(id) }} (unsaved) {{/if}}</div> &nbsp;
+								{{/if}}
+								<div class="button raised" on-click="configure-remote" data-index="{{i}}">Configure</div>
+							</td>
+						</tr>
+						{{/hidden}}
+					{{else}}
+						<tr>
+							<td colspan="2"><i>No remotes</i></td>
+						</tr>
+					{{/remote}}
+				</tbody>
+			</table>
+			<div class="buttons">
+				<div class="pull-right">
+					<div class="button raised" on-click="enable-all-remotes">Enable All</div>
+					<div class="button raised" on-click="disable-all-remotes">Disable All</div>
+					<div class="button raised" on-click="save-remotes">Save Changes</div>
+				</div>
+				<div class="pull-left">
+					<input type="checkbox" id="show-hidden-remotes" checked="{{view.showhidden}}" /> Show hidden remotes.
+				</div>
+				<div class="clear"></div>
+			</div>
+
+			{{/view.remote}}
+
+		</div>
+	</script>
+
+	<script id="tstatus" type="text/ractive">
+		<div class="header">
+			<h1>Status</h1>
+			<ul class="tabs">
+				<li><a href="#/status/dashboard" on-click="navigate" class="{{ view.tab.dashboard || view.tab.default ? 'active' : '' }}">Dashboard</a></li>
+				<li><a href="#/status/connect" on-click="navigate" class="{{ view.tab.connect ? 'active' : '' }}">Accounts</a></li>
+				<li><a href="#/status/connections" on-click="navigate" class="{{ view.tab.connections ? 'active' : '' }}">Connections</a></li>
+				<li><a href="#/status/instances" on-click="navigate" class="{{ view.tab.instances ? 'active' : '' }}">Instances</a></li>
+				<li><a href="#/status/addresses" on-click="navigate" class="{{ view.tab.addresses ? 'active' : '' }}">Addresses</a></li>
+			</ul>
+			<div class="clear"></div>
+		</div>
+		<div class="page">
+			{{#view.tab.dashboard || view.tab.default}}
+				<h2>{{ status.running ? "Server Started" : "Server Stopped" }}</h2>
+				<ul class="list">
+					<li class="{{status.interfaces.wifi.view.style}}">
+						<i class="fa fa-{{status.interfaces.wifi.view.icon}}" />
+						WiFi: {{ status.interfaces.wifi.view.text }}
+					</li>
+					<li class="{{status.interfaces.bt.view.style}}">
+						<i class="fa fa-{{status.interfaces.bt.view.icon}}" />
+						Bluetooth: {{ status.interfaces.bt.view.text }}
+					</li>
+					<li class="{{status.interfaces.ad.view.style}}">
+						<i class="fa fa-{{status.interfaces.ad.view.icon}}" />
+						Auto-Discovery: {{ status.interfaces.ad.view.text }}
+					</li>
+					<li class="{{status.network.lan.view.style}}">
+						<i class="fa fa-{{status.network.lan.view.icon}}" />
+						LAN: {{ status.network.lan.view.text }} ( {{ status.network.lan.address }} )
+					</li>
+					<li class="{{status.network.wan.view.style}}">
+						<i class="fa fa-{{status.network.wan.view.icon}}" />
+						WAN: {{ status.network.wan.view.text }} (
+							<span id="wan-address">
+								<a href="#" on-click="toggle-wan-address">&lt;Show IP&gt;</a>
+								<a href="#" on-click="toggle-wan-address" class="hide">{{ status.network.wan.address }}</a>
+							</span>
+						)
+					</li>
+					{{#status.firewall.available}}
+						<li class="{{status.firewall.view.style}}">
+							<i class="fa fa-{{status.firewall.view.icon}}" />
+							Firewall: {{ status.firewall.view.text }}
+						</li>
+					{{/status.firewall.available}}
+
+					{{#status.input.available}}
+						<li class="{{status.input.view.style}}">
+							<i class="fa fa-{{status.input.view.icon}}" />
+							Input Mode: {{ status.input.view.text }}
+						</li>
+					{{/status.input.available}}
+				</ul>
+
+				<div class="buttons">
+					<div class="button raised" on-click="restart">Restart Server</div>
+					<div class="button raised" on-click="reload">Reload Remotes</div>
+				</div>
+
+			{{/view.tab.dashboard}}
+
+			{{#view.tab.connect}}
+
+				<h2>Spotify</h2>
+				{{#if !config.connect.spotify}}
+					<p>Connect to your Spotify account to enable the Spotify Advanced remote.</p>
+				{{else}}
+					<p>Account connected.</p>
+				{{/if}}
+				<a class="button raised" href="http://services.unifiedremote.com/connect/spotify?return=manager">
+					{{#if !config.connect.spotify}}
+						Connect Spotify
+					{{else}}
+						Re-Connect Spotify
+					{{/if}}
+				</a>
+				{{#if config.connect.spotify}}
+				&nbsp; <a class="button raised" href="/system/disconnect/spotify">Disconnect</a>
+				{{/if}}
+
+				<h2>Telldus</h2>
+				{{#if !config.connect.telldus}}
+					<p>Connect to your Telldus Live account to enable the TellStick Live remote.</p>
+				{{else}}
+					<p>Account connected.</p>
+				{{/if}}
+				<a class="button raised" href="http://services.unifiedremote.com/connect/telldus?return=manager">
+					{{#if !config.connect.telldus}}
+						Connect Telldus
+					{{else}}
+						Re-Connect Telldus
+					{{/if}}
+				</a>
+				{{#if config.connect.telldus}}
+				&nbsp; <a class="button raised" href="/system/disconnect/telldus">Disconnect</a>
+				{{/if}}
+			{{/view.tab.connect}}
+
+			{{#view.tab.connections}}
+				<h2>Connections</h2>
+				<table class="table">
+					<thead>
+						<tr>
+							<th width="40%">Identity</th>
+							<th width="20%">Status</th>
+							<th width="20%">Connected</th>
+							<th width="20%">Active</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#status.connections}}
+						<tr>
+							<td>{{destination}}</td>
+							<td>{{ (authenticated ? "Authenticated" : "Not Authenticated") + (encrypted ? " Encrypted" : "") }}</td>
+							<td>{{started}}</td>
+							<td>{{active}}</td>
+						</tr>
+						{{else}}
+						<tr>
+							<td colspan="4"><i>No connections</i></td>
+						</tr>
+						{{/status.connections}}
+					</tbody>
+				</table>
+			{{/view.tab.connections}}
+
+			{{#view.tab.instances}}
+				<h2>Instances</h2>
+				<table class="table">
+					<thead>
+						<tr>
+							<th width="60%">Remote</th>
+							<th width="40%">Type</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#status.instances}}
+						<tr>
+							<td>{{remote}}</td>
+							<td>{{type}}</td>
+						</tr>
+						{{else}}
+						<tr>
+							<td colspan="2"><i>No instances</i></td>
+						</tr>
+						{{/status.connections}}
+					</tbody>
+				</table>
+			{{/view.tab.instances}}
+
+			{{#view.tab.addresses}}
+				<h2>Addresses</h2>
+				<table class="table">
+					<thead>
+						<tr>
+							<th width="40%">Name</th>
+							<th width="30%">Network</th>
+							<th width="30%">Physical</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#status.addresses}}
+						<tr>
+							<td>{{name}}</td>
+							<td>{{network}}</td>
+							<td>{{physical}}</td>
+						</tr>
+						{{else}}
+						<tr>
+							<td colspan="3"><i>No addresses</i></td>
+						</tr>
+						{{/status.addresses}}
+					</tbody>
+				</table>
+			{{/view.tab.addresses}}
+		</div>
+	</script>
+
+	<script id="tabout" type="text/ractive">
+		<div class="header">
+			<h1>About</h1>
+		</div>
+		<div class="page">
+			<h2>Updates</h2>
+			<ul class="list">
+				{{#if config.updates.pending}}
+					<li><a href="{{config.updates.response.Link}}" target="_blank">A newer version of the server is available.</a></li>
+				{{else}}
+					<li><i>No updates available</i></li>
+				{{/if}}
+			</ul>
+			<div class="buttons">
+				<div class="button raised" on-click="update-check">Check</div>
+				{{#if config.updates.pending}}
+					<div class="button raised" on-click="update-clear">Later</div>
+				{{/if}}
+			</div>
+
+			<h2>Version</h2>
+			<table class="table">
+				<tbody>
+					<tr>
+						<td>Version</td>
+						<td>{{ status.version }} ({{ status["version-code"] }})</td>
+					</tr>
+					<tr>
+						<td>OS</td>
+						<td>{{ status.os }}</td>
+					</tr>
+					<tr>
+						<td>Platform</td>
+						<td>{{ status.platform }}</td>
+					</tr>
+					<tr>
+						<td>Machine</td>
+						<td>{{ status.machine }}</td>
+					</tr>
+					<tr>
+						<td>Command</td>
+						<td>{{ status.command }}</td>
+					</tr>
+					<tr>
+						<td>Uptime</td>
+						<td>{{ status.started }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</script>
+
+	<script id="tlog" type="text/ractive">
+		<div class="header">
+			<h1>Log</h1>
+		</div>
+		<div class="page">
+			<div id="log-output">
+				<div class="pure-g">
+					<div class="form-inline">
+						<div class="pull-right pure-u-1-3">
+							<label># lines</label>
+							<div class="form-group">
+								<input type="text" id="log-lines" class="form-control" value="{{view.log.lines}}" >
+							</div>
+							<div class="button raised pause" on-click="toggle-pause-log">
+								{{ #view.log.paused }}
+									<i class="fa fa-play"></i> Resume
+								{{ else }}
+									<i class="fa fa-pause"></i> Pause
+								{{/}}
+							</div>
+						</div>
+						<div class="pure-u-2-3">
+							<label>Filter</label>
+							<div class="form-group filter" width="400px">
+								<input id="log-filter" type="text" value="{{view.log.filter}}" class="filter" class="form-control" placeholder="e.g. Connection" >
+							</div>
+							<label>Level</label>
+							<div class="form-group">
+								<select class="level" id="log-level" value="{{view.log.level}}" class="form-control" >
+									{{#each view_log_levels}}
+										<option value="{{value}}">{{name}}</option>
+									{{/each}}
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="log" id="log-data">
+					<div class="log-line">
+						<span class="log-msg-trace">Loading...</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</script>
+
+	<script id="tlogline" type="text/ractive">
+		{{#log:i}}
+			<div class="log-line" data-text="{{text}}">
+				<span class="log-date">{{date}}</span>
+				<span class="log-time">{{time}}</span>
+				<span class="log-msg {{ "log-msg-" + tag }}">{{msg}}</span>
+			</div>
+		{{/log}}
+	</script>
+
+	<script id="tconfig" type="text/ractive">
+		<div class="header">
+			<h1>Settings</h1>
+			<ul class="tabs">
+				<li><a href="#/settings/general" on-click="navigate" class="{{ view.tab.general || view.tab.default ? 'active' : '' }}">General</a></li>
+				<li><a href="#/settings/network" on-click="navigate" class="{{ view.tab.network ? 'active' : '' }}">Network</a></li>
+				<li><a href="#/settings/security" on-click="navigate" class="{{ view.tab.security ? 'active' : '' }}">Security</a></li>
+				<li><a href="#/settings/remotes" on-click="navigate" class="{{ view.tab.remotes ? 'active' : '' }}">Remotes</a></li>
+				<li><a href="#/settings/advanced" on-click="navigate" class="{{ view.tab.advanced ? 'active' : '' }}">Advanced</a></li>
+			</ul>
+			<div class="clear"></div>
+		</div>
+		<div class="page">
+
+			{{#view.tab.general || view.tab.default}}
+				<h2>General</h2>
+				<div class="section">
+					<div class="checkbox" id="auto-start">
+						<label>
+							<input type="checkbox" checked="{{ config.general["auto-start"] }}" /> Automatically start server when OS starts up.
+						</label>
+					</div>
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" checked="{{ config.updates["auto-check"] }}" /> Automatically check for server updates.
+						</label>
+					</div>
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" checked="{{ config.general.notifications }}" /> Show important error notifications.
+						</label>
+					</div>
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" checked="{{ config.general.icon }}" /> Show icon in system notification area.
+						</label>
+					</div>
+				</div>
+			{{/view.tab.general}}
+
+			{{#view.tab.network}}
+				<h2>Network</h2>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" checked="{{ config.interfaces.tcp.enable }}" /> Enable WiFi connections on port <input type="number" placeholder="9512" value="{{config.interfaces.tcp.port}}" /> (TCP).
+					</label>
+				</div>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" checked="{{ config.interfaces.udp.enable }}" /> Enable fast connections on port <input type="number" placeholder="9512" value="{{config.interfaces.udp.port}}" /> (UDP).
+					</label>
+				</div>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" checked="{{ config.interfaces.ad.enable }}" /> Enable automatic server discovery on port <input type="number" placeholder="9511" value="{{config.interfaces.ad.port}}" /> (UDP).
+					</label>
+				</div>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" checked="{{ config.interfaces.bt.enable }}" /> Enable Bluetooth connections (if available depending on OS).
+					</label>
+				</div>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" checked="{{ config.interfaces.web.enable }}" /> Enable web-based client (<a href="http://localhost:9510/client">http://localhost:9510/client</a>).
+					</label>
+				</div>
+
+				<h2>Manager</h2>
+				<p>Warning: If you disable the manager interface then you must <a href="http://www.unifiedremote.com/tutorials/54e308394e5ec1da50a44fca" target="_blank">manually re-enable</a> it to use it later.</p>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" checked="{{ config.manager.enable }}" /> Enable manager interface.
+					</label>
+				</div>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" checked="{{ config.manager.remote }}" /> Allow management from a different LAN computer.
+					</label>
+				</div>
+			{{/view.tab.network}}
+
+			{{#view.tab.security}}
+				<h2>Authentication</h2>
+				<div class="radio">
+					<label>
+						<input type="radio" name="{{ config.security.mode }}" value="none" /> Do not require apps to enter a password before connecting.
+					</label>
+					<div class="form-extra"></div>
+				</div>
+				<div class="radio">
+					<label>
+						<input type="radio" name="{{ config.security.mode }}" value="anonymous" /> Use the same password for all users.
+					</label>
+					<div class="form-extra">
+						<input type="password" placeholder="Password" disabled="{{ config.security.mode != 'anonymous' ? 'disabled' : '' }}" value="{{config.security.password}}" />
+					</div>
+				</div>
+				<div class="radio">
+					<label>
+						<input type="radio" name="{{ config.security.mode }}" value="users" /> Use individual usernames and passwords.
+					</label>
+				</div>
+
+				{{#config.security.mode == "users"}}
+				<h2>Users</h2>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Username</th>
+							<th>Password</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#each config.security.users:i}}
+						<tr>
+							<td><input type="text" placeholder="Username" value="{{username}}" /></td>
+							<td><input type="password" placeholder="Password" value="{{password}}" /></td>
+							<td><div class="button raised" on-click="remove-user" data-index="{{i}}">Remove</div></td>
+						</tr>
+						{{/each}}
+					</tbody>
+				</table>
+				<div class="button raised" on-click="add-user">Add</div>
+				{{/config.security.mode == "users"}}
+
+				<h2>Encryption</h2>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" checked="{{ config.security.encryption }}" /> Encrypt all network (recommended for non-LAN use but impacts performance).
+					</label>
+				</div>
+			{{/view.tab.security}}
+
+			{{#view.tab.remotes}}
+				<h2>Remotes</h2>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" checked="{{ config.loader.watch }}" /> Automatically detect new or modified remotes.
+					</label>
+				</div>
+				<h2>Paths</h2>
+				<p>Change where Unified Remote Server looks for remotes on your system.</p>
+
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Local Path</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						{{#config.loader.paths:i}}
+						<tr>
+							<td><input type="text" placeholder="Path" value="{{this}}" /></td>
+							<td><div class="button raised" on-click="remove-path" data-index="{{i}}">Remove</div></td>
+						</tr>
+						{{/config.loader.paths}}
+					</tbody>
+				</table>
+
+				<div class="button raised" on-click="add-path">Add</div>
+			{{/view.tab.remotes}}
+
+			{{#view.tab.advanced}}
+				<h2>Logging</h2>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" checked="{{ config.log.enable }}" /> Enable server activity logging (recommended).
+					</label>
+				</div>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" checked="{{ config.log.trace }}" /> Enable trace level logging (for troubleshooting).
+					</label>
+				</div>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" checked="{{ config.log.dumps }}" /> Enable crash dumps.
+					</label>
+				</div>
+
+				<h2>Advanced</h2>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" checked="{{ config.advanced.debug }}" /> Run in debug mode (not recommended).
+					</label>
+				</div>
+				<div class="checkbox">
+					<label>
+						<input type="checkbox" checked="{{ config.advanced.driver }}" /> Enable driver on Windows.
+					</label>
+				</div>
+				<div>
+					<form class="form-inline">
+						<div class="form-group" style="width: 120px">
+							Force LAN IP:
+						</div>
+						<div class="form-group">
+							<input type="text" value="{{ config.advanced['lan-ip'] }}" placeholder="Automatic" class="form-control" width="300px" />
+						</div>
+					</form>
+				</div>
+
+				<div class="form-extra">
+					<br><br>
+					<a href="/system/config" target="_blank">Show Configuration</a>
+				</div>
+			{{/view.tab.advanced}}
+
+			<div class="buttons">
+				<div class="button raised" on-click="save-config">Save</div>
+				<div class="button raised" on-click="cancel-config">Cancel</div>
+			</div>
+
+		</div>
+	</script>
+
+	<script id="tdragdrop" type="text/ractive">
+		{{#view.dragdrop.dragging}}
+			<h1>Drop your files here...</h1>
+			<p class="droparea">Drag the file onto this page to import it into the custom remote folder</p>
+		{{/}}
+		{{#view.dragdrop.uploading}}
+			<h1>
+				<i class="fa fa-spin fa-spinner"></i>
+				Uploading...
+			</h1>
+		{{/}}
+		{{#view.dragdrop.result}}
+			<h1>Done!</h1>
+			<p>{{msg}}</p>
+			<a class="button raised pull-right grayer" on-click="file-drag-dismiss">
+				  <i class="fa fa-check"></i>
+				  Continue
+			</a>
+			<br>
+			<br>
+			<br>
+		{{/}}
+	</script>
+
+
+	<!-- Load JavaScript last to improve load times -->
+	<script type="text/javascript" src="/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/codemirror/codemirror-compressed.js"></script>
+	<script type="text/javascript" src="/lodash/lodash.compat.js"></script>
+	<script type="text/javascript" src="/ractive/ractive.js"></script>
+	<script type="text/javascript" src="/default.js"></script>
+
+</body>
+</html>

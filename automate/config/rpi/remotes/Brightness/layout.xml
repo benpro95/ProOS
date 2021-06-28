@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <row>
+        <button text="Low" ontap="fc05" color="#000030" />
+        <button text="Default" ontap="fcnorm" color="#00004c" />
+    </row>
+    <row>
+        <button text="60%" ontap="fc60" color="#000041" />
+        <button text="70%" ontap="fc70" color="#000044" />
+        <button text="80%" ontap="fc80" color="#000046" />
+        <button text="90%" ontap="fc90" color="#000049" />
+        <button text="100%" ontap="fc100" color="#00004c" />
+    </row>    
+    <row>
+        <button text="10%" ontap="fc10" color="#000030" />
+        <button text="20%" ontap="fc20" color="#000036" />
+        <button text="30%" ontap="fc30" color="#000038" />
+        <button text="40%" ontap="fc40" color="#00003b" />
+        <button text="50%" ontap="fc50" color="#00003e" />
+    </row>
+    <row>
+        <button text="LEDSync" ontap="global" color="#000037" />
+        <button icon="pause" ontap="pause" color="#252629" />
+        <button icon="off" ontap="stop" color="#000000" />
+    </row>
+</layout>
+
+

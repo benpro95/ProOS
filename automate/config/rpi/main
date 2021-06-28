@@ -1,0 +1,294 @@
+#!/bin/bash
+##
+###########################################################
+## Main Home Automation Script by Ben Provenzano III v17 ##
+###########################################################
+###########################################################
+
+## Read the 2nd Argument
+ARG2=$2
+
+## Read the 1st Argument
+case "$1" in
+
+### Relaxation Sound Playback
+stoprelax)
+killall -s KILL -w mpv
+## USB Decoder Input
+/opt/rpi/xmit usb
+sleep 0.5
+## Preamp DAC Input
+/opt/rpi/xmit dac
+exit
+;;
+###
+relax)
+killall -s KILL -w mpv
+## Capatialize first letter of second argument
+ARG2="${ARG2^}"
+## Play Audio in Loop
+/usr/bin/screen -dm /usr/bin/mpv --no-video --gapless-audio=yes --loop-file "/mnt/smb/Media/Sounds/Relaxation/$ARG2"
+## Optical Decoder Input
+/opt/rpi/xmit coaxial
+sleep 0.5
+## Preamp DAC Input
+/opt/rpi/xmit dac
+exit
+;;
+
+rebootnet)
+echo "Rebooting Network Switch..."
+/usr/bin/screen -dm /opt/rpi/main rebootnet-bkg
+exit
+;;
+
+rebootnet-bkg)
+## Reboot Network Switch
+/opt/rpi/xmit fet1 off
+sleep 5.25
+/opt/rpi/xmit fet1 on
+exit
+;;
+
+## Automated Multi-Functions
+
+lightson)
+touch /var/lock/rpi/lights.save
+sleep 0.35
+## Dresser Lamp
+/opt/rpi/xmit rfa1 on
+sleep 0.35
+## Ceiling Lamp
+/opt/rpi/xmit rfa2 on
+sleep 0.35
+## Desk Light
+/opt/rpi/xmit rfb1 on
+exit
+;;
+
+lightsoff)
+## Turn all lights off
+rm -f /var/lock/rpi/lights.save
+sleep 0.35
+## Dresser Lamp
+/opt/rpi/xmit rfa1 off
+sleep 0.35
+## Ceiling Lamp
+/opt/rpi/xmit rfa2 off
+sleep 0.35
+## Desk Light
+/opt/rpi/xmit rfb1 off
+exit
+;;
+
+allon)
+/opt/rpi/main lightson
+sleep 0.35
+## LEDwalls
+touch /tmp/global-fc.lock
+sh -c '/opt/rpi/leds fc 60'
+sleep 3.5
+sh -c '/opt/rpi/leds candle'
+exit
+;;
+
+alloff)
+/opt/rpi/main lightsoff
+sleep 0.35
+## Blank LEDwalls
+/opt/rpi/leds stop
+exit
+;;
+
+## Audio Power
+pwrhifi)
+## Power Audio System
+/opt/rpi/xmit pwrhifi
+sleep 0.35
+## Reset volume tokens
+rm -f /var/lock/rpi/subs.enabled
+### Stop Relax Sounds
+/opt/rpi/main stopsnd
+sleep 2.5
+## USB Decoder Input
+/opt/rpi/xmit usb
+sleep 8.0
+## Preamp DAC Input
+/opt/rpi/xmit dac
+exit
+;;
+
+## PC Power
+pcon)
+if ping -c 1 z97mx &> /dev/null
+then
+  echo "Host is up"
+else
+  /opt/rpi/xmit rfb3
+fi
+exit
+;;
+##
+pcoff)
+if ping -c 1 z97mx &> /dev/null
+then
+  /opt/rpi/xmit rfb3
+else
+  echo "Host is down"
+fi
+exit
+;;
+
+submute)
+if [ ! -e /var/lock/rpi/subs.enabled ]; then
+  echo ""  > /dev/null 2>&1
+else
+  ### Subwoofer mute/disable
+  /opt/rpi/xmit subpwr
+fi
+exit
+;;
+
+subup)
+if [ ! -e /var/lock/rpi/subs.enabled ]; then
+  echo ""  > /dev/null 2>&1
+else
+  ### Subwoofer volume up
+  /opt/rpi/xmit subup
+fi
+exit
+;;
+
+subdwn)
+if [ ! -e /var/lock/rpi/subs.enabled ]; then
+  echo ""  > /dev/null 2>&1
+else
+  ### Subwoofer volume down
+  /opt/rpi/xmit subdwn
+fi
+exit
+;;
+
+subs)
+## Toggle volume control to subwoofers
+if [ ! -e /var/lock/rpi/subs.enabled ]; then
+   touch /var/lock/rpi/subs.enabled
+else
+   rm -f /var/lock/rpi/subs.enabled
+fi
+exit
+;;
+
+autodac)
+## Reset volume tokens
+rm -f /var/lock/rpi/subs.enabled
+## Auto Decoder Input
+/opt/rpi/xmit inauto
+sleep 0.5
+## Preamp DAC Input
+/opt/rpi/xmit dac
+exit
+;;
+
+usb)
+## Reset volume tokens
+rm -f /var/lock/rpi/subs.enabled
+## USB Decoder Input
+/opt/rpi/xmit usb
+sleep 0.5
+## Preamp DAC Input
+/opt/rpi/xmit dac
+exit
+;;
+
+## Coax Input
+coax)
+## Reset volume tokens
+rm -f /var/lock/rpi/subs.enabled
+## Coaxial Decoder Input
+/opt/rpi/xmit coaxial
+sleep 0.5
+## Preamp DAC Input
+/opt/rpi/xmit dac
+exit
+;;
+
+## Optical Input
+opt)
+## Reset volume tokens
+rm -f /var/lock/rpi/subs.enabled
+## Optical Decoder Input
+/opt/rpi/xmit optical
+sleep 0.5
+## Preamp DAC Input
+/opt/rpi/xmit dac
+exit
+;;
+
+roomon)
+## Main Light On
+/opt/rpi/xmit fet0 on
+sleep 0.35
+## Dresser Lamp
+/opt/rpi/xmit rfa1 on
+sleep 0.35
+## Ceiling Lamp
+/opt/rpi/xmit rfa2 on
+sleep 0.35
+## Desk Light
+/opt/rpi/xmit rfb1 on
+sleep 0.35
+## Desktop Power
+/opt/rpi/xmit rfb2 on
+sleep 0.35
+## PC Power On
+/opt/rpi/main pcon
+sleep 0.35
+## LEDwalls
+touch /tmp/global-fc.lock
+/opt/rpi/leds fc norm
+sleep 0.35
+/opt/rpi/leds video prism
+exit
+;;
+
+roomoff)
+## Main Light Off
+/opt/rpi/xmit fet0 off
+sleep 0.35
+## Dresser Lamp
+/opt/rpi/xmit rfa1 off
+sleep 0.35
+## Ceiling Lamp
+/opt/rpi/xmit rfa2 off
+sleep 0.35
+## Desk Light
+/opt/rpi/xmit rfb1 off
+sleep 0.35
+## Desktop Power
+/opt/rpi/xmit rfb2 off
+sleep 0.35
+## PC Power Off
+/opt/rpi/main pcoff
+sleep 0.35
+## Blank LEDwalls
+touch /tmp/global-fc.lock
+/opt/rpi/leds stop
+exit
+;;
+
+### Examples of URL strings ###
+# http://automate:9300/exec.php?var=&arg=lightson&action=main
+# http://automate:9300/exec.php?var=&arg=lightsoff&action=main
+# http://automate:9300/exec.php?var=prism&arg=video&action=leds
+###############################
+
+
+        *)
+          echo "Automate Server for Raspberry Pi"
+	      echo "  by Ben Provenzano III "
+	      echo " "
+	      echo "Enter a valid command line argument."
+          exit 1
+          ;;
+    esac   

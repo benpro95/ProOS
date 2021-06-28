@@ -1,0 +1,342 @@
+/* Template Theme v3 by Ben Provenzano III 5/14/17 for ProOS Web Server*/
+
+
+@font-face {
+  font-family: 'JosefinSans';
+  src: url("http://raspberrypi.home:9300/JosefinSans-SemiBold-webfont.eot?v=1.1.0");
+  src: url("http://raspberrypi.home:9300/JosefinSans-SemiBold-webfont.eot?#iefix&v=1.1.0") format("embedded-opentype"), url("http://raspberrypi.home:9300/JosefinSans-SemiBold-webfont.woff2?v=1.1.0") format("woff2"), url("http://raspberrypi.home:9300/JosefinSans-SemiBold-webfont.woff?v=1.1.0") format("woff"), url("http://raspberrypi.home:9300/JosefinSans-SemiBold-webfont.ttf?v=1.1.0") format("truetype"), url("http://raspberrypi.home:9300/JosefinSans-SemiBold-webfont.svg?v=1.1.0#Regular") format("svg");
+}
+
+html, body {
+    height: 100%}
+body {
+    font-family: 'JosefinSans', sans-serif;
+    cursor: default;
+}
+a {
+    color: #419b24;
+    outline: 0;
+}
+a:hover {
+    text-decoration: none;
+    color: White;
+}
+.nav {
+    float: left;
+    width: 258px;
+    height: 100%;
+    overflow: auto;
+    border-right: solid 1px #ButtonShadowFrame;
+    background: -moz-linear-gradient(top, #BackgroundTop 0%, #BackgroundMid 19%, #000000 100%);
+    background: -webkit-linear-gradient(top, #BackgroundTop 0%,#BackgroundMid 19%,#000000 100%);
+    background: linear-gradient(to bottom, #BackgroundTop 0%,#BackgroundMid 19%,#000000 100%);
+}
+.nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.nav a {
+    display: block;
+    padding: 14px 20px;
+    color: #e2dfdf;
+    outline: 0;
+    text-decoration: none;
+}
+.nav a:hover, .nav a.active {
+    color: #f6f2f2; /* Side Menu Text Color */
+    /* Side Menu Active Hover */
+    background: #HoverOverTop; 
+    background: -moz-linear-gradient(top, #HoverOverTop 0%, #ActiveMenuBtm 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#HoverOverTop), color-stop(100%,#ActiveMenuBtm));
+    background: -webkit-linear-gradient(top, #HoverOverTop 0%,#ActiveMenuBtm 100%);
+    background: -o-linear-gradient(top, #HoverOverTop 0%,#ActiveMenuBtm 100%);
+    background: -ms-linear-gradient(top, #HoverOverTop 0%,#ActiveMenuBtm 100%);
+    background: linear-gradient(to bottom, #HoverOverTop 0%,#ActiveMenuBtm 100%);
+}
+.nav img.fa {
+    margin-right: 10px;
+}
+.nav .nav-icon {
+    width: 28px;
+    height: 28px;
+    margin-right: 10px;
+}
+.nav .nav-icon .fa {
+    font-size: 22px;
+}
+.nav .nav-title {
+    vertical-align: middle;
+}
+.nav-top {
+    border-bottom: solid 1px #ButtonShadowFrame;
+    padding: 20px;
+    font-size: 20pt;
+}
+.nav-top img {
+    margin-top: -2px;
+    margin-right: 7px;
+}
+.nav-brand {
+    padding: 0 !important;
+    cursor: pointer;
+}
+.nav-brand:hover {
+    /* Top Navigation Hover Menu Color */
+    background: #HoverOverTop; 
+    background: -moz-linear-gradient(top, #HoverOverTop 0%, #ActiveMenuBtm 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#HoverOverTop), color-stop(100%,#ActiveMenuBtm));
+    background: -webkit-linear-gradient(top, #HoverOverTop 0%,#ActiveMenuBtm 100%);
+    background: -o-linear-gradient(top, #HoverOverTop 0%,#ActiveMenuBtm 100%);
+    background: -ms-linear-gradient(top, #HoverOverTop 0%,#ActiveMenuBtm 100%);
+    background: linear-gradient(to bottom, #HoverOverTop 0%,#ActiveMenuBtm 100%);
+}
+.nav-brand:active {
+    /* Top Navigation Click Down Menu Color */
+    background: #HoverOverTop;
+    background: -moz-linear-gradient(top, #ActiveMenuTop 0%, #ActiveMenuBtm 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ActiveMenuTop), color-stop(100%,#ActiveMenuBtm));
+    background: -webkit-linear-gradient(top, #ActiveMenuTop 0%,#ActiveMenuBtm 100%);
+    background: -o-linear-gradient(top, #ActiveMenuTop 0%,#ActiveMenuBtm 100%);
+    background: -ms-linear-gradient(top, #ActiveMenuTop 0%,#ActiveMenuBtm 100%);
+    background: linear-gradient(to bottom, #ActiveMenuTop 0%,#ActiveMenuBtm 100%);
+}
+.nav-middle {
+    padding: 10px 0;
+}
+.nav-middle li.active {
+    /* Active Selected Menu Color */
+    background: #HoverOverTop;
+    background: -moz-linear-gradient(top, #ActiveMenuTop 0%, #ActiveMenuBtm 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ActiveMenuTop), color-stop(100%,#ActiveMenuBtm));
+    background: -webkit-linear-gradient(top, #ActiveMenuTop 0%,#ActiveMenuBtm 100%);
+    background: -o-linear-gradient(top, #ActiveMenuTop 0%,#ActiveMenuBtm 100%);
+    background: -ms-linear-gradient(top, #ActiveMenuTop 0%,#ActiveMenuBtm 100%);
+    background: linear-gradient(to bottom, #ActiveMenuTop 0%,#ActiveMenuBtm 100%);
+}
+.nav-middle .overlay {
+    opacity: .5;
+    background: #e2dfdf no-repeat center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    position: static;
+}
+.nav-bottom {
+    border-top: solid 1px #ButtonShadowFrame;
+    padding: 20px;
+}
+@media(max-width:700px) {
+    .nav {
+    width: 118px;
+}
+.nav span.nav-title {
+    display: none;
+}
+.nav a {
+    text-align: center;
+    color: #e2dfdf;
+}
+.nav i.fa {
+    margin-right: 0;
+}
+}.main {
+    height: 100%;
+    overflow: auto;
+    background: -moz-linear-gradient(top, #BackgroundTop 0%, #BackgroundMid 19%, #000000 100%);
+    background: -webkit-linear-gradient(top, #BackgroundTop 0%,#BackgroundMid 19%,#000000 100%);
+    background: linear-gradient(to bottom, #BackgroundTop 0%,#BackgroundMid 19%,#000000 100%);
+}
+.main-content {
+    width: 600px;
+}
+.main-content table {
+    width: 90%}
+.page {
+    padding: 00px 30px 100px 30px;
+}
+.page .container {
+    margin: 0;
+}
+.page-welcome p {
+    margin-bottom: 25px;
+}
+.page-welcome a {
+    font-size: 15pt;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+.page-welcome a .fa {
+    width: 20px;
+    text-align: center;
+}
+.page-welcome-buttons {
+    margin-left: 20px;
+}
+h1 {
+    padding: 0;
+    margin: 10px 0;
+}
+h2 {
+    margin-top: 60px;
+    margin-bottom: 20px;
+}
+.card {
+    padding: 40px;
+    box-shadow: 0px 1px 2px #f4f0f0;
+    background: #eee8e8;
+    border-radius: 3px;
+    margin: 10px;
+}
+.clear {
+    clear: both;
+}
+.button {
+    display: inline-block;
+    position: relative;
+    padding: 8px 16px;
+    min-width: 80px;
+    border-radius: 12px; /* Button Roundness */
+    font-size: .9em;
+    background-color: #ButtonColour; /* Button Color */
+    background-image: -moz-linear-gradient(top, #ButtonColour 0%, #ButtonColour 22%, #000000 100%);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ButtonColour), color-stop(22%,#ButtonColour), color-stop(100%,#000000));
+    background-image: -webkit-linear-gradient(top, #ButtonColour 0%,#ButtonColour 22%,#000000 100%);
+    background-image: -o-linear-gradient(top, #ButtonColour 0%,#ButtonColour 22%,#000000 100%);
+    background-image: -ms-linear-gradient(top, #ButtonColour 0%,#ButtonColour 22%,#000000 100%);
+    background-image: linear-gradient(to bottom, #ButtonColour 0%,#ButtonColour 22%,#000000 100%);
+    color: #d2fff3; /* Button Text Color */
+    cursor: pointer;
+    text-align: center;
+}
+.button.raised {
+    transition: box-shadow .2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: .3s;
+    box-shadow: 0 2px 5px 0 #ButtonShadowFrame;  /* Button Shadow Color */
+}
+.button:hover {
+    /* Hover Over Button Color*/
+    background: #HoverOverTop;
+    background: -moz-linear-gradient(top, #HoverOverTop 0%, #ActiveMenuBtm 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#HoverOverTop), color-stop(100%,#ActiveMenuBtm));
+    background: -webkit-linear-gradient(top, #HoverOverTop 0%,#ActiveMenuBtm 100%);
+    background: -o-linear-gradient(top, #HoverOverTop 0%,#ActiveMenuBtm 100%);
+    background: -ms-linear-gradient(top, #HoverOverTop 0%,#ActiveMenuBtm 100%);
+    background: linear-gradient(to bottom, #HoverOverTop 0%,#ActiveMenuBtm 100%);
+    
+    
+}
+.button:active {
+    /* Click Down Button Color*/
+    background: #HoverOverTop;
+    background: -moz-linear-gradient(top, #ActiveMenuTop 0%, #ActiveMenuBtm 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ActiveMenuTop), color-stop(100%,#ActiveMenuBtm));
+    background: -webkit-linear-gradient(top, #ActiveMenuTop 0%,#ActiveMenuBtm 100%);
+    background: -o-linear-gradient(top, #ActiveMenuTop 0%,#ActiveMenuBtm 100%);
+    background: -ms-linear-gradient(top, #ActiveMenuTop 0%,#ActiveMenuBtm 100%);
+    background: linear-gradient(to bottom, #ActiveMenuTop 0%,#ActiveMenuBtm 100%);
+}
+.buttons {
+    margin-top: 30px;
+}
+.buttons .button {
+    margin-right: 10px;
+}
+.divider {
+    border-bottom: solid 1px #f3eded;
+    margin: 20px 0;
+}
+.tips {
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
+    position: fixed;
+    text-align: center;
+    display: none;
+}
+.tip {
+    background: #10111E; /* Syncing Menu Color */
+    color: #ffffff;
+    display: inline-block;
+    padding: 8px 16px;
+}
+input[type="number"] {
+    width: 100px;
+    padding: 3px;
+    margin: 0 10px;
+    margin-top: -5px;
+    text-align: center;
+}
+input[type="password"], input[type="text"] {
+    padding: 5px;
+    max-width: 600px;
+    width: 100%;
+    border: solid 1px #e9e9e9;
+}
+.remotes img {
+    width: 32px;
+    height: 32px;
+    margin-top: 5px;
+}
+.remotes tr td:first-child {
+    width: 50px;
+}
+.remotes tr.disabled {
+    color: #ccc;
+}
+.remotes tr.disabled img {
+    filter: url(filters.svg#grayscale);
+    filter: gray;
+    -webkit-filter: grayscale(1);
+}
+.remote-action {
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+.remote-widget {
+    width: 100%;
+    padding: 20px 10px;
+    font-size: 18pt;
+}
+.remote-button .text {
+    font-weight: bolder;
+    font-size: 200%}
+.remote-slider-wrapper {
+    padding: 0 16px;
+}
+.remote-slider {
+    margin: 16px 0;
+    background: #419b24 !important;
+    padding: 0 !important;
+}
+.remote-slider-info {
+    position: relative;
+    top: -10px;
+}
+.remote-slider-text {
+    display: inline;
+    color: gray;
+    font-size: 80%}
+.remote-slider-value-text {
+    display: inline;
+    color: gray;
+    font-size: 80%}
+.remote-text {
+    White-space: pre;
+}
+.remote-layout table td {
+    padding: 5px;
+}
+.remote-tab-start {
+    margin-top: 36px;
+}
+.color-android {
+    color: #a4c739;
+}
+.color-windows {
+    color: #1ba1e2;
+}

@@ -12,7 +12,7 @@ actions.dac = function ()
 script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit dac");
 end
 
-actions.audio = function ()
+actions.pwrhifi = function ()
 script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/main pwrhifi");
 end
 

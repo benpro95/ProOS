@@ -435,7 +435,6 @@ lighttpd-enable-mod fastcgi fastcgi-php; lighty-enable-mod fastcgi-php
 ln -sf /etc/lighttpd/conf-available/10-fastcgi.conf /etc/lighttpd/conf-enabled/
 ln -sf /etc/lighttpd/conf-available/15-fastcgi-php.conf /etc/lighttpd/conf-enabled/
 ln -sf /usr/share/lighttpd/create-mime.conf.pl /usr/share/lighttpd/create-mime.assign.pl
-systemctl enable lighttpd
 
 ## PHP Configuration v7.3
 cp -rf $BIN/php.cgi.ini /etc/php/7.3/cgi/php.ini

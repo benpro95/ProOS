@@ -28,29 +28,19 @@ usbplug)
 echo "no function assigned"
 exit
 ;;
-### Relaxation Sound Playback
 
+### Relaxation Sound Playback
 stoprelax)
 killall -s KILL -w mpv
-## USB Decoder Input
-/opt/rpi/xmit usb
-sleep 0.5
-## Preamp DAC Input
-/opt/rpi/xmit dac
 exit
 ;;
-
+##
 relax)
 killall -s KILL -w mpv
-## Capatialize first letter of second argument
+## Capitialize first letter of argument
 ARG2="${ARG2^}"
 ## Play Audio in Loop
 /usr/bin/screen -dm /usr/bin/mpv --no-video --gapless-audio=yes --loop-file "/mnt/smb/Media/Sounds/Relaxation/$ARG2"
-## Optical Decoder Input
-/opt/rpi/xmit coaxial
-sleep 0.5
-## Preamp DAC Input
-/opt/rpi/xmit dac
 exit
 ;;
 

@@ -24,9 +24,12 @@ IRsend irsend;
 // Create RF send object
 RCSwitch mySwitch = RCSwitch();
 
-// Validate Incoming Data
+// Validate Constants
+long valout;
 int base = 10;
 char* behind;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 // Setup instructions
 void setup() {
@@ -35,8 +38,10 @@ void setup() {
   Serial.begin(CONFIG_SERIAL);
   Serial.println();
   Serial.println("Starting setup");
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, 0);
+
+  // Built-in LED (turn-on, active low)
+  pinMode(5, OUTPUT);
+  digitalWrite(5, 0);
 
   // RF transmit output on pin #19
   mySwitch.enableTransmit(19);
@@ -85,10 +90,12 @@ void setup() {
 
   // Setup complete
   Serial.println("Setup completed");
-  digitalWrite(LED_BUILTIN, 0);
   Serial.println();
+  digitalWrite(5, 1);
 
 }
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 // Loop instructions
 void loop() {
@@ -98,7 +105,6 @@ void loop() {
   if (client) {
 
     // New client
-    digitalWrite(LED_BUILTIN, 1);
     //Serial.println("New client connected");
 
     // Wait nicely for the client to complete its full request
@@ -112,11 +118,10 @@ void loop() {
     if (millis() < timeout) {
       //Serial.println("Client request finished!");
     } else {
-      Serial.println("Client request timeout!");
+      //Serial.println("Client request timeout!");
       client.flush();
       client.stop();
-      digitalWrite(LED_BUILTIN, 0);
-      Serial.println();
+      //Serial.println();
       return;
     }
 
@@ -132,7 +137,9 @@ void loop() {
     currentLine.remove((currentLine.indexOf(" ")));
     //Serial.print("Valid request: ");
     //Serial.println(currentLine);
-
+    // Turn-on LED when valid request received
+    digitalWrite(5, 0);
+    
 ///////////////////////////////////////////////      
       
 // IR Transmit (must be in integer format)
@@ -142,40 +149,31 @@ if(currentLine.indexOf("irtx.") >=0)
   if(currentLine.indexOf("nec.") >=4)
   {
     // NEC IR Transmit 32-bit
-    String ircode = currentLine.substring(9,60);
-    //Serial.println("NEC");
-    //Serial.println(ircode);
-    long longVal = strtol(ircode.c_str(), &behind, base);
-    //Serial.println("Result ");
-    //Serial.println(longVal, base);
-    //Serial.println("\n");
-    irsend.sendNEC(longVal, 32);
+    String code = currentLine.substring(9,60);
+    //Serial.print("NEC: ");
+    //Serial.println(code);
+    valdata(code);
+    irsend.sendNEC(valout, 32);
     delay(30);
   }
   if(currentLine.indexOf("sony20.") >=4)
   {
     // SONY IR Transmit 20-bit
-    String ircode = currentLine.substring(12,60);
-    //Serial.println("Sony 20-bit");
-    //Serial.println(ircode);
-    long longVal = strtol(ircode.c_str(), &behind, base);
-    //Serial.println("Result ");
-    //Serial.println(longVal, base);
-    //Serial.println("\n");
-    irsend.sendSony(longVal, 20);
+    String code = currentLine.substring(12,60);
+    //Serial.print("Sony 20-bit: ");
+    //Serial.println(code);
+    valdata(code);
+    irsend.sendSony(valout, 20);
     delay(30);
   }
   if(currentLine.indexOf("sony12.") >=4)
   {
     // SONY IR Transmit 12-bit
-    String ircode = currentLine.substring(12,60);
-    //Serial.println("Sony 12-bit");
-    //Serial.println(ircode);
-    long longVal = strtol(ircode.c_str(), &behind, base);
-    //Serial.println("Result ");
-    //Serial.println(longVal, base);
-    //Serial.println("\n");
-    irsend.sendSony(longVal, 12);
+    String code = currentLine.substring(12,60);
+    //Serial.print("Sony 12-bit: ");
+    //Serial.println(code);
+    valdata(code);
+    irsend.sendSony(valout, 12);
     delay(30);
   }
 }
@@ -187,21 +185,21 @@ if(currentLine.indexOf("fet.") >=0)
   if(currentLine.indexOf("on.") >=3)
   {
     // FET on
-    String fet = currentLine.substring(7,9);
-    //Serial.println("FET on");
-    //Serial.println(fet);
-    //Serial.println("\n");
-    digitalWrite(fet.toInt(), HIGH);
+    String code = currentLine.substring(7,9);
+    Serial.print("FET on: ");
+    Serial.println(code);
+    valdata(code);
+    //digitalWrite(valout, HIGH);
     delay(30);
   }
   if(currentLine.indexOf("off.") >=3)
   {
     // FET off
-    String fet = currentLine.substring(8,10);
-    //Serial.println("FET off");
-    //Serial.println(fet);
-    //Serial.println("\n");
-    digitalWrite(fet.toInt(), LOW);
+    String code = currentLine.substring(8,10);
+    Serial.print("FET off: ");
+    Serial.println(code);
+    valdata(code);
+    //digitalWrite(valout, LOW);
     delay(30);
   }
 }    
@@ -209,11 +207,11 @@ if(currentLine.indexOf("fet.") >=0)
 // 433MHz RF Control
 if(currentLine.indexOf("rftx.") >=0)
 {
-  String rfcode = currentLine.substring(5,20);
-  //Serial.println("RF Transmit");
-  //Serial.println(rfcode);
-  //Serial.println("\n");
-  mySwitch.send(rfcode.toInt(), 24);
+  String code = currentLine.substring(5,20);
+  //Serial.print("RF Code: ");
+  //Serial.println(code);
+  valdata(code);
+  mySwitch.send(valout, 24);
   delay(30);
 }
         
@@ -224,7 +222,8 @@ if(currentLine.indexOf("rftx.") >=0)
       client.println("Content-Type: text/plain");
       client.println("Connection: close");
       client.println();
-      client.println("OK");
+      // Turn-off LED when request is finished
+      digitalWrite(5, 1);
 
     } else {
 
@@ -232,16 +231,27 @@ if(currentLine.indexOf("rftx.") >=0)
       Serial.println("Invalid client request");
       Serial.println("Sending HTTP/1.1 404 response");
       client.println("HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html><body>Not found</body></html>");
+      // Turn-off LED when request is finished
+      digitalWrite(5, 1);
 
     }
 
     // Flush output buffer
     //Serial.println("Flushing output buffer");
     client.flush();
-    digitalWrite(LED_BUILTIN, 0);
-    Serial.println();
+    //Serial.println();
     return;
 
   }
 
 }
+
+// Data validation function, converts string to integers
+int valdata(String code)
+{
+  valout = strtol(code.c_str(), &behind, base);
+  //Serial.print("Validated Output: ");
+  //Serial.println(valout, base);
+  //Serial.println("\n");
+}
+

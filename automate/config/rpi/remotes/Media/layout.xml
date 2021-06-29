@@ -27,7 +27,9 @@
         <button text="Auto" ontap="autodac" />
     </row>
     <row>
-	    <button text="System" icon="power" ontap="audio" />
+        <button icon="off" ontap="hifioff" />
+	    <button text="System" icon="power" ontap="pwrhifi" />
+        <button icon="on" ontap="hifion" />
     </row>
 </layout>
 

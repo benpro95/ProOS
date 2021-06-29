@@ -44,4 +44,7 @@ chmod 644 /etc/auto.map
 chown root:root /etc/auto.map
 mkdir -p /mnt/smb
 
+## Link Main Script
+ln -sf /opt/rpi/main /usr/bin/main
+
 exit

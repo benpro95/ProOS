@@ -95,7 +95,6 @@ fi
 ## Update Automate Conf
 if [[ $REPLY =~ ^[Aa]$ ]]
 then
-  touch /mnt/extbkps/keytmp/createlog.txt
   echo " "
   echo "Updating Automate System Configuration..."
   rsync -e "ssh -i ~/ProOS/automate/id_rsa" --progress --checksum -rtv ~/ProOS/automate/config/rpi/* root@automate.home:/opt/rpi/

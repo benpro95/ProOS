@@ -5,11 +5,11 @@ script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfa1 toggle");
 end
 
 actions.dresseron = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfa1 on");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfa2 on");
 end
 
 actions.dresseroff = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfa1 off");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfa2 off");
 end
 
 actions.ceiling = function ()

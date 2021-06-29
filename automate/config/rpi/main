@@ -13,40 +13,22 @@ case "$1" in
 
 ### Relaxation Sound Playback
 stoprelax)
-killall -s KILL -w mpv
+/usr/bin/curl -N -f -m 5 --silent "http://system/exec.php?var=&arg=stoprelax&action=main"
 ## USB Decoder Input
 /opt/rpi/xmit usb
-sleep 0.5
 ## Preamp DAC Input
 /opt/rpi/xmit dac
 exit
 ;;
-###
+
 relax)
 killall -s KILL -w mpv
-## Capatialize first letter of second argument
-ARG2="${ARG2^}"
 ## Play Audio in Loop
-/usr/bin/screen -dm /usr/bin/mpv --no-video --gapless-audio=yes --loop-file "/mnt/smb/Media/Sounds/Relaxation/$ARG2"
+/usr/bin/curl -N -f -m 5 --silent "http://system/exec.php?var=$ARG2&arg=relax&action=main"
 ## Optical Decoder Input
 /opt/rpi/xmit coaxial
-sleep 0.5
 ## Preamp DAC Input
 /opt/rpi/xmit dac
-exit
-;;
-
-rebootnet)
-echo "Rebooting Network Switch..."
-/usr/bin/screen -dm /opt/rpi/main rebootnet-bkg
-exit
-;;
-
-rebootnet-bkg)
-## Reboot Network Switch
-/opt/rpi/xmit fet1 off
-sleep 5.25
-/opt/rpi/xmit fet1 on
 exit
 ;;
 
@@ -54,67 +36,80 @@ exit
 
 lightson)
 touch /var/lock/rpi/lights.save
-sleep 0.35
 ## Dresser Lamp
-/opt/rpi/xmit rfa1 on
-sleep 0.35
-## Ceiling Lamp
 /opt/rpi/xmit rfa2 on
-sleep 0.35
 ## Desk Light
 /opt/rpi/xmit rfb1 on
+exit
+;;
+
+allon)
+touch /var/lock/rpi/lights.save
+## Dresser Lamp
+/opt/rpi/xmit rfa2 on
+## Desk Light
+/opt/rpi/xmit rfb1 on
+## LEDwalls
+/opt/rpi/leds candle
+sleep 2.5
+/opt/rpi/leds fc 60
 exit
 ;;
 
 lightsoff)
 ## Turn all lights off
 rm -f /var/lock/rpi/lights.save
-sleep 0.35
 ## Dresser Lamp
-/opt/rpi/xmit rfa1 off
-sleep 0.35
-## Ceiling Lamp
 /opt/rpi/xmit rfa2 off
-sleep 0.35
 ## Desk Light
 /opt/rpi/xmit rfb1 off
 exit
 ;;
 
-allon)
-/opt/rpi/main lightson
-sleep 0.35
-## LEDwalls
-touch /tmp/global-fc.lock
-sh -c '/opt/rpi/leds fc 60'
-sleep 3.5
-sh -c '/opt/rpi/leds candle'
-exit
-;;
-
 alloff)
-/opt/rpi/main lightsoff
-sleep 0.35
+## Turn all lights off
+rm -f /var/lock/rpi/lights.save
+## Dresser Lamp
+/opt/rpi/xmit rfa2 off
+## Desk Light
+/opt/rpi/xmit rfb1 off
 ## Blank LEDwalls
 /opt/rpi/leds stop
 exit
 ;;
 
-## Audio Power
+## Audio power
 pwrhifi)
-## Power Audio System
+## Power audio system
 /opt/rpi/xmit pwrhifi
-sleep 0.35
-## Reset volume tokens
+## Reset sub volume token
 rm -f /var/lock/rpi/subs.enabled
-### Stop Relax Sounds
-/opt/rpi/main stopsnd
-sleep 2.5
-## USB Decoder Input
-/opt/rpi/xmit usb
-sleep 8.0
-## Preamp DAC Input
-/opt/rpi/xmit dac
+exit
+;;
+##
+hifion)
+if ping -c 1 system &> /dev/null
+then
+  echo "Host is up"
+else
+  ## Power audio system
+  /opt/rpi/xmit pwrhifi
+  ## Reset sub volume token
+  rm -f /var/lock/rpi/subs.enabled
+fi
+exit
+;;
+##
+hifioff)
+if ping -c 1 system &> /dev/null
+then
+  ## Power audio system
+  /opt/rpi/xmit pwrhifi
+  ## Reset sub volume token
+  rm -f /var/lock/rpi/subs.enabled
+else
+  echo "Host is down"
+fi
 exit
 ;;
 
@@ -140,9 +135,7 @@ exit
 ;;
 
 submute)
-if [ ! -e /var/lock/rpi/subs.enabled ]; then
-  echo ""  > /dev/null 2>&1
-else
+if [ -e /var/lock/rpi/subs.enabled ]; then
   ### Subwoofer mute/disable
   /opt/rpi/xmit subpwr
 fi
@@ -150,9 +143,7 @@ exit
 ;;
 
 subup)
-if [ ! -e /var/lock/rpi/subs.enabled ]; then
-  echo ""  > /dev/null 2>&1
-else
+if [ -e /var/lock/rpi/subs.enabled ]; then
   ### Subwoofer volume up
   /opt/rpi/xmit subup
 fi
@@ -160,9 +151,7 @@ exit
 ;;
 
 subdwn)
-if [ ! -e /var/lock/rpi/subs.enabled ]; then
-  echo ""  > /dev/null 2>&1
-else
+if [ -e /var/lock/rpi/subs.enabled ]; then
   ### Subwoofer volume down
   /opt/rpi/xmit subdwn
 fi
@@ -184,7 +173,6 @@ autodac)
 rm -f /var/lock/rpi/subs.enabled
 ## Auto Decoder Input
 /opt/rpi/xmit inauto
-sleep 0.5
 ## Preamp DAC Input
 /opt/rpi/xmit dac
 exit
@@ -195,7 +183,6 @@ usb)
 rm -f /var/lock/rpi/subs.enabled
 ## USB Decoder Input
 /opt/rpi/xmit usb
-sleep 0.5
 ## Preamp DAC Input
 /opt/rpi/xmit dac
 exit
@@ -207,7 +194,6 @@ coax)
 rm -f /var/lock/rpi/subs.enabled
 ## Coaxial Decoder Input
 /opt/rpi/xmit coaxial
-sleep 0.5
 ## Preamp DAC Input
 /opt/rpi/xmit dac
 exit
@@ -219,7 +205,6 @@ opt)
 rm -f /var/lock/rpi/subs.enabled
 ## Optical Decoder Input
 /opt/rpi/xmit optical
-sleep 0.5
 ## Preamp DAC Input
 /opt/rpi/xmit dac
 exit
@@ -228,51 +213,33 @@ exit
 roomon)
 ## Main Light On
 /opt/rpi/xmit fet0 on
-sleep 0.35
 ## Dresser Lamp
-/opt/rpi/xmit rfa1 on
-sleep 0.35
-## Ceiling Lamp
 /opt/rpi/xmit rfa2 on
-sleep 0.35
 ## Desk Light
 /opt/rpi/xmit rfb1 on
-sleep 0.35
 ## Desktop Power
 /opt/rpi/xmit rfb2 on
-sleep 0.35
 ## PC Power On
 /opt/rpi/main pcon
-sleep 0.35
 ## LEDwalls
-touch /tmp/global-fc.lock
+/opt/rpi/leds prism
+sleep 3.5
 /opt/rpi/leds fc norm
-sleep 0.35
-/opt/rpi/leds video prism
 exit
 ;;
 
 roomoff)
 ## Main Light Off
 /opt/rpi/xmit fet0 off
-sleep 0.35
 ## Dresser Lamp
-/opt/rpi/xmit rfa1 off
-sleep 0.35
-## Ceiling Lamp
 /opt/rpi/xmit rfa2 off
-sleep 0.35
 ## Desk Light
 /opt/rpi/xmit rfb1 off
-sleep 0.35
 ## Desktop Power
 /opt/rpi/xmit rfb2 off
-sleep 0.35
 ## PC Power Off
 /opt/rpi/main pcoff
-sleep 0.35
 ## Blank LEDwalls
-touch /tmp/global-fc.lock
 /opt/rpi/leds stop
 exit
 ;;

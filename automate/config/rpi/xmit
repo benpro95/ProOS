@@ -12,7 +12,7 @@ HTML="on"
 XMIT(){
 if [[ "$HTML" == "on" ]]; then
 ### Transmit to ESP32 WiFi MCU
-/usr/bin/curl --no-keepalive --fail --connect-timeout 2 --max-time 2 --silent --url http://esp32:80/xmit/$XMITCMD
+/usr/bin/curl --connect-timeout 2 --max-time 2 --silent --url "http://10.177.1.17:80/xmit/$XMITCMD"
 ###  
 else
 ### Transmit to RS-232 serial

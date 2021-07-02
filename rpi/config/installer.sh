@@ -141,26 +141,32 @@ apt-get install -y --no-upgrade autoconf make libtool \
  libxml2-dev libxslt1-dev python-dev mpv mplayer vlc portaudio19-dev libffi-dev \
  libssl-dev socat mpg123 nmap libatlas-base-dev
 
-## Install Node.js
+## CPU Specific Packages
 if [ "$CPUTYPE" = "Raspberry Pi Zero W Rev 1.1" ]; then
-    echo "Pi Zero detected"
+	  ##### Install Node.js from 'pkgs' folder #####
+	  NODEVERSION="14.17.1"
+	  ## Uncomment to reinstall
+    #rm -f /usr/bin/node
+    echo "Pi Zero detected."
     if [ ! -e /usr/bin/node ]; then
-    tar xvfJ /opt/rpi/pkgs/node-v14.13.0-linux-armv6l.tar.xz -C /opt/rpi/pkgs/
-    mv /opt/rpi/pkgs/node-v14.13.0-linux-armv6l/bin/* /usr/local/bin/
-    mv /opt/rpi/pkgs/node-v14.13.0-linux-armv6l/include/node /usr/local/include/
-    mv /opt/rpi/pkgs/node-v14.13.0-linux-armv6l/lib/node_modules /usr/local/lib/
-    mkdir -p /usr/local/share/systemtap; mkdir -p /usr/local/share/systemtap/tapset; mkdir -p /usr/local/share/doc
-    mv /opt/rpi/pkgs/node-v14.13.0-linux-armv6l/share/doc/node /usr/local/share/doc/
-    mv /opt/rpi/pkgs/node-v14.13.0-linux-armv6l/share/man/man1/node.1 /usr/share/man/man1/
-    mv /opt/rpi/pkgs/node-v14.13.0-linux-armv6l/share/systemtap/tapset/node.stp /usr/local/share/systemtap/tapset/
+    tar xvfJ /opt/rpi/pkgs/node-v$NODEVERSION-linux-armv6l.tar.xz -C /opt/rpi/pkgs/
+    cd /opt/rpi/pkgs/node-v$NODEVERSION-linux-armv6l/
+    cp -vR * /usr/local/
     ln -sf /usr/local/bin/node /usr/bin/node
-    rm -rf /opt/rpi/pkgs/node-v14.13.0-linux-armv6l
+    rm -rf /opt/rpi/pkgs/node-v$NODEVERSION-linux-armv6l
+    cd $BIN
     else
     echo "Node already installed."
     fi
+    ln -sf /usr/local/bin/node /usr/bin/nodejs
+    ###########################
+    echo "Removing Java and Arduino Support..."
+    apt-get remove -y arduino default-jre openjdk-11-jre
+    apt-get remove -y ca-certificates-java default-jre-headless
 else
-    echo "ARMv7 CPU detected installing Node"
-    apt install -y --no-upgrade nodejs
+    echo "Pi 3+ detected."
+    apt-get install -y --no-upgrade nodejs
+    apt-get install -y --no-upgrade arduino arduino-core avrdude
 fi
 
 ## Python Libraries
@@ -171,16 +177,6 @@ pip install --disable-pip-version-check pip==19.1.1 wheel==0.33.4 ipython==5.8.0
 virtualenvwrapper==4.8.4 pssh==2.3.1 numpy==1.16.2 RPi.GPIO==0.7.0 PyAudio==0.2.11 pyserial==3.5 dam1021==0.4 xmodem==0.4.6
 pip3 install --disable-pip-version-check pyserial==3.5
 
-## Arduino / Java Support
-if [ "$CPUTYPE" = "Raspberry Pi Zero W Rev 1.1" ]; then
-    echo "Pi Zero detected removing Java..."
-    apt-get remove -y arduino default-jre openjdk-11-jre
-    apt-get remove -y ca-certificates-java default-jre-headless
-else
-    echo "ARMv7 CPU detected installing Arduino support..."
-    apt-get install -y --no-upgrade arduino arduino-core avrdude
-fi
-
 ## AV Codecs Support
 apt-get install -y --no-upgrade libupnp-dev
 apt-get remove -y --purge libgstreamer0.10-dev gstreamer0.10-plugins-base gstreamer0.10-plugins-good gstreamer0.10-plugins-ugly
@@ -190,7 +186,7 @@ apt-get install -y --no-upgrade libgstreamer1.0-dev gstreamer1.0-plugins-base gs
  gstreamer1.0-plugins-bad-dbg gstreamer1.0-omx gstreamer1.0-libav \
  libavcodec-dev libavformat-dev libswscale-dev
  
-## OpenCV
+## OpenCV (disabled)
 #apt-get install -y opencv-doc opencv-data libopencv-dev libopencv3.2-java libopencv3.2-jni python-opencv
 apt-get remove -y --purge opencv-doc opencv-data libopencv-dev libopencv3.2-java libopencv3.2-jni python-opencv
 
@@ -210,7 +206,7 @@ chmod 777 /media
 chmod 777 /media/usb*
 chown root:root /media/usb*
 
-## FTP Client ( ncftpput -R -v -u "ftp-username" ftp.website.com ftp-upload-path local-path/* )
+## FTP Client
 apt-get install -y --no-upgrade ncftp
 
 ## Bluetooth Support

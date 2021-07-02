@@ -39,16 +39,28 @@ gpio write 25 0
 exit
 ;;
 
-lamp)
+whtledon)
+## White Front LED On
+touch /tmp/whtled.save
+gpio write 26 1
+exit
+;;
+
+whtledoff)
+## White Front LED Off
+rm -f /tmp/whtled.save
+gpio write 26 0
+exit
+;;
+
+whtled)
 ## White Front LED Toggle
-if [ ! -e /tmp/fntled.save ]; then
-   ## White Front LED On
-   touch /tmp/fntled.save
-   gpio write 26 1
-else
-   ## White Front LED Off
-   rm -f /tmp/fntled.save
+if [ -e /tmp/whtled.save ]; then
+   rm -f /tmp/whtled.save
    gpio write 26 0
+else
+   touch /tmp/whtled.save
+   gpio write 26 1
 fi
 exit
 ;;

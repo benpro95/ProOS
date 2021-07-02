@@ -82,6 +82,12 @@ chmod 644 /etc/cron.d/rootcron
 chown root:root /etc/cron.d/rootcron
 systemctl restart cron
 
+## Suppress Slice Log Entries
+cp /tmp/config/ignore-session-slice.conf /etc/rsyslog.d/
+chmod 644 /etc/rsyslog.d/ignore-session-slice.conf
+chown root:root /etc/rsyslog.d/ignore-session-slice.conf
+systemctl restart rsyslog
+
 ## Main Menu Script
 cp /tmp/config/svrutil /usr/bin/
 chmod 755 /usr/bin/svrutil

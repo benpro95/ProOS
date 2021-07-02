@@ -260,10 +260,10 @@ exit
 
 
         *)
-          echo "Automate Server for Raspberry Pi"
-	      echo "  by Ben Provenzano III "
-	      echo " "
-	      echo "Enter a valid command line argument."
+          echo "Automate Server"
+	        echo "  by Ben Provenzano III "
+	        echo " "
+	        echo "Enter a valid command line argument."
           exit 1
           ;;
     esac   

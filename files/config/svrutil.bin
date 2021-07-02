@@ -95,6 +95,7 @@ fi
 ## Update Automate Conf
 if [[ $REPLY =~ ^[Aa]$ ]]
 then
+  curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
   echo " "
   echo "Updating Automate System Configuration..."
   rsync -e "ssh -i ~/ProOS/automate/id_rsa" --progress --checksum -rtv ~/ProOS/automate/config/rpi/* root@automate.home:/opt/rpi/
@@ -104,6 +105,7 @@ then
   echo " "
   echo "Restarting Unified Remote Server..."
   ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i ~/ProOS/automate/id_rsa root@automate.home "systemctl restart urserver"
+  curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"
   ENDPGRM
 fi
 
@@ -140,10 +142,13 @@ then
     echo
     if [[ $REPLY =~ ^[Bb]$ ]]
     then
+     curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
      touch /mnt/extbkps/keytmp/start$VMHOST.txt
      echo "waiting one-minute for startup to trigger..."
      sleep 60
      cat /mnt/extbkps/keytmp/vmlog.txt
+     ## Turn off white light on LEDwall
+     curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"
     fi
     if [[ $REPLY =~ ^[Ss]$ ]]
     then
@@ -216,6 +221,7 @@ then
   if [[ $REPLY =~ ^[Dd]$ ]]
   then
     echo " "
+    curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
     touch /mnt/extbkps/keytmp/unmount.txt
     echo "waiting one-minute for drives to detach..."
     sleep 60
@@ -228,6 +234,7 @@ then
     then
       cat /mnt/extbkps/keytmp/status.txt
     fi
+    curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"
     ENDPGRM
   fi
   ## Read password then mount drives
@@ -239,6 +246,7 @@ then
     echo "$KEYVAR" >> /mnt/extbkps/keytmp/pass.txt
     KEYVAR=000000000000000000000
     echo " "
+    curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
     echo "waiting one-minute for drives to mount..."
     sleep 60
   fi
@@ -277,6 +285,7 @@ then
     CHECKSUM="--checksum"
     BKPPGRM
   fi
+  curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"
   ENDPGRM
 fi
 ##### END MAIN FUNCTION #####
@@ -311,6 +320,7 @@ else
 fi
 
 echo "starting backup..."
+curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
 echo " "
 echo "***************************************************"
 echo "press ctrl+a then ctrl+d to detach terminal"
@@ -454,6 +464,7 @@ touch /mnt/extbkps/keytmp/unmount.txt
 ## Unlock State File
 rm -f /tmp/backupsvr.lock
 echo "waiting one-minute for drives to detach..."
+curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"
 sleep 60
 cat /mnt/extbkps/keytmp/status.txt
 REPLY=""

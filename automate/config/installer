@@ -11,7 +11,7 @@ apt-get install -y --no-upgrade dirmngr ca-certificates apt-transport-https wget
 apt-get install -y --no-upgrade unzip gnupg htop rsync curl screen parallel ethtool 
 apt-get install -y --no-upgrade libdbus-1-dev libdbus-glib-1-dev locales
 apt-get install -y --no-upgrade aptitude sudo gnupg scrub avahi-daemon
-apt-get remove --purge -y cron anacron
+apt-get remove --purge -y cron anacron postfix
 
 ## Install Replacement Logger
 apt-get remove --purge -y logrotate
@@ -134,7 +134,10 @@ chmod 644 /root/.hushlogin
 chown root:root /root/.hushlogin
 
 ## Symbolic Links
+ln -sf /opt/rpi/init /usr/bin/rpi
 ln -sf /opt/rpi/xmit /usr/bin/xmit
+ln -sf /opt/rpi/leds /usr/bin/leds
+ln -sf /opt/rpi/main /usr/bin/main
 
 ## Clean-up
 systemctl daemon-reload

@@ -12,7 +12,7 @@ HTML="on"
 XMIT(){
 if [[ "$HTML" == "on" ]]; then
 ### Transmit to ESP32 WiFi MCU
-/usr/bin/curl -N -f -m 10 --silent http://esp32.home/xmit/$XMITCMD
+/usr/bin/curl --no-keepalive --fail --connect-timeout 2 --max-time 2 --silent --url http://esp32:80/xmit/$XMITCMD
 ###  
 else
 ### Transmit to RS-232 serial
@@ -209,37 +209,16 @@ if [[ "$CMD" == "inauto" ]]; then
    XMIT
 fi
 
-### External Power Outputs
+### External Power Outputs (disabled)
 
-## Main Light
-if [[ "$CMD" == "fet0on" ]]; then
-   XMITCMD="fet.on.6"
-   XMIT
-fi
-if [[ "$CMD" == "fet0off" ]]; then
-   XMITCMD="fet.off.6"
-   XMIT
-fi
-
-## Network Switch
-if [[ "$CMD" == "fet1on" ]]; then
-   XMITCMD="fet.on.7"
-   XMIT
-fi
-if [[ "$CMD" == "fet1off" ]]; then
-   XMITCMD="fet.off.7"
-   XMIT
-fi
-
-## Built-in Fan
-if [[ "$CMD" == "fet2on" ]]; then
-   XMITCMD="fet.on.5"
-   XMIT
-fi
-if [[ "$CMD" == "fet2off" ]]; then
-   XMITCMD="fet.off.5"
-   XMIT
-fi
+#if [[ "$CMD" == "fet0on" ]]; then
+#   XMITCMD="fet.on.6"
+#   XMIT
+#fi
+#If [[ "$CMD" == "fet0off" ]]; then
+#   XMITCMD="fet.off.6"
+#   XMIT
+#fi
 
 ### 433MHz RF Controller
 
@@ -295,6 +274,16 @@ fi
 
 if [[ "$CMD" == "rfb3" ]]; then
    XMITCMD="rftx.864343"
+   XMIT
+fi
+
+if [[ "$CMD" == "rfc1on" ]]; then
+   XMITCMD="rftx.834511"
+   XMIT
+fi
+
+if [[ "$CMD" == "rfc1off" ]]; then
+   XMITCMD="rftx.834512"
    XMIT
 fi
 

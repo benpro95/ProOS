@@ -1,7 +1,7 @@
 local script = libs.script;
 
 actions.dresser = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfa1 toggle");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfa2 toggle");
 end
 
 actions.dresseron = function ()
@@ -13,15 +13,15 @@ script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfa2 off");
 end
 
 actions.ceiling = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfa2 toggle");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfa1 toggle");
 end
 
 actions.ceilingon = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfa2 on");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfa1 on");
 end
 
 actions.ceilingoff = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfa2 off");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfa1 off");
 end
 
 actions.desk = function ()
@@ -37,15 +37,15 @@ script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfb1 off");
 end
 
 actions.mainl = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit fet0 toggle");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfc1 toggle");
 end
 
 actions.mainlon = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit fet0 on");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfc1 on");
 end
 
 actions.mainloff = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit fet0 off");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfc1 off");
 end
 
 actions.lights = function ()

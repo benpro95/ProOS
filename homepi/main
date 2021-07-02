@@ -28,7 +28,7 @@ systemctl start motion
 ## Cameras Cleanup Timer
 systemctl start rpi-camcleanup.timer
 ## Auto Restart Motion
-screen -dmS motionping /opt/rpi/motionping
+screen -h 100 -dmS motionping /opt/rpi/motionping
 ## Disable HDMI
 /usr/bin/tvservice -o
 exit

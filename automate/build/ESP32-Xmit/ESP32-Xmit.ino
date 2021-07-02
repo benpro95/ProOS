@@ -105,38 +105,38 @@ void loop() {
   if (client) {
 
     // New client
-    //Serial.println("New client connected");
+    Serial.println("New client connected");
 
     // Wait nicely for the client to complete its full request
     unsigned long timeout = millis() + CONFIG_TIMEOUT;
-    //Serial.println("Waiting for client request to finish...");
+    Serial.println("Waiting for client request to finish...");
     while (!client.available() && millis() < timeout) {
       delay(1);
     }
 
     // End client connection when timeout is reached to not hold up availability
     if (millis() < timeout) {
-      //Serial.println("Client request finished!");
+      Serial.println("Client request finished!");
     } else {
-      //Serial.println("Client request timeout!");
+      Serial.println("Client request timeout!");
       client.flush();
       client.stop();
-      //Serial.println();
+      Serial.println();
       return;
     }
 
     // Catch client request
     String req = client.readStringUntil('\r');
-    //Serial.print("Raw request: ");
-    //Serial.println(req);
+    Serial.print("Raw request: ");
+    Serial.println(req);
     if (req.indexOf(F("/xmit/")) != -1) {
 
     // Truncate request string
     String currentLine = req;
     currentLine.remove(0, ((currentLine.lastIndexOf("/xmit/")) + 6));
     currentLine.remove((currentLine.indexOf(" ")));
-    //Serial.print("Valid request: ");
-    //Serial.println(currentLine);
+    Serial.print("Valid request: ");
+    Serial.println(currentLine);
     // Turn-on LED when valid request received
     digitalWrite(5, 0);
     
@@ -145,13 +145,11 @@ void loop() {
 // IR Transmit (must be in integer format)
 if(currentLine.indexOf("irtx.") >=0)
 {
-  //Serial.print("IR Transmit\n");
   if(currentLine.indexOf("nec.") >=4)
   {
     // NEC IR Transmit 32-bit
-    String code = currentLine.substring(9,60);
-    //Serial.print("NEC: ");
-    //Serial.println(code);
+    Serial.print("IR NEC\n");
+    String code = currentLine.substring(9,21);
     valdata(code);
     irsend.sendNEC(valout, 32);
     delay(30);
@@ -159,9 +157,8 @@ if(currentLine.indexOf("irtx.") >=0)
   if(currentLine.indexOf("sony20.") >=4)
   {
     // SONY IR Transmit 20-bit
-    String code = currentLine.substring(12,60);
-    //Serial.print("Sony 20-bit: ");
-    //Serial.println(code);
+    Serial.print("IR Sony 20-bit\n");
+    String code = currentLine.substring(12,24);
     valdata(code);
     irsend.sendSony(valout, 20);
     delay(30);
@@ -169,25 +166,24 @@ if(currentLine.indexOf("irtx.") >=0)
   if(currentLine.indexOf("sony12.") >=4)
   {
     // SONY IR Transmit 12-bit
-    String code = currentLine.substring(12,60);
-    //Serial.print("Sony 12-bit: ");
-    //Serial.println(code);
+    Serial.print("IR Sony 12-bit\n");
+    String code = currentLine.substring(12,24);
     valdata(code);
-    irsend.sendSony(valout, 12);
-    delay(30);
+    for (int i = 0; i < 3; i++) {
+      irsend.sendSony(valout, 12);
+      delay(30);
+    }  
   }
 }
 
 // FET Control
 if(currentLine.indexOf("fet.") >=0)
 {
-  //Serial.print("FET Control\n");
   if(currentLine.indexOf("on.") >=3)
   {
     // FET on
+    Serial.print("FET on\n");
     String code = currentLine.substring(7,9);
-    Serial.print("FET on: ");
-    Serial.println(code);
     valdata(code);
     //digitalWrite(valout, HIGH);
     delay(30);
@@ -195,9 +191,8 @@ if(currentLine.indexOf("fet.") >=0)
   if(currentLine.indexOf("off.") >=3)
   {
     // FET off
+    Serial.print("FET off\n");
     String code = currentLine.substring(8,10);
-    Serial.print("FET off: ");
-    Serial.println(code);
     valdata(code);
     //digitalWrite(valout, LOW);
     delay(30);
@@ -207,9 +202,8 @@ if(currentLine.indexOf("fet.") >=0)
 // 433MHz RF Control
 if(currentLine.indexOf("rftx.") >=0)
 {
+  Serial.print("RF transmit\n");
   String code = currentLine.substring(5,20);
-  //Serial.print("RF Code: ");
-  //Serial.println(code);
   valdata(code);
   mySwitch.send(valout, 24);
   delay(30);
@@ -231,15 +225,13 @@ if(currentLine.indexOf("rftx.") >=0)
       Serial.println("Invalid client request");
       Serial.println("Sending HTTP/1.1 404 response");
       client.println("HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html><body>Not found</body></html>");
-      // Turn-off LED when request is finished
-      digitalWrite(5, 1);
 
     }
 
     // Flush output buffer
-    //Serial.println("Flushing output buffer");
+    Serial.println("Flushing output buffer");
     client.flush();
-    //Serial.println();
+    Serial.println();
     return;
 
   }
@@ -250,8 +242,7 @@ if(currentLine.indexOf("rftx.") >=0)
 int valdata(String code)
 {
   valout = strtol(code.c_str(), &behind, base);
-  //Serial.print("Validated Output: ");
-  //Serial.println(valout, base);
-  //Serial.println("\n");
+  Serial.print("Validated request: ");
+  Serial.println(valout, base);
 }
 

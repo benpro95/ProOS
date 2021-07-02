@@ -36,6 +36,8 @@ exit
 
 lightson)
 touch /var/lock/rpi/lights.save
+## Main Lamp
+/opt/rpi/xmit rfc1 on
 ## Dresser Lamp
 /opt/rpi/xmit rfa2 on
 ## Desk Light
@@ -45,6 +47,8 @@ exit
 
 allon)
 touch /var/lock/rpi/lights.save
+## Main Lamp
+/opt/rpi/xmit rfc1 on
 ## Dresser Lamp
 /opt/rpi/xmit rfa2 on
 ## Desk Light
@@ -59,6 +63,8 @@ exit
 lightsoff)
 ## Turn all lights off
 rm -f /var/lock/rpi/lights.save
+## Main Lamp
+/opt/rpi/xmit rfc1 off
 ## Dresser Lamp
 /opt/rpi/xmit rfa2 off
 ## Desk Light
@@ -69,6 +75,8 @@ exit
 alloff)
 ## Turn all lights off
 rm -f /var/lock/rpi/lights.save
+## Main Lamp
+/opt/rpi/xmit rfc1 off
 ## Dresser Lamp
 /opt/rpi/xmit rfa2 off
 ## Desk Light
@@ -211,8 +219,8 @@ exit
 ;;
 
 roomon)
-## Main Light On
-/opt/rpi/xmit fet0 on
+## Main Lamp On
+/opt/rpi/xmit rfc1 on
 ## Dresser Lamp
 /opt/rpi/xmit rfa2 on
 ## Desk Light
@@ -229,8 +237,8 @@ exit
 ;;
 
 roomoff)
-## Main Light Off
-/opt/rpi/xmit fet0 off
+## Main Lamp Off
+/opt/rpi/xmit rfc1 off
 ## Dresser Lamp
 /opt/rpi/xmit rfa2 off
 ## Desk Light

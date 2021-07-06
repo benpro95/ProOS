@@ -190,8 +190,8 @@ exit
 ;;
 
 netdetect)
-echo "Log will be written to '/tmp/netstat.txt'."
-systemctl start rpi-netdetect.service
+## Invoke Autohotspot
+NETDETECT
 exit
 ;;
 

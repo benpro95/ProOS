@@ -261,6 +261,13 @@ mount -o remount,ro /boot
 exit
 ;;
 
+netdetect)
+echo "Switching to hotspot if network down."
+echo "Log is written to '/tmp/netstat.txt'."
+systemctl start netdetect.service
+exit
+;;
+
 delwifi)
 echo "Resetting Wi-Fi Settings..."
 /usr/bin/screen -dm /bin/bash /etc/netmode.sh delwifi || :
@@ -510,6 +517,7 @@ exit
           echo "running - Running Services"
           echo "timers - Active Timers"
           echo "wifistats - Wi-Fi Statistics"
+          echo "netdetect - Switch to hotspot if network down"
           echo "togglenet - Toggle Hotspot/Client Network"
           echo "gpumem - Free GPU Memory"
           echo "ftp - List File Transfer Command"

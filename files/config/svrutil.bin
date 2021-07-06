@@ -72,7 +72,6 @@ echo "(p) Backup ProOS to GitHub"
 echo "(enter) Exit to shell"
 echo " "
 
-REPLY=""
 read -p "select mode: " -n 1 -r
 echo
 
@@ -224,7 +223,7 @@ then
   ENDPGRM  
 fi
 
-## Backup to external drives
+## Backup to external drives (must be last)
 if [[ $REPLY =~ ^[Bb]$ ]]
 then
   echo " "
@@ -320,6 +319,8 @@ then
   fi
   curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"
   ENDPGRM
+else
+  exit
 fi
 ##### END MAIN FUNCTION #####
 }

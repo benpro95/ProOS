@@ -806,14 +806,15 @@ chmod -R 777 /var/log/Xorg.0.log /var/log/Xorg.0.log.old
 chmod -R 644 /home/pi/.xsession-errors /home/pi/.bash_history
 chown -R pi:pi /var/log/Xorg.0.log /var/log/Xorg.0.log.old /home/pi/.xsession-errors /home/pi/.bash_history
 
-## Cleanup Obsolete Files
-rm -rf /etc/supervisor/conf.d
+## Cleanup Obsolete Files\
 apt-get remove --purge -y supervisor
-apt-get -y autoremove
+rm -rf /etc/supervisor/conf.d
 rm -f /etc/systemd/system/systemd-udevd.service
 rm -f /etc/systemd/system/tmpfiles-clean.service
 rm -f /etc/systemd/system/tmpfiles-setup.service
 rm -f /etc/systemd/system/wifiswitch.service
+rm -f /etc/systemd/system/rpi-timer.service
+rm -f /etc/systemd/system/rpi-timer.timer
 rm -f /opt/rpi/leds.txt
 rm -rf /opt/rpi/spectro
 rm -rf /opt/rpi/rainbow

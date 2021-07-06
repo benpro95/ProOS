@@ -30,20 +30,6 @@ echo "no function assigned"
 exit
 ;;
 
-timer)
-## This script is ran every 5min after rpi-timer.timer is enabled.
-echo "no function assigned"
-exit
-;;
-
-example)
-### Place command in subscript if calling from exec.php over network.
-(
-### COMMAND HERE ###
-exit
-) > /dev/null 2>&1 &
-;;
-
 
 
 

@@ -20,78 +20,10 @@ sleep 4.25
 exit
 ;;
 
-timer)
-## This script is ran every 5-min
-exit
-;;
-
 usbplug)
 ## This script is ran after USB drive attached
 echo "no function assigned"
 exit
-;;
-
-300sine)
-(
-killall -s KILL -w mpv
-screen -dm /usr/bin/mpv --no-video --loop-file '/opt/rpi/300hz-sine.wav'
-exit
-) > /dev/null 2>&1 &
-;;
-
-600sine)
-(
-killall -s KILL -w mpv
-screen -dm /usr/bin/mpv --no-video --loop-file '/opt/rpi/600hz-sine.wav'
-) > /dev/null 2>&1 &
-;;
-
-1ksine)
-(
-killall -s KILL -w mpv
-screen -dm /usr/bin/mpv --no-video --loop-file '/opt/rpi/1khz-sine.wav'
-exit
-) > /dev/null 2>&1 &
-;;
-
-300square)
-(
-killall -s KILL -w mpv
-screen -dm /usr/bin/mpv --no-video --loop-file '/opt/rpi/300hz-square.wav'
-exit
-) > /dev/null 2>&1 &
-;;
-
-600square)
-(
-killall -s KILL -w mpv
-screen -dm /usr/bin/mpv --no-video --loop-file '/opt/rpi/600hz-square.wav'
-exit
-) > /dev/null 2>&1 &
-;;
-
-1ksquare)
-(
-killall -s KILL -w mpv
-screen -dm /usr/bin/mpv --no-video --loop-file '/opt/rpi/1khz-square.wav'
-exit
-) > /dev/null 2>&1 &
-;;
-
-stop)
-(
-## Stop audio player
-killall -s KILL -w mpv
-exit
-) > /dev/null 2>&1 &
-;;
-
-skip)
-(
-## Skip to next video
-killall omxplayer.bin 
-exit
-) > /dev/null 2>&1 &
 ;;
 	    
     *)

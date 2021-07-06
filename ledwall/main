@@ -77,6 +77,6 @@ exit
 	    echo "  by Ben Provenzano III"
 	    echo " "
 	    echo "Enter a valid command line argument."
-          exit 1
-          ;;
+      exit 1
+      ;;
     esac

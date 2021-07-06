@@ -5,7 +5,6 @@
 STOP_NET(){
 ## Clear Logs
 rm -f /tmp/gateway.txt
-rm -f /tmp/autoapd.txt
 ## Clear Tables
 iptables -F
 ## Stop Hotspot Service
@@ -139,28 +138,25 @@ SERVER=$(/sbin/ip route | awk '/default/ { print $3 }')
 touch /tmp/gateway.txt
 echo "Gateway IP $SERVER" > /tmp/gateway.txt
 ########
-if  [ ! -e /boot/apd-mode.enable ] ; then
-  echo ""  > /dev/null 2>&1
-else
-  echo "APD mode detected."
+if [ ! -e /sys/class/net/wlan0 ] ; then
+  echo "Wi-Fi interface not found."
   echo "Network check has been disabled."
   exit
 fi
 ########
-if  [ ! -e /sys/class/net/wlan0 ] ; then
-  echo "Wi-Fi interface not found."
-  echo "Network check has been disabled."
+if pgrep -x "hostapd" > /dev/null
+then
+  echo "APD mode, network check has been disabled."
+  echo "APD mode, network check has been disabled." > /tmp/gateway.txt
   exit
-else
-  echo ""  > /dev/null 2>&1
 fi
 ########
 ping -c2 ${SERVER} > /dev/null
 ########
 if [ $? != 0 ]
 then
-  touch /tmp/autoapd.txt
-  echo "Network connection down, switching to hotspot." > /tmp/autoapd.txt
+  echo "Network connection down, switching to hotspot."
+  echo "Network connection down, switching to hotspot." > /tmp/gateway.txt
   APD_MODE
   exit
 fi
@@ -182,19 +178,12 @@ else
   echo "Bridge network mode"
   BRIDGE_MODE
 fi
-##
-if [ ! -e /boot/autohotspot.off ]; then
-  sleep 7.25
-  NETDETECT
-else
-  echo "Auto Hotspot Disabled"
-fi
 exit
 ;;
 
 delwifi)
 DELWIFI_MODE
-sleep 7.25
+sleep 10
 NETDETECT
 exit
 ;;

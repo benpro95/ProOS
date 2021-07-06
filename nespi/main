@@ -17,12 +17,6 @@ echo "no function assigned"
 exit
 ;;
 
-timer)
-## 5-min timer
-echo "no function assigned"
-exit
-;;
-
 	    
     *)
       echo "NES Pi"

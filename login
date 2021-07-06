@@ -25,7 +25,11 @@ ARG2=$2
 HOST=$3
 
 ## Set Temporary Directory
-TMPFLDR=$(mktemp -d /tmp/proostmp.XXXXXXXXX)
+if [ -e /mnt/scratch/downloads ]; then
+  TMPFLDR=$(mktemp -d /mnt/scratch/downloads/.protmp.XXXXXXXXX)
+else
+  TMPFLDR=$(mktemp -d /tmp/protmp.XXXXXXXXX)
+fi
 
 ### ProServer Configuration
 if [ "$MODULE" = "" ]; then
@@ -51,8 +55,6 @@ echo ""
 ## Clean-up
 rm -r $TMPFLDR
 exit
-else
-echo ""  > /dev/null 2>&1
 fi
 
 ### Exit if matches this hostnames
@@ -61,17 +63,17 @@ echo "Hostname not allowed."
 ## Clean-up
 rm -r $TMPFLDR
 exit
-else
-echo ""  > /dev/null 2>&1
 fi
 
 ### Remove temp files
 if [ "$MODULE" = "rmtmp" ]; then
 echo "Removing temporary files..."
-rm -rfv /tmp/proostmp.*
+ if [ -e /mnt/scratch/downloads ]; then
+  rm -rfv /mnt/scratch/downloads/.protmp.*
+ else
+  rm -rfv /tmp/protmp.*
+ fi
 exit
-else
-echo ""  > /dev/null 2>&1
 fi
 
 ### ProServer Configuration
@@ -82,7 +84,7 @@ if [ "$MODULE" = "files" ] || [ "$MODULE" = "plex" ] || [ "$MODULE" = "pve" ] ||
   chmod 600 $TMPFLDR/id_rsa
   ## SSH Key Password
   eval `ssh-agent -s`
-  ssh-add $TMPFLDR/id_rsa
+  ssh-add $TMPFLDR/id_rsa 2>/dev/null
   ### AutoSync
   if [ "$ARG2" = "sync" ]; then
     echo "ProOS NetInstall for Server"
@@ -112,8 +114,6 @@ if [ "$MODULE" = "files" ] || [ "$MODULE" = "plex" ] || [ "$MODULE" = "pve" ] ||
   exit
   fi
 ######### END AUTOSYNC ##########
-else
-echo ""  > /dev/null 2>&1
 fi
 
 ## Copy SSH key to temp
@@ -148,38 +148,28 @@ fi
 if [ "$ARG2" = "clean" ]; then
 HOST=`cat $TMPFLDR/hostname`
 touch $TMPFLDR/start_sync
-else
-echo ""  > /dev/null 2>&1
 fi
 
 ## Check for Reset
 if [ "$ARG2" = "reset" ]; then
 HOST=`cat $TMPFLDR/hostname`
 touch $TMPFLDR/start_sync
-else
-echo ""  > /dev/null 2>&1
 fi
 
 ## Check for Init
 ## DON'T CHANGE HOST VARIABLE
 if [ "$ARG2" = "init" ]; then
 touch $TMPFLDR/start_sync
-else
-echo ""  > /dev/null 2>&1
 fi
 
 ## Check for Sync
 if [ "$ARG2" = "sync" ]; then
 HOST=`cat $TMPFLDR/hostname`
 touch $TMPFLDR/start_sync
-else
-echo ""  > /dev/null 2>&1
 fi
 
 ### Sync ###############
-if [ ! -e $TMPFLDR/start_sync ]; then
-  echo ""  > /dev/null 2>&1
-else
+if [ -e $TMPFLDR/start_sync ]; then
   ## Exit if host down
   HOSTCHK
   echo "*** ProOS NetInstall ***"

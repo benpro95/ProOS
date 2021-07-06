@@ -138,21 +138,23 @@ echo "Gateway IP $SERVER"
 ########
 if [ ! -e /sys/class/net/wlan0 ] ; then
   echo "wlan0 not found, network check has been disabled."
+  echo " "
   exit
 fi
 ########
 if pgrep -x "hostapd" > /dev/null
 then
   echo "APD mode, network check has been disabled."
+  echo " "
   exit
 fi
 ########
 ping -c2 ${SERVER} > /dev/null
-########
 if [ $? != 0 ]
 then
   echo "Network connection down, switching to hotspot..."
   APD_MODE
+  echo " "
   exit
 fi
 echo " "
@@ -164,7 +166,7 @@ case "$1" in
 ##############################################
 
 client)
-## Detect Standard Client or Bridge Mode
+## Detect standard client or bridge Mode
 if [ ! -e /boot/ap-bridge.enable ]; then
   echo "Client network mode"
   CLIENT_MODE
@@ -176,6 +178,7 @@ exit
 ;;
 
 delwifi)
+## Delete Wi-Fi credentials
 DELWIFI_MODE
 sleep 10
 systemctl start rpi-netdetect.service
@@ -183,6 +186,7 @@ exit
 ;;
 
 apd)
+## Access point mode
 /opt/rpi/main apdled-on || :
 APD_MODE
 /opt/rpi/main apdled-on || :
@@ -190,7 +194,7 @@ exit
 ;;
 
 netdetect)
-## Invoke Autohotspot
+## Invoked by systemd only
 NETDETECT
 exit
 ;;

@@ -3,14 +3,14 @@
 ### by Ben Provenzano III
 ###
 
+## Check if host is up
 HOSTCHK(){
-echo "Attempting connection to Pi..."
-if ping -c 1 $HOST &> /dev/null
+if ping -c 2 $HOST &> /dev/null
 then
-  echo ""  > /dev/null 2>&1
+  echo "Connection established."
 else
   echo "Host $HOST is down, exiting..."
-  ## Clean-up
+  ## Clean-up on logout
   rm -r $TMPFLDR
   exit
 fi
@@ -57,7 +57,7 @@ rm -r $TMPFLDR
 exit
 fi
 
-### Exit if matches this hostnames
+### Exit if matches this hosts
 if [ "$MODULE" = "router" ] || [ "$MODULE" = "rpi" ] || [ "$MODULE" = "z97mx" ] || [ "$MODULE" = "sources" ]; then
 echo "Hostname not allowed."
 ## Clean-up
@@ -65,9 +65,10 @@ rm -r $TMPFLDR
 exit
 fi
 
-### Remove temp files
+### Remove temp files argument
 if [ "$MODULE" = "rmtmp" ]; then
 echo "Removing temporary files..."
+pkill ssh-agent
  if [ -e /mnt/scratch/downloads ]; then
   rm -rfv /mnt/scratch/downloads/.protmp.*
  else
@@ -76,29 +77,35 @@ echo "Removing temporary files..."
 exit
 fi
 
-### ProServer Configuration
+### ProServer Configurator (only these hosts)
 if [ "$MODULE" = "files" ] || [ "$MODULE" = "plex" ] || [ "$MODULE" = "pve" ] || [ "$MODULE" = "unifi" ] || [ "$MODULE" = "xana" ] || [ "$MODULE" = "dev" ] || [ "$MODULE" = "automate" ]; then
-  echo "Attempting connection to server..."
+######################################
+  HOST="$MODULE"
+   ## Check if host is up (don't ping these hosts)
+  if [ ! "$HOST" = "pve" ]; then
+    echo "Attempting connection to server..."
+    HOSTCHK
+  fi 
   ## Copy SSH key
-  cp -r $ROOTDIR/$MODULE/id_rsa $TMPFLDR/id_rsa
+  cp -r $ROOTDIR/$HOST/id_rsa $TMPFLDR/id_rsa
   chmod 600 $TMPFLDR/id_rsa
-  ## SSH Key Password
+  ## SSH key prompt
   eval `ssh-agent -s`
   ssh-add $TMPFLDR/id_rsa 2>/dev/null
   ### AutoSync
   if [ "$ARG2" = "sync" ]; then
     echo "ProOS NetInstall for Server"
     ## Copying files to temp
-    cp -r $ROOTDIR/$MODULE/config $TMPFLDR/
+    cp -r $ROOTDIR/$HOST/config $TMPFLDR/
     ## Compressing files
     cd $TMPFLDR
     export COPYFILE_DISABLE=true
     tar -cvf config.tar config
     cd -
-    ## Downloading module bundle
-    scp -i $TMPFLDR/id_rsa -p $TMPFLDR/config.tar root@$MODULE:/tmp/
+    ## Downloading host bundle
+    scp -i $TMPFLDR/id_rsa -p $TMPFLDR/config.tar root@$HOST:/tmp/
     ## Install files
-    ssh -t -i $TMPFLDR/id_rsa root@$MODULE "cd /tmp/; tar -xvf config.tar; rm -f config.tar; chmod +x /tmp/config/installer; /tmp/config/installer"
+    ssh -t -i $TMPFLDR/id_rsa root@$HOST "cd /tmp/; tar -xvf config.tar; rm -f config.tar; chmod +x /tmp/config/installer; /tmp/config/installer"
     ## Clean-up on logout
     ssh-add -D
     eval $(ssh-agent -k)
@@ -106,15 +113,17 @@ if [ "$MODULE" = "files" ] || [ "$MODULE" = "plex" ] || [ "$MODULE" = "pve" ] ||
     exit
   else
   ## Login to SSH
-  ssh -t -i $TMPFLDR/id_rsa root@$MODULE
+  ssh -t -i $TMPFLDR/id_rsa root@$HOST
   ## Clean-up on logout
   ssh-add -D
   eval $(ssh-agent -k)
   rm -r $TMPFLDR
   exit
   fi
-######### END AUTOSYNC ##########
+######################################
 fi
+
+########## Raspberry Pi Configurator ##########
 
 ## Copy SSH key to temp
 cp -r $ROOTDIR/rpi/id_rsa $TMPFLDR/id_rsa
@@ -130,8 +139,6 @@ HOST=`cat $TMPFLDR/hostname`
 ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "/opt/rpi/init rw"
 rm -r $TMPFLDR
 exit
-else
-echo ""  > /dev/null 2>&1
 fi
 
 ## Check for Read-only
@@ -140,8 +147,6 @@ HOST=`cat $TMPFLDR/hostname`
 ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "/opt/rpi/init ro"
 rm -r $TMPFLDR
 exit
-else
-echo ""  > /dev/null 2>&1
 fi
 
 ## Check for Clean
@@ -170,7 +175,7 @@ fi
 
 ### Sync ###############
 if [ -e $TMPFLDR/start_sync ]; then
-  ## Exit if host down
+  echo "Attempting connection to Pi..."
   HOSTCHK
   echo "*** ProOS NetInstall ***"
   echo ""
@@ -207,7 +212,7 @@ if [ -e $TMPFLDR/start_sync ]; then
      fi
      if ping -c 1 $HOST &> /dev/null
      then
-       echo "Connection established."
+       echo ""  > /dev/null 2>&1
      else
        echo "Host is down, waiting 10 more seconds..."
        sleep 10
@@ -236,15 +241,11 @@ if [ -e $TMPFLDR/start_sync ]; then
   ## Check for Reset
   if [ "$ARG2" = "init" ]; then
   ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "rm -fv /etc/rpi-conf.done"  
-  else
-  echo ""  > /dev/null 2>&1
   fi  
 
   ## Check for Reset
   if [ "$ARG2" = "reset" ]; then
   ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "rm -fv /etc/rpi-conf.done"  
-  else
-  echo ""  > /dev/null 2>&1
   fi
 
   ## Check for Restore
@@ -252,8 +253,6 @@ if [ -e $TMPFLDR/start_sync ]; then
   echo "Erasing software..."
   ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "rm -fv /etc/rpi-conf.done"  
   ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "rm -rfv /opt/rpi"
-  else
-  echo ""  > /dev/null 2>&1
   fi
 
   echo "Syncing software..."
@@ -288,6 +287,7 @@ fi
 ## Read Hostname
 HOST=`cat $TMPFLDR/hostname`
 ## Exit if host down
+echo "Attempting connection to Pi..."
 HOSTCHK
 ## Login to SSH
 ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST

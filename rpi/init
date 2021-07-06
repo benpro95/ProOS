@@ -263,8 +263,8 @@ exit
 
 netdetect)
 echo "Switching to hotspot if network down."
-echo "Log is written to '/tmp/netstat.txt'."
-systemctl start netdetect.service
+echo "Log is written to '/tmp/netstat.txt'"
+systemctl start rpi-netdetect.service
 exit
 ;;
 

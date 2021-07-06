@@ -6,4 +6,6 @@ Before=shutdown.target
 [Service]
 Type=oneshot
 RemainAfterExit=no
+LogLevelMax=notice
+StandardOutput=append:/tmp/netstat.txt
 ExecStart=/etc/netmode.sh netdetect

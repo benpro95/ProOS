@@ -816,6 +816,7 @@ rm -f /etc/systemd/system/wifiswitch.service
 rm -f /etc/systemd/system/rpi-timer.service
 rm -f /etc/systemd/system/rpi-timer.timer
 rm -f /opt/rpi/leds.txt
+rm -f /tmp/gateway.txt
 rm -rf /opt/rpi/spectro
 rm -rf /opt/rpi/rainbow
 rm -f /root/sketchbook

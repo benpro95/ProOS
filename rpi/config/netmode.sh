@@ -3,8 +3,6 @@
 #### RUN FROM '/opt/rpi/init CMD'
 
 STOP_NET(){
-## Clear Logs
-rm -f /tmp/gateway.txt
 ## Clear Tables
 iptables -F
 ## Stop Hotspot Service
@@ -135,19 +133,17 @@ NETDETECT(){
 ## Switch to Hotspot mode if network connection lost ###########
 ################################################################
 SERVER=$(/sbin/ip route | awk '/default/ { print $3 }')
-touch /tmp/gateway.txt
-echo "Gateway IP $SERVER" > /tmp/gateway.txt
+date
+echo "Gateway IP $SERVER"
 ########
 if [ ! -e /sys/class/net/wlan0 ] ; then
-  echo "Wi-Fi interface not found."
-  echo "Network check has been disabled."
+  echo "wlan0 not found, network check has been disabled."
   exit
 fi
 ########
 if pgrep -x "hostapd" > /dev/null
 then
   echo "APD mode, network check has been disabled."
-  echo "APD mode, network check has been disabled." > /tmp/gateway.txt
   exit
 fi
 ########
@@ -155,13 +151,11 @@ ping -c2 ${SERVER} > /dev/null
 ########
 if [ $? != 0 ]
 then
-  echo "Network connection down, switching to hotspot."
-  echo "Network connection down, switching to hotspot." > /tmp/gateway.txt
+  echo "Network connection down, switching to hotspot..."
   APD_MODE
   exit
 fi
-########
-echo "Network connection found."
+echo " "
 ################################################################
 }
 
@@ -184,7 +178,7 @@ exit
 delwifi)
 DELWIFI_MODE
 sleep 10
-NETDETECT
+systemctl start rpi-netdetect.service
 exit
 ;;
 
@@ -196,16 +190,17 @@ exit
 ;;
 
 netdetect)
-NETDETECT
+echo "Log will be written to '/tmp/netstat.txt'."
+systemctl start rpi-netdetect.service
 exit
 ;;
 
 
         *)
         echo "RPi Network Startup II"
-	      echo "by Ben Provenzano III"
-	      echo " "
-	      echo "Enter Valid Arguments."
+	    echo "by Ben Provenzano III"
+	    echo " "
+	    echo "Enter Valid Arguments."
         echo " "
         exit 1
         ;;

@@ -2,7 +2,7 @@
 Description=Runs script every 5min.
 
 [Timer]
-OnBootSec=30
+OnBootSec=40
 OnUnitActiveSec=5min
 
 [Install]

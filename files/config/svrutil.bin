@@ -62,17 +62,31 @@ echo " "
 echo "last login:"
 lastlog -u server
 echo " "
-echo "(b) backup utility"
-echo "(l) list drive usage"
-echo "(a) update automate configuration"
-echo "(v) virtual machine control"
-echo "(n) network access control"
-echo "(g) generate a server log"
-echo "(enter) exit to shell"
+echo "(b) Backup utility"
+echo "(l) List drive usage"
+echo "(a) Update automate configuration"
+echo "(v) Virtual machine control"
+echo "(n) Network access control"
+echo "(g) Generate a server log"
+echo "(p) Backup ProOS to GitHub"
+echo "(enter) Exit to shell"
 echo " "
 
 read -p "select mode: " -n 1 -r
 echo
+
+## Backup ProOS to GitHub
+if [[ $REPLY =~ ^[pP]$ ]]
+then
+  TIMESTMP=$(date '+%Y-%m-%d %H:%M')
+  echo "Uploading changes to GitHub..."
+  cd /mnt/datastore/Ben/ProOS
+  git add .
+  git commit -m "$TIMESTMP"
+  git push -u ProOS master
+  cd -
+  ENDPGRM
+fi
 
 ## List drive usage
 if [[ $REPLY =~ ^[Ll]$ ]]

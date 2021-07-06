@@ -72,6 +72,7 @@ echo "(p) Backup ProOS to GitHub"
 echo "(enter) Exit to shell"
 echo " "
 
+REPLY=""
 read -p "select mode: " -n 1 -r
 echo
 

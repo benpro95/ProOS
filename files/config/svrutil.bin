@@ -158,8 +158,14 @@ then
     then
      curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
      touch /mnt/extbkps/keytmp/start$VMHOST.txt
-     echo "waiting one-minute for startup to trigger..."
-     sleep 60
+     wait_time=60 # seconds
+     temp_cnt=${wait_time}
+     while [[ ${temp_cnt} -gt 0 ]];
+     do
+       printf "\rwait %2d second(s) for startup to trigger." ${temp_cnt}
+       sleep 1
+       ((temp_cnt--))
+     done
      cat /mnt/extbkps/keytmp/vmlog.txt
      ## Turn off white light on LEDwall
      curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"
@@ -237,8 +243,14 @@ then
     echo " "
     curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
     touch /mnt/extbkps/keytmp/unmount.txt
-    echo "waiting one-minute for drives to detach..."
-    sleep 60
+    wait_time=60 # seconds
+    temp_cnt=${wait_time}
+    while [[ ${temp_cnt} -gt 0 ]];
+    do
+      printf "\rwait %2d second(s) for drives to detach." ${temp_cnt}
+      sleep 1
+      ((temp_cnt--))
+    done
     cat /mnt/extbkps/keytmp/status.txt
     echo " "
     REPLY=""
@@ -261,8 +273,14 @@ then
     KEYVAR=000000000000000000000
     echo " "
     curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
-    echo "waiting one-minute for drives to mount..."
-    sleep 60
+    wait_time=60 # seconds
+    temp_cnt=${wait_time}
+    while [[ ${temp_cnt} -gt 0 ]];
+    do
+      printf "\rwait %2d second(s) for drives to mount." ${temp_cnt}
+      sleep 1
+      ((temp_cnt--))
+    done
   fi
   ## Backup Drives Status
   cat /mnt/extbkps/keytmp/status.txt
@@ -472,15 +490,29 @@ do
 done
 
 ################################
-echo "detaching backup disks..."
-sleep 25
+wait_time=25 # seconds
+temp_cnt=${wait_time}
+while [[ ${temp_cnt} -gt 0 ]];
+do
+  printf "\rtriggering drive detach in %2d second(s)." ${temp_cnt}
+  sleep 1
+  ((temp_cnt--))
+done
 touch /mnt/extbkps/keytmp/unmount.txt
 ## Unlock State File
 rm -f /tmp/backupsvr.lock
-echo "waiting one-minute for drives to detach..."
-curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"
-sleep 60
+## Wait for drives to detach
+wait_time=60 # seconds
+temp_cnt=${wait_time}
+while [[ ${temp_cnt} -gt 0 ]];
+do
+  printf "\rwait %2d second(s) for drives to detach." ${temp_cnt}
+  sleep 1
+  ((temp_cnt--))
+done
+## Print drives status
 cat /mnt/extbkps/keytmp/status.txt
+curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"
 REPLY=""
 read -p "re-check drives status (s) or enter to skip: " -n 1 -r
 echo

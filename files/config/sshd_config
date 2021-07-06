@@ -39,9 +39,6 @@ PermitEmptyPasswords no
 # some PAM modules and threads)
 ChallengeResponseAuthentication no
 
-# Change to no to disable tunnelled clear text passwords
-PasswordAuthentication no
-
 # Kerberos options
 #KerberosAuthentication no
 #KerberosGetAFSToken no
@@ -65,6 +62,9 @@ TCPKeepAlive yes
 AcceptEnv LANG LC_*
 
 Subsystem sftp /usr/lib/openssh/sftp-server
+
+# Change to no to disable tunnelled clear text passwords
+PasswordAuthentication yes
 
 # Set this to 'yes' to enable PAM authentication, account processing,
 # and session processing. If this is enabled, PAM authentication will

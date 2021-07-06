@@ -23,12 +23,6 @@ systemctl start rpi-netdetect.timer
 exit
 ;;
 
-usbplug)
-## This script is ran after USB drive attached
-echo "no function assigned"
-exit
-;;
-
 
     
         *)

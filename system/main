@@ -20,12 +20,8 @@ systemctl restart lighttpd
 systemctl restart autofs
 ## AirPlay Support
 systemctl restart rpi-airplay
-exit
-;;
-
-usbplug)
-## This script is ran after USB drive attached
-echo "no function assigned"
+## Auto Hotspot
+systemctl start rpi-netdetect.timer
 exit
 ;;
 

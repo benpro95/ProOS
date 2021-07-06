@@ -25,12 +25,6 @@ systemctl start rpi-netdetect.timer
 exit
 ;;
 
-usbplug)
-## This script is ran after USB drive attached
-echo "no function assigned"
-exit
-;;
-
 300sine)
 killall -s KILL -w mpv
 screen -dm /usr/bin/mpv --no-video --loop-file '/opt/rpi/300hz-sine.wav'

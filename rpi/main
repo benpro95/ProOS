@@ -10,6 +10,8 @@ boot)
 systemctl restart lighttpd
 ## Unified Web Server
 systemctl restart rpi-urserver
+## Auto Hotspot
+systemctl start rpi-netdetect.timer
 ## Loop Movies from USB Drive
 #systemctl restart rpi-vidlooper
 ## Start X11 Server

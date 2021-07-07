@@ -270,31 +270,31 @@ exit
 
 delwifi)
 echo "Resetting Wi-Fi Settings..."
-/usr/bin/screen -dm /bin/bash /etc/netmode.sh delwifi || :
+/usr/bin/screen -dm /bin/bash /etc/netmode.sh delwifi
 exit
 ;;
 
 client)
 echo 'Enabling client network mode...'
-/usr/bin/screen -dm /bin/bash /etc/netmode.sh client || :
+/usr/bin/screen -dm /bin/bash /etc/netmode.sh client
 exit
 ;;
 
 apd)
 echo 'Enabling access point mode...'
-/usr/bin/screen -dm /bin/bash /etc/netmode.sh apd || :
+/usr/bin/screen -dm /bin/bash /etc/netmode.sh apd
 exit
 ;;
 
 togglenet)
 ## Toggle between hostspot and client mode
-if pgrep -x "hostapd" > /dev/null
+if pgrep -x "hostapd" > /dev/null 2> /dev/null
 then
   echo "APD running, switching to client..."
-  /usr/bin/screen -dm /bin/bash /etc/netmode.sh client || :
+  /usr/bin/screen -dm /bin/bash /etc/netmode.sh client
 else
   echo "APD not running, switching to hotspot..."
-  /usr/bin/screen -dm /bin/bash /etc/netmode.sh apd || :
+  /usr/bin/screen -dm /bin/bash /etc/netmode.sh apd
 fi
 exit
 ;;

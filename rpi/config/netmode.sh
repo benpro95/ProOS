@@ -142,14 +142,14 @@ if [ ! -e /sys/class/net/wlan0 ] ; then
   exit
 fi
 ########
-if pgrep -x "hostapd" > /dev/null
+if pgrep -x "hostapd" > /dev/null 2> /dev/null
 then
   echo "APD mode, network check has been disabled."
   echo " "
   exit
 fi
 ########
-ping -c2 ${SERVER} > /dev/null
+ping -c2 ${SERVER} > /dev/null 2> /dev/null
 if [ $? != 0 ]
 then
   echo "Network connection down, switching to hotspot..."

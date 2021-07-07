@@ -96,7 +96,7 @@ exit
 ;;
 ##
 hifion)
-if ping -c 1 system &> /dev/null
+if ping -c 1 system.home > /dev/null 2> /dev/null
 then
   echo "Host is up"
 else
@@ -109,7 +109,7 @@ exit
 ;;
 ##
 hifioff)
-if ping -c 1 system &> /dev/null
+if ping -c 1 system.home > /dev/null 2> /dev/null
 then
   ## Power audio system
   /opt/rpi/xmit pwrhifi
@@ -123,7 +123,7 @@ exit
 
 ## PC Power
 pcon)
-if ping -c 1 z97mx &> /dev/null
+if ping -c 1 z97mx.home > /dev/null 2> /dev/null
 then
   echo "Host is up"
 else
@@ -133,7 +133,7 @@ exit
 ;;
 ##
 pcoff)
-if ping -c 1 z97mx &> /dev/null
+if ping -c 1 z97mx.home > /dev/null 2> /dev/null
 then
   /opt/rpi/xmit rfb3
 else

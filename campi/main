@@ -1,0 +1,61 @@
+#!/bin/bash
+##
+## CameraPi by Ben Provenzano III v1.5 #############
+####################################################
+case "$1" in
+
+boot)
+## Video RAM Disk
+mkdir -p /mnt/ramdisk
+chmod 777 /mnt/ramdisk
+mount -t tmpfs -o size=200m ramdisk /mnt/ramdisk
+sleep 25
+## Attach Server SMB Share
+if ping -c 1 10.177.1.4 &> /dev/null
+then
+  systemctl start autofs
+  sleep 5.75
+fi
+## Google Drive
+if [ ! -e /media/usb0/rclone ]; then
+  echo "Flash drive not connected, not starting rclone."
+else
+  systemctl start rpi-rclone
+  sleep 5.75
+fi
+## Disable IR-Cut Filter
+gpio mode 5 out
+gpio write 5 1
+## Motion Server
+systemctl start motion
+## Cameras Cleanup Timer
+systemctl start rpi-camcleanup.timer
+## Disable HDMI
+/usr/bin/tvservice -o
+exit
+;;
+
+ircutoff)
+## Disable IR-Cut Filter
+gpio mode 5 out
+gpio write 5 1
+exit
+;;
+
+ircuton)
+## Enable IR-Cut Filter (auto)
+gpio mode 5 out
+gpio write 5 0
+gpio mode 5 in
+exit
+;;
+
+    
+        *)
+	      echo "  Cameras v1"
+	      echo "  by Ben Provenzano III"
+	      echo " "
+	      echo "Enter a valid command line argument."
+          exit 1
+        ;;
+    esac   

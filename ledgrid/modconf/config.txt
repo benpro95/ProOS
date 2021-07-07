@@ -39,7 +39,6 @@ dtoverlay=pi3-disable-bt
 
 #-------RPi Camera (disabled)-------
 start_x=0
-disable_camera_led=0
 
 #------Reboot when exceeds-----
 temp_limit=75

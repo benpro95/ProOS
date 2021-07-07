@@ -169,6 +169,9 @@ else
     apt-get install -y --no-upgrade arduino arduino-core avrdude
 fi
 
+## GPIO Support
+apt-get install -y --no-upgrade wiringpi
+
 ## Python Libraries
 apt-get install -y --no-upgrade net-tools python python-pip python3 python3-setuptools
 apt-get install -y --no-upgrade python3-pip python3-dev python3-pygame python3-venv

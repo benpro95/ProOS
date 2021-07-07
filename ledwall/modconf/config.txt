@@ -28,8 +28,7 @@ dtparam=spi=off
 dtoverlay=pi3-disable-bt
 
 #------Camera (disabled)------
-#start_x=1
-#disable_camera_led=1
+start_x=0
 
 #------Reboot when exceeds-----
 temp_limit=78

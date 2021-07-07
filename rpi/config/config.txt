@@ -39,7 +39,7 @@ lcd_rotate=0
 # uncomment for composite PAL
 #sdtv_mode=2
 
-#-------RPi Camera Module-------
+#-------RPi Camera (disabled)-------
 start_x=0
 disable_camera_led=0
 

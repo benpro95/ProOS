@@ -1,0 +1,28 @@
+## Created by Ben Provenzano III
+
+#-------GPU memory-------
+gpu_mem=200
+
+#-------Max USB Current-------
+max_usb_current=1
+
+#------Disable Bluetooth-----
+dtoverlay=disable-bt
+
+#-------Disable Ram temp refresh every 500ms---------
+disable_pvt=1
+
+#-------Disable Pi Splash screen on boot-------------
+disable_splash=1
+
+#-------Disable Audio------
+dtparam=audio=off
+
+#------Reboot when exceeds-----
+temp_limit=75
+
+#------Camera------
+start_x=1
+
+
+

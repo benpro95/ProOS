@@ -1,7 +1,7 @@
-## Created by Ben Provenzano III
+## Created by Ben Provenzano III for CameraPi
 
 #-------GPU memory-------
-gpu_mem=200
+gpu_mem=192
 
 #-------Max USB Current-------
 max_usb_current=1
@@ -18,11 +18,15 @@ disable_splash=1
 #-------Disable Audio------
 dtparam=audio=off
 
+#-------Disable the Act/Pwr LEDs-------
+dtparam=act_led_trigger=none
+dtparam=act_led_activelow=off
+dtparam=pwr_led_trigger=none
+dtparam=pwr_led_activelow=off
+
 #------Reboot when exceeds-----
 temp_limit=75
 
 #------Camera------
 start_x=1
-
-
 

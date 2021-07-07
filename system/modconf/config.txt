@@ -1,4 +1,4 @@
-## Created by Ben Provenzano III for Automate Server
+## Created by Ben Provenzano III for System Pi
 
 #-------GPU memory-------
 gpu_mem=32

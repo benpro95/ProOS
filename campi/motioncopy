@@ -40,4 +40,7 @@ fi
 ## Delete video from RAM Disk
 rm -f $VARB.mp4
 
+## Turn off status LED
+/usr/bin/sudo /opt/rpi/main redoff
+
 exit

@@ -62,6 +62,21 @@ cp -fr $BIN/modconf/camera*.conf /etc/motion/
 chmod -R 644 /etc/motion/camera*.conf
 chown -R root:root /etc/motion/camera*.conf
 systemctl disable motion
+if [ ! -e /media/usb0/cameras ]; then
+  echo "Cameras folder on USB drive not found, creating..."
+  mkdir -p /media/usb0/cameras
+  chown -R motion:motion /media/usb0/cameras
+fi
+
+## Pi and Motion Permissions
+rm -f /etc/sudoers.d/010_pi-perms
+rm -f /etc/sudoers.d/010_pi-nopasswd
+sh -c "touch /etc/sudoers.d/010_pi-nopasswd"
+sh -c "echo \"motion ALL=(ALL) NOPASSWD:/opt/rpi/main*\" >> /etc/sudoers.d/010_pi-nopasswd"
+sh -c "echo \"pi ALL=(ALL) NOPASSWD: ALL\" >> /etc/sudoers.d/010_pi-nopasswd"
+chown root:root /etc/sudoers.d/010_pi-nopasswd
+chmod u=rwx,g=rx,o=rx /etc/sudoers.d/010_pi-nopasswd
+chmod u=r,g=r,o= /etc/sudoers.d/010_pi-nopasswd
 
 ## Camera Cleanup Timer
 cp -f $BIN/modconf/rpi-camcleanup.service /etc/systemd/system/

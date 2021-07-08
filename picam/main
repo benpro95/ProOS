@@ -23,30 +23,42 @@ else
   systemctl start rpi-rclone
   sleep 5.75
 fi
-## Disable IR-Cut Filter
-gpio mode 5 out
-gpio write 5 1
 ## Motion Server
 systemctl start motion
 ## Cameras Cleanup Timer
 systemctl start rpi-camcleanup.timer
+## IR Control
+systemctl start rpi-ldr.service
 ## Disable HDMI
 /usr/bin/tvservice -o
 exit
 ;;
 
 ircutoff)
-## Disable IR-Cut Filter
-gpio mode 5 out
-gpio write 5 1
+## Disable IR Filter (GPIO #17)
+gpio mode 0 out
+gpio write 0 1
 exit
 ;;
 
 ircuton)
-## Enable IR-Cut Filter (auto)
-gpio mode 5 out
-gpio write 5 0
-gpio mode 5 in
+## Enable IR Filter (GPIO #17)
+gpio mode 0 out
+gpio write 0 0
+exit
+;;
+
+iroff)
+## Disable IR LEDs (GPIO #27)
+gpio mode 2 out
+gpio write 2 0
+exit
+;;
+
+iron)
+## Enable IR LEDs (GPIO #27)
+gpio mode 2 out
+gpio write 2 1
 exit
 ;;
 

@@ -17,6 +17,8 @@ sleep 4.25
 /opt/rpi/leds stop
 ## Disable HDMI
 /usr/bin/tvservice -o
+## Auto Hotspot
+systemctl start rpi-netdetect.timer
 exit
 ;;
 

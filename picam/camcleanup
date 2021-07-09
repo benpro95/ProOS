@@ -3,13 +3,6 @@
 ## Cameras Cleanup Script for Pi
 ### run as root user only!
 
-## Only allow one instance
-stoproc=camcleanup.lock
-exec 200>/tmp/${stoproc}
-flock -n 200 || exit 1
-stoppid=$$
-echo $stoppid 1>&200
-
 ## Check if Google Drive connected before cleanup
 if [ ! -e /mnt/gsync/Current ]; then
   echo "Google Drive not connected."

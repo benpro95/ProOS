@@ -66,6 +66,7 @@ then
 fi
 echo "restarting auto IR Control..."
 systemctl start rpi-ldr.service
+echo 1 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
 exit
 }
 
@@ -100,6 +101,8 @@ systemctl start rpi-camcleanup.timer
 systemctl start rpi-ldr.service
 ## Disable HDMI
 /usr/bin/tvservice -o
+## Auto Hotspot
+systemctl start rpi-netdetect.timer
 exit
 ;;
 

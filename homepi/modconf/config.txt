@@ -17,7 +17,7 @@ disable_pvt=1
 disable_splash=1
 
 #-------Disable Audio------
-#dtparam=audio=off
+dtparam=audio=off
 
 #------Reboot when exceeds-----
 temp_limit=75

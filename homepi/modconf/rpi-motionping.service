@@ -1,0 +1,10 @@
+[Unit]
+Description=Restart motion if camera's go down
+
+[Service]
+LogLevelMax=notice
+StandardOutput=append:/tmp/motionping.log
+StandardError=append:/tmp/motionping.log
+Type=oneshot
+RemainAfterExit=no
+ExecStart=/opt/rpi/motionping

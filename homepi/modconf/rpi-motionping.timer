@@ -1,0 +1,9 @@
+[Unit]
+Description=Runs script 60 seconds.
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=60
+
+[Install]
+WantedBy=timers.target

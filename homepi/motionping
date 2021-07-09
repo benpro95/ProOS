@@ -1,23 +1,23 @@
 #!/bin/bash
-## This is ran every 40 seconds
-#########################
-for (( ; ; ))
-do
-sleep 40
+## This is ran every 60 seconds
 #########################
 ## Detect if Driveway Camera is connected
-if ! ping -c 1 10.177.1.6 &> /dev/null
+if ! ping -c 1 10.177.1.6 > /dev/null 2> /dev/null
 then
-  echo "Host is down restarting motion..."
+  date
+  echo "Driveway camera is down restarting motion..."
   systemctl restart motion
+  echo " "
 fi
 sleep 5.25
 #########################
 ## Detect if Porch Camera is connected
-if ! ping -c 1 10.177.1.7 &> /dev/null
+if ! ping -c 1 10.177.1.7 > /dev/null 2> /dev/null
 then
-  echo "Host is down restarting motion..."
+  date
+  echo "Porch camera is down restarting motion..."
   systemctl restart motion
+  echo " "
 fi
 #########################
-done
+exit

@@ -65,6 +65,14 @@ chmod -R 644 /etc/motion/camera*.conf
 chown -R root:root /etc/motion/camera*.conf
 systemctl disable motion
 
+## Auto Restart Motion
+cp -f $BIN/modconf/rpi-motionping.service /etc/systemd/system/
+chmod -f 644 /etc/systemd/system/rpi-motionping.service
+chown -f root:root /etc/systemd/system/rpi-motionping.service
+cp -f $BIN/modconf/rpi-motionping.timer /etc/systemd/system/
+chmod -f 644 /etc/systemd/system/rpi-motionping.timer
+chown -f root:root /etc/systemd/system/rpi-motionping.timer
+
 ## Camera Cleanup Timer
 cp -f $BIN/modconf/rpi-camcleanup.service /etc/systemd/system/
 chmod -f 644 /etc/systemd/system/rpi-camcleanup.service

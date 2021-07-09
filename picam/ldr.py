@@ -1,8 +1,12 @@
+#!/usr/bin/python3
+##### Light Detection Program for IR Camera #####
+## by Ben Provenzano III - 07/08/2021
+
 import RPi.GPIO as GPIO
 import time
 GPIO.setmode(GPIO.BCM)
 
-delayt = 1.5
+delayt = 2.5
 value = 0
 ldr = 22
 irleds = 27
@@ -13,6 +17,7 @@ GPIO.output(irleds, False)
 GPIO.setup(ircut, GPIO.OUT)
 GPIO.output(ircut, True)
 
+## Read time GPIO pin takes to go low
 def rc_time (ldr):
     count = 0
 
@@ -23,28 +28,27 @@ def rc_time (ldr):
 
     while (GPIO.input(ldr) == 0):
         count += 1
+        if (count > 85000):
+            break
 
     return count
 
-
+## Main Loop
 try:
-    # Main loop
     while True:
-        print("Ldr Value:")
+        #print("LDR Time Constant:")
         value = rc_time(ldr)
-        print(value)
+        #print(value)
 
         if (value > 80000):
-                print("Dark out!")
-                print("Turning on IR LEDs & cut filter..")
+                #print("Turning on IR LEDs & cut filter")
                 GPIO.output(ircut, True)
                 GPIO.output(irleds, True)  
         if ( value <= 40000 ):
-                print("Bright out!")
-                print("Turning off IR LEDs & cut filter..")
+                #print("Turning off IR LEDs & cut filter")
                 GPIO.output(ircut, False)
                 GPIO.output(irleds, False)
-        print(" ")        
+        #print(" ")        
 
 except KeyboardInterrupt:
     pass

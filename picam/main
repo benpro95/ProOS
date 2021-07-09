@@ -2,6 +2,57 @@
 ##
 ## CameraPi by Ben Provenzano III v1.5 #############
 ####################################################
+
+## Manual Camera Control Function
+CAMCTL () {
+clear
+REPLY=""
+echo "(Manual Camera Control Menu)"
+echo "(1) - disable IR filter shutter"
+echo "(2) - enable IR filter shutter"
+echo "(3) - disable IR LEDs"
+echo "(4) - enable IR LEDs"
+echo "(enter) exit manual control"
+echo " "
+read -p "select mode: " -n 1 -r
+echo
+##
+if [[ $REPLY =~ ^[1]$ ]]
+then
+  ## Disable IR Filter (GPIO #17)
+  gpio mode 0 out
+  gpio write 0 1
+  CAMCTL
+fi
+##
+if [[ $REPLY =~ ^[2]$ ]]
+then
+  ## Enable IR Filter (GPIO #17)
+  gpio mode 0 out
+  gpio write 0 0
+  CAMCTL
+fi
+##
+if [[ $REPLY =~ ^[3]$ ]]
+then
+  ## Disable IR LEDs (GPIO #27)
+  gpio mode 2 out
+  gpio write 2 0
+  CAMCTL
+fi
+##
+if [[ $REPLY =~ ^[4]$ ]]
+then
+  ## Enable IR LEDs (GPIO #27)
+  gpio mode 2 out
+  gpio write 2 1
+  CAMCTL
+fi
+echo "Restarting Auto IR Control..."
+systemctl start rpi-ldr.service
+exit
+}
+
 case "$1" in
 
 boot)
@@ -34,31 +85,11 @@ systemctl start rpi-ldr.service
 exit
 ;;
 
-ircutoff)
-## Disable IR Filter (GPIO #17)
-gpio mode 0 out
-gpio write 0 1
-exit
-;;
-
-ircuton)
-## Enable IR Filter (GPIO #17)
-gpio mode 0 out
-gpio write 0 0
-exit
-;;
-
-iroff)
-## Disable IR LEDs (GPIO #27)
-gpio mode 2 out
-gpio write 2 0
-exit
-;;
-
-iron)
-## Enable IR LEDs (GPIO #27)
-gpio mode 2 out
-gpio write 2 1
+camctl)
+echo "Stopping Auto IR Control..."
+systemctl stop rpi-ldr.service
+sleep 1.25
+CAMCTL
 exit
 ;;
 
@@ -97,15 +128,12 @@ exit
 	      echo " CameraPi v1"
 	      echo "  by Ben Provenzano III"
 	      echo " "
-	      echo " ircutoff - Disable IR Filter (GPIO #17)"
-	      echo " ircuton - Enable IR Filter (GPIO #17)"
-	      echo " iroff - Disable IR LEDs (GPIO #27)"
-	      echo " iron - Enable IR LEDs (GPIO #27)"
+	      echo " camctl - Manual Camera Control"
 	      echo " redoff - Disable Red Power LED"
 	      echo " redon - Enable Red Power LED"
 	      echo " cpusb - Copy Videos on USB Drive to Server"
 	      echo " "
 	      echo " Enter a valid command argument."
-          exit 1
+        exit 1
         ;;
     esac   

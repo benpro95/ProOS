@@ -26,7 +26,8 @@ HOST=$3
 
 ## Set Temporary Directory
 if [ -e /mnt/scratch/downloads ]; then
-  TMPFLDR=$(mktemp -d /mnt/scratch/downloads/.protmp.XXXXXXXXX)
+  mkdir -p /mnt/scratch/downloads/.ptmp
+  TMPFLDR=$(mktemp -d /mnt/scratch/downloads/.ptmp/XXXXXXXXX)
 else
   TMPFLDR=$(mktemp -d /tmp/protmp.XXXXXXXXX)
 fi
@@ -70,7 +71,7 @@ if [ "$MODULE" = "rmtmp" ]; then
 echo "Removing temporary files..."
 pkill ssh-agent
  if [ -e /mnt/scratch/downloads ]; then
-  rm -rfv /mnt/scratch/downloads/.protmp.*
+  rm -rfv /mnt/scratch/downloads/.ptmp
  else
   rm -rfv /tmp/protmp.*
  fi

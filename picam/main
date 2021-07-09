@@ -74,12 +74,38 @@ echo 0 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
 exit
 ;;
 
+cpusb)
+## Copy Videos on USB Drive to Server
+mkdir -p /mnt/smb/Cameras/Current/PiCam-USB
+rsync -a --progress /media/usb0/cameras/ /mnt/smb/Cameras/Current/PiCam-USB/
+echo "Videos can be found at '//files/Cameras/Current/PiCam-USB'"
+read -p "Delete videos from USB drive? (y/n) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[yY]$ ]]
+then
+  rm -rfv /media/usb0/cameras
+  mkdir -p /media/usb0/cameras
+  chown -R motion:motion /media/usb0/cameras
+  chmod -R 777 /media/usb0/cameras
+fi
+exit
+;;
+
+
     
         *)
-	      echo "  Cameras v1"
+	      echo " CameraPi v1"
 	      echo "  by Ben Provenzano III"
 	      echo " "
-	      echo "Enter a valid command line argument."
+	      echo " ircutoff - Disable IR Filter (GPIO #17)"
+	      echo " ircuton - Enable IR Filter (GPIO #17)"
+	      echo " iroff - Disable IR LEDs (GPIO #27)"
+	      echo " iron - Enable IR LEDs (GPIO #27)"
+	      echo " redoff - Disable Red Power LED"
+	      echo " redon - Enable Red Power LED"
+	      echo " cpusb - Copy Videos on USB Drive to Server"
+	      echo " "
+	      echo " Enter a valid command argument."
           exit 1
         ;;
     esac   

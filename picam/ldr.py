@@ -34,12 +34,12 @@ try:
         value = rc_time(ldr)
         print(value)
 
-        if (value > 12000):
+        if (value > 80000):
                 print("Dark out!")
                 print("Turning on IR LEDs & cut filter..")
                 GPIO.output(ircut, True)
                 GPIO.output(irleds, True)  
-        if ( value <= 12000 ):
+        if ( value <= 40000 ):
                 print("Bright out!")
                 print("Turning off IR LEDs & cut filter..")
                 GPIO.output(ircut, False)

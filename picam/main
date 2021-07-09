@@ -12,6 +12,8 @@ echo "(1) - disable IR filter shutter"
 echo "(2) - enable IR filter shutter"
 echo "(3) - disable IR LEDs"
 echo "(4) - enable IR LEDs"
+echo "(5) - disable power LED"
+echo "(6) - enable power LED"
 echo "(enter) exit manual control"
 echo " "
 read -p "select mode: " -n 1 -r
@@ -46,6 +48,20 @@ then
   ## Enable IR LEDs (GPIO #27)
   gpio mode 2 out
   gpio write 2 1
+  CAMCTL
+fi
+##
+if [[ $REPLY =~ ^[5]$ ]]
+then
+  ## Disable Red LED
+  echo 1 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
+  CAMCTL
+fi
+##
+if [[ $REPLY =~ ^[6]$ ]]
+then
+  ## Enable Red LED
+  echo 0 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
   CAMCTL
 fi
 echo "Restarting Auto IR Control..."
@@ -125,13 +141,11 @@ exit
 
     
         *)
-	      echo " CameraPi v1"
-	      echo "  by Ben Provenzano III"
+	      echo "CameraPi v1"
+	      echo " by Ben Provenzano III"
 	      echo " "
-	      echo " camctl - Manual Camera Control"
-	      echo " redoff - Disable Red Power LED"
-	      echo " redon - Enable Red Power LED"
-	      echo " cpusb - Copy Videos on USB Drive to Server"
+	      echo "camctl - Manual Camera Control Menu"
+	      echo "cpusb - Copy Videos on USB Drive to Server"
 	      echo " "
 	      echo " Enter a valid command argument."
         exit 1

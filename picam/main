@@ -64,10 +64,12 @@ then
   echo 0 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
   CAMCTL
 fi
-echo "Restarting Auto IR Control..."
+echo "restarting auto IR Control..."
 systemctl start rpi-ldr.service
 exit
 }
+
+##################################
 
 case "$1" in
 
@@ -85,7 +87,7 @@ then
 fi
 ## Google Drive
 if [ ! -e /media/usb0/rclone ]; then
-  echo "Flash drive not connected, not starting rclone."
+  echo "flash drive not connected, not starting rclone."
 else
   systemctl start rpi-rclone
   sleep 5.75
@@ -102,7 +104,7 @@ exit
 ;;
 
 camctl)
-echo "Stopping Auto IR Control..."
+echo "stopping auto IR control..."
 systemctl stop rpi-ldr.service
 sleep 1.25
 CAMCTL
@@ -125,8 +127,8 @@ cpusb)
 ## Copy Videos on USB Drive to Server
 mkdir -p /mnt/smb/Cameras/Current/PiCam-USB
 rsync -a --progress /media/usb0/cameras/ /mnt/smb/Cameras/Current/PiCam-USB/
-echo "Videos can be found at '//files/Cameras/Current/PiCam-USB'"
-read -p "Delete videos from USB drive? (y/n) " -n 1 -r
+echo "videos can be found at '//files/Cameras/Current/PiCam-USB'"
+read -p "delete videos from USB drive? (y/n) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[yY]$ ]]
 then
@@ -138,16 +140,16 @@ fi
 exit
 ;;
 
-
+##################################
     
         *)
 	      echo "CameraPi v1"
 	      echo " by Ben Provenzano III"
 	      echo " "
-	      echo "camctl - Manual Camera Control Menu"
-	      echo "cpusb - Copy Videos on USB Drive to Server"
+	      echo "camctl - manual camera control menu"
+	      echo "cpusb - copy videos on USB drive to server"
 	      echo " "
-	      echo " Enter a valid command argument."
+	      echo "enter a valid command argument."
         exit 1
         ;;
     esac   

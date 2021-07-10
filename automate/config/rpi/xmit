@@ -35,6 +35,7 @@ END
 fi
 ##echo "$XMITCMD"
 XMITCMD=""
+exit
 }
 
 ##### MAIN SECTION #####
@@ -287,7 +288,7 @@ if [[ "$CMD" == "rfc1off" ]]; then
    XMIT
 fi
 
-#echo "$CMD"
+echo "invalid command!"
 exit
 
 

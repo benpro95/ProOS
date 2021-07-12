@@ -15,8 +15,8 @@
     <row>
         <button text="Ripple" ontap="ripple" color="#00003e" />
         <button text="Blur" ontap="blur" color="#00003e" />
-        <button text="Melt" ontap="melt" color="#00003e" />
         <button text="Rings" ontap="rings" color="#00003e" />
+        <button text="Beachball" ontap="beachball" color="#00003e" />
     </row>
     <row>
         <button text="Vibrant" ontap="vibrant" color="#000037" />

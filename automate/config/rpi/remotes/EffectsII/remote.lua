@@ -28,8 +28,8 @@ actions.paint = function ()
 script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds paint");
 end
 
-actions.melt = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds melt");
+actions.beachball = function ()
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds beachball");
 end
 
 actions.blur = function ()

@@ -28,7 +28,7 @@ def rc_time (ldr):
 
     while (GPIO.input(ldr) == 0):
         count += 1
-        if (count > 70000):
+        if (count > 65000):
             break
 
     return count
@@ -44,7 +44,7 @@ try:
                 #print("Turning on IR LEDs & cut filter")
                 GPIO.output(ircut, True)
                 GPIO.output(irleds, True)  
-        if ( value <= 30000 ):
+        if ( value <= 20000 ):
                 #print("Turning off IR LEDs & cut filter")
                 GPIO.output(ircut, False)
                 GPIO.output(irleds, False)

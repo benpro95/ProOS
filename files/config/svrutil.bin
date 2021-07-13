@@ -10,11 +10,11 @@ echo " "
 REPLY=""
 read -p "select (s) for shell or (enter) to return: " -n 1 -r
 echo
-clear
 if [[ $REPLY =~ ^[Ss]$ ]]
 then
   exit
 else
+  clear
   MAINPGRM
 fi
 ###############################
@@ -23,8 +23,8 @@ fi
 ##### BEGIN MAIN FUNCTION #####
 MAINPGRM () {
 uname -m -n -s -o -r
-RANDOPT=$(( $RANDOM % 4 ))
-if [[ $RANDOPT == "0" || $RANDOPT == "3" ]]
+RANDOPT=$(( $RANDOM % 5 ))
+if [[ $RANDOPT == "0" || $RANDOPT == "1" ]]
 then
   echo " "
   echo "    ____             ____  _____"
@@ -34,7 +34,7 @@ then
   echo "/_/   /_/   \____/\____//____/  "
   echo " "
 fi
-if [[ $RANDOPT == "1" ]]
+if [[ $RANDOPT == "2" ]]
 then
   echo " "
   echo "  _____            ____   _____ "
@@ -45,7 +45,7 @@ then
   echo " |_|   |_|  \___/ \____/|_____/ "
   echo " "
 fi
-if [[ $RANDOPT == "2" ]]
+if [[ $RANDOPT == "3" || $RANDOPT == "4" ]]
 then
   echo " "
   echo " ____  ____   ___   ___   _____"
@@ -71,7 +71,6 @@ echo "(g) Generate a server log"
 echo "(p) Backup ProOS to GitHub"
 echo "(enter) Exit to shell"
 echo " "
-
 read -p "select mode: " -n 1 -r
 echo
 
@@ -530,36 +529,38 @@ fi
 ############################
 ### Only run if server user
 if [ ! "$USER" = server ]; then
-    echo "this script should only be ran by server user, aborting."
-    exit 1
+  echo "this script should only be ran by server user, aborting."
+  exit 1
 fi
 ############################
 ### Backup Drive Status
 if [ "$1" = "bkpstatus" ] ; then
-cat /mnt/extbkps/keytmp/status.txt
-echo " "
-exit
+  cat /mnt/extbkps/keytmp/status.txt
+  echo " "
+  exit
 fi
 ### Force Quit
 if [ "$1" = "kill" ] ; then
-/usr/bin/pkill svrutil.bin
-rm -f /tmp/backupsvr.lock
-echo "removed lockfile."
-exit
+  pkill svrutil.bin
+  rm -f /tmp/backupsvr.lock
+  echo "removed lockfile."
+  exit
 fi
 if [ "$1" = "quit" ] ; then
-/usr/bin/pkill svrutil.bin
-rm -f /tmp/backupsvr.lock
-echo "removed lockfile."
-exit
+  pkill svrutil.bin
+  rm -f /tmp/backupsvr.lock
+  echo "removed lockfile."
+  exit
 fi
 ############################
 ### Remove Lock Manually
 if [ "$1" = "rmlock" ] ; then
-rm -f /tmp/backupsvr.lock
-echo "removed lockfile."
-exit
+  rm -f /tmp/backupsvr.lock
+  echo "removed lockfile."
+  exit
 fi
+sleep 0.25
+clear
 MAINPGRM
 #### END MAIN SCRIPT #####
 exit

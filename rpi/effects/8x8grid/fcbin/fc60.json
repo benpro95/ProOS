@@ -4,7 +4,7 @@
  
 	"color": {
 	    "gamma": 2.5,
-	    "whitepoint": [0.6, 0.6, 0.6]
+	    "whitepoint": [0.4, 0.4, 0.4]
 	},
  
 	"devices": [

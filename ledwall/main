@@ -7,11 +7,6 @@
 case "$1" in
 
 boot)
-## Set GPIO's
-gpio mode 26 out
-gpio write 26 0
-gpio mode 25 out
-gpio write 25 0
 ## Light Web Server
 systemctl start lighttpd
 ## Unified Web Server
@@ -21,62 +16,116 @@ systemctl start rpi-wifiswitch
 ## LED Controller
 /opt/rpi/leds fc norm
 ## Flash LED
-gpio write 26 1
-sleep 1.25
-gpio write 26 0
+/usr/bin/python3 - <<END
+import time
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO_PIN = 12
+GPIO.setup(GPIO_PIN, GPIO.OUT)
+GPIO.output(GPIO_PIN, True)
+time.sleep(0.5)
+GPIO.output(GPIO_PIN, False)
+GPIO.cleanup()
+quit()
+END
 exit
 ;;
 
 apdled-on)
 ## Turn WiFi LED On
-gpio write 25 1
+/usr/bin/python3 - <<END
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO_PIN = 26
+GPIO.setup(GPIO_PIN, GPIO.OUT)
+GPIO.output(GPIO_PIN, True)
+quit()
+END
 exit
 ;;
 
 apdled-off)
 ## Turn WiFi LED Off
-gpio write 25 0
+/usr/bin/python3 - <<END
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO_PIN = 26
+GPIO.setup(GPIO_PIN, GPIO.OUT)
+GPIO.output(GPIO_PIN, False)
+GPIO.cleanup()
+quit()
+END
 exit
 ;;
 
 whtledon)
 ## White Front LED On
 touch /tmp/whtled.save
-gpio write 26 1
+/usr/bin/python3 - <<END
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO_PIN = 12
+GPIO.setup(GPIO_PIN, GPIO.OUT)
+GPIO.output(GPIO_PIN, True)
+quit()
+END
 exit
 ;;
 
 whtledoff)
 ## White Front LED Off
 rm -f /tmp/whtled.save
-gpio write 26 0
+/usr/bin/python3 - <<END
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO_PIN = 12
+GPIO.setup(GPIO_PIN, GPIO.OUT)
+GPIO.output(GPIO_PIN, False)
+GPIO.cleanup()
+quit()
+END
 exit
 ;;
 
 whtled)
 ## White Front LED Toggle
 if [ -e /tmp/whtled.save ]; then
-   rm -f /tmp/whtled.save
-   gpio write 26 0
+rm -f /tmp/whtled.save
+/usr/bin/python3 - <<END
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO_PIN = 12
+GPIO.setup(GPIO_PIN, GPIO.OUT)
+GPIO.output(GPIO_PIN, False)
+GPIO.cleanup()
+quit()
+END
 else
-   touch /tmp/whtled.save
-   gpio write 26 1
+/usr/bin/python3 - <<END
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO_PIN = 12
+GPIO.setup(GPIO_PIN, GPIO.OUT)
+GPIO.output(GPIO_PIN, True)
+quit()
+END
 fi
-exit
-;;
-
-usbplug)
-## This script is ran after USB drive attached
-echo "no function assigned"
 exit
 ;;
 
 	    
     *)
       echo "LEDwall Server v6 for Raspberry Pi"
-	    echo "  by Ben Provenzano III"
-	    echo " "
-	    echo "Enter a valid command line argument."
+	  echo "  by Ben Provenzano III"
+	  echo " "
+	  echo "Enter a valid command line argument."
       exit 1
-      ;;
+     ;;
     esac

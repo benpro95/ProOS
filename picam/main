@@ -18,53 +18,91 @@ echo "(enter) exit manual control"
 echo " "
 read -p "select mode: " -n 1 -r
 echo
-##
+############
 if [[ $REPLY =~ ^[1]$ ]]
 then
-  ## Disable IR Filter (GPIO #17)
-  gpio mode 0 out
-  gpio write 0 1
-  CAMCTL
+## Disable IR Filter (GPIO #17)
+/usr/bin/python3 - <<END
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO_PIN = 17
+GPIO.setup(GPIO_PIN, GPIO.OUT)
+GPIO.output(GPIO_PIN, True)
+quit()
+END
+CAMCTL
 fi
-##
+############
 if [[ $REPLY =~ ^[2]$ ]]
 then
-  ## Enable IR Filter (GPIO #17)
-  gpio mode 0 out
-  gpio write 0 0
-  CAMCTL
+## Enable IR Filter (GPIO #17)
+/usr/bin/python3 - <<END
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO_PIN = 17
+GPIO.setup(GPIO_PIN, GPIO.OUT)
+GPIO.output(GPIO_PIN, False)
+quit()
+END
+CAMCTL
 fi
-##
+############
 if [[ $REPLY =~ ^[3]$ ]]
 then
-  ## Disable IR LEDs (GPIO #27)
-  gpio mode 2 out
-  gpio write 2 0
-  CAMCTL
+## Disable IR LEDs (GPIO #27)
+/usr/bin/python3 - <<END
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO_PIN = 27
+GPIO.setup(GPIO_PIN, GPIO.OUT)
+GPIO.output(GPIO_PIN, False)
+quit()
+END
+CAMCTL
 fi
-##
+############
 if [[ $REPLY =~ ^[4]$ ]]
 then
-  ## Enable IR LEDs (GPIO #27)
-  gpio mode 2 out
-  gpio write 2 1
-  CAMCTL
+## Enable IR LEDs (GPIO #27)
+/usr/bin/python3 - <<END
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO_PIN = 27
+GPIO.setup(GPIO_PIN, GPIO.OUT)
+GPIO.output(GPIO_PIN, True)
+quit()
+END
+CAMCTL
 fi
-##
+############
 if [[ $REPLY =~ ^[5]$ ]]
 then
-  ## Disable Red LED
-  echo 1 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
-  CAMCTL
+## Disable Red LED
+echo 1 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
+CAMCTL
 fi
-##
+############
 if [[ $REPLY =~ ^[6]$ ]]
 then
-  ## Enable Red LED
-  echo 0 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
-  CAMCTL
+## Enable Red LED
+echo 0 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
+CAMCTL
 fi
+############
 echo "restarting auto IR Control..."
+/usr/bin/python3 - <<END
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(27, GPIO.OUT)
+GPIO.setup(17, GPIO.OUT)
+GPIO.cleanup()
+quit()
+END
 systemctl start rpi-ldr.service
 echo 1 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
 exit

@@ -6,7 +6,7 @@ import RPi.GPIO as GPIO
 import time
 GPIO.setmode(GPIO.BCM)
 
-delayt = 2.5
+delayt = 3
 value = 0
 ldr = 22
 irleds = 27

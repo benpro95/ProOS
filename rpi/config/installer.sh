@@ -169,9 +169,6 @@ else
     apt-get install -y --no-upgrade arduino arduino-core avrdude
 fi
 
-## GPIO Support
-apt-get install -y --no-upgrade wiringpi
-
 ## Python Libraries
 apt-get install -y --no-upgrade net-tools python python-pip python3 python3-setuptools
 apt-get install -y --no-upgrade python3-pip python3-dev python3-pygame python3-venv
@@ -259,6 +256,7 @@ apt-get remove --purge -y desktop-file-utils exfat-fuse exfat-utils gdisk gnome-
 apt-get remove --purge -y libatasmart4 libavahi-glib1 libbonobo2-0 libbonobo2-common libbonoboui2-0 libbonoboui2-common
 apt-get remove --purge -y libssl-doc libudisks2-0 libusbmuxd4 ntfs-3g udisks2 usbmuxd udhcpd wolfram-engine motion
 apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp
+apt-get remove --purge -y wiringpi
 apt-get -y autoremove
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades

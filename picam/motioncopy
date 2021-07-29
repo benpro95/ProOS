@@ -1,7 +1,12 @@
 #!/bin/bash
 ###########################################################
-####### Motion copy script by Ben Provenzano III v1 #######
+####### Motion copy script by Ben Provenzano III v2 #######
 ###########################################################
+
+## File Share IP
+SERVERIP=10.177.1.4
+## Google's IP
+GOOGLEIP=8.8.8.8
 
 ## Read camera name
 VARA=$1
@@ -14,27 +19,35 @@ VARB=$2
 #touch /tmp/motionfile.log
 #echo "$VARB" | tee -a /tmp/motionfile.log
 
-## Copy video to Google Drive
-if [ ! -e /mnt/gsync/Current ]; then
-   echo "Google Drive not connected."
-else
-   mkdir -p /mnt/gsync/Current/$VARA
-   cp -f $VARB.mp4 /mnt/gsync/Current/$VARA/
-fi
-
-## Copy video to Flash drive if Server & Google Drive not connected 
-if [ ! -e /mnt/smb/Cameras/Current ]; then
-  if [ ! -e /mnt/gsync/Current ]; then
+########################################################
+if ! ping -c 1 $SERVERIP > /dev/null 2> /dev/null; then
+  #echo "Server not connected."
+  if ! ping -c 1 $GOOGLEIP > /dev/null 2> /dev/null; then
+    #echo "Google Drive and server not connected."
     if [ ! -e /media/usb0/cameras ]; then
-      echo "Flash drive not connected."
+      echo "Flash drive not connected, discarding video."
     else
+      #echo "Copying to Flash drive..."
       mkdir -p /media/usb0/cameras/$VARA
       cp -f $VARB.mp4 /media/usb0/cameras/$VARA/
     fi
+  else
+    #echo "Copying to Google Drive..."
+    mkdir -p /mnt/gsync/Current/$VARA
+    cp -f $VARB.mp4 /mnt/gsync/Current/$VARA/
   fi
 else
+  #echo "Copying to Server..."	
   mkdir -p /mnt/smb/Cameras/Current/$VARA
   cp -f $VARB.mp4 /mnt/smb/Cameras/Current/$VARA/
+  ################################################
+  if ! ping -c 1 $GOOGLEIP > /dev/null 2> /dev/null; then
+    echo "Google Drive not connected."
+  else
+    #echo "Copying to Google Drive..."
+    mkdir -p /mnt/gsync/Current/$VARA
+    cp -f $VARB.mp4 /mnt/gsync/Current/$VARA/
+  fi
 fi
 
 ## Delete video from RAM Disk

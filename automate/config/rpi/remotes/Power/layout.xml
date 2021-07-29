@@ -21,8 +21,8 @@
 	    <button icon="on" ontap="desktopon" color="#000039" />
     </row>
     <row>
-        <button icon="off" ontap="lightsoff" color="black" />
+        <button icon="off" ontap="alloff" color="black" />
         <button text="All Lights" ontap="lights" color="#000030" />
-    	<button icon="on" ontap="lightson" color="#000030" />	
+    	<button icon="on" ontap="allon" color="#000030" />	
     </row>
 </layout>

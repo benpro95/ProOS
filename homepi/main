@@ -10,12 +10,6 @@ mkdir -p /mnt/ramdisk
 chmod 777 /mnt/ramdisk
 mount -t tmpfs -o size=284m ramdisk /mnt/ramdisk
 sleep 25
-## Attach Server SMB Share
-if ping -c 1 10.177.1.4 &> /dev/null
-then
-  systemctl start autofs
-  sleep 5.75
-fi
 ## Google Drive
 if [ ! -e /media/usb0/rclone ]; then
   echo "Flash drive not connected, not starting rclone."
@@ -40,6 +34,6 @@ exit
 	      echo "  by Ben Provenzano III"
 	      echo " "
 	      echo "Enter a valid command line argument."
-          exit 1
+        exit 1
         ;;
     esac   

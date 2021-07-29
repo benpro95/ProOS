@@ -139,8 +139,6 @@ systemctl start rpi-camcleanup.timer
 systemctl start rpi-ldr.service
 ## Disable HDMI
 /usr/bin/tvservice -o
-## Auto Hotspot
-systemctl start rpi-netdetect.timer
 exit
 ;;
 

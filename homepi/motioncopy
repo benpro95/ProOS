@@ -15,26 +15,17 @@ VARB=$2
 #echo "$VARB" | tee -a /tmp/motionfile.log
 
 ## Copy video to Google Drive
-if [ ! -e /mnt/gsync/Current ]; then
-   echo "Google Drive not connected."
-else
-   mkdir -p /mnt/gsync/Current/$VARA
-   cp -f $VARB.mp4 /mnt/gsync/Current/$VARA/
-fi
-
-## Copy video to Flash drive if Server & Google Drive not connected 
-if [ ! -e /mnt/smb/Cameras/Current ]; then
-  if [ ! -e /mnt/gsync/Current ]; then
-    if [ ! -e /media/usb0/cameras ]; then
-      echo "Flash drive not connected."
-    else
-      mkdir -p /media/usb0/cameras/$VARA
-      cp -f $VARB.mp4 /media/usb0/cameras/$VARA/
-    fi
+if ! ping -c 1 8.8.8.8 > /dev/null 2> /dev/null; then
+  echo "Google Drive not connected."
+  if [ ! -e /media/usb0/cameras ]; then
+    echo "Flash drive not connected."
+  else
+    mkdir -p /media/usb0/cameras/$VARA
+    cp -f $VARB.mp4 /media/usb0/cameras/$VARA/
   fi
 else
-  mkdir -p /mnt/smb/Cameras/Current/$VARA
-  cp -f $VARB.mp4 /mnt/smb/Cameras/Current/$VARA/
+  mkdir -p /mnt/gsync/Current/$VARA
+  cp -f $VARB.mp4 /mnt/gsync/Current/$VARA/
 fi
 
 ## Delete video from RAM Disk

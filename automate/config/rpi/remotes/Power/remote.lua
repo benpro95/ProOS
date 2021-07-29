@@ -52,3 +52,11 @@ actions.lightsoff = function ()
 script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/main lightsoff");
 end
 
+actions.allon = function ()
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/main allon");
+end
+
+actions.alloff = function ()
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/main alloff");
+end
+

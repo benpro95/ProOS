@@ -66,6 +66,8 @@ void setup() {
   }
   Serial.println();
   Serial.println("WiFi connected!");
+  WiFi.setAutoReconnect(true);
+  WiFi.persistent(true);
 
   // Print WiFi connection information
   Serial.print("  SSID: ");

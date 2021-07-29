@@ -22,7 +22,7 @@
     </row>
     <row>
         <button icon="off" ontap="lightsoff" color="black" />
-        <button text="Lights" ontap="" color="#000035" />
+        <button text="Lights" ontap="lights" color="#000035" />
     	<button icon="on" ontap="lightson" color="#000035" />	
     </row>
     <row>

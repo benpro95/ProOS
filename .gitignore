@@ -7,6 +7,6 @@ pve/router.xml
 pve/switch.tar.gz
 pve/vmbkps
 pve/photos
-unifi/siteconf.unf
+unifi/*.unf
 *authorized_keys*
 *id_rsa*

@@ -165,6 +165,7 @@ then
        sleep 1
        ((temp_cnt--))
      done
+     echo " "
      cat /mnt/extbkps/keytmp/vmlog.txt
      ## Turn off white light on LEDwall
      curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"

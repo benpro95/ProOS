@@ -78,6 +78,11 @@ chown root:root /etc/sudoers.d/010_pi-nopasswd
 chmod u=rwx,g=rx,o=rx /etc/sudoers.d/010_pi-nopasswd
 chmod u=r,g=r,o= /etc/sudoers.d/010_pi-nopasswd
 
+## Lighttpd Configuration
+cp -f $BIN/modconf/lighttpd.conf /etc/lighttpd/
+chmod 644 /etc/lighttpd/lighttpd.conf
+chown root:root /etc/lighttpd/lighttpd.conf
+
 ## Camera Cleanup Timer
 cp -f $BIN/modconf/rpi-camcleanup.service /etc/systemd/system/
 chmod -f 644 /etc/systemd/system/rpi-camcleanup.service

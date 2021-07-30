@@ -1,7 +1,7 @@
 // Configuration
-const char* CONFIG_SSID      = "phome";
-const char* CONFIG_PSK       = "Provenzano383";
-const char* HOSTNAME         = "ESP32";
+const char* CONFIG_SSID      = "mach_kernel";
+const char* CONFIG_PSK       = "phonics.87.reply.218";
+const char* HOSTNAME         = "xmit";
 const int   CONFIG_SERIAL    = 115200;
 const int   CONFIG_PORT      = 80;
 const int   CONFIG_TIMEOUT   = 5000;

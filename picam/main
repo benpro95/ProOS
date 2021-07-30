@@ -131,6 +131,8 @@ else
   systemctl start rpi-rclone
   sleep 5.75
 fi
+## Light Web Server
+systemctl start lighttpd
 ## Motion Server
 systemctl start motion
 ## Cameras Cleanup Timer

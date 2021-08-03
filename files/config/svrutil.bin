@@ -155,9 +155,8 @@ then
     echo
     if [[ $REPLY =~ ^[Bb]$ ]]
     then
-     curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
      touch /mnt/extbkps/keytmp/start$VMHOST.txt
-     wait_time=60 # seconds
+     wait_time=65 # seconds
      temp_cnt=${wait_time}
      while [[ ${temp_cnt} -gt 0 ]];
      do
@@ -167,8 +166,6 @@ then
      done
      echo " "
      cat /mnt/extbkps/keytmp/vmlog.txt
-     ## Turn off white light on LEDwall
-     curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"
     fi
     if [[ $REPLY =~ ^[Ss]$ ]]
     then
@@ -243,7 +240,7 @@ then
     echo " "
     curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
     touch /mnt/extbkps/keytmp/unmount.txt
-    wait_time=60 # seconds
+    wait_time=65 # seconds
     temp_cnt=${wait_time}
     while [[ ${temp_cnt} -gt 0 ]];
     do

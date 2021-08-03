@@ -28,15 +28,20 @@ mount -o remount,ro /boot
 if [ ! -e /usr/bin/emulationstation ]; then
   git clone https://github.com/RetroPie/RetroPie-Setup.git /home/pi/RetroPie-Setup
   chmod +x /home/pi/RetroPie-Setup/retropie_setup.sh
+  echo "Make sure flash drive is unplugged until reboot!"
+  sleep 5.25
   chown -R pi:pi /home/pi/RetroPie-Setup
   mv /home/pi/RetroPie /home/pi/RetroPie.orig
   mv /opt/retropie/configs /home/pi/RetroPie.orig/
-  ln -sf /home/pi/RetroPie/configs /opt/retropie/configs
   mkdir -p /home/pi/RetroPie
   chown -R pi:pi /home/pi/RetroPie
   echo " "
   echo "Login to pi user and run 'sudo ./RetroPie-Setup/retropie_setup.sh'"
-  echo "Copy contents of '/home/pi/RetroPie.orig/*' to a USB flash drive"
+  echo "After reboot do these steps:"
+  echo "(1) Copy contents of '/home/pi/RetroPie.orig/*' to flash drive"
+  echo "flash drive will be mounted at '/home/pi/RetroPie'"
+  echo "(2) 'ln -sf /home/pi/RetroPie/configs /opt/retropie/configs'"
+  echo "to link configuration folder to the flash drive"
   echo " "
 else
   echo "RetroPie already installed."

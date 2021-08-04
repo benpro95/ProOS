@@ -24,6 +24,11 @@ sleep 1.25
 cp -f $BIN/modconf/config.txt /boot/
 mount -o remount,ro /boot
 
+## lighttpd Configuration
+cp -f $BIN/modconf/lighttpd.conf /etc/lighttpd/
+chmod 644 /etc/lighttpd/lighttpd.conf
+chown root:root /etc/lighttpd/lighttpd.conf
+
 ## RetroPie Setup
 if [ ! -e /usr/bin/emulationstation ]; then
   git clone https://github.com/RetroPie/RetroPie-Setup.git /home/pi/RetroPie-Setup

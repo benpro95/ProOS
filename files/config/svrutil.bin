@@ -4,6 +4,9 @@
 #######################
 #######################
 
+## Time to wait for PVE action timer
+wait_time=65 # seconds
+
 ##### END SESSION FUNCTION #####
 ENDPGRM () {
 echo " "
@@ -156,7 +159,6 @@ then
     if [[ $REPLY =~ ^[Bb]$ ]]
     then
      touch /mnt/extbkps/keytmp/start$VMHOST.txt
-     wait_time=65 # seconds
      temp_cnt=${wait_time}
      while [[ ${temp_cnt} -gt 0 ]];
      do
@@ -240,7 +242,6 @@ then
     echo " "
     curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
     touch /mnt/extbkps/keytmp/unmount.txt
-    wait_time=65 # seconds
     temp_cnt=${wait_time}
     while [[ ${temp_cnt} -gt 0 ]];
     do
@@ -270,7 +271,6 @@ then
     KEYVAR=000000000000000000000
     echo " "
     curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
-    wait_time=60 # seconds
     temp_cnt=${wait_time}
     while [[ ${temp_cnt} -gt 0 ]];
     do
@@ -489,8 +489,7 @@ do
 done
 
 ################################
-wait_time=25 # seconds
-temp_cnt=${wait_time}
+temp_cnt=25 # wait seconds
 while [[ ${temp_cnt} -gt 0 ]];
 do
   printf "\rtriggering drive detach in %2d second(s)." ${temp_cnt}
@@ -501,7 +500,6 @@ touch /mnt/extbkps/keytmp/unmount.txt
 ## Unlock State File
 rm -f /tmp/backupsvr.lock
 ## Wait for drives to detach
-wait_time=60 # seconds
 temp_cnt=${wait_time}
 while [[ ${temp_cnt} -gt 0 ]];
 do

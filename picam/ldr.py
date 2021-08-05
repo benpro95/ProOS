@@ -44,7 +44,7 @@ try:
                 #print("Turning on IR LEDs & cut filter")
                 GPIO.output(ircut, True)
                 GPIO.output(irleds, True)  
-        if ( value <= 20000 ):
+        if ( value <= 15000 ):
                 #print("Turning off IR LEDs & cut filter")
                 GPIO.output(ircut, False)
                 GPIO.output(irleds, False)

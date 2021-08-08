@@ -24,6 +24,9 @@ IRsend irsend;
 // Create RF send object
 RCSwitch mySwitch = RCSwitch();
 
+// WiFi Constants
+unsigned long previousMillis = 0;
+unsigned long interval = 30000;
 // Validate Constants
 long valout;
 int base = 10;
@@ -101,6 +104,16 @@ void setup() {
 
 // Loop instructions
 void loop() {
+
+  // if WiFi is down, try reconnecting every CHECK_WIFI_TIME seconds
+  unsigned long currentMillis = millis();
+  if ((WiFi.status() != WL_CONNECTED) && (currentMillis - previousMillis >=interval)) {
+    Serial.print(millis());
+    Serial.println("Reconnecting to WiFi...");
+    WiFi.disconnect();
+    WiFi.reconnect();
+    previousMillis = currentMillis;
+  }  
 
   // Wait for new client
   WiFiClient client = server.available();

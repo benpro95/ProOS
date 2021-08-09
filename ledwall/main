@@ -29,6 +29,9 @@ GPIO.output(GPIO_PIN, False)
 GPIO.cleanup()
 quit()
 END
+## Auto Hotspot (on boot only)
+sleep 25
+systemctl start rpi-netdetect.service
 exit
 ;;
 

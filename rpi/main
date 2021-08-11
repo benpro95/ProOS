@@ -10,8 +10,6 @@ boot)
 systemctl restart lighttpd
 ## Unified Web Server
 systemctl restart rpi-urserver
-## Auto Hotspot
-systemctl start rpi-netdetect.timer
 ## Loop Movies from USB Drive
 #systemctl restart rpi-vidlooper
 ## Start X11 Server
@@ -23,6 +21,9 @@ systemctl start rpi-netdetect.timer
 ## Bluetooth Driver
 #systemctl start hciuart
 #systemctl start bluetooth
+## Auto Hotspot (on boot only)
+sleep 25
+systemctl start rpi-netdetect.service
 exit
 ;;
 

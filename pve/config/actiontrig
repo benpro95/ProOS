@@ -63,11 +63,11 @@ if [ -e /mnt/extbkps/keytmp/unmount.txt ]; then
       echo "unmounting ZFS backup volume ${!ZFSVAR1}."
       zfs unmount /mnt/extbkps/${!ZFSVAR1}
       zpool export ${!ZFSVAR1}
-      zpool status ${!ZFSVAR1}
       echo ""
     fi
   done
   zfs unload-key -a
+  zpool status
   zfs list
   echo ""
   rm -f /mnt/extbkps/keytmp/unmount.txt

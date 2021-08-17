@@ -1,5 +1,5 @@
 #!/bin/bash
-## This is ran every 60 seconds
+## This is ran every 4 minutes
 #########################
 ## Detect if Driveway Camera is connected
 if ! ping -c 1 10.177.1.6 > /dev/null 2> /dev/null

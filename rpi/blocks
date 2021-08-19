@@ -1,0 +1,102 @@
+#!/bin/bash
+
+## Read input arguments
+in=$1
+chr=$2
+
+## Set arguments if none specified
+if [ "$1" == "" ]
+then
+ in="9"
+fi	
+###
+if [ "$2" == "" ]
+then
+ chr='#'
+fi	
+if [ "$2" == "$" ]
+then
+ chr='$'
+fi
+
+## Small to Large (Left Justifed)
+d=in
+for (( a=0; a<=in; a++ ))
+do
+  ###
+  b=a
+  for (( c=1; c<=b; c++ ))
+  do
+     printf '%s' "$chr"
+  done
+  ###
+  d=$((d-1))
+  for (( e=1; e<=d; e++ ))
+  do
+     printf " "
+  done
+###  
+printf "\n"
+done
+
+## Large to Small (Right Justifed)
+d=in
+for (( a=0; a<=in; a++ ))
+do
+  ###
+  b=a
+  for (( c=1; c<=b; c++ ))
+  do
+     printf " "
+  done
+  ###
+  d=$((d-1))
+  for (( e=0; e<=d; e++ ))
+  do
+     printf '%s' "$chr"
+  done
+###  
+printf "\n"
+done
+
+## Small to Large (Right Justifed)
+d=in
+for (( a=1; a<=in; a++ ))
+do
+  ###
+  d=$((d-1))
+  for (( e=1; e<=d; e++ ))
+  do
+     printf " "
+  done
+  ###
+  b=a
+  for (( c=1; c<=b; c++ ))
+  do
+     printf '%s' "$chr"
+  done
+###  
+printf "\n"
+done
+
+## Large to Small (Left Justifed)
+d=in
+for (( a=0; a<=in; a++ ))
+do
+  ###
+  d=$((d-1))
+  for (( e=0; e<=d; e++ ))
+  do
+     printf '%s' "$chr"
+  done
+  ###
+  b=a
+  for (( c=1; c<=b; c++ ))
+  do
+     printf " "
+  done
+###
+printf "\n"
+done
+
+exit

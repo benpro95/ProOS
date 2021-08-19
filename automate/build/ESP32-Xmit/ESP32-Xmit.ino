@@ -42,6 +42,10 @@ void setup() {
   Serial.println();
   Serial.println("Starting setup");
 
+  // Trigger Out 3.5mm Jack 
+  pinMode(32, OUTPUT);
+  digitalWrite(32, 0);
+
   // Built-in LED (turn-on, active low)
   pinMode(5, OUTPUT);
   digitalWrite(5, 0);
@@ -200,7 +204,9 @@ if(currentLine.indexOf("fet.") >=0)
     Serial.print("FET on\n");
     String code = currentLine.substring(7,9);
     valdata(code);
-    //digitalWrite(valout, HIGH);
+    if (valout == 32 ) {
+      digitalWrite(valout, HIGH);
+    }
     delay(30);
   }
   if(currentLine.indexOf("off.") >=3)
@@ -209,7 +215,22 @@ if(currentLine.indexOf("fet.") >=0)
     Serial.print("FET off\n");
     String code = currentLine.substring(8,10);
     valdata(code);
-    //digitalWrite(valout, LOW);
+    if (valout == 32 || valout == 5) {
+      digitalWrite(valout, LOW);
+    }  
+    delay(30);
+  }
+  if(currentLine.indexOf("tgl.") >=3)
+  {
+    // FET toggle
+    Serial.print("FET toggled\n");
+    String code = currentLine.substring(8,10);
+    valdata(code);
+    if (valout == 32 || valout == 5) {
+      digitalWrite(valout, HIGH);
+      delay(300);
+      digitalWrite(valout, LOW);
+    }  
     delay(30);
   }
 }    

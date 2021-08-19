@@ -274,7 +274,7 @@ if [[ "$CMD" == "rfb2off" ]]; then
 fi
 
 if [[ "$CMD" == "rfb3" ]]; then
-   XMITCMD="rftx.864343"
+   XMITCMD="fet.tgl.32"
    XMIT
 fi
 

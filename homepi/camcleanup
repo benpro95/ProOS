@@ -3,6 +3,9 @@
 ## Cameras Cleanup Script for Pi
 ### run as root user only!
 
+CAMERA1="Driveway"
+CAMERA2="Porch"
+
 ## Remove Motion Restart Log History
 truncate -s 0 /tmp/motionping.log
 
@@ -17,10 +20,12 @@ else
   if [[ -s /tmp/camcleanup.vars ]] ; then
 	echo "Google Drive above 14GB limit deleting archived video files..."
 	service motion stop
-	rm -rf /mnt/gsync/Archive/Driveway
-	rm -rf /mnt/gsync/Archive/Porch
-	mkdir -p /mnt/gsync/Archive/Driveway
-	mkdir -p /mnt/gsync/Archive/Porch
+  rm -rf /mnt/gsync/Archive/$CAMERA1
+  mkdir -p /mnt/gsync/Archive/$CAMERA1
+  chmod -R 777 /mnt/gsync/Archive/$CAMERA1
+  rm -rf /mnt/gsync/Archive/$CAMERA2
+  mkdir -p /mnt/gsync/Archive/$CAMERA2
+  chmod -R 777 /mnt/gsync/Archive/$CAMERA2 
 	service motion start
   else
     echo "Google Drive under 14GB."
@@ -32,11 +37,11 @@ else
   if [[ -s /tmp/camcleanup.vars ]] ; then
 	echo "Google Drive current folder above 6GB limit moving video files..."
 	service motion stop
-	mkdir -p /mnt/gsync/Archive
-	mkdir -p /mnt/gsync/Archive/Driveway
-	mkdir -p /mnt/gsync/Archive/Porch
-	mv /mnt/gsync/Current/Driveway/* /mnt/gsync/Archive/Driveway/
-	mv /mnt/gsync/Current/Porch/* /mnt/gsync/Archive/Porch/
+  mkdir -p /mnt/gsync/Archive
+  mkdir -p /mnt/gsync/Archive/$CAMERA1
+  mv /mnt/gsync/Current/$CAMERA1/* /mnt/gsync/Archive/$CAMERA1/
+  mkdir -p /mnt/gsync/Archive/$CAMERA2
+  mv /mnt/gsync/Current/$CAMERA2/* /mnt/gsync/Archive/$CAMERA2/
 	service motion start
   else
     echo "Google Drive current folder under 6GB."
@@ -55,10 +60,12 @@ else
   if [[ -s /tmp/camcleanup.vars ]] ; then
 	echo "Flash drive above 15GB limit deleting video files..."
 	service motion stop
-	rm -rf /media/usb0/cameras/Driveway
-	rm -rf /media/usb0/cameras/Porch
-	mkdir -p /media/usb0/cameras/Driveway
-	mkdir -p /media/usb0/cameras/Porch
+  rm -rf /media/usb0/cameras/$CAMERA1
+  mkdir -p /media/usb0/cameras/$CAMERA1
+  chmod -R 777 /media/usb0/cameras/$CAMERA1
+  rm -rf /media/usb0/cameras/$CAMERA2
+  mkdir -p /media/usb0/cameras/$CAMERA2
+  chmod -R 777 /media/usb0/cameras/$CAMERA2 
 	service motion start
   else
     echo "Flash drive under 15GB."

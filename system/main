@@ -21,7 +21,7 @@ systemctl restart autofs
 ## AirPlay Support
 systemctl restart rpi-airplay
 ## Auto Hotspot
-systemctl start rpi-netdetect.timer
+systemctl start rpi-netdetect.service
 exit
 ;;
 

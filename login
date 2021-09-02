@@ -16,10 +16,13 @@ else
 fi
 }
 
+## Local domain name
+DOMAIN=".home"
+
 ## Set to current directory
 ROOTDIR=.
 
-## Read Variables
+## Read variables
 MODULE=$1
 ARG2=$2
 HOST=$3
@@ -81,14 +84,14 @@ fi
 ### ProServer Configurator (only these hosts)
 if [ "$MODULE" = "files" ] || [ "$MODULE" = "plex" ] || [ "$MODULE" = "pve" ] || [ "$MODULE" = "unifi" ] || [ "$MODULE" = "xana" ] || [ "$MODULE" = "dev" ] || [ "$MODULE" = "automate" ]; then
 ######################################
-  HOST="$MODULE"
+  HOST="$MODULE$DOMAIN"
    ## Check if host is up (don't ping these hosts)
-  if [ ! "$HOST" = "pve" ]; then
+  if [ ! "$MODULE" = "pve" ]; then
     echo "Attempting connection to server..."
     HOSTCHK
   fi 
   ## Copy SSH key
-  cp -r $ROOTDIR/$HOST/id_rsa $TMPFLDR/id_rsa
+  cp -r $ROOTDIR/$MODULE/id_rsa $TMPFLDR/id_rsa
   chmod 600 $TMPFLDR/id_rsa
   ## SSH key prompt
   eval `ssh-agent -s`
@@ -97,7 +100,7 @@ if [ "$MODULE" = "files" ] || [ "$MODULE" = "plex" ] || [ "$MODULE" = "pve" ] ||
   if [ "$ARG2" = "sync" ]; then
     echo "ProOS NetInstall for Server"
     ## Copying files to temp
-    cp -r $ROOTDIR/$HOST/config $TMPFLDR/
+    cp -r $ROOTDIR/$MODULE/config $TMPFLDR/
     ## Compressing files
     cd $TMPFLDR
     export COPYFILE_DISABLE=true
@@ -130,13 +133,16 @@ fi
 cp -r $ROOTDIR/rpi/id_rsa $TMPFLDR/id_rsa
 chmod 600 $TMPFLDR/id_rsa
 
-## Set env variables
-touch $TMPFLDR/hostname
-echo "$MODULE" > $TMPFLDR/hostname
+## Check for Init 1st
+if [ "$ARG2" = "init" ]; then
+ touch $TMPFLDR/start_sync
+ HOST="$HOST$DOMAIN"
+else
+ HOST="$MODULE$DOMAIN"
+fi
 
 ## Check for Read-write
 if [ "$ARG2" = "rw" ]; then
-HOST=`cat $TMPFLDR/hostname`
 ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "/opt/rpi/init rw"
 rm -r $TMPFLDR
 exit
@@ -144,33 +150,13 @@ fi
 
 ## Check for Read-only
 if [ "$ARG2" = "ro" ]; then
-HOST=`cat $TMPFLDR/hostname`
 ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "/opt/rpi/init ro"
 rm -r $TMPFLDR
 exit
 fi
 
-## Check for Clean
-if [ "$ARG2" = "clean" ]; then
-HOST=`cat $TMPFLDR/hostname`
-touch $TMPFLDR/start_sync
-fi
-
-## Check for Reset
-if [ "$ARG2" = "reset" ]; then
-HOST=`cat $TMPFLDR/hostname`
-touch $TMPFLDR/start_sync
-fi
-
-## Check for Init
-## DON'T CHANGE HOST VARIABLE
-if [ "$ARG2" = "init" ]; then
-touch $TMPFLDR/start_sync
-fi
-
-## Check for Sync
-if [ "$ARG2" = "sync" ]; then
-HOST=`cat $TMPFLDR/hostname`
+## Check for Command
+if [ "$ARG2" = "sync" ] || [ "$ARG2" = "clean" ] || [ "$ARG2" = "reset" ] ; then
 touch $TMPFLDR/start_sync
 fi
 
@@ -285,8 +271,6 @@ if [ -e $TMPFLDR/start_sync ]; then
 fi
 ######### END AUTOSYNC ##########
 
-## Read Hostname
-HOST=`cat $TMPFLDR/hostname`
 ## Exit if host down
 echo "Attempting connection to Pi..."
 HOSTCHK

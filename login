@@ -129,35 +129,28 @@ fi
 
 ########## Raspberry Pi Configurator ##########
 
-## Copy SSH key to temp
+## Copy SSH key
 cp -r $ROOTDIR/rpi/id_rsa $TMPFLDR/id_rsa
 chmod 600 $TMPFLDR/id_rsa
 
-## Check for Init 1st
+## Determine script operation
 if [ "$ARG2" = "init" ]; then
- touch $TMPFLDR/start_sync
- HOST="$HOST$DOMAIN"
+  ## Init function
+  touch $TMPFLDR/start_sync
+  HOST="$HOST$DOMAIN"
 else
- HOST="$MODULE$DOMAIN"
-fi
-
-## Check for Read-write
-if [ "$ARG2" = "rw" ]; then
-ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "/opt/rpi/init rw"
-rm -r $TMPFLDR
-exit
-fi
-
-## Check for Read-only
-if [ "$ARG2" = "ro" ]; then
-ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "/opt/rpi/init ro"
-rm -r $TMPFLDR
-exit
-fi
-
-## Check for Command
-if [ "$ARG2" = "sync" ] || [ "$ARG2" = "clean" ] || [ "$ARG2" = "reset" ] ; then
-touch $TMPFLDR/start_sync
+  ## Sync and reset functions	
+  HOST="$MODULE$DOMAIN"
+  if [ "$ARG2" = "sync" ] || [ "$ARG2" = "clean" ] || [ "$ARG2" = "restore" ] || [ "$ARG2" = "reset" ] ; then
+    touch $TMPFLDR/start_sync
+  else
+  ## Other argument specified	
+    if ! [ "$ARG2" = "" ] ; then
+    ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "/opt/rpi/init $ARG2"
+    rm -r $TMPFLDR
+    exit
+    fi
+  fi
 fi
 
 ### Sync ###############
@@ -175,43 +168,23 @@ if [ -e $TMPFLDR/start_sync ]; then
      ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "/opt/rpi/init rw"
      echo "Waiting 30 seconds..."
      sleep 30
-     ### Wait for Connection
-     if ping -c 1 $HOST &> /dev/null
-     then
-       echo ""  > /dev/null 2>&1
-     else
-       echo "Host is down, waiting 10 more seconds..."
-       sleep 10
-     fi
-     if ping -c 1 $HOST &> /dev/null
-     then
-      echo ""  > /dev/null 2>&1
-     else
-       echo "Host is down, waiting 10 more seconds..."
-       sleep 10
-     fi
-     if ping -c 1 $HOST &> /dev/null
-     then
-       echo ""  > /dev/null 2>&1
-     else
-       echo "Host is down, waiting 10 more seconds..."
-       sleep 10
-     fi
-     if ping -c 1 $HOST &> /dev/null
-     then
-       echo ""  > /dev/null 2>&1
-     else
-       echo "Host is down, waiting 10 more seconds..."
-       sleep 10
-     fi
-     if ping -c 1 $HOST &> /dev/null
-     then
+     if ping -c 1 $HOST &> /dev/null ; then
        echo "Connection established."
      else
-       echo "Host is down, exiting..."
-       ## Clean-up
-       rm -r $TMPFLDR
-       exit
+        for run in {1..4}; do
+          if ! ping -c 1 $HOST &> /dev/null ; then
+          echo "Host is down, waiting 10 more seconds..."
+          sleep 10
+          fi
+        done
+        if ping -c 1 $HOST &> /dev/null ; then
+          echo "Connection established."
+        else
+          echo "Host is down, exiting..."
+          ## Clean-up
+          rm -r $TMPFLDR
+          exit
+        fi
      fi
   fi
 
@@ -225,24 +198,22 @@ if [ -e $TMPFLDR/start_sync ]; then
   done
   echo ""
 
-  ## Check for Reset
-  if [ "$ARG2" = "init" ]; then
-  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "rm -fv /etc/rpi-conf.done"  
-  fi  
-
-  ## Check for Reset
-  if [ "$ARG2" = "reset" ]; then
+  ## Check for reset
+  if [ "$ARG2" = "reset" ] ||  [ "$ARG2" = "init" ] ; then
   ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "rm -fv /etc/rpi-conf.done"  
   fi
 
-  ## Check for Restore
-  if [ "$ARG2" = "clean" ]; then
-  echo "Erasing software..."
-  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "rm -fv /etc/rpi-conf.done"  
-  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "rm -rfv /opt/rpi"
+  ## Check for restore
+  if [ "$ARG2" = "restore" ] ||  [ "$ARG2" = "clean" ] ; then
+    echo "Erasing software..."
+    ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "rm -fv /etc/rpi-conf.done"  
+    ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "rm -rfv /opt/rpi"
+    echo "Downloading software..."
+  else 
+    echo "Syncing software..."
   fi
 
-  echo "Syncing software..."
+  ## Download & sync software
   rsync -e "ssh -i $TMPFLDR/id_rsa" --progress --checksum -rtv --exclude=id_rsa --exclude=BaseOS.zip --exclude=photos $ROOTDIR/rpi root@$HOST:/opt/
   rsync -e "ssh -i $TMPFLDR/id_rsa" --progress --checksum -rtv --exclude=id_rsa --exclude=photos --exclude=sources $ROOTDIR/$MODULE/* root@$HOST:/opt/rpi/
 
@@ -252,10 +223,10 @@ if [ -e $TMPFLDR/start_sync ]; then
   rsync -e "ssh -i $TMPFLDR/id_rsa" --progress -a $TMPFLDR/modname root@$HOST:/opt/rpi/config/hostname
 
   ## Installing on Pi
-  echo "Installing software."
+  echo "Installing software..."
   ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST "chmod +x /opt/rpi/config/installer.sh; /opt/rpi/config/installer.sh"
 
-  ## Reboot in Read-only mode
+  ## Reboot in read-only mode
   read -p "Do you want to reboot in read-only mode? " -n 1 -r
   echo
   if [[ ! $REPLY =~ ^[Yy]$ ]]

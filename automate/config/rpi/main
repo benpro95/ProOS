@@ -13,7 +13,7 @@ case "$1" in
 
 ### Relaxation Sound Playback
 stoprelax)
-/usr/bin/curl -N -f -m 5 --silent "http://system.home/exec.php?var=&arg=stoprelax&action=main"
+/usr/bin/curl -N -f -m 5 --silent "http://hifi.home/exec.php?var=&arg=stoprelax&action=main"
 ## USB Decoder Input
 /opt/rpi/xmit usb
 ## Preamp DAC Input
@@ -24,7 +24,7 @@ exit
 relax)
 killall -s KILL -w mpv
 ## Play Audio in Loop
-/usr/bin/curl -N -f -m 5 --silent "http://system.home/exec.php?var=$ARG2&arg=relax&action=main"
+/usr/bin/curl -N -f -m 5 --silent "http://hifi.home/exec.php?var=$ARG2&arg=relax&action=main"
 ## Optical Decoder Input
 /opt/rpi/xmit coaxial
 ## Preamp DAC Input
@@ -96,7 +96,7 @@ exit
 ;;
 ##
 hifion)
-if ping -W 1 -c 1 system.home > /dev/null 2> /dev/null
+if ping -W 1 -c 1 hifi.home > /dev/null 2> /dev/null
 then
   echo "Host is up"
 else
@@ -109,7 +109,7 @@ exit
 ;;
 ##
 hifioff)
-if ping -W 1 -c 1 system.home > /dev/null 2> /dev/null
+if ping -W 1 -c 1 hifi.home > /dev/null 2> /dev/null
 then
   ## Power audio system
   /opt/rpi/xmit pwrhifi

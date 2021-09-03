@@ -2,7 +2,7 @@
 <layout>
 	<row>
         <button icon="off" ontap="roff" color="black" />
-	    <button text="Bedroom" color="#00004c" />
+	    <button text="Apartment" color="#00004c" />
 	    <button icon="on" ontap="ron" color="#00004c" />
     </row>
     <row>

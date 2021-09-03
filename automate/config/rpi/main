@@ -247,6 +247,8 @@ roomoff)
 /opt/rpi/xmit rfb2 off
 ## PC Power Off
 /opt/rpi/main pcoff
+## System Off
+/opt/rpi/main hifioff
 ## Blank LEDwalls
 /opt/rpi/leds stop
 exit

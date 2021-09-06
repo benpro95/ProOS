@@ -5,6 +5,7 @@
 
 ## Check if host is up
 HOSTCHK(){
+echo "Attempting connection..."
 if ping -c 2 $HOST &> /dev/null
 then
   echo "Connection established."
@@ -87,7 +88,6 @@ if [ "$MODULE" = "files" ] || [ "$MODULE" = "plex" ] || [ "$MODULE" = "pve" ] ||
   HOST="$MODULE$DOMAIN"
    ## Check if host is up (don't ping these hosts)
   if [ ! "$MODULE" = "pve" ]; then
-    echo "Attempting connection to server..."
     HOSTCHK
   fi 
   ## Copy SSH key
@@ -155,7 +155,6 @@ fi
 
 ### Sync ###############
 if [ -e $TMPFLDR/start_sync ]; then
-  echo "Attempting connection to Pi..."
   HOSTCHK
   echo "*** ProOS NetInstall ***"
   echo ""
@@ -243,7 +242,6 @@ fi
 ######### END AUTOSYNC ##########
 
 ## Exit if host down
-echo "Attempting connection to Pi..."
 HOSTCHK
 ## Login to SSH
 ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $TMPFLDR/id_rsa root@$HOST

@@ -1,8 +1,8 @@
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
-# Scrub all ZFS drives the second Sunday of every month.
+# Scrub all ZFS drives the second Sunday of every month, at 9:24am.
 MAILTO=""
-24 0 8-14 * * root [ $(date +\%w) -eq 0 ] && [ -x /usr/lib/zfs-linux/scrub ] && /usr/lib/zfs-linux/scrub
+24 9 8-14 * * root [ $(date +\%w) -eq 0 ] && [ -x /usr/lib/zfs-linux/scrub ] && /usr/lib/zfs-linux/scrub
 
 ## Trim ZFS root pool at 04:00 AM on the 10th every month.
 MAILTO=""

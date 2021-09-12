@@ -18,8 +18,8 @@ sleep 1.25; /usr/bin/amixer set PCM 100%
 systemctl start lighttpd
 ## Disable HDMI
 /usr/bin/tvservice -o
-## Auto Hotspot
-systemctl start rpi-netdetect.timer
+## Auto Hotspot (on boot only)
+systemctl start rpi-netdetect.service
 exit
 ;;
 

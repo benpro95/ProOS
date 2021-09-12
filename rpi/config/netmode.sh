@@ -78,13 +78,7 @@ systemctl start dnsmasq
 DELWIFI_MODE(){
 ## Stop Networking
 STOP_NET
-## Copy Empty Wi-Fi Settings
-cp -f /etc/wpa_supplicant/wpa_supplicant.empty /etc/wpa_supplicant/wpa_supplicant.conf
-chmod 644 /etc/wpa_supplicant/wpa_supplicant.conf
-chown root:root /etc/wpa_supplicant/wpa_supplicant.conf
-mount -o remount,rw /boot
-cp -f /etc/wpa_supplicant/wpa_supplicant.empty /boot/wpa.conf
-mount -o remount,ro /boot
+
 ## DHCP Client Mode
 cp -f /etc/dhcpcd.net /etc/dhcpcd.conf
 chmod 644 /etc/dhcpcd.conf
@@ -154,7 +148,6 @@ if [ $? != 0 ]
 then
   echo "Network connection down, switching to hotspot..."
   APD_MODE
-  echo " "
   exit
 fi
 echo " "
@@ -179,9 +172,14 @@ exit
 
 delwifi)
 ## Delete Wi-Fi credentials
-DELWIFI_MODE
-sleep 10
-systemctl start rpi-netdetect.service
+cp -f /etc/wpa_supplicant/wpa_supplicant.empty /etc/wpa_supplicant/wpa_supplicant.conf
+chmod 644 /etc/wpa_supplicant/wpa_supplicant.conf
+chown root:root /etc/wpa_supplicant/wpa_supplicant.conf
+mount -o remount,rw /boot
+cp -f /etc/wpa_supplicant/wpa_supplicant.empty /boot/wpa.conf
+mount -o remount,ro /boot
+## Switch to hotspot
+APD_MODE
 exit
 ;;
 
@@ -195,6 +193,7 @@ exit
 
 netdetect)
 ## Invoked by systemd only
+sleep 40
 NETDETECT
 exit
 ;;

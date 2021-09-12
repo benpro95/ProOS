@@ -1,9 +1,0 @@
-[Unit]
-Description=Runs script every 5min.
-
-[Timer]
-OnBootSec=40
-OnUnitActiveSec=5min
-
-[Install]
-WantedBy=timers.target

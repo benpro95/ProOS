@@ -6,35 +6,27 @@
 
 echo "Installing..."
 
-## Source List
-cp -f /tmp/config/aptsources.list /etc/apt/sources.list.d/
-chmod 644 /etc/apt/sources.list.d/aptsources.list
-chown root:root /etc/apt/sources.list.d/aptsources.list
-
 ## Update Sources
 apt-get --yes update
 
 ## Support Packages
-#apt-get install -y --no-upgrade build-essential g++ gcc
 apt-get install -y --no-upgrade dirmngr ca-certificates apt-transport-https wget 
 apt-get install -y --no-upgrade unzip gnupg htop rsync curl screen parallel ethtool neofetch
 apt-get install -y --no-upgrade libdbus-1-dev libdbus-glib-1-dev locales cifs-utils iptables
 apt-get install -y --no-upgrade aptitude sudo gnupg mailutils scrub seahorse avahi-daemon avahi-utils
 
-## 3D Virtualization Support
-apt-get install -y --no-upgrade libvirglrenderer0
-
 ## X Packages
-apt-get install -y --no-upgrade libnotify-bin libxext6 libxtst6 xvfb wipe scrub
+systemctl set-default graphical.target
+apt-get install -y --no-upgrade libvirglrenderer0
+apt-get install -y --no-upgrade task-xfce-desktop dbus-x11
+apt-get install -y --no-upgrade libnotify-bin libxext6 libxtst6 wipe scrub
 apt-get install -y --no-upgrade xfce4-goodies crystalcursors gnome-colors-common
 apt-get install -y --no-upgrade mate-themes gnome-icon-theme gnome-human-icon-theme
 apt-get install -y --no-upgrade audacity dosbox blender transmission wxhexeditor
 apt-get install -y --no-upgrade xchm scribus kazam medit luckybackup inkscape meld
 apt-get install -y --no-upgrade gimp gnumeric geany gtkhash git vlc clamtk gdebi
 apt-get install -y --no-upgrade lightdm-gtk-greeter-settings xserver-xorg-input-evdev
-apt-get install -y --no-upgrade qt5-style-plugins qt4-qtconfig
-apt-get --yes remove --purge libreoffice*
-#apt-get install -y --no-upgrade xdotool
+apt-get install -y --no-upgrade xdotool
 
 ## Set Passwords
 if [ ! -e /etc/passwds.set ]; then
@@ -43,8 +35,6 @@ if [ ! -e /etc/passwds.set ]; then
   passwd ben
   echo ""
   touch /etc/passwds.set
-else
-  echo ""  > /dev/null 2>&1
 fi
 
 ## Remove Root Password
@@ -54,8 +44,6 @@ passwd -d root
 if [ ! -e /etc/locales.generated ]; then
   dpkg-reconfigure locales
   touch /etc/locales.generated
-else
-  echo ""  > /dev/null 2>&1
 fi
 
 ## Auto SSH Login Key for root
@@ -82,19 +70,20 @@ chown root:root /etc/rc.local
 systemctl enable rc-local
 
 ## VNC Support
-apt-get --yes install tigervnc-standalone-server tigervnc-common
+apt-get --yes install tightvncserver
 cp -f /tmp/config/vncserver.service /etc/systemd/system/
 chmod 644 /etc/systemd/system/vncserver.service
 chown root:root /etc/systemd/system/vncserver.service
 if [ ! -e /etc/vncserver.installed ]; then
   echo ""
   systemctl enable vncserver
-  echo "Login to user 'ben' and run 'vncserver' initially to set password."
+  echo "Login to user 'ben' and run 'vncserver' initially to setup."
   touch /etc/vncserver.installed
   echo ""
-else
-  echo ""  > /dev/null 2>&1
 fi
+cp -f /tmp/config/xstartup /home/ben/.vnc/
+chmod +x /home/ben/.vnc/xstartup
+chown ben:ben /home/ben/.vnc/xstartup
 echo "Login to user 'ben' and run 'vncpasswd' to change VNC password."
 systemctl disable lightdm
 
@@ -159,8 +148,6 @@ if [ ! -e /etc/themes.installed ]; then
   cp -r /tmp/config/themes/Piranha /usr/share/themes/
   chmod -R 777 /usr/share/themes/
   touch /etc/themes.installed
-else
-  echo ""  > /dev/null 2>&1
 fi
 
 ## Clean-up

@@ -1,0 +1,7 @@
+Stable Firmware UAP/USW Firmware 4.3.20.11298
+
+https://community.ui.com/releases/UAP-USW-Firmware-4-3-20-11298/dc127981-4b29-46be-aca0-9272d89ec2ad
+
+UAP-AC-Lite/LR/Pro/EDU/M/M-PRO/IW/IW-Pro (Direct Firmware Link)
+
+https://dl.ui.com/unifi/firmware/U7PG2/4.3.20.11298/BZ.qca956x.v4.3.20.11298.200704.1347.bin

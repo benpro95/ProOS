@@ -36,27 +36,33 @@ else
   TMPFLDR=$(mktemp -d /tmp/protmp.XXXXXXXXX)
 fi
 
-### ProServer Configuration
+### ProServer Help Menu
 if [ "$MODULE" = "" ]; then
-echo ""
-echo "Pi / Server Configuration and Login Script"
-echo "by Ben Provenzano III"
-echo ""
-echo "Login to ProOS Pi / Server"
-echo "./login 'Hostname'"
-echo ""
-echo "Sync ProOS (quick run config script) Pi / Server"
-echo "./login 'Hostname' sync"
-echo ""
-echo "Reset ProOS (full config script) Pi Only"
-echo "./login 'Hostname' reset"
-echo ""
-echo "Clean/Restore ProOS (delete /opt/rpi and run full config script) Pi Only"
-echo "./login 'Hostname' clean"
-echo ""
-echo "Initialize ProOS (configure a base Pi or reconfigure one) Pi Only"
-echo "./login 'Module' init 'Hostname'"
-echo ""
+printf \
+'* Pi / Server Configuration and Login Script
+by Ben Provenzano III
+
+Login to ProOS Pi / Server
+./login "Hostname"
+
+Sync ProOS (quick run config script) Pi / Server
+./login "Hostname" sync
+
+Reset ProOS (full config script) Pi Only
+./login "Hostname" reset
+
+Clean/Restore ProOS (delete /opt/rpi and run full config script) Pi Only
+./login "Hostname" clean
+
+Initialize ProOS (configure a base Pi or reconfigure one) Pi Only
+./login "Module" init "Hostname"
+
+Command Reference List
+./login cmds
+
+Clean-up Temporary Files
+./login rmtmp
+\n'
 ## Clean-up
 rm -r $TMPFLDR
 exit
@@ -65,6 +71,28 @@ fi
 ### Exit if matches this hosts
 if [ "$MODULE" = "router" ] || [ "$MODULE" = "rpi" ] || [ "$MODULE" = "z97mx" ] || [ "$MODULE" = "sources" ]; then
 echo "Hostname not allowed."
+## Clean-up
+rm -r $TMPFLDR
+exit
+fi
+
+if [ "$MODULE" = "cmds" ]; then
+printf \
+'* Linux Command Reference
+by Ben Provenzano III
+
+#### Find a specific string in multiple files
+grep -RHIni "\<STRING\>" file or folder
+
+#### Convert binary to single line of base64 (PNG to HTML base64)
+openssl base64 -A -in file.bin -out file.base64
+
+#### Convert ZFS stored VM disk to RAW disk image
+dd bs=128k if=/dev/rpool/proxmox/vm-100-disk-0 of=file.raw
+
+#### Convert ZFS stored VM disk to QCOW2 disk image
+qemu-img convert -f raw -O qcow2 /dev/rpool/proxmox/vm-100-disk-0 file.qcow2
+\n'
 ## Clean-up
 rm -r $TMPFLDR
 exit

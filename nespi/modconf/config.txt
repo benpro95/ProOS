@@ -4,10 +4,15 @@
 gpu_mem=128
 
 #-------Force HDMI to 1080p---------
-hdmi_force_hotplug=1
-hdmi_group=1
-hdmi_mode=16
-hdmi_drive=2
+#hdmi_force_hotplug=1
+#hdmi_group=1
+#hdmi_mode=16
+#hdmi_drive=2
+
+##------Enable Composite Video (disable HDMI)---------
+hdmi_ignore_hotplug=1
+overscan_scale=1
+sdtv_mode=0
 
 #-------Max USB Current-------
 #max_usb_current=1

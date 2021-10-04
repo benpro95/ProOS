@@ -2,31 +2,81 @@
 ##
 ## Portable Pi Zero Speaker by Ben Provenzano III v2.2 #########
 ################################################################
+
+## Read the 2nd Argument
+ARG2=$2
+
+## Read the 1st Argument
 case "$1" in
 
 boot)
 ## Pop Eliminator
-/usr/bin/amixer set PCM 0%; sleep 1.25
+/usr/bin/amixer set PCM 0%
+sleep 1.25
 systemctl start rpi-zeroaudio
 ## AirPlay Support
 systemctl start rpi-airplay
 ## Startup Sound / Set Volume
 /usr/bin/amixer set PCM 60%
 /usr/bin/aplay /opt/rpi/sounds/ds.wav
-sleep 1.25; /usr/bin/amixer set PCM 100%
+sleep 1.25
+/usr/bin/amixer set PCM 100%
 ## Light Web Server
 systemctl start lighttpd
 ## Disable HDMI
 /usr/bin/tvservice -o
 ## Auto Hotspot (on boot only)
 systemctl start rpi-netdetect.service
+## Attach Server SMB Share
+sleep 5.75
+if ping -c 1 files.home > /dev/null 2> /dev/null
+then
+  systemctl start autofs
+fi
 exit
 ;;
+
+### Relaxation Sound Playback
+stoprelax)
+killall -s KILL -w omxplayer
+## Set Volume
+/usr/bin/amixer set PCM 100%
+exit
+;;
+##
+relax)
+killall -s KILL -w omxplayer
+## Set Initial Volume
+/usr/bin/amixer set PCM 60%
+## Capitialize first letter of argument
+ARG2="${ARG2^}"
+## Play Audio in Loop
+/usr/bin/omxplayer -o alsa --loop "/mnt/smb/Media/Sounds/Relaxation/$ARG2.mp3"
+exit
+;;
+
+vup)
+## Volume Up
+/usr/bin/amixer set PCM 2%+
+exit
+;;
+
+vdwn)
+## Volume Down
+/usr/bin/amixer set PCM 2%-
+exit
+;;
+
+### Examples of URL strings ###
+# http://automate:9300/exec.php?var=&arg=lightson&action=main
+# http://automate:9300/exec.php?var=&arg=lightsoff&action=main
+# http://automate:9300/exec.php?var=prism&arg=video&action=leds
+###############################
 
 
     
         *)
-	      echo "  Pi Zero II"
+	      echo "  AirZero Portable"
 	      echo "  by Ben Provenzano III"
 	      echo " "
 	      echo "Enter a valid command line argument."

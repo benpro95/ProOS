@@ -12,6 +12,18 @@ actions.oldmacoff = function ()
 script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfa3 off");
 end
 
+actions.crt = function ()
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfa1 toggle");
+end
+
+actions.crton = function ()
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfa1 on");
+end
+
+actions.crtoff = function ()
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfa1 off");
+end
+
 actions.desktop = function ()
 script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit rfb2 toggle");
 end

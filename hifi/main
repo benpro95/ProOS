@@ -15,26 +15,30 @@ rm -rf /var/lock/rpi
 mkdir -p /var/lock/rpi
 chmod -R 777 /var/lock/rpi
 ## Light Web Server
-systemctl restart lighttpd
-## Automount Network Shares
-systemctl restart autofs
+systemctl start lighttpd
 ## AirPlay Support
-systemctl restart rpi-airplay
+systemctl start rpi-airplay
+## Attach Server SMB Share
+sleep 5.75
+if ping -c 1 files.home > /dev/null 2> /dev/null
+then
+  systemctl start autofs
+fi
 exit
 ;;
 
 ### Relaxation Sound Playback
 stoprelax)
-killall -s KILL -w mpv
+killall -s KILL -w omxplayer
 exit
 ;;
 ##
 relax)
-killall -s KILL -w mpv
+killall -s KILL -w omxplayer
 ## Capitialize first letter of argument
 ARG2="${ARG2^}"
 ## Play Audio in Loop
-/usr/bin/screen -dm /usr/bin/mpv --no-video --gapless-audio=yes --loop-file "/mnt/smb/Media/Sounds/Relaxation/$ARG2"
+/usr/bin/omxplayer -o alsa --loop "/mnt/smb/Media/Sounds/Relaxation/$ARG2.mp3"
 exit
 ;;
 
@@ -46,7 +50,7 @@ exit
 
 
         *)
-          echo "System Server for Raspberry Pi"
+          echo "HiFi System"
 	      echo "  by Ben Provenzano III "
 	      echo " "
 	      echo "Enter a valid command line argument."

@@ -1,10 +1,10 @@
 ## Created by Ben Provenzano III for HiFi Pi
 
 #-------GPU memory-------
-gpu_mem=32
+gpu_mem=64
 
 #-------Max USB Current-------
-## max_usb_current=1
+##max_usb_current=1
 
 #-------Disable Ram temp refresh every 500ms---------------
 disable_pvt=1

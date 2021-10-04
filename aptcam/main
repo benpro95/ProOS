@@ -119,7 +119,7 @@ chmod 777 /mnt/ramdisk
 mount -t tmpfs -o size=200m ramdisk /mnt/ramdisk
 sleep 25
 ## Attach Server SMB Share
-if ping -c 1 10.177.1.4 > /dev/null 2> /dev/null
+if ping -c 1 files.home > /dev/null 2> /dev/null
 then
   systemctl start autofs
   sleep 5.75

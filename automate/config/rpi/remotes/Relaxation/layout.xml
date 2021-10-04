@@ -1,37 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 	<row>
-        <button icon="vdown" ontap="vdwn" color="#00004c" />
-        <button icon="vup" ontap="vup" color="#00004c" />
+        <button icon="vdown" ontap="vdwn" />
+        <button icon="vup" ontap="vup" />
     </row>
     <row>
-        <button text="Rainforest" ontap="amazon" color="#000045" />
-	    <button text="Campfire" ontap="campfire" color="#000045" />
-	    <button text="Forest" ontap="forest" color="#000045" />
+        <button text="Rainforest" ontap="amazon" />
+	    <button text="Campfire" ontap="campfire" />
+	    <button text="Forest" ontap="forest" />
     </row>
     <row>
-        <button text="Harbour" ontap="harbour" color="#00003e" />
-        <button text="Wind" ontap="wind" color="#00003e" />
-        <button text="Jungle" ontap="jungle" color="#00003e" />
-	    <button text="Meadow" ontap="meadow" color="#00003e" />
+        <button text="Harbour" ontap="harbour" />
+        <button text="Wind" ontap="wind" />
+        <button text="Jungle" ontap="jungle" />
+	    <button text="Meadow" ontap="meadow" />
     </row>
     <row>
-    	<button text="Thunder" ontap="thunder" color="#000037" />
-        <button text="Waterfall" ontap="waterfall" color="#000037" />
-        <button text="Stream" ontap="stream" color="#000037" />
+    	<button text="Thunder" ontap="thunder" />
+        <button text="Waterfall" ontap="waterfall" />
+        <button text="Stream" ontap="stream" />
     </row>
     <row>
-        <button text="Rain" ontap="rainii" color="#000030" />
-        <button text="Storm" ontap="storm" color="#000030" />
-        <button text="River" ontap="river" color="#000030" />
-        <button text="Ocean" ontap="ocean" color="#000030" />
+        <button text="Rain" ontap="rainii" />
+        <button text="Storm" ontap="storm" />
+        <button text="River" ontap="river" />
+        <button text="Ocean" ontap="ocean" />
     </row>
     <row>
-        <button text="Beach" ontap="beach" color="#000020" />
-        <button text="Traffic" ontap="traffic" color="#000020" />
-        <button text="Warp" ontap="warp" color="#000020" />
+        <button text="Ambient I" ontap="ambient1" />
+        <button text="Ambient II" ontap="ambient2" />
+        <button text="Ambient III" ontap="ambient3" />
     </row>
     <row>
-        <button icon="pause" ontap="stop" color="#000000" />
+        <button text="Beach" ontap="beach" />
+        <button text="Traffic" ontap="traffic" />
+        <button text="Warp" ontap="warp" />
+        <button text="Classical" ontap="classical" />
+    </row>
+    <row>
+        <button icon="pause" ontap="stop" />
     </row>
 </layout>

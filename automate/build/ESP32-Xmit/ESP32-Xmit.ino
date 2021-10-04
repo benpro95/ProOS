@@ -14,6 +14,19 @@ const int   CONFIG_TIMEOUT   = 5000;
 #include <IRremote.h>
 #include <RCSwitch.h>
 
+// Enable Serial Messages (0 disable)
+#define DEBUG 0
+
+#if DEBUG == 1
+#define debugstart(x) Serial.begin(x)
+#define debug(x) Serial.print(x)
+#define debugln(x) Serial.println(x)
+#else
+#define debugstart(x)
+#define debug(x)
+#define debugln(x)
+#endif
+
 // Create webserver object
 WiFiServer server(CONFIG_PORT);
 
@@ -38,9 +51,9 @@ char* behind;
 void setup() {
 
   // Start serial and LED
-  Serial.begin(CONFIG_SERIAL);
-  Serial.println();
-  Serial.println("Starting setup");
+  debugstart(CONFIG_SERIAL);
+  debugln();
+  debugln("Starting setup");
 
   // Trigger Out 3.5mm Jack 
   pinMode(32, OUTPUT);
@@ -58,8 +71,8 @@ void setup() {
   delay(500);
 
   // Start WiFi connection
-  Serial.print("Connecting to: ");
-  Serial.println(CONFIG_SSID);
+  debug("Connecting to: ");
+  debugln(CONFIG_SSID);
   WiFi.mode(WIFI_STA);
   WiFi.disconnect(true);
   WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
@@ -69,37 +82,37 @@ void setup() {
   // Wait for WiFi connection
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    Serial.print(".");
+    debug(".");
   }
-  Serial.println();
-  Serial.println("WiFi connected!");
+  debugln();
+  debugln("WiFi connected!");
   WiFi.setAutoReconnect(true);
   WiFi.persistent(true);
 
   // Print WiFi connection information
-  Serial.print("  SSID: ");
-  Serial.println(WiFi.SSID());
-  Serial.print("  RSSI: ");
-  Serial.print(WiFi.RSSI());
-  Serial.println(" dBm");
-  Serial.print("  Local IP: ");
-  Serial.println(WiFi.localIP());
+  debug("  SSID: ");
+  debugln(WiFi.SSID());
+  debug("  RSSI: ");
+  debug(WiFi.RSSI());
+  debugln(" dBm");
+  debug("  Local IP: ");
+  debugln(WiFi.localIP());
 
   // Start webserver
-  Serial.println("Starting webserver...");
+  debugln("Starting webserver...");
   server.begin();
   delay(1000);
-  Serial.println("Webserver started!");
+  debugln("Webserver started!");
 
   // Print webserver information
-  Serial.print("  Host: ");
-  Serial.println(WiFi.localIP());
-  Serial.print("  Port: ");
-  Serial.println(CONFIG_PORT);
+  debug("  Host: ");
+  debugln(WiFi.localIP());
+  debug("  Port: ");
+  debugln(CONFIG_PORT);
 
   // Setup complete
-  Serial.println("Setup completed");
-  Serial.println();
+  debugln("Setup completed");
+  debugln();
   digitalWrite(5, 1);
 
 }
@@ -112,8 +125,8 @@ void loop() {
   // if WiFi is down, try reconnecting every CHECK_WIFI_TIME seconds
   unsigned long currentMillis = millis();
   if ((WiFi.status() != WL_CONNECTED) && (currentMillis - previousMillis >=interval)) {
-    Serial.print(millis());
-    Serial.println("Reconnecting to WiFi...");
+    debug(millis());
+    debugln("Reconnecting to WiFi...");
     WiFi.disconnect();
     WiFi.reconnect();
     previousMillis = currentMillis;
@@ -124,38 +137,38 @@ void loop() {
   if (client) {
 
     // New client
-    Serial.println("New client connected");
+    debugln("New client connected");
 
     // Wait nicely for the client to complete its full request
     unsigned long timeout = millis() + CONFIG_TIMEOUT;
-    Serial.println("Waiting for client request to finish...");
+    debugln("Waiting for client request to finish...");
     while (!client.available() && millis() < timeout) {
       delay(1);
     }
 
     // End client connection when timeout is reached to not hold up availability
     if (millis() < timeout) {
-      Serial.println("Client request finished!");
+      debugln("Client request finished!");
     } else {
-      Serial.println("Client request timeout!");
+      debugln("Client request timeout!");
       client.flush();
       client.stop();
-      Serial.println();
+      debugln();
       return;
     }
 
     // Catch client request
     String req = client.readStringUntil('\r');
-    Serial.print("Raw request: ");
-    Serial.println(req);
+    debug("Raw request: ");
+    debugln(req);
     if (req.indexOf(F("/xmit/")) != -1) {
 
     // Truncate request string
     String currentLine = req;
     currentLine.remove(0, ((currentLine.lastIndexOf("/xmit/")) + 6));
     currentLine.remove((currentLine.indexOf(" ")));
-    Serial.print("Valid request: ");
-    Serial.println(currentLine);
+    debug("Valid request: ");
+    debugln(currentLine);
     // Turn-on LED when valid request received
     digitalWrite(5, 0);
     
@@ -167,7 +180,7 @@ if(currentLine.indexOf("irtx.") >=0)
   if(currentLine.indexOf("nec.") >=4)
   {
     // NEC IR Transmit 32-bit
-    Serial.print("IR NEC\n");
+    debug("IR NEC\n");
     String code = currentLine.substring(9,21);
     valdata(code);
     irsend.sendNEC(valout, 32);
@@ -176,7 +189,7 @@ if(currentLine.indexOf("irtx.") >=0)
   if(currentLine.indexOf("sony20.") >=4)
   {
     // SONY IR Transmit 20-bit
-    Serial.print("IR Sony 20-bit\n");
+    debug("IR Sony 20-bit\n");
     String code = currentLine.substring(12,24);
     valdata(code);
     irsend.sendSony(valout, 20);
@@ -185,7 +198,7 @@ if(currentLine.indexOf("irtx.") >=0)
   if(currentLine.indexOf("sony12.") >=4)
   {
     // SONY IR Transmit 12-bit
-    Serial.print("IR Sony 12-bit\n");
+    debug("IR Sony 12-bit\n");
     String code = currentLine.substring(12,24);
     valdata(code);
     for (int i = 0; i < 3; i++) {
@@ -201,7 +214,7 @@ if(currentLine.indexOf("fet.") >=0)
   if(currentLine.indexOf("on.") >=3)
   {
     // FET on
-    Serial.print("FET on\n");
+    debug("FET on\n");
     String code = currentLine.substring(7,9);
     valdata(code);
     if (valout == 32 ) {
@@ -212,7 +225,7 @@ if(currentLine.indexOf("fet.") >=0)
   if(currentLine.indexOf("off.") >=3)
   {
     // FET off
-    Serial.print("FET off\n");
+    debug("FET off\n");
     String code = currentLine.substring(8,10);
     valdata(code);
     if (valout == 32 || valout == 5) {
@@ -223,7 +236,7 @@ if(currentLine.indexOf("fet.") >=0)
   if(currentLine.indexOf("tgl.") >=3)
   {
     // FET toggle
-    Serial.print("FET toggled\n");
+    debug("FET toggled\n");
     String code = currentLine.substring(8,10);
     valdata(code);
     if (valout == 32 || valout == 5) {
@@ -238,7 +251,7 @@ if(currentLine.indexOf("fet.") >=0)
 // 433MHz RF Control
 if(currentLine.indexOf("rftx.") >=0)
 {
-  Serial.print("RF transmit\n");
+  debug("RF transmit\n");
   String code = currentLine.substring(5,20);
   valdata(code);
   mySwitch.send(valout, 24);
@@ -258,16 +271,16 @@ if(currentLine.indexOf("rftx.") >=0)
     } else {
 
       // Invalid request
-      Serial.println("Invalid client request");
-      Serial.println("Sending HTTP/1.1 404 response");
+      debugln("Invalid client request");
+      debugln("Sending HTTP/1.1 404 response");
       client.println("HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html><body>Not found</body></html>");
 
     }
 
     // Flush output buffer
-    Serial.println("Flushing output buffer");
+    debugln("Flushing output buffer");
     client.flush();
-    Serial.println();
+    debugln();
     return;
 
   }
@@ -278,7 +291,9 @@ if(currentLine.indexOf("rftx.") >=0)
 int valdata(String code)
 {
   valout = strtol(code.c_str(), &behind, base);
-  Serial.print("Validated request: ");
-  Serial.println(valout, base);
+  debug("Discarded: ");
+  debugln(base);
+  debug("Validated output: ");
+  debugln(valout);
 }
 

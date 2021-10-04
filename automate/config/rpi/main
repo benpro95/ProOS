@@ -1,7 +1,7 @@
 #!/bin/bash
 ##
 ###########################################################
-## Main Home Automation Script by Ben Provenzano III v17 ##
+## Main Home Automation Script by Ben Provenzano III v18 ##
 ###########################################################
 ###########################################################
 
@@ -13,22 +13,68 @@ case "$1" in
 
 ### Relaxation Sound Playback
 stoprelax)
-/usr/bin/curl -N -f -m 5 --silent "http://hifi.home/exec.php?var=&arg=stoprelax&action=main"
-## USB Decoder Input
-/opt/rpi/xmit usb
-## Preamp DAC Input
-/opt/rpi/xmit dac
+if ping -W 1 -c 1 airzero.home > /dev/null 2> /dev/null
+then
+  echo "AirZero Found."
+  ## Stop Audio on AirZero
+  /usr/bin/curl -N -f -m 5 --silent "http://airzero.home/exec.php?var=&arg=stoprelax&action=main"
+else
+  echo "AirZero Not Found."
+  ## Stop Audio on System
+  /usr/bin/curl -N -f -m 5 --silent "http://hifi.home/exec.php?var=&arg=stoprelax&action=main"
+  ## USB Decoder Input
+  /opt/rpi/xmit usb
+  ## Preamp DAC Input
+  /opt/rpi/xmit dac
+fi
 exit
 ;;
 
 relax)
-killall -s KILL -w mpv
-## Play Audio in Loop
-/usr/bin/curl -N -f -m 5 --silent "http://hifi.home/exec.php?var=$ARG2&arg=relax&action=main"
-## Optical Decoder Input
-/opt/rpi/xmit coaxial
-## Preamp DAC Input
-/opt/rpi/xmit dac
+if ping -W 1 -c 1 airzero.home > /dev/null 2> /dev/null
+then
+  echo "AirZero Found."
+  ## Play Audio in Loop on AirZero
+  /usr/bin/curl -N -f -m 5 --silent "http://airzero.home/exec.php?var=$ARG2&arg=relax&action=main"
+else
+  echo "AirZero Not Found."
+  ## Play Audio in Loop on System
+  /usr/bin/curl -N -f -m 5 --silent "http://hifi.home/exec.php?var=$ARG2&arg=relax&action=main"
+  ## Optical Decoder Input
+  /opt/rpi/xmit coaxial
+  ## Preamp DAC Input
+  /opt/rpi/xmit dac
+fi
+exit
+;;
+
+### Relaxation Volume Up
+relaxvup)
+if ping -W 1 -c 1 airzero.home > /dev/null 2> /dev/null
+then
+  echo "AirZero Found."
+  ## Increasing Volume on AirZero
+  /usr/bin/curl -N -f -m 5 --silent "http://airzero.home/exec.php?var=&arg=vup&action=main"
+else
+  echo "AirZero Not Found."
+  ## Increasing Volume on System
+  /opt/rpi/xmit upc
+fi
+exit
+;;
+
+### Relaxation Volume Down
+relaxvdwn)
+if ping -W 1 -c 1 airzero.home > /dev/null 2> /dev/null
+then
+  echo "AirZero Found."
+  ## Decreasing Volume on AirZero
+  /usr/bin/curl -N -f -m 5 --silent "http://airzero.home/exec.php?var=&arg=vdwn&action=main"
+else
+  echo "AirZero Not Found."
+  ## Decreasing Volume on System
+  /opt/rpi/xmit dwnc
+fi
 exit
 ;;
 
@@ -228,7 +274,12 @@ roomon)
 ## Desktop Power
 /opt/rpi/xmit rfb2 on
 ## PC Power On
-/opt/rpi/main pcon
+if ping -W 1 -c 1 z97mx.home > /dev/null 2> /dev/null
+then
+  echo "Host is up"
+else
+  /opt/rpi/xmit rfb3
+fi
 ## LEDwalls
 /opt/rpi/leds prism
 sleep 3.5
@@ -246,9 +297,22 @@ roomoff)
 ## Desktop Power
 /opt/rpi/xmit rfb2 off
 ## PC Power Off
-/opt/rpi/main pcoff
+if ping -W 1 -c 1 z97mx.home > /dev/null 2> /dev/null
+then
+  /opt/rpi/xmit rfb3
+else
+  echo "Host is down"
+fi
 ## System Off
-/opt/rpi/main hifioff
+if ping -W 1 -c 1 hifi.home > /dev/null 2> /dev/null
+then
+  ## Power audio system
+  /opt/rpi/xmit pwrhifi
+  ## Reset sub volume token
+  rm -f /var/lock/rpi/subs.enabled
+else
+  echo "Host is down"
+fi
 ## Blank LEDwalls
 /opt/rpi/leds stop
 exit

@@ -1,9 +1,7 @@
 ## Created by Ben Provenzano III for Zero Pi
 
 #-------GPU memory-------
-gpu_mem_256=16
-gpu_mem_512=16
-gpu_mem_1024=16
+gpu_mem=64
 
 #-------Max USB Current-------
 #max_usb_current=1

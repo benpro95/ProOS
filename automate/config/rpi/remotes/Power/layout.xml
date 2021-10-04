@@ -11,6 +11,11 @@
 	    <button icon="on" ontap="oldmacon" color="#000043" />
     </row>
     <row>
+        <button icon="off" ontap="crtoff" color="black" />
+        <button text="CRT TV" ontap="crt" color="#000043" />
+        <button icon="on" ontap="crton" color="#000043" />
+    </row>
+    <row>
     	<button icon="off" ontap="pcoff" color="black" />
 	    <button text="PC" ontap="pc" color="#00003e" />
 	    <button icon="on" ontap="pcon" color="#00003e" />

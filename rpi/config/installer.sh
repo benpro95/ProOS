@@ -109,12 +109,12 @@ apt-get -y update --allow-releaseinfo-change
 ## Essential Packages
 apt-get install -y --no-upgrade locales console-setup keyboard-configuration apt-utils \
  aptitude libnss-mdns usbutils zsync perl v4l-utils libmariadb3 libpq5 \
- avahi-daemon avahi-discover avahi-utils hostapd dnsmasq unzip wget htop bc \
+ avahi-daemon avahi-discover avahi-utils hostapd dnsmasq unzip wget bc \
  rsync screen parallel sudo sed nano curl insserv wireless-regdb wireless-tools \
  uuid-runtime mpg321 omxplayer libdbus-1-dev libdbus-glib-1-dev python-pyudev \
- iw crda firmware-brcm80211 wpasupplicant dirmngr autofs triggerhappy \
- libbluetooth3 libbluetooth-dev lsb-release \
- perl-modules tightvncserver iptables espeak
+ iw crda firmware-brcm80211 wpasupplicant dirmngr autofs triggerhappy
+apt-get install -y --no-upgrade libbluetooth3 libbluetooth-dev lsb-release
+apt-get install -y --no-upgrade perl-modules tightvncserver iptables espeak bpytop htop
 
 ## Disable Swap
 dphys-swapfile swapoff

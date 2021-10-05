@@ -27,6 +27,12 @@ xset -dpms
 exit
 ;;
 
+mon)
+## System Resource Monitor
+bpytop
+exit
+;;
+
 wifistats)
 ## Displays realtime Wi-Fi signal stats
 watch -n 1 cat /proc/net/wireless
@@ -505,13 +511,14 @@ exit
 
         *)
           echo "RPi Init Script v15"
-	      echo "by Ben Provenzano III"
-	      echo " "
-	      echo "Enter Valid Arguments."
+	        echo "by Ben Provenzano III"
+	        echo " "
+	        echo "Enter Valid Arguments."
           echo " "
           echo "ro - Enable Read/Only Mode"
           echo "rw - Enable Read/Write Mode"
           echo "update - Update/Upgrade System"
+          echo "mon - Resource Monitor"
           echo "loadtimes - Startup Services"
           echo "active - Active Services"
           echo "running - Running Services"

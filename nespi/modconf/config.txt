@@ -9,6 +9,12 @@ gpu_mem=128
 #hdmi_mode=16
 #hdmi_drive=2
 
+#-------Force HDMI to 480i---------
+#hdmi_force_hotplug=1
+#hdmi_group=1
+#hdmi_mode=6
+#hdmi_drive=2
+
 ##------Enable Composite Video (disable HDMI)---------
 hdmi_ignore_hotplug=1
 overscan_scale=1

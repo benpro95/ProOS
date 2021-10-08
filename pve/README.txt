@@ -77,7 +77,10 @@ ls -la
 (Select the drive name without -part* on the end)
 (Use that name for BACKUP-DRIVE)
 
-(Format the BACKUP-DRIVE using the above command)
+(Erase entire drive, randomize UUID and create new GPT table)
+wipefs -a /dev/disk/by-id/BACKUP-DRIVE
+sgdisk -G /dev/disk/by-id/BACKUP-DRIVE
+sgdisk -og /dev/disk/by-id/BACKUP-DRIVE
 
 (Create a new pool and dataset on the drive)
 (BKP-VOL=BKP-POOL volume and pool name should be the same) 

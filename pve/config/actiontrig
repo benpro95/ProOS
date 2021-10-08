@@ -5,8 +5,8 @@
 ## External Backup Drives
 ZFSPOOL1="usb256-01" # SanDisk Ultra 256GB USB 3.0
 ZFSPOOL2="usb128-01" # SanDisk Ultra 128GB USB 3.0
-ZFSPOOL3="usb128-02" # SanDisk Ultra 128GB USB 3.0
-ZFSPOOL4="usb128-03" # SanDisk Cruzer 128GB USB 2.0
+ZFSPOOL3="usb256-02" # SanDisk Ultra 256GB USB 3.0
+ZFSPOOL4="usb128-02" # SanDisk Ultra 128GB USB 3.0
 ZFSPOOL5="hdd4tb-01" # HGST 4GB Hard Drive (Oldest)
 ZFSPOOL6="hdd4tb-02" # HGST 4GB Hard Drive (2017)
 ZFSPOOL7="hdd4tb-03" # WD 4TB Blue Hard Drive (Newest)

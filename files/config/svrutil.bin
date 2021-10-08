@@ -26,8 +26,8 @@ fi
 ##### BEGIN MAIN FUNCTION #####
 MAINPGRM () {
 uname -m -n -s -o -r
-RANDOPT=$(( $RANDOM % 5 ))
-if [[ $RANDOPT == "0" || $RANDOPT == "1" ]]
+RANDOPT=$(( $RANDOM % 3 ))
+if [[ $RANDOPT == "0" ]]
 then
   echo " "
   echo "    ____             ____  _____"
@@ -37,7 +37,7 @@ then
   echo "/_/   /_/   \____/\____//____/  "
   echo " "
 fi
-if [[ $RANDOPT == "2" ]]
+if [[ $RANDOPT == "1" ]]
 then
   echo " "
   echo "  _____            ____   _____ "
@@ -48,7 +48,7 @@ then
   echo " |_|   |_|  \___/ \____/|_____/ "
   echo " "
 fi
-if [[ $RANDOPT == "3" || $RANDOPT == "4" ]]
+if [[ $RANDOPT == "2" ]]
 then
   echo " "
   echo " ____  ____   ___   ___   _____"
@@ -327,13 +327,13 @@ BKPPGRM () {
 
 #### 256GB Drives ####
 USB256DRV1="usb256-01"
-USB256DRV2=""
+USB256DRV2="usb256-02"
 USB256DRV3=""
 USB256DRV4=""
 #### 128GB Drives ####
 USB128DRV1="usb128-01"
 USB128DRV2="usb128-02"
-USB128DRV3="usb128-03"
+USB128DRV3=""
 USB128DRV4=""
 #### 4TB Drives ####
 HDDRV1="hdd4tb-01"

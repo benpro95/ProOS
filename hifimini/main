@@ -4,24 +4,65 @@
 ###########################################################
 ###########################################################
 
+## Read the 2nd Argument
+ARG2=$2
+
 case "$1" in
 
 boot)
 ## Light Web Server
 systemctl start lighttpd
-## Unified Web Server
-systemctl start rpi-urserver
 ## Startup Sound
-/usr/bin/amixer set PCM 30%; sleep 0.35
+/usr/bin/amixer set PCM 30%
 /usr/bin/aplay /opt/rpi/sounds/ps1.wav
+sleep 1.25
 ## Set Volume
-/usr/bin/amixer set PCM 100%
+/usr/bin/amixer set PCM 95%
 ## AirPlay Support
 systemctl start rpi-airplay
 ## Disable HDMI
 /usr/bin/tvservice -o
+## Attach Server SMB Share
+sleep 5.75
+if ping -c 1 files.home > /dev/null 2> /dev/null
+then
+  systemctl start autofs
+fi
+## Disable Activity LED
+echo none | tee /sys/class/leds/led0/trigger
 ## Auto Hotspot (on boot only)
 systemctl start rpi-netdetect.service
+exit
+;;
+
+### Relaxation Sound Playback
+stoprelax)
+killall -s KILL -w omxplayer
+## Set Volume
+/usr/bin/amixer set PCM 95%
+exit
+;;
+##
+relax)
+killall -s KILL -w omxplayer
+## Set Initial Volume
+/usr/bin/amixer set PCM 95%
+## Capitialize first letter of argument
+ARG2="${ARG2^}"
+## Play Audio in Loop
+/usr/bin/omxplayer -o alsa --loop "/mnt/smb/Media/Sounds/Relaxation/$ARG2.mp3"
+exit
+;;
+
+vup)
+## Volume Up
+/usr/bin/amixer set PCM 2%+
+exit
+;;
+
+vdwn)
+## Volume Down
+/usr/bin/amixer set PCM 2%-
 exit
 ;;
 
@@ -73,7 +114,7 @@ exit
 ;;
 	    
     *)
-      echo "AirGrid Server for Raspberry Pi"
+      echo "HiFi Mini Server for Raspberry Pi"
 	  echo "  by Ben Provenzano III"
 	  echo " "
 	  echo "Enter a valid command line argument."

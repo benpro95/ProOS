@@ -13,11 +13,11 @@ case "$1" in
 
 ### Relaxation Sound Playback
 stoprelax)
-if ping -W 1 -c 1 airzero.home > /dev/null 2> /dev/null
+if ping -W 1 -c 1 hifimini.home > /dev/null 2> /dev/null
 then
   echo "AirZero Found."
   ## Stop Audio on AirZero
-  /usr/bin/curl -N -f -m 5 --silent "http://airzero.home/exec.php?var=&arg=stoprelax&action=main"
+  /usr/bin/curl -N -f -m 5 --silent "http://hifimini.home/exec.php?var=&arg=stoprelax&action=main"
 else
   echo "AirZero Not Found."
   ## Stop Audio on System
@@ -31,13 +31,13 @@ exit
 ;;
 
 relax)
-if ping -W 1 -c 1 airzero.home > /dev/null 2> /dev/null
+if ping -W 1 -c 1 hifimini.home > /dev/null 2> /dev/null
 then
-  echo "AirZero Found."
+  echo "HiFi-Mini Found."
   ## Play Audio in Loop on AirZero
-  /usr/bin/curl -N -f -m 5 --silent "http://airzero.home/exec.php?var=$ARG2&arg=relax&action=main"
+  /usr/bin/curl -N -f -m 5 --silent "http://hifimini.home/exec.php?var=$ARG2&arg=relax&action=main"
 else
-  echo "AirZero Not Found."
+  echo "HiFi-Mini Not Found."
   ## Play Audio in Loop on System
   /usr/bin/curl -N -f -m 5 --silent "http://hifi.home/exec.php?var=$ARG2&arg=relax&action=main"
   ## Optical Decoder Input
@@ -50,13 +50,13 @@ exit
 
 ### Relaxation Volume Up
 relaxvup)
-if ping -W 1 -c 1 airzero.home > /dev/null 2> /dev/null
+if ping -W 1 -c 1 hifimini.home > /dev/null 2> /dev/null
 then
-  echo "AirZero Found."
+  echo "HiFi-Mini Found."
   ## Increasing Volume on AirZero
-  /usr/bin/curl -N -f -m 5 --silent "http://airzero.home/exec.php?var=&arg=vup&action=main"
+  /usr/bin/curl -N -f -m 5 --silent "http://hifimini.home/exec.php?var=&arg=vup&action=main"
 else
-  echo "AirZero Not Found."
+  echo "HiFi-Mini Not Found."
   ## Increasing Volume on System
   /opt/rpi/xmit upc
 fi
@@ -65,13 +65,13 @@ exit
 
 ### Relaxation Volume Down
 relaxvdwn)
-if ping -W 1 -c 1 airzero.home > /dev/null 2> /dev/null
+if ping -W 1 -c 1 hifimini.home > /dev/null 2> /dev/null
 then
-  echo "AirZero Found."
+  echo "HiFi-Mini Found."
   ## Decreasing Volume on AirZero
-  /usr/bin/curl -N -f -m 5 --silent "http://airzero.home/exec.php?var=&arg=vdwn&action=main"
+  /usr/bin/curl -N -f -m 5 --silent "http://hifimini.home/exec.php?var=&arg=vdwn&action=main"
 else
-  echo "AirZero Not Found."
+  echo "HiFi-Mini Not Found."
   ## Decreasing Volume on System
   /opt/rpi/xmit dwnc
 fi

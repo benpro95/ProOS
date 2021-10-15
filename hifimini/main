@@ -13,11 +13,11 @@ boot)
 ## Light Web Server
 systemctl start lighttpd
 ## Startup Sound
-/usr/bin/amixer set PCM 30%
+/usr/bin/amixer set PCM 45%
 /usr/bin/aplay /opt/rpi/sounds/ps1.wav
 sleep 1.25
 ## Set Volume
-/usr/bin/amixer set PCM 95%
+/usr/bin/amixer set PCM 96%
 ## AirPlay Support
 systemctl start rpi-airplay
 ## Disable HDMI
@@ -38,15 +38,11 @@ exit
 ### Relaxation Sound Playback
 stoprelax)
 killall -s KILL -w omxplayer
-## Set Volume
-/usr/bin/amixer set PCM 95%
 exit
 ;;
 ##
 relax)
 killall -s KILL -w omxplayer
-## Set Initial Volume
-/usr/bin/amixer set PCM 95%
 ## Capitialize first letter of argument
 ARG2="${ARG2^}"
 ## Play Audio in Loop

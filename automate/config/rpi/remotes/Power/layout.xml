@@ -1,33 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 	<row>
-        <button icon="off" ontap="roff" color="black" />
-	    <button text="Apartment" color="#00004c" />
-	    <button icon="on" ontap="ron" color="#00004c" />
+        <button icon="off" ontap="roff" />
+	    <button text="Apartment" />
+	    <button icon="on" ontap="ron" />
     </row>
     <row>
-	    <button icon="off" ontap="oldmacoff" color="black" />
-	    <button text="Mac Classic" ontap="oldmac" color="#000043" />
-	    <button icon="on" ontap="oldmacon" color="#000043" />
+	    <button icon="off" ontap="oldmacoff" />
+	    <button text="Macs" ontap="oldmac" />
+	    <button icon="on" ontap="oldmacon" />
     </row>
     <row>
-        <button icon="off" ontap="crtoff" color="black" />
-        <button text="CRT TV" ontap="crt" color="#000043" />
-        <button icon="on" ontap="crton" color="#000043" />
+        <button icon="off" ontap="crtoff" />
+        <button text="TV" ontap="crt" />
+        <button icon="on" ontap="crton" />
     </row>
     <row>
-    	<button icon="off" ontap="pcoff" color="black" />
-	    <button text="PC" ontap="pc" color="#00003e" />
-	    <button icon="on" ontap="pcon" color="#00003e" />
+    	<button icon="off" ontap="pcoff" />
+	    <button text="PC" ontap="pc" />
+	    <button icon="on" ontap="pcon" />
     </row>
     <row>
-	    <button icon="off" ontap="desktopoff" color="black" />
-	    <button text="Desktop" ontap="desktop" color="#000039" />
-	    <button icon="on" ontap="desktopon" color="#000039" />
+        <button icon="off" ontap="mainloff" color="black" />
+        <button text="Main Lamp" ontap="mainl" color="#00004c" />
+        <button icon="on" ontap="mainlon" color="#00004c" />
     </row>
     <row>
-        <button icon="off" ontap="alloff" color="black" />
-        <button text="All Lights" ontap="lights" color="#000030" />
-    	<button icon="on" ontap="allon" color="#000030" />	
+        <button icon="off" ontap="dresseroff" color="black" />
+        <button text="Dresser Lamp" ontap="dresser" color="#000045" />
+        <button icon="on" ontap="dresseron" color="#000045" />
+    </row>    
+    <row>
+        <button icon="off" ontap="alloff" />
+        <button text="All Lights" ontap="lights" />
+    	<button icon="on" ontap="allon" />	
     </row>
 </layout>

@@ -80,14 +80,22 @@ exit
 
 ## Automated Multi-Functions
 
-lightson)
-touch /var/lock/rpi/lights.save
-## Main Lamp
-/opt/rpi/xmit rfc1 on
-## Dresser Lamp
-/opt/rpi/xmit rfa2 on
-## Desk Light
-/opt/rpi/xmit rfb1 on
+lights)
+## Toggle Lamps
+if [ ! -e /var/lock/rpi/lights.save ]; then
+   touch /var/lock/rpi/lights.save
+   ## Main Lamp
+   /opt/rpi/xmit rfc1 on
+   ## Dresser Lamp
+   /opt/rpi/xmit rfa2 on
+else
+   ## Turn all lights off
+   rm -f /var/lock/rpi/lights.save
+   ## Main Lamp
+   /opt/rpi/xmit rfc1 off
+   ## Dresser Lamp
+   /opt/rpi/xmit rfa2 off
+fi
 exit
 ;;
 
@@ -106,17 +114,6 @@ sleep 2.5
 exit
 ;;
 
-lightsoff)
-## Turn all lights off
-rm -f /var/lock/rpi/lights.save
-## Main Lamp
-/opt/rpi/xmit rfc1 off
-## Dresser Lamp
-/opt/rpi/xmit rfa2 off
-## Desk Light
-/opt/rpi/xmit rfb1 off
-exit
-;;
 
 alloff)
 ## Turn all lights off

@@ -114,6 +114,7 @@ then
   curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
   echo " "
   echo "Updating Automate System Configuration..."
+  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i ~/ProOS/automate/id_rsa root@automate.home "rm -rfv /opt/rpi/remotes"
   rsync -e "ssh -i ~/ProOS/automate/id_rsa" --progress --checksum -rtv ~/ProOS/automate/config/rpi/* root@automate.home:/opt/rpi/
   echo " "
   echo "Restarting Lighttpd Web Server..."

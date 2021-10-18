@@ -38,6 +38,10 @@ dtparam=i2c1=off
 i2c_arm_baudrate=100000
 dtparam=spi=off
 
+#------Disable Wi-Fi and Bluetooth-----
+dtoverlay=disable-wifi
+dtoverlay=disable-bt
+
 #------Reboot when exceeds-----
 temp_limit=75
 

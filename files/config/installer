@@ -17,8 +17,6 @@ apt-get install -y --no-upgrade locales apt-transport-https mailutils
 if [ ! -e /etc/locales.generated ]; then
   dpkg-reconfigure locales
   touch /etc/locales.generated
-else
-  echo ""  > /dev/null 2>&1
 fi
 
 ## SSH key for root user
@@ -33,8 +31,6 @@ if [ ! -e /home/server ]; then
   mkdir -p /home/server
   mkdir -p /home/server/.ssh
   chown -R server:server /home/server
-else
-  echo ""  > /dev/null 2>&1
 fi
 cp /tmp/config/authorized_keys.server /home/server/.ssh/authorized_keys
 chmod 644 /home/server/.ssh/authorized_keys
@@ -102,8 +98,6 @@ if [ ! -e /mnt/backup ]; then
   mkdir -p /mnt/backup
   chmod 755 /mnt/backup
   chmod server:server /mnt/backup
-else
-  echo ""  > /dev/null 2>&1
 fi
 
 ## Camera Cleanup Script

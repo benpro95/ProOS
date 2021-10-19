@@ -11,7 +11,7 @@ if [ ! -e /etc/apt/sources.list.d/pve-enterprise.list ]; then
   cp -f /tmp/config/pve-enterprise.list /etc/apt/sources.list.d/
   chmod 644 /etc/apt/sources.list.d/pve-enterprise.list
   chown root:root /etc/apt/sources.list.d/pve-enterprise.list
-  echo "PVE debian version set to buster."
+  echo "PVE debian version set to current release."
   echo "Make sure this is correct before updating!"
   echo "Source File: /etc/apt/sources.list.d/pve-enterprise.list"
   cat /etc/apt/sources.list.d/pve-enterprise.list
@@ -86,8 +86,6 @@ if [ ! -e /etc/iommu.enabled ]; then
   chown root:root /etc/default/grub
   proxmox-boot-tool refresh
   touch /etc/iommu.enabled
-else
-  echo ""  > /dev/null 2>&1
 fi
 
 ## Move Swapfile to Scratch Drive

@@ -11,27 +11,32 @@ MODNAME=`cat /opt/rpi/modconf/brand.txt`
 ## Detect Pi Model
 CPUTYPE=$(tr -d '\0' < /sys/firmware/devicetree/base/model)
 
+## Pre-installation checks
 if [ ! -e /opt/rpi/init ]; then
-echo "Core components missing or corrupted."
-echo "Rebooting..."
-reboot
+echo "Core components missing."
 exit
 else
 echo "Core components integrity verified."
 fi
 if [ ! -e /boot/config.txt ]; then
-echo "Not running on a Raspberry Pi !!."
-echo "Rebooting..."
-reboot
+echo "Not running on a Pi !!"
 exit
 else
 echo "Raspberry Pi detected."
 fi
+OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
+if [ "${OSVER}" = "buster" ] || [ "${OSVER}" = "bullseye" ]; then
+  echo "OS version ${OSVER} detected."
+else
+  echo "Unsupported OS version ${OSVER} detected."
+  exit
+fi
+
 cd $BIN
 
 echo ""
 echo "########### Welcome to ProOS ! ###########"
-echo "############ Configurator v10 ############"
+echo "############## Configurator ##############"
 echo "######### by Ben Provenzano III ##########"
 echo ""
 
@@ -65,29 +70,6 @@ adduser pi
 chown -R pi:pi /home/pi
 chsh -s /bin/bash pi
 
-## Delete custom services
-rm -fvr /etc/systemd/system/rpi-*
-
-## Reset hotspot configuration
-cp -f $BIN/hostapd.conf /etc/hostapd
-chmod 644 /etc/hostapd/hostapd.conf
-chown root:root /etc/hostapd/hostapd.conf
-if [ ! -e /opt/rpi/modconf/brand.txt ]; then
-echo "Skipping module modification."
-else
-## Set module name to hotspot config
-sed -i "s/RaspberryPi/$MODNAME/g" /etc/hostapd/hostapd.conf
-fi
-
-## Reset network settings
-rm -f /etc/netchk.disabled
-rm -f /etc/apd-mode.enable
-rm -f /etc/apd-nodns.enable
-
-## Reset LED configuration
-rm -f /opt/rpi/remotes/leds
-rm -f /tmp/global-fc.lock
-
 ## Remove LSB scripts
 insserv -r bootlogs
 insserv -r console-setup
@@ -96,31 +78,67 @@ insserv -r console-setup
 curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
 
 ## Custom Source List
-cp -f $BIN/rpi-apt.list /etc/apt/sources.list.d/
-chmod 644 /etc/apt/sources.list.d/rpi-apt.list
-chown root:root /etc/apt/sources.list.d/rpi-apt.list
+if [ "${OSVER}" = "buster" ]; then
+  cp -f $BIN/rpi-apt.buster /etc/apt/sources.list.d/rpi-apt.list
+  chmod 644 /etc/apt/sources.list.d/rpi-apt.list
+  chown root:root /etc/apt/sources.list.d/rpi-apt.list
+fi
+if [ "${OSVER}" = "bullseye" ]; then
+  cp -f $BIN/rpi-apt.bullseye /etc/apt/sources.list.d/rpi-apt.list
+  chmod 644 /etc/apt/sources.list.d/rpi-apt.list
+  chown root:root /etc/apt/sources.list.d/rpi-apt.list  
+fi
 
-## Set bootloader RW
+## Set boot partition to read/write
 mount -o remount,rw /boot
 
 ## Update Sources
 apt-get -y update --allow-releaseinfo-change
 
 ## Essential Packages
-apt-get install -y --no-upgrade locales console-setup keyboard-configuration apt-utils \
- aptitude libnss-mdns usbutils zsync perl v4l-utils libmariadb3 libpq5 \
+apt-get install -y --no-upgrade locales console-setup keyboard-configuration \
+ aptitude libnss-mdns usbutils zsync  v4l-utils libpq5 htop lsb-release \
  avahi-daemon avahi-discover avahi-utils hostapd dnsmasq unzip wget bc \
  rsync screen parallel sudo sed nano curl insserv wireless-regdb wireless-tools \
- uuid-runtime mpg321 omxplayer libdbus-1-dev libdbus-glib-1-dev python-pyudev \
- iw crda firmware-brcm80211 wpasupplicant dirmngr autofs triggerhappy
-apt-get install -y --no-upgrade libbluetooth3 libbluetooth-dev lsb-release
-apt-get install -y --no-upgrade perl-modules tightvncserver iptables espeak bpytop htop
+ uuid-runtime mpg321 omxplayer vlc mpv mplayer espeak tightvncserver iptables \
+ iw crda firmware-brcm80211 wpasupplicant dirmngr autofs triggerhappy apt-utils \
+ build-essential git autoconf make libtool binutils i2c-tools cmake yasm \
+ libmariadb3 texi2html socat nmap libtool bpytop autoconf automake pkg-config
+ 
+## Developer Packages 
+apt-get install -y --no-upgrade libgtk2.0-dev libbluetooth3 libbluetooth-dev \
+ libavfilter-dev libavdevice-dev libavcodec-dev libavc1394-dev libatlas-base-dev \
+ libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev libdbus-glib-1-dev \
+ libass-dev libfreetype6-dev libgpac-dev libsdl1.2-dev libtheora-dev libssl-dev \
+ libva-dev libvdpau-dev libvorbis-dev libx11-dev libxext-dev libxfixes-dev \
+ libjack-jackd2-dev portaudio19-dev libffi-dev libxslt1-dev libxml2-dev \
+ libxml2-dev libxslt1-dev portaudio19-dev libffi-dev zlib1g-dev libdbus-1-dev
 
-## Disable Swap
-dphys-swapfile swapoff
-dphys-swapfile uninstall
-update-rc.d dphys-swapfile remove
-apt-get -y remove --purge dphys-swapfile
+ ## AV Codecs Support
+apt-get install -y --no-upgrade libupnp-dev
+apt-get remove -y --purge libgstreamer0.10-dev
+apt-get install -y --no-upgrade libgstreamer1.0-dev gstreamer1.0-plugins-base \
+ libx264-dev x264 ffmpeg libswscale-dev libavformat-dev libavcodec-dev \
+ gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly \
+ gstreamer1.0-tools libgstreamer-plugins-base1.0-0 \
+ gstreamer1.0-alsa gstreamer1.0-pulseaudio \
+ gstreamer1.0-omx gstreamer1.0-libav
+
+## EGL hardware video decoding libraries
+if [ ! -e /usr/lib/arm-linux-gnueabihf/libbrcmEGL.so ]; then
+  cd /usr/lib/arm-linux-gnueabihf
+  ln -s libmmal_core.so.0 libmmal_core.so
+  ln -s libmmal_util.so.0 libmmal_util.so
+  ln -s libmmal_vc_client.so.0 libmmal_vc_client.so
+  ln -s libbcm_host.so.0 libbcm_host.so
+  ln -s libvcsm.so.0 libvcsm.so
+  ln -s libvchiq_arm.so.0 libvchiq_arm.so
+  ln -s libvcos.so.0 libvcos.so
+  curl -sSfLO 'https://raw.githubusercontent.com/raspberrypi/firmware/master/opt/vc/lib/libbrcmEGL.so'
+  curl -sSfLO 'https://raw.githubusercontent.com/raspberrypi/firmware/master/opt/vc/lib/libbrcmGLESv2.so'
+  curl -sSfLO 'https://raw.githubusercontent.com/raspberrypi/firmware/master/opt/vc/lib/libopenmaxil.so'
+  cd $BIN
+fi
 
 ## Install X11
 apt-get install -y --no-upgrade xserver-xorg xorg \
@@ -129,66 +147,53 @@ apt-get install -y --no-upgrade xserver-xorg xorg \
  synaptic medit lxterminal florence libatlas-base-dev
 dpkg-reconfigure x11-common
 
-## Developer Support
-apt-get install -y --no-upgrade build-essential git
-apt-get install -y --no-upgrade autoconf make libtool \
- cmake libgtk2.0-dev binutils i2c-tools g++ gcc\
- libavfilter-dev libavdevice-dev libavcodec-dev libavc1394-dev \
- python-dev python-numpy libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev \
- autoconf automake build-essential libass-dev libfreetype6-dev libgpac-dev libsdl1.2-dev libtheora-dev libtool \
- libva-dev libvdpau-dev libvorbis-dev libx11-dev libxext-dev libxfixes-dev pkg-config texi2html zlib1g-dev yasm \
- libjack-jackd2-dev portaudio19-dev libffi-dev python-dev libxslt-dev libxml2-dev \
- libxml2-dev libxslt1-dev python-dev mpv mplayer vlc portaudio19-dev libffi-dev \
- libssl-dev socat mpg123 nmap libatlas-base-dev
+## Disable Swap
+dphys-swapfile swapoff
+dphys-swapfile uninstall
+update-rc.d dphys-swapfile remove
+apt-get -y remove --purge dphys-swapfile
+
+## Perl Support
+if [ "${OSVER}" = "buster" ]; then
+  apt-get install -y --no-upgrade perl perl-modules
+fi
+if [ "${OSVER}" = "bullseye" ]; then
+  apt-get install -y --no-upgrade perl perl-modules-5.32
+fi
 
 ## CPU Specific Packages
 if [ "$CPUTYPE" = "Raspberry Pi Zero W Rev 1.1" ]; then
-	  ##### Install Node.js from 'pkgs' folder #####
-	  NODEVERSION="14.17.1"
-	  ## Uncomment to reinstall
-    #rm -f /usr/bin/node
-    echo "Pi Zero detected."
-    if [ ! -e /usr/bin/node ]; then
+	##### Install Node.js from 'pkgs' folder #####
+	NODEVERSION="14.17.1"
+	## Uncomment to reinstall
+  #rm -f /usr/bin/node
+  echo "Pi Zero detected."
+  if [ ! -e /usr/bin/node ]; then
     tar xvfJ /opt/rpi/pkgs/node-v$NODEVERSION-linux-armv6l.tar.xz -C /opt/rpi/pkgs/
     cd /opt/rpi/pkgs/node-v$NODEVERSION-linux-armv6l/
     cp -vR * /usr/local/
     ln -sf /usr/local/bin/node /usr/bin/node
     rm -rf /opt/rpi/pkgs/node-v$NODEVERSION-linux-armv6l
     cd $BIN
-    else
+  else
     echo "Node already installed."
-    fi
-    ln -sf /usr/local/bin/node /usr/bin/nodejs
-    ###########################
-    echo "Removing Java and Arduino Support..."
-    apt-get remove -y arduino default-jre openjdk-11-jre
-    apt-get remove -y ca-certificates-java default-jre-headless
+  fi
+  ln -sf /usr/local/bin/node /usr/bin/nodejs
+  ###########################
+  echo "Removing Java and Arduino Support..."
+  apt-get remove -y arduino default-jre openjdk-11-jre
+  apt-get remove -y ca-certificates-java default-jre-headless
 else
-    echo "Pi 3+ detected."
-    apt-get install -y --no-upgrade nodejs
-    apt-get install -y --no-upgrade arduino arduino-core avrdude
+  echo "Pi 3+ detected."
+  apt-get install -y --no-upgrade nodejs
+  apt-get install -y --no-upgrade arduino avrdude
 fi
 
 ## Python Libraries
-apt-get install -y --no-upgrade net-tools python python-pip python3 python3-setuptools
-apt-get install -y --no-upgrade python3-pip python3-dev python3-pygame python3-venv
-apt-get install -y --no-upgrade python3-gpiozero
-pip install --disable-pip-version-check pip==19.1.1 wheel==0.33.4 ipython==5.8.0 setuptools==41.0.1 virtualenv==16.6.1 \
-virtualenvwrapper==4.8.4 pssh==2.3.1 numpy==1.16.2 RPi.GPIO==0.7.0 PyAudio==0.2.11 pyserial==3.5 dam1021==0.4 xmodem==0.4.6
-pip3 install --disable-pip-version-check pyserial==3.5
-
-## AV Codecs Support
-apt-get install -y --no-upgrade libupnp-dev
-apt-get remove -y --purge libgstreamer0.10-dev gstreamer0.10-plugins-base gstreamer0.10-plugins-good gstreamer0.10-plugins-ugly
-apt-get install -y --no-upgrade libgstreamer1.0-dev gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly \
- libgstreamer1.0-0-dbg gstreamer1.0-tools libgstreamer-plugins-base1.0-0 \
- gstreamer1.0-alsa gstreamer1.0-pulseaudio libx264-dev x264 ffmpeg \
- gstreamer1.0-plugins-bad-dbg gstreamer1.0-omx gstreamer1.0-libav \
- libavcodec-dev libavformat-dev libswscale-dev
- 
-## OpenCV (disabled)
-#apt-get install -y opencv-doc opencv-data libopencv-dev libopencv3.2-java libopencv3.2-jni python-opencv
-apt-get remove -y --purge opencv-doc opencv-data libopencv-dev libopencv3.2-java libopencv3.2-jni python-opencv
+apt-get install -y --no-upgrade net-tools python python3 python3-setuptools
+apt-get install -y --no-upgrade python3-pip python3-dev python3-pygame python3-venv python3-gpiozero
+pip3 install --disable-pip-version-check setuptools wheel pyserial xmodem RPi.GPIO \
+ ipython pssh PyAudio dam1021 virtualenv virtualenvwrapper numpy
 
 ## Light Web Server
 apt-get install -y --no-upgrade lighttpd
@@ -216,7 +221,7 @@ apt-get install -y --no-upgrade bluetooth pi-bluetooth bluez-tools
 apt-get install -y --no-upgrade libasound2 alsa-utils alsa-base mpg321 lame sox \
  sqlite3 libupnp6 libmpdclient2 libexpat1 \
  libexpat1 libimage-exiftool-perl libcurl4 \
- libconfig-dev libjsoncpp0 python-requests djmount \
+ libconfig-dev libjsoncpp0 djmount \
  libao-dev libglib2.0-dev libjson-glib-1.0-0 libjson-glib-dev libao-common \
  libasound2-dev libreadline-dev libsox-dev libsoup2.4-dev libsoup2.4-1 \
  pulseaudio pulseaudio-module-zeroconf pulseaudio-utils pavucontrol paprefs
@@ -233,20 +238,25 @@ gpasswd -a mpd audio
 gpasswd -a mpd pulse-access
 
 ## AirPlay Support
-apt-get install -y --no-upgrade xmltoman \
- libdaemon-dev libpopt-dev libconfig-dev \
- libasound2-dev \
- libpulse-dev \
- libavahi-client-dev \
- libssl-dev \
- libdaemon-dev libpopt-dev \
- libsoxr-dev libsndfile1-dev \
- shairport-sync
+apt-get install -y --no-upgrade xmltoman libsoxr-dev libsndfile1-dev \
+ libdaemon-dev libpopt-dev libconfig-dev libdaemon-dev libpopt-dev \
+ libasound2-dev libpulse-dev libavahi-client-dev libssl-dev shairport-sync
 
-## Wi-Fi Fix (not needed anymore)
-##apt-mark unhold firmware-brcm80211
-#dpkg -i /opt/rpi/pkgs/firmware-brcm80211_20190114-1+rpt4_all.deb
-#apt-mark hold firmware-brcm80211
+## Camera Motion Server
+if [ "${OSVER}" = "buster" ]; then
+  if [ ! -e /usr/bin/motion ]; then
+    apt-get install -y --no-upgrade libmicrohttpd12
+    dpkg -i /opt/rpi/pkgs/pi_buster_motion_4.3.2-1_armhf.deb
+    systemctl stop motion
+  fi
+fi
+if [ "${OSVER}" = "bullseye" ]; then
+  apt-get install -y --no-upgrade motion
+fi
+groupadd motion
+useradd motion -g motion --shell /bin/false
+groupmod -g 1005 motion
+usermod -u 1005 motion
 
 ## Remove Conflicts ***
 apt-get remove --purge -y exim4 exim4-base exim4-config exim4-daemon-light 
@@ -254,9 +264,8 @@ apt-get remove --purge -y tigervnc-common tigervnc-standalone-server iptables-pe
 apt-get remove --purge -y lxlock xscreensaver xscreensaver-data gvfs gvfs-backends vnc4server light-locker
 apt-get remove --purge -y desktop-file-utils exfat-fuse exfat-utils gdisk gnome-mime-data gvfs-common gvfs-daemons gvfs-libs
 apt-get remove --purge -y libatasmart4 libavahi-glib1 libbonobo2-0 libbonobo2-common libbonoboui2-0 libbonoboui2-common
-apt-get remove --purge -y libssl-doc libudisks2-0 libusbmuxd4 ntfs-3g udisks2 usbmuxd udhcpd wolfram-engine motion
+apt-get remove --purge -y libssl-doc libudisks2-0 libusbmuxd4 ntfs-3g udisks2 usbmuxd udhcpd wolfram-engine
 apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp
-apt-get remove --purge -y wiringpi
 apt-get -y autoremove
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
@@ -270,13 +279,33 @@ dpkg --purge rsyslog
 rm -f /var/log/messages
 rm -f /var/log/syslog
 
+## Delete custom services
+rm -fvr /etc/systemd/system/rpi-*
+
+## Reset hotspot configuration
+cp -f $BIN/hostapd.conf /etc/hostapd
+chmod 644 /etc/hostapd/hostapd.conf
+chown root:root /etc/hostapd/hostapd.conf
+if [ ! -e /opt/rpi/modconf/brand.txt ]; then
+echo "Skipping module modification."
+else
+## Set module name to hotspot config
+sed -i "s/RaspberryPi/$MODNAME/g" /etc/hostapd/hostapd.conf
+fi
+
+## Reset network settings
+rm -f /etc/netchk.disabled
+rm -f /etc/apd-mode.enable
+rm -f /etc/apd-nodns.enable
+
+## Reset LED configuration
+rm -f /opt/rpi/remotes/leds
+rm -f /tmp/global-fc.lock
+
 ## Set bootloader RO
 mount -o remount,ro /boot
 
 echo "Phase I setup complete."
-###################################################
-else
-echo ""  > /dev/null 2>&1
 fi ###### END OF SUB-SCRIPT #######################
 ###################################################
 
@@ -323,14 +352,10 @@ if [ ! -e /etc/wpa_supplicant/wpa_supplicant.conf ]; then
   cp -f /etc/wpa_supplicant/wpa_supplicant.empty /etc/wpa_supplicant/wpa_supplicant.conf
   chmod 644 /etc/wpa_supplicant/wpa_supplicant.conf
   chown root:root /etc/wpa_supplicant/wpa_supplicant.conf
-else
-  echo ""  > /dev/null 2>&1
 fi
 if [ ! -e /boot/wpa.conf ]; then
   echo "Copying Wi-Fi settings to boot partition."
   cp -f /etc/wpa_supplicant/wpa_supplicant.conf /boot/wpa.conf
-else
-  echo ""  > /dev/null 2>&1
 fi
 
 ## Boot partition read-only
@@ -381,8 +406,6 @@ chown root:root /etc/modules
 if [ ! -e /etc/systemd/system/proinit.service ]; then
   echo "proinit.service not found, resetting services."
   rm -f /etc/rpi-conf.done
-else
-  echo ""  > /dev/null 2>&1
 fi
 
 ## Original Services (Restoring Stock Files)
@@ -433,18 +456,17 @@ ln -sf /etc/lighttpd/conf-available/10-fastcgi.conf /etc/lighttpd/conf-enabled/
 ln -sf /etc/lighttpd/conf-available/15-fastcgi-php.conf /etc/lighttpd/conf-enabled/
 ln -sf /usr/share/lighttpd/create-mime.conf.pl /usr/share/lighttpd/create-mime.assign.pl
 
-## PHP Configuration v7.3
-cp -rf $BIN/php.cgi.ini /etc/php/7.3/cgi/php.ini
-chmod 644 /etc/php/7.3/cgi/php.ini
-chown root:root /etc/php/7.3/cgi/php.ini
-cp -rf $BIN/php.cli.ini /etc/php/7.3/cli/php.ini
-chmod 644 /etc/php/7.3/cli/php.ini
-chown root:root /etc/php/7.3/cli/php.ini
+## PHP Configuration
+PHP_VERSION=$(php -v | tac -r | tail -n 1 | cut -d " " -f 2 | cut -c 1-3)
+cp -rf $BIN/php.cgi.ini /etc/php/$PHP_VERSION/cgi/php.ini
+chmod 644 /etc/php/$PHP_VERSION/cgi/php.ini
+chown root:root /etc/php/$PHP_VERSION/cgi/php.ini
+cp -rf $BIN/php.cli.ini /etc/php/$PHP_VERSION/cli/php.ini
+chmod 644 /etc/php/$PHP_VERSION/cli/php.ini
+chown root:root /etc/php/$PHP_VERSION/cli/php.ini
 chown -R www-data:www-data /var/lib/php
 chmod -R g+rx /var/lib/php
-if [ ! -e /lib/systemd/system/phpsessionclean.service ]; then
-  echo ""  > /dev/null 2>&1
-else
+if [ -e /lib/systemd/system/phpsessionclean.service ]; then
   systemctl disable phpsessionclean.timer
   systemctl disable phpsessionclean.service
   rm -f /lib/systemd/system/phpsessionclean.timer
@@ -630,8 +652,6 @@ echo "Creating Alsa state file"
 touch /var/lib/alsa/asound.state
 echo '#' > /var/lib/alsa/asound.state
 chmod 777 /var/lib/alsa/asound.state
-else
-echo ""  > /dev/null 2>&1
 fi
 
 ## ALSA Configuration
@@ -710,9 +730,9 @@ ln -sf /opt/rpi/leds /usr/bin/leds
 ## Set web server default theme
 /opt/rpi/init dred
 
+## Services Configuration
 systemctl daemon-reload
 if [ ! -e /etc/rpi-conf.done ]; then
-## Services Configuration
 systemctl enable avahi-daemon
 systemctl enable proinit
 systemctl enable ssh
@@ -724,6 +744,7 @@ systemctl disable plymouth-log
 systemctl disable plymouth
 systemctl disable sysstat
 systemctl disable lightdm
+systemctl disable apache2
 systemctl disable lighttpd
 systemctl disable dnsmasq
 systemctl disable systemd-timesyncd
@@ -733,6 +754,8 @@ systemctl disable apt-daily.service
 systemctl disable apt-daily.timer
 systemctl disable apt-daily-upgrade.service
 systemctl disable apt-daily-upgrade.timer
+systemctl disable sysstat-collect.timer
+systemctl disable sysstat-summary.timer
 systemctl disable man-db.service
 systemctl disable man-db.timer
 systemctl disable bluetooth
@@ -749,7 +772,7 @@ systemctl disable shairport-sync
 echo "Initial setup (phase II) complete."
 touch /etc/rpi-conf.done
 else
-echo "Skipping service configuration."
+echo "Skipping services configuration."
 fi
 
 ## File Permissions
@@ -807,20 +830,18 @@ chmod -R 777 /var/log/Xorg.0.log /var/log/Xorg.0.log.old
 chmod -R 644 /home/pi/.xsession-errors /home/pi/.bash_history
 chown -R pi:pi /var/log/Xorg.0.log /var/log/Xorg.0.log.old /home/pi/.xsession-errors /home/pi/.bash_history
 
-## Cleanup Obsolete Files\
-apt-get remove --purge -y supervisor
-rm -rf /etc/supervisor/conf.d
+## Cleanup Obsolete Files
+rm -f /etc/systemd/system/dhcpcd.service.d/wait.conf
 rm -f /etc/systemd/system/systemd-udevd.service
 rm -f /etc/systemd/system/tmpfiles-clean.service
 rm -f /etc/systemd/system/tmpfiles-setup.service
 rm -f /etc/systemd/system/wifiswitch.service
 rm -f /etc/systemd/system/rpi-timer.service
 rm -f /etc/systemd/system/rpi-timer.timer
+rm -f /etc/cron.daily/lighttpd
+rm -f /etc/cron.daily/sysstat
+rm -f /etc/cron.daily/dpkg
 rm -f /opt/rpi/leds.txt
-rm -f /tmp/gateway.txt
-rm -rf /opt/rpi/spectro
-rm -rf /opt/rpi/rainbow
-rm -f /root/sketchbook
 
 echo "Configuration Complete."
 exit

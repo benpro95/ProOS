@@ -42,26 +42,13 @@ if [ ! -e /media/usb0/rclone/rclone.conf ]; then
   chmod -R 777 /media/usb0/rclone
 fi
 
-## Camera Motion Server
-if [ ! -e /usr/bin/motion ]; then
-  apt-get install -y --no-upgrade libmicrohttpd12
-  dpkg -i /opt/rpi/pkgs/pi_buster_motion_4.3.2-1_armhf.deb
-  systemctl stop motion
-fi
-groupadd motion
-useradd motion -g motion --shell /bin/false
-groupmod -g 1005 motion
-usermod -u 1005 motion
-cp -f $BIN/modconf/motion /etc/default/
-chmod 644 /etc/default/motion
-chown root:root /etc/default/motion
+## Camera Motion Configuration 
 cp -f $BIN/modconf/motion.conf /etc/motion/
 chmod 644 /etc/motion/motion.conf
 chown root:root /etc/motion/motion.conf
 cp -fr $BIN/modconf/camera*.conf /etc/motion/
 chmod -R 644 /etc/motion/camera*.conf
 chown -R root:root /etc/motion/camera*.conf
-systemctl disable motion
 if [ ! -e /media/usb0/cameras ]; then
   echo "Cameras folder on USB drive not found, creating..."
   mkdir -p /media/usb0/cameras

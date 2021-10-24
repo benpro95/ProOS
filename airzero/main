@@ -25,14 +25,15 @@ sleep 1.25
 systemctl start lighttpd
 ## Disable HDMI
 /usr/bin/tvservice -o
-## Auto Hotspot (on boot only)
-systemctl start rpi-netdetect.service
 ## Attach Server SMB Share
 sleep 5.75
 if ping -c 1 files.home > /dev/null 2> /dev/null
 then
   systemctl start autofs
 fi
+## Auto Hotspot (on boot only)
+sleep 60
+systemctl start rpi-netdetect.service
 exit
 ;;
 

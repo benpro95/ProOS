@@ -15,11 +15,11 @@ case "$1" in
 stoprelax)
 if ping -W 1 -c 1 hifimini.home > /dev/null 2> /dev/null
 then
-  echo "AirZero Found."
-  ## Stop Audio on AirZero
+  echo "HiFi mini Found."
+  ## Stop Audio on HiFi mini
   /usr/bin/curl -N -f -m 5 --silent "http://hifimini.home/exec.php?var=&arg=stoprelax&action=main"
 else
-  echo "AirZero Not Found."
+  echo "HiFi mini Not Found."
   ## Stop Audio on System
   /usr/bin/curl -N -f -m 5 --silent "http://hifi.home/exec.php?var=&arg=stoprelax&action=main"
   ## USB Decoder Input
@@ -34,7 +34,7 @@ relax)
 if ping -W 1 -c 1 hifimini.home > /dev/null 2> /dev/null
 then
   echo "HiFi-Mini Found."
-  ## Play Audio in Loop on AirZero
+  ## Play Audio in Loop on HiFi mini
   /usr/bin/curl -N -f -m 5 --silent "http://hifimini.home/exec.php?var=$ARG2&arg=relax&action=main"
 else
   echo "HiFi-Mini Not Found."
@@ -53,7 +53,7 @@ relaxvup)
 if ping -W 1 -c 1 hifimini.home > /dev/null 2> /dev/null
 then
   echo "HiFi-Mini Found."
-  ## Increasing Volume on AirZero
+  ## Increasing Volume on HiFi mini
   /usr/bin/curl -N -f -m 5 --silent "http://hifimini.home/exec.php?var=&arg=vup&action=main"
 else
   echo "HiFi-Mini Not Found."
@@ -68,7 +68,7 @@ relaxvdwn)
 if ping -W 1 -c 1 hifimini.home > /dev/null 2> /dev/null
 then
   echo "HiFi-Mini Found."
-  ## Decreasing Volume on AirZero
+  ## Decreasing Volume on HiFi mini
   /usr/bin/curl -N -f -m 5 --silent "http://hifimini.home/exec.php?var=&arg=vdwn&action=main"
 else
   echo "HiFi-Mini Not Found."
@@ -99,6 +99,26 @@ fi
 exit
 ;;
 
+lightson)
+## Turn all lights on
+touch /var/lock/rpi/lights.save
+## Main Lamp
+/opt/rpi/xmit rfc1 on
+## Dresser Lamp
+/opt/rpi/xmit rfa2 on
+exit
+;;
+
+lightsoff)
+## Turn all lights off
+rm -f /var/lock/rpi/lights.save
+## Main Lamp
+/opt/rpi/xmit rfc1 off
+## Dresser Lamp
+/opt/rpi/xmit rfa2 off
+exit
+;;
+
 allon)
 touch /var/lock/rpi/lights.save
 ## Main Lamp
@@ -113,7 +133,6 @@ sleep 2.5
 /opt/rpi/leds fc 60
 exit
 ;;
-
 
 alloff)
 ## Turn all lights off

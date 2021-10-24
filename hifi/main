@@ -24,6 +24,9 @@ if ping -c 1 files.home > /dev/null 2> /dev/null
 then
   systemctl start autofs
 fi
+## Auto Hotspot (on boot only)
+sleep 60
+systemctl start rpi-netdetect.service
 exit
 ;;
 

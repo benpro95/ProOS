@@ -94,13 +94,13 @@ exit
 
 kiosk)
 ## X11 Web Kiosk
-killall chromium-browser
+killall chromium
 sleep 1.25
 ## Connect to X
 export DISPLAY=":0"
 ## Clear Web Cache
 rm -r ~/.cache/chromium
-chromium-browser --kiosk --no-first-run --disable-plugins --disk-cache-size=800000 --media-cache-size=800000 --incognito --disable-session-crashed-bubble --noerrdialogs --disable-infobars localhost/ &
+chromium --kiosk --no-first-run --disable-plugins --disk-cache-size=800000 --media-cache-size=800000 --incognito --disable-session-crashed-bubble --noerrdialogs --disable-infobars localhost/ &
 exit
 ;;
 

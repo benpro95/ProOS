@@ -1,0 +1,76 @@
+#!/bin/bash
+###########################################################
+## NES Pi main script by Ben Provenzano III ###############
+###########################################################
+###########################################################
+
+case "$1" in
+
+boot)
+## LCD Brightness
+sh -c 'echo "170" > /sys/class/backlight/rpi_backlight/brightness'
+## Light Web Server
+systemctl start lighttpd
+## Start X11 Server
+su -c "/opt/rpi/init x11" -s /bin/sh pi
+## Start Kiosk Browser
+su -c "/opt/rpi/main kiosk" -s /bin/sh pi
+exit
+;;
+
+kiosk)
+## X11 Web Kiosk
+killall chromium
+sleep 1.25
+## Connect to X
+export DISPLAY=":0"
+## Clear Web Cache
+rm -r ~/.cache/chromium
+chromium --kiosk --no-first-run --disable-plugins --disk-cache-size=800000 --media-cache-size=800000 \
+--incognito --disable-session-crashed-bubble --noerrdialogs --disable-infobars automate.home/ &
+exit
+;;
+
+lcdlow)
+## Low LCD Brightness
+sudo sh -c 'echo "50" > /sys/class/backlight/rpi_backlight/brightness'
+exit
+;;
+
+lcd50)
+## 50% LCD Brightness
+sudo sh -c 'echo "100" > /sys/class/backlight/rpi_backlight/brightness'
+exit
+;;
+
+lcd75)
+## 75% LCD Brightness
+sudo sh -c 'echo "170" > /sys/class/backlight/rpi_backlight/brightness'
+exit
+;;
+
+lcd100)
+## Full LCD Brightness
+sudo sh -c 'echo "255" > /sys/class/backlight/rpi_backlight/brightness'
+exit
+;;
+
+usbplug)
+## This script is ran after USB drive attached
+echo "no function assigned"
+exit
+;;
+
+	    
+    *)
+      echo "TouchPi"
+	  echo "  by Ben Provenzano III"
+	  echo " "
+	  echo "Enter a valid command line argument."
+	  echo "lcdlow - Low display brightness"
+	  echo "lcd50 - 50% display brightness"
+	  echo "lcd75 - 75% display brightness"
+	  echo "lcd100 - 100% display brightness"
+      exit 1
+      ;;
+    esac

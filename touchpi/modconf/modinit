@@ -1,0 +1,32 @@
+#!/bin/bash
+## Pi Configuration Script v7.0
+
+# Import Host name
+HOSTNAME=`cat /opt/rpi/config/hostname`
+## Set Module Path
+BIN=/opt/rpi
+# Import Brand name
+MODNAME=`cat $BIN/modconf/brand.txt`
+
+if [ ! -e /opt/rpi/init ]; then
+echo "Core components missing or corrupted."
+echo "Exiting..."
+sleep 1
+exit
+else
+echo "Components integrity verified."
+fi
+echo "Starting $MODNAME configuration..."
+
+## Copy Boot Config
+mount -o remount,rw /boot
+sleep 1.25
+cp -f $BIN/modconf/config.txt /boot/
+mount -o remount,ro /boot
+
+## lighttpd Configuration
+cp -f $BIN/modconf/lighttpd.conf /etc/lighttpd/
+chmod 644 /etc/lighttpd/lighttpd.conf
+chown root:root /etc/lighttpd/lighttpd.conf
+
+exit

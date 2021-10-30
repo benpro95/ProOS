@@ -15,8 +15,8 @@ systemctl start rpi-urserver
 /opt/rpi/leds fc 40
 sleep 4.25
 /opt/rpi/leds stop
-## Disable HDMI
-/usr/bin/tvservice -o
+## Disable HDMI (saves 30mA of power draw)
+/opt/vc/bin/tvservice -o
 ## Auto Hotspot (on boot only)
 sleep 60
 systemctl start rpi-netdetect.service

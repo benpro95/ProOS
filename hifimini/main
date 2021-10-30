@@ -20,8 +20,6 @@ sleep 1.25
 /usr/bin/amixer set PCM 96%
 ## AirPlay Support
 systemctl start rpi-airplay
-## Disable HDMI
-/usr/bin/tvservice -o
 ## Attach Server SMB Share
 sleep 5.75
 if ping -c 1 files.home > /dev/null 2> /dev/null
@@ -30,6 +28,8 @@ then
 fi
 ## Disable Activity LED
 echo none | tee /sys/class/leds/led0/trigger
+## Disable HDMI (saves 30mA of power draw)
+/opt/vc/bin/tvservice -o
 ## Auto Hotspot (on boot only)
 sleep 60
 systemctl start rpi-netdetect.service

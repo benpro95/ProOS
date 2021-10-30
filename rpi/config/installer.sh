@@ -140,12 +140,13 @@ if [ ! -e /usr/lib/arm-linux-gnueabihf/libbrcmEGL.so ]; then
   cd $BIN
 fi
 
-## Install X11
+## Install X11 and X Programs
 apt-get install -y --no-upgrade xserver-xorg xorg \
- x11-common x11-apps xserver-xorg-input-evdev \
- xdotool libxext6 libxtst6 xvfb lxde-core \
- synaptic medit lxterminal florence libatlas-base-dev
+ x11-common x11-apps xserver-xorg-input-evdev xvfb \
+ libxext6 libxtst6 lxde-core libatlas-base-dev \
 dpkg-reconfigure x11-common
+apt-get install -y --no-upgrade synaptic medit \
+ lxterminal florence xprintidle xdotool wmctrl chromium
 
 ## Disable Swap
 dphys-swapfile swapoff

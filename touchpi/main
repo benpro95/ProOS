@@ -11,19 +11,26 @@ boot)
 sh -c 'echo "120" > /sys/class/backlight/rpi_backlight/brightness'
 ## Light Web Server
 systemctl start lighttpd
-## Start X11 Server
+## Start X Interface
 su -c "/opt/rpi/init x11" -s /bin/sh pi
-## Start Kiosk Browser
-su -c "/opt/rpi/main kiosk" -s /bin/sh pi
+## Start X Programs
+su -c "/opt/rpi/main xprgms" -s /bin/sh pi
+## Disable HDMI (saves 30mA of power draw)
+/opt/vc/bin/tvservice -o
+## Auto Hotspot (on boot only)
+sleep 60
+systemctl start rpi-netdetect.service
 exit
 ;;
 
-kiosk)
+xprgms)
+## Connect to X
+export DISPLAY=":0"
+## LCD Sleep Mode
+/opt/rpi/lcdsleep.sh &
 ## X11 Web Kiosk
 killall chromium
 sleep 1.25
-## Connect to X
-export DISPLAY=":0"
 ## Clear Cache
 rm -r ~/.cache/chromium
 ## Start Browser 
@@ -31,6 +38,18 @@ chromium --kiosk --no-first-run --disable-plugins --disk-cache-size=800000 --med
  --enable-features=OverlayScrollbar,OverlayScrollbarFlashAfterAnyScrollUpdate,OverlayScrollbarFlashWhenMouseEnter \
  --incognito --disable-restore-session-state --disable-session-crashed-bubble --noerrdialogs --disable-infobars \
  http://automate.home/ &
+exit
+;;
+
+lcdon)
+## LCD on
+sudo sh -c 'echo 0 > /sys/class/backlight/rpi_backlight/bl_power'
+exit
+;;
+
+lcdoff)
+## LCD off
+sudo sh -c 'echo 1 > /sys/class/backlight/rpi_backlight/bl_power'
 exit
 ;;
 
@@ -70,6 +89,8 @@ exit
 	  echo "  by Ben Provenzano III"
 	  echo " "
 	  echo "Enter a valid command line argument."
+	  echo "lcdoff - Turn off display"
+	  echo "lcdon - Turn on display"
 	  echo "lcdlow - Low display brightness"
 	  echo "lcd50 - 50% display brightness"
 	  echo "lcd75 - 75% display brightness"

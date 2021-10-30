@@ -29,6 +29,8 @@ GPIO.output(GPIO_PIN, False)
 GPIO.cleanup()
 quit()
 END
+## Disable HDMI (saves 30mA of power draw)
+/opt/vc/bin/tvservice -o
 exit
 ;;
 

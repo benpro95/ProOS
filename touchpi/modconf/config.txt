@@ -4,7 +4,7 @@
 #hdmi_safe=1
 
 # Set to 1 if your display has a black border of unused pixels visible
-disable_overscan=1
+#disable_overscan=1
 
 # uncomment the following to adjust overscan. Use positive numbers if console
 # goes off screen, and negative if there is too much border
@@ -13,9 +13,8 @@ disable_overscan=1
 #overscan_top=16
 #overscan_bottom=16
 
-# Console rotation
-display_rotate=0
-lcd_rotate=0
+# Rotate LCD/touch screen 180
+#lcd_rotate=2
 
 # Force a console size
 #framebuffer_width=1280
@@ -47,13 +46,13 @@ disable_camera_led=0
 gpu_mem=128
 
 #-------Max USB Current -------
-max_usb_current=1
+#max_usb_current=1
 
 #-------Disable Ram temp refresh every 500ms---------------
 disable_pvt=1
 
 #-------Disable Pi Splash screen on boot-------------
-disable_splash=1
+#disable_splash=1
 
 # --------- Disable ACT LED ---------
 dtparam=act_led_trigger=none
@@ -79,7 +78,7 @@ i2c_arm_baudrate=100000
 dtparam=spi=off
 
 #------Reboot when exceeds-----
-temp_limit=78
+temp_limit=75
 
 #------Disable Bluetooth-----
 dtoverlay=pi3-disable-bt

@@ -1,6 +1,6 @@
 #!/bin/bash
 ###########################################################
-## NES Pi main script by Ben Provenzano III ###############
+## TouchPi main script by Ben Provenzano III ###############
 ###########################################################
 ###########################################################
 
@@ -8,7 +8,7 @@ case "$1" in
 
 boot)
 ## LCD Brightness
-sh -c 'echo "170" > /sys/class/backlight/rpi_backlight/brightness'
+sh -c 'echo "120" > /sys/class/backlight/rpi_backlight/brightness'
 ## Light Web Server
 systemctl start lighttpd
 ## Start X11 Server
@@ -24,10 +24,13 @@ killall chromium
 sleep 1.25
 ## Connect to X
 export DISPLAY=":0"
-## Clear Web Cache
+## Clear Cache
 rm -r ~/.cache/chromium
+## Start Browser 
 chromium --kiosk --no-first-run --disable-plugins --disk-cache-size=800000 --media-cache-size=800000 \
---incognito --disable-session-crashed-bubble --noerrdialogs --disable-infobars automate.home/ &
+ --enable-features=OverlayScrollbar,OverlayScrollbarFlashAfterAnyScrollUpdate,OverlayScrollbarFlashWhenMouseEnter \
+ --incognito --disable-restore-session-state --disable-session-crashed-bubble --noerrdialogs --disable-infobars \
+ http://automate.home/ &
 exit
 ;;
 

@@ -18,9 +18,6 @@ dtparam=i2c_arm=off
 dtoverlay=hifiberry-digi
 dtoverlay=i2s-mmap
 
-#------Disable Wi-Fi and Bluetooth-----
-dtoverlay=disable-bt
-
 #------Disable the Activity LED-------
 ## dtparam=act_led_trigger=none
 ## dtparam=act_led_activelow=off

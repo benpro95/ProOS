@@ -18,15 +18,30 @@ chmod -R 777 /var/lock/rpi
 systemctl start lighttpd
 ## AirPlay Support
 systemctl start rpi-airplay
+## Bluetooth Audio
+systemctl start hciuart
+systemctl start bluetooth
+systemctl start bt-agent@hci0
+systemctl start bluealsa-aplay
 ## Attach Server SMB Share
 sleep 5.75
 if ping -c 1 files.home > /dev/null 2> /dev/null
 then
   systemctl start autofs
 fi
+## Reset Bluetooth Connections
+#/opt/rpi/main resetbt
 ## Auto Hotspot (on boot only)
 sleep 60
 systemctl start rpi-netdetect.service
+exit
+;;
+
+resetbt)
+## Reset Bluetooth Connections 
+for device in $(bluetoothctl devices  | grep -o "[[:xdigit:]:]\{8,17\}"); do
+    echo "removing bluetooth device: $device | $(bluetoothctl remove $device)"
+done
 exit
 ;;
 
@@ -57,6 +72,7 @@ exit
 	      echo "  by Ben Provenzano III "
 	      echo " "
 	      echo "Enter a valid command line argument."
+	      echo "resetbt - Clear active bluetooth connections"
           exit 1
           ;;
     esac   

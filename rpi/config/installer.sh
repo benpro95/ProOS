@@ -111,7 +111,7 @@ apt-get install -y --no-upgrade libgtk2.0-dev libbluetooth3 libbluetooth-dev \
  libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev libdbus-glib-1-dev \
  libass-dev libfreetype6-dev libgpac-dev libsdl1.2-dev libtheora-dev libssl-dev \
  libva-dev libvdpau-dev libvorbis-dev libx11-dev libxext-dev libxfixes-dev \
- libjack-jackd2-dev portaudio19-dev libffi-dev libxslt1-dev libxml2-dev \
+ libjack-jackd2-dev portaudio19-dev libffi-dev libxslt1-dev libxml2-dev sqlite3 \
  libxml2-dev libxslt1-dev portaudio19-dev libffi-dev zlib1g-dev libdbus-1-dev
 
  ## AV Codecs Support
@@ -216,13 +216,12 @@ chown root:root /media/usb*
 apt-get install -y --no-upgrade ncftp
 
 ## Bluetooth Support
-apt-get install -y --no-upgrade bluetooth pi-bluetooth bluez-tools
+apt-get install -y --no-upgrade bluetooth pi-bluetooth bluez-tools bluealsa
 
 ## Install Audio Support
-apt-get install -y --no-upgrade libasound2 alsa-utils alsa-base mpg321 lame sox \
- sqlite3 libupnp6 libmpdclient2 libexpat1 \
- libexpat1 libimage-exiftool-perl libcurl4 \
- libconfig-dev libjsoncpp0 djmount \
+apt-get install -y --no-upgrade alsa-base alsa-utils mpg321 lame sox
+apt-get install -y --no-upgrade libasound2 libupnp6 libmpdclient2 libexpat1 \
+ libconfig-dev libjsoncpp0 djmount libexpat1 libimage-exiftool-perl libcurl4 \
  libao-dev libglib2.0-dev libjson-glib-1.0-0 libjson-glib-dev libao-common \
  libasound2-dev libreadline-dev libsox-dev libsoup2.4-dev libsoup2.4-1 \
  pulseaudio pulseaudio-module-zeroconf pulseaudio-utils pavucontrol paprefs
@@ -567,12 +566,39 @@ chmod 755 /home/pi/.config/lxsession/LXDE/autostart
 chown pi:pi /home/pi/.config/lxsession/LXDE/autostart
 
 ## Bluetooth Configuration
+cp -f $BIN/btmain.conf /etc/bluetooth/main.conf
+if [ ! -e /opt/rpi/modconf/brand.txt ]; then
+echo "Skip module naming."
+else
+## Set module name to bluetooth config
+sed -i "s/RaspberryPi/$MODNAME/g" /etc/bluetooth/main.conf
+fi
+chown root:root /etc/bluetooth/main.conf
+chmod 644 /etc/bluetooth/main.conf
+mkdir -p /etc/systemd/system/bluetooth.service.d
+cp -f $BIN/bt-override.conf /etc/systemd/system/bluetooth.service.d/override.conf
+chown root:root /etc/systemd/system/bluetooth.service.d/override.conf
+chmod 644 /etc/systemd/system/bluetooth.service.d/override.conf
+# Make Bluetooth Discoverable
+mkdir -p /etc/systemd/system/bthelper@.service.d
+cp -f $BIN/bthelper-override.conf /etc/systemd/system/bthelper@.service.d/override.conf
+chown root:root /etc/systemd/system/bthelper@.service.d/override.conf
+chmod 644 /etc/systemd/system/bthelper@.service.d/override.conf
+# BlueALSA Configuration
+mkdir -p /etc/systemd/system/bluealsa.service.d
+cp -f $BIN/bluealsa-override.conf /etc/systemd/system/bluealsa.service.d/override.conf
+chown root:root /etc/systemd/system/bluealsa.service.d/override.conf
+chmod 644 /etc/systemd/system/bluealsa.service.d/override.conf
+# Bluetooth Udev Script
+cp -f $BIN/bluetooth-udev /usr/local/bin/bluetooth-udev
+chown root:root /usr/local/bin/bluetooth-udev
+chmod 755 /usr/local/bin/bluetooth-udev
+cp -f $BIN/bluetooth-udev.rules /etc/udev/rules.d/99-bluetooth-udev.rules
+chown root:root /etc/udev/rules.d/99-bluetooth-udev.rules
+chmod 644 /etc/udev/rules.d/99-bluetooth-udev.rules
 cp -f $BIN/btinput.conf /etc/bluetooth/input.conf
 chmod 644 /etc/bluetooth/input.conf
 chown root:root /etc/bluetooth/input.conf
-cp -f $BIN/btmain.conf /etc/bluetooth/main.conf
-chmod 644 /etc/bluetooth/main.conf
-chown root:root /etc/bluetooth/main.conf
 
 ## Udev Network Rules
 cp -f $BIN/70-persistent-net.rules /etc/udev/rules.d
@@ -656,9 +682,12 @@ chmod 777 /var/lib/alsa/asound.state
 fi
 
 ## ALSA Configuration
-cp -f $BIN/asound.conf /etc
+cp -f $BIN/asound.conf /etc/
 chmod 644 /etc/asound.conf
 chown root:root /etc/asound.conf
+cp -f $BIN/aliases.conf /lib/modprobe.d/
+chmod 644 /lib/modprobe.d/aliases.conf
+chown root:root /lib/modprobe.d/aliases.conf
 
 ## PulseAudio Configuration
 cp -f $BIN/system.pa /etc/pulse
@@ -759,8 +788,10 @@ systemctl disable sysstat-collect.timer
 systemctl disable sysstat-summary.timer
 systemctl disable man-db.service
 systemctl disable man-db.timer
-systemctl disable bluetooth
 systemctl disable hciuart
+systemctl disable bluetooth
+systemctl disable bluealsa-aplay
+systemctl disable bt-agent@hci0.service
 systemctl disable triggerhappy
 systemctl disable wifiswitch
 systemctl disable usbplug

@@ -34,9 +34,6 @@ cp -f $BIN/modconf/asound.conf /etc
 chmod 644 /etc/asound.conf
 chown root:root /etc/asound.conf
 
-## Install Remotes
-cp -r $BIN/modconf/remotes/* /opt/rpi/remotes/
-
 ## Stage II - Set module name to configs
 if [ ! -e $BIN/modconf/brand.txt ]; then
 echo "Skip module naming."

@@ -596,6 +596,7 @@ chmod 755 /usr/local/bin/bluetooth-udev
 cp -f $BIN/bluetooth-udev.rules /etc/udev/rules.d/99-bluetooth-udev.rules
 chown root:root /etc/udev/rules.d/99-bluetooth-udev.rules
 chmod 644 /etc/udev/rules.d/99-bluetooth-udev.rules
+## Bluetooth Input Configuration
 cp -f $BIN/btinput.conf /etc/bluetooth/input.conf
 chmod 644 /etc/bluetooth/input.conf
 chown root:root /etc/bluetooth/input.conf

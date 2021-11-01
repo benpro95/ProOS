@@ -1,6 +1,4 @@
 #!/bin/bash
-##
-###########################################################
 ###########################################################
 
 ## Read the 2nd Argument
@@ -29,19 +27,11 @@ if ping -c 1 files.home > /dev/null 2> /dev/null
 then
   systemctl start autofs
 fi
-## Reset Bluetooth Connections
-#/opt/rpi/main resetbt
 ## Auto Hotspot (on boot only)
-sleep 60
-systemctl start rpi-netdetect.service
-exit
-;;
-
-resetbt)
-## Reset Bluetooth Connections 
-for device in $(bluetoothctl devices  | grep -o "[[:xdigit:]:]\{8,17\}"); do
-    echo "removing bluetooth device: $device | $(bluetoothctl remove $device)"
-done
+sleep 60 # only run if bluetooth not connected
+if [ ! -e /tmp/bt.connected ]; then
+   systemctl start rpi-netdetect.service
+fi
 exit
 ;;
 
@@ -60,19 +50,10 @@ ARG2="${ARG2^}"
 exit
 ;;
 
-### Examples of URL strings ###
-# http://automate:9300/exec.php?var=&arg=lightson&action=main
-# http://automate:9300/exec.php?var=&arg=lightsoff&action=main
-# http://automate:9300/exec.php?var=prism&arg=video&action=leds
-###############################
-
 
         *)
           echo "HiFi System"
-	      echo "  by Ben Provenzano III "
-	      echo " "
-	      echo "Enter a valid command line argument."
-	      echo "resetbt - Clear active bluetooth connections"
+	        echo "  by Ben Provenzano III "
           exit 1
           ;;
     esac   

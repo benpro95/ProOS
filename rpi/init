@@ -323,6 +323,14 @@ fi
 exit
 ;;
 
+resetbt)
+## Reset Bluetooth Connections 
+for device in $(bluetoothctl devices  | grep -o "[[:xdigit:]:]\{8,17\}"); do
+    echo "removing bluetooth device: $device | $(bluetoothctl remove $device)"
+done
+exit
+;;
+
 ##############################################
 #### END MAINTENANCE SCRIPT ##################
 
@@ -529,24 +537,25 @@ exit
 
         *)
           echo "RPi Init Script v15"
-	      echo "by Ben Provenzano III"
-	      echo " "
-	      echo "Enter Valid Arguments."
+	        echo "by Ben Provenzano III"
+	        echo " "
+	        echo "Enter Valid Arguments."
           echo " "
-          echo "ro - Enable Read/Only Mode"
-          echo "rw - Enable Read/Write Mode"
-          echo "update - Update/Upgrade System"
-          echo "mon - Resource Monitor"
-          echo "loadtimes - Startup Services"
-          echo "active - Active Services"
-          echo "running - Running Services"
-          echo "timers - Active Timers"
-          echo "wifistats - Wi-Fi Statistics"
+          echo "ro - Enable read/only mode"
+          echo "rw - Enable read/write mode"
+          echo "update - Update/upgrade system"
+          echo "mon - Resource monitor"
+          echo "loadtimes - Startup services"
+          echo "active - Active services"
+          echo "running - Running services"
+          echo "timers - Active timers"
+          echo "wifistats - Wi-Fi statistics"
           echo "netdetect - Switch to hotspot if network down"
-          echo "togglenet - Toggle Hotspot/Client Network"
-          echo "gpumem - Free GPU Memory"
-          echo "ftp - List File Transfer Command"
-          echo "temp - Display System Temperature"
+          echo "togglenet - Toggle hotspot/client network"
+          echo "resetbt - Clear active bluetooth connections"
+          echo "gpumem - GPU statistics"
+          echo "ftp - List file transfer command"
+          echo "temp - System temperature"
           echo " "
           exit 1
           ;;

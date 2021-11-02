@@ -1,7 +1,7 @@
 ## Created by Ben Provenzano III for Bluetooth Pi
 
 #-------GPU memory-------
-gpu_mem=64
+gpu_mem=32
 
 #-------Disable Ram temp refresh every 500ms---------
 disable_pvt=1

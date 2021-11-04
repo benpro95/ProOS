@@ -3,9 +3,6 @@
 ## Portable Pi Zero Speaker by Ben Provenzano III v2.2 #########
 ################################################################
 
-## Read the 2nd Argument
-ARG2=$2
-
 ## Read the 1st Argument
 case "$1" in
 
@@ -14,45 +11,29 @@ boot)
 /usr/bin/amixer set PCM 0%
 sleep 1.25
 systemctl start rpi-zeroaudio
+## Bluetooth Audio
+systemctl start hciuart
+systemctl start bluetooth
+systemctl start bt-agent@hci0
+systemctl start bluealsa-aplay
 ## AirPlay Support
 systemctl start rpi-airplay
 ## Startup Sound / Set Volume
 /usr/bin/amixer set PCM 60%
 /usr/bin/aplay /opt/rpi/sounds/ds.wav
 sleep 1.25
-/usr/bin/amixer set PCM 100%
+/usr/bin/amixer set PCM 99%
 ## Light Web Server
 systemctl start lighttpd
-## Attach Server SMB Share
-sleep 5.75
-if ping -c 1 files.home > /dev/null 2> /dev/null
-then
-  systemctl start autofs
-fi
 ## Disable HDMI (saves 30mA of power draw)
 /opt/vc/bin/tvservice -o
+## Reset Bluetooth Connections
+/opt/rpi/init resetbt
 ## Auto Hotspot (on boot only)
-sleep 60
-systemctl start rpi-netdetect.service
-exit
-;;
-
-### Relaxation Sound Playback
-stoprelax)
-killall -s KILL -w omxplayer
-## Set Volume
-/usr/bin/amixer set PCM 100%
-exit
-;;
-##
-relax)
-killall -s KILL -w omxplayer
-## Set Initial Volume
-/usr/bin/amixer set PCM 60%
-## Capitialize first letter of argument
-ARG2="${ARG2^}"
-## Play Audio in Loop
-/usr/bin/omxplayer -o alsa --loop "/mnt/smb/Media/Sounds/Relaxation/$ARG2.mp3"
+sleep 60 # only run if bluetooth not connected
+if [ ! -e /tmp/bt.connected ]; then
+   systemctl start rpi-netdetect.service
+fi
 exit
 ;;
 
@@ -81,6 +62,6 @@ exit
 	      echo "  by Ben Provenzano III"
 	      echo " "
 	      echo "Enter a valid command line argument."
-          exit 1
+        exit 1
         ;;
     esac   

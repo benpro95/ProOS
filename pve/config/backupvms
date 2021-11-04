@@ -55,7 +55,8 @@ chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-105.conf
 echo ""
 echo "Copying VM's to Datastore..."
 chmod -R 777 /var/lib/vz/dump/vzdump-*
-rsync --progress -a /var/lib/vz/dump/vzdump-* /mnt/datastore/Ben/ProOS/pve/vmbkps/
+rsync --progress -a --exclude="*qemu-103*" --exclude="*qemu-105*" \
+ /var/lib/vz/dump/vzdump-* /mnt/datastore/Ben/ProOS/pve/vmbkps/
 echo "Backup Complete."
 echo ""
 exit

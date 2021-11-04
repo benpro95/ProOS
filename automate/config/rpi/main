@@ -150,6 +150,9 @@ exit
 
 ## Audio power
 pwrhifi)
+## Turn off amp first
+/opt/rpi/xmit subpwr
+sleep 2.5
 ## Power audio system
 /opt/rpi/xmit pwrhifi
 ## Reset sub volume token
@@ -173,6 +176,9 @@ exit
 hifioff)
 if ping -W 1 -c 1 hifi.home > /dev/null 2> /dev/null
 then
+  ## Turn off amp first
+  /opt/rpi/xmit subpwr
+  sleep 2.5
   ## Power audio system
   /opt/rpi/xmit pwrhifi
   ## Reset sub volume token

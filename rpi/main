@@ -7,17 +7,13 @@ case "$1" in
 
 boot)
 ## Light Web Server
-systemctl restart lighttpd
+systemctl start lighttpd
 ## Unified Web Server
-systemctl restart rpi-urserver
+systemctl start rpi-urserver
 ## Loop Movies from USB Drive
-#systemctl restart rpi-vidlooper
+#systemctl start rpi-vidlooper
 ## Start X11 Server
-#su -c "/opt/rpi/init x11" -s /bin/sh pi
-## Start Web Kiosk Interface
-#su -c "/opt/rpi/init kiosk" -s /bin/sh pi
-## Start On-Screen Keyboard
-#su -c "/opt/rpi/init osk" -s /bin/sh pi
+#systemctl start rpi-x11
 ## Bluetooth Audio
 #systemctl start hciuart
 #systemctl start bluetooth
@@ -36,6 +32,32 @@ if [ ! -e /tmp/bt.connected ]; then
    # (runs every 5min)	
    #systemctl start rpi-netdetect.timer
 fi
+exit
+;;
+
+x11)
+## Desktop environment
+## Start as pi user!
+export DISPLAY=":0"
+pkill Xorg
+sleep 1.25
+rm -rf /home/pi/.cache/menus
+rm -rf /home/pi/.cache/lxsession
+mkdir -p /home/pi/.cache/lxsession/LXDE
+ln -sf /dev/null /home/pi/.cache/lxsession/LXDE/run.log
+rm -rf /home/pi/.cache/openbox
+mkdir -p /home/pi/.cache/openbox
+ln -sf /dev/null /home/pi/.cache/openbox/openbox.log
+echo "Starting X11-LXDE..."
+startx &
+sleep 4.25
+## Disable Screen Blanking
+xset s 0 0 s noblank s noexpose
+xset -dpms
+## Start Web Kiosk Interface
+#/opt/rpi/init kiosk
+## Start On-Screen Keyboard
+#/opt/rpi/init osk
 exit
 ;;
 

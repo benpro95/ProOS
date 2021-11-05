@@ -1,10 +1,11 @@
 [Unit]
-Description=USB Flash Drive Detector
+Description=Start the Graphical User Interface
 
 [Service]
+User=pi
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/opt/rpi/main usbplug
+ExecStart=/opt/rpi/main x11
 
 [Install]
 WantedBy=multi-user.target

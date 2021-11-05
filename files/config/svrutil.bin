@@ -490,7 +490,8 @@ do
 done
 
 ################################
-temp_cnt=25 # wait seconds
+## Wait for drives to settle after backup complete
+temp_cnt=${wait_time}
 while [[ ${temp_cnt} -gt 0 ]];
 do
   printf "\rtriggering drive detach in %2d second(s)." ${temp_cnt}

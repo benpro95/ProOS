@@ -12,9 +12,7 @@ sh -c 'echo "120" > /sys/class/backlight/rpi_backlight/brightness'
 ## Light Web Server
 systemctl start lighttpd
 ## Start X Interface
-su -c "/opt/rpi/init x11" -s /bin/sh pi
-## Start X Programs
-su -c "/opt/rpi/main xprgms" -s /bin/sh pi
+systemctl start rpi-x11
 ## Disable HDMI (saves 30mA of power draw)
 /opt/vc/bin/tvservice -o
 ## Auto Hotspot (on boot only)
@@ -23,21 +21,40 @@ systemctl start rpi-netdetect.service
 exit
 ;;
 
-xprgms)
-## Connect to X
+x11)
+## Desktop environment
+## Start as pi user!
 export DISPLAY=":0"
+pkill Xorg
+sleep 1.25
+rm -rf /home/pi/.cache/menus
+rm -rf /home/pi/.cache/lxsession
+mkdir -p /home/pi/.cache/lxsession/LXDE
+ln -sf /dev/null /home/pi/.cache/lxsession/LXDE/run.log
+rm -rf /home/pi/.cache/openbox
+mkdir -p /home/pi/.cache/openbox
+ln -sf /dev/null /home/pi/.cache/openbox/openbox.log
+echo "Starting X11-LXDE..."
+startx &
+sleep 4.25
+## Disable Screen Blanking
+xset s 0 0 s noblank s noexpose
+xset -dpms
 ## LCD Sleep Mode
 /opt/rpi/lcdsleep.sh &
+#################
 ## X11 Web Kiosk
 killall chromium
 sleep 1.25
 ## Clear Cache
-rm -r ~/.cache/chromium
+rm -rf /home/pi/.config/chromium
+rm -rf /home/pi/.cache/chromium
 ## Start Browser 
-chromium --kiosk --no-first-run --disable-plugins --disk-cache-size=800000 --media-cache-size=800000 \
+chromium --kiosk --no-first-run --disable-plugins --disk-cache-size=80000 --media-cache-size=80000 \
  --enable-features=OverlayScrollbar,OverlayScrollbarFlashAfterAnyScrollUpdate,OverlayScrollbarFlashWhenMouseEnter \
  --incognito --disable-restore-session-state --disable-session-crashed-bubble --noerrdialogs --disable-infobars \
  http://automate.home/ &
+ ################
 exit
 ;;
 

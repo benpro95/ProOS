@@ -30,6 +30,21 @@ fi
 echo none | tee /sys/class/leds/led0/trigger
 ## Disable HDMI (saves 30mA of power draw)
 /opt/vc/bin/tvservice -o
+## Start Relaxation Sound Automatically
+DOW=$(date +%u)
+if [ "$DOW" = "5" ] || [ "$DOW" = "6" ]; then
+  echo "is Fri or Sat, not starting..."
+else
+  HOUR=$(date +%H)
+  echo "is Sun or weekday, is hour is echo $HOUR"
+  if (( 8 <= 10#$HOUR && 10#$HOUR < 23 )); then 
+    echo "not between 10pm and 8am, not starting."
+  else  
+    echo "starting relax sound..."
+    sleep 5.25
+    screen -dm /opt/rpi/main relax rain
+  fi
+fi
 ## Auto Hotspot (on boot only)
 sleep 60
 systemctl start rpi-netdetect.service

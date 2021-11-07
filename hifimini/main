@@ -1,6 +1,6 @@
 #!/bin/bash
 ###########################################################
-## AirZero II main script by Ben Provenzano III v1 ########
+## HiFi mini main script by Ben Provenzano III ############
 ###########################################################
 ###########################################################
 
@@ -26,25 +26,32 @@ if ping -c 1 files.home > /dev/null 2> /dev/null
 then
   systemctl start autofs
 fi
-## Disable Activity LED
-echo none | tee /sys/class/leds/led0/trigger
 ## Disable HDMI (saves 30mA of power draw)
 /opt/vc/bin/tvservice -o
 ## Start Relaxation Sound Automatically
 DOW=$(date +%u)
+HOUR=$(date +%H)
 if [ "$DOW" = "5" ] || [ "$DOW" = "6" ]; then
-  echo "is Fri or Sat, not starting..."
+  echo "is Fri or Sat, hour is $HOUR"
+  if (( 9 <= 10#$HOUR && 10#$HOUR < 24 )); then 
+    echo "not between midnight and 8am, not starting."
+  else  
+    echo "starting relax sound..."
+    sleep 5.25
+    screen -dm /opt/rpi/main relax rain
+  fi
 else
-  HOUR=$(date +%H)
-  echo "is Sun or weekday, is hour is echo $HOUR"
-  if (( 8 <= 10#$HOUR && 10#$HOUR < 23 )); then 
-    echo "not between 10pm and 8am, not starting."
+  echo "is Sun or weekday, hour is $HOUR"
+  if (( 9 <= 10#$HOUR && 10#$HOUR < 21 )); then 
+    echo "not between 9pm and 8am, not starting."
   else  
     echo "starting relax sound..."
     sleep 5.25
     screen -dm /opt/rpi/main relax rain
   fi
 fi
+## Disable Activity LED
+echo none | tee /sys/class/leds/led0/trigger
 ## Auto Hotspot (on boot only)
 sleep 60
 systemctl start rpi-netdetect.service

@@ -148,27 +148,13 @@ rm -f /var/lock/rpi/lights.save
 exit
 ;;
 
-## Audio power
-pwrhifi)
-## Turn off amp first
-/opt/rpi/xmit subpwr
-sleep 2.5
-## Power audio system
-/opt/rpi/xmit pwrhifi
-## Reset sub volume token
-rm -f /var/lock/rpi/subs.enabled
-exit
-;;
-##
+## Audio Power
 hifion)
 if ping -W 1 -c 1 hifi.home > /dev/null 2> /dev/null
 then
   echo "Host is up"
 else
-  ## Power audio system
   /opt/rpi/xmit pwrhifi
-  ## Reset sub volume token
-  rm -f /var/lock/rpi/subs.enabled
 fi
 exit
 ;;
@@ -176,13 +162,7 @@ exit
 hifioff)
 if ping -W 1 -c 1 hifi.home > /dev/null 2> /dev/null
 then
-  ## Turn off amp first
-  /opt/rpi/xmit subpwr
-  sleep 2.5
-  ## Power audio system
   /opt/rpi/xmit pwrhifi
-  ## Reset sub volume token
-  rm -f /var/lock/rpi/subs.enabled
 else
   echo "Host is down"
 fi
@@ -325,13 +305,10 @@ then
 else
   echo "Host is down"
 fi
-## System Off
+## Audio System Power Off
 if ping -W 1 -c 1 hifi.home > /dev/null 2> /dev/null
 then
-  ## Power audio system
   /opt/rpi/xmit pwrhifi
-  ## Reset sub volume token
-  rm -f /var/lock/rpi/subs.enabled
 else
   echo "Host is down"
 fi

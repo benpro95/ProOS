@@ -70,6 +70,8 @@ fi
 
 ## Power
 if [[ "$CMD" == "pwrhifi" ]]; then
+   ## Reset sub volume token
+   rm -f /var/lock/rpi/subs.enabled	
    XMITCMD="irtx.sony20.691015"
    XMIT
 fi

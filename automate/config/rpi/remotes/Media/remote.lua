@@ -13,7 +13,7 @@ script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit dac");
 end
 
 actions.pwrhifi = function ()
-script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/main pwrhifi");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/xmit pwrhifi");
 end
 
 actions.hifion = function ()

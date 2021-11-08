@@ -133,7 +133,7 @@ exit
 ;;
 	    
     *)
-      echo "HiFi Mini Server for Raspberry Pi"
+      echo "HiFi mini"
 	  echo "  by Ben Provenzano III"
 	  echo " "
 	  echo "Enter a valid command line argument."

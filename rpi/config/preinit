@@ -13,6 +13,9 @@ systemctl start systemd-timesyncd
 
 systemctl start rpi-cleanup.timer
 
+#### Remove Journal Logs ##########################
+rm -rf /var/log/journal/*
+
 #### Module Startup ###############################
 
 ## Start Modules

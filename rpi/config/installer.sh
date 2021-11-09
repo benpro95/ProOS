@@ -51,19 +51,22 @@ echo "Resettings to defaults..."
 echo "*"
 
 ## Set location
-cp -f $BIN/locale.gen /etc
-chmod 644 /etc/locale.gen
-chown root:root /etc/locale.gen
+cp /etc/locale.gen /etc/locale.gen.dist
+sed -i -e "/^[^#]/s/^/#/" -e "/en_US.UTF-8/s/^#//" /etc/locale.gen
+cp /var/cache/debconf/config.dat /var/cache/debconf/config.dat.dist
+sed -i -e "/^Value: en_GB.UTF-8/s/en_GB/en_US/" \
+       -e "/^ locales = en_GB.UTF-8/s/en_GB/en_US/" /var/cache/debconf/config.dat
+locale-gen
 update-locale LANG=en_US.UTF-8
-dpkg-reconfigure --frontend=noninteractive locales
-
 ## Set time zone
-rm -f /etc/timezone
+echo "America/New_York" > /etc/timezone
 timedatectl set-timezone America/New_York
-dpkg-reconfigure -f noninteractive tzdata
+## Regenerate configuration
+dpkg-reconfigure -f noninteractive tzdata locales
 
 ## Set keyboard layout
 sed -i -e "/XKBLAYOUT=/s/gb/us/" /etc/default/keyboard
+service keyboard-setup restart
 
 ## Create pi user
 adduser pi
@@ -127,13 +130,6 @@ apt-get install -y --no-upgrade libgstreamer1.0-dev gstreamer1.0-plugins-base \
 ## EGL hardware video decoding libraries
 if [ ! -e /usr/lib/arm-linux-gnueabihf/libbrcmEGL.so ]; then
   cd /usr/lib/arm-linux-gnueabihf
-  ln -s libmmal_core.so.0 libmmal_core.so
-  ln -s libmmal_util.so.0 libmmal_util.so
-  ln -s libmmal_vc_client.so.0 libmmal_vc_client.so
-  ln -s libbcm_host.so.0 libbcm_host.so
-  ln -s libvcsm.so.0 libvcsm.so
-  ln -s libvchiq_arm.so.0 libvchiq_arm.so
-  ln -s libvcos.so.0 libvcos.so
   curl -sSfLO 'https://raw.githubusercontent.com/raspberrypi/firmware/master/opt/vc/lib/libbrcmEGL.so'
   curl -sSfLO 'https://raw.githubusercontent.com/raspberrypi/firmware/master/opt/vc/lib/libbrcmGLESv2.so'
   curl -sSfLO 'https://raw.githubusercontent.com/raspberrypi/firmware/master/opt/vc/lib/libopenmaxil.so'
@@ -143,10 +139,9 @@ fi
 ## Install X11 and X Programs
 apt-get install -y --no-upgrade xserver-xorg xorg \
  x11-common x11-apps xserver-xorg-input-evdev xvfb \
- libxext6 libxtst6 lxde-core libatlas-base-dev \
-dpkg-reconfigure x11-common
-apt-get install -y --no-upgrade synaptic medit \
- lxterminal florence xprintidle xdotool wmctrl chromium
+ libxext6 libxtst6 lxde-core libatlas-base-dev x11-common
+apt-get install -y --no-upgrade synaptic \
+ lxterminal xprintidle xdotool wmctrl chromium
 
 ## Disable Swap
 dphys-swapfile swapoff
@@ -215,23 +210,45 @@ chown root:root /media/usb*
 ## FTP Client
 apt-get install -y --no-upgrade ncftp
 
-## Bluetooth Support
-apt-get install -y --no-upgrade bluetooth pi-bluetooth bluez-tools bluealsa
-
-## Install Audio Support
+## Audio Support
 apt-get install -y --no-upgrade alsa-base alsa-utils mpg321 lame sox
 apt-get install -y --no-upgrade libasound2 libupnp6 libmpdclient2 libexpat1 \
- libconfig-dev libjsoncpp0 djmount libexpat1 libimage-exiftool-perl libcurl4 \
+ libconfig-dev djmount libexpat1 libimage-exiftool-perl libcurl4 libsoup2.4-1 \
  libao-dev libglib2.0-dev libjson-glib-1.0-0 libjson-glib-dev libao-common \
- libasound2-dev libreadline-dev libsox-dev libsoup2.4-dev libsoup2.4-1 \
- pulseaudio pulseaudio-module-zeroconf pulseaudio-utils pavucontrol paprefs
-chmod -x /usr/bin/start-pulseaudio-x11
-gpasswd -a root audio
-gpasswd -a pulse audio
-gpasswd -a pi audio
-gpasswd -a pi pulse-access
+ libasound2-dev libreadline-dev libsox-dev libsoup2.4-dev
 
-## Install Music Player Support
+## Bluetooth Support
+apt-get install -y --no-upgrade bluetooth pi-bluetooth bluez bluez-tools
+
+## Bluetooth Audio Support
+if [ "${OSVER}" = "buster" ]; then
+  apt-get install -y --no-upgrade bluealsa
+fi
+if [ "${OSVER}" = "bullseye" ]; then
+  if [ ! -e /usr/bin/bluealsa-aplay ]; then
+    ## Prerequisites
+    apt-get install -y --no-upgrade dh-autoreconf libortp-dev libusb-dev \
+     libudev-dev libical-dev libsbc1 libsbc-dev libdbus-1-dev
+    ## Compile FDK AAC from source
+    git clone --depth 1 git://github.com/mstorsjo/fdk-aac.git
+    cd fdk-aac
+    autoreconf -fiv
+    ./configure --disable-shared
+    make
+    make install
+    make distclean
+    ## Compile BlueALSA from source
+    git clone https://github.com/Arkq/bluez-alsa.git
+    cd bluez-alsa/
+    autoreconf --install
+    mkdir build && cd build
+    ../configure --enable-aac --enable-ofono
+    make && make install
+    cd $BIN
+  fi
+fi
+
+## Music Player Support
 apt-get install -y --no-upgrade mpd mpc
 update-rc.d mpd remove
 gpasswd -a mpd audio
@@ -240,7 +257,7 @@ gpasswd -a mpd pulse-access
 ## AirPlay Support
 apt-get install -y --no-upgrade xmltoman libsoxr-dev libsndfile1-dev \
  libdaemon-dev libpopt-dev libconfig-dev libdaemon-dev libpopt-dev \
- libasound2-dev libpulse-dev libavahi-client-dev libssl-dev shairport-sync
+ libpulse-dev libavahi-client-dev libssl-dev shairport-sync
 
 ## Camera Motion Server
 if [ "${OSVER}" = "buster" ]; then
@@ -723,17 +740,6 @@ else
 sed -i "s/RaspberryPi/$MODNAME/g" /etc/samba/smb.conf
 fi
 
-## Adafruit Video Looper
-if [ ! -e /etc/vidloop.done ]; then
-echo "Installing Video Looper..."
-cd $BIN/videoloop
-/usr/bin/python3 setup.py install --force
-cd $BIN
-touch /etc/vidloop.done
-else
-echo "Video looper already installed."
-fi
-
 ## USB Automount Configuration
 cp -f $BIN/usbmount.conf /etc/usbmount
 chmod 644 /etc/usbmount/usbmount.conf
@@ -787,6 +793,8 @@ systemctl disable apt-daily-upgrade.service
 systemctl disable apt-daily-upgrade.timer
 systemctl disable sysstat-collect.timer
 systemctl disable sysstat-summary.timer
+systemctl disable systemd-journald.service
+systemctl mask systemd-journald.service
 systemctl disable man-db.service
 systemctl disable man-db.timer
 systemctl disable hciuart
@@ -878,3 +886,4 @@ rm -f /opt/rpi/leds.txt
 
 echo "Configuration Complete."
 exit
+

@@ -10,8 +10,6 @@ boot)
 systemctl start lighttpd
 ## Unified Web Server
 systemctl start rpi-urserver
-## Loop Movies from USB Drive
-#systemctl start rpi-vidlooper
 ## Start X11 Server
 #systemctl start rpi-x11
 ## Bluetooth Audio

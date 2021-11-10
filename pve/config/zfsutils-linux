@@ -1,9 +1,13 @@
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
-# Scrub all ZFS drives the second Sunday of every month, at 9:24am.
+### Scrub all ZFS drives the second Sunday of every month, at 9:30am.
 MAILTO=""
-24 9 8-14 * * root [ $(date +\%w) -eq 0 ] && [ -x /usr/lib/zfs-linux/scrub ] && /usr/lib/zfs-linux/scrub
+30 9 8-14 * *    root    [ $(date +\%w) -eq 0 ] && [ -x /usr/lib/zfs-linux/scrub ] && /usr/lib/zfs-linux/scrub
 
-## Trim ZFS root pool at 04:00 AM on the 10th every month.
+### Trim ZFS root pool at 4am on the 10th every month.
 MAILTO=""
 0 4 10 1-12 *    root    /sbin/zpool trim rpool
+
+### Create a system log at 6am on the 3rd every month.
+MAILTO=""
+0 6 3 1-12 *     root    /usr/bin/touch /mnt/extbkps/keytmp/createlog.txt

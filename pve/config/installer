@@ -174,6 +174,7 @@ if [ ! -e /etc/zfsautosnap.enabled ]; then
 else
   echo "ZFS snapshot already enabled."
 fi
+
 ## Automatic Snapshot Configurations
 cp -f /tmp/config/zfs-snap-daily /etc/cron.daily/zfs-auto-snapshot
 chmod 755 /etc/cron.daily/zfs-auto-snapshot
@@ -187,12 +188,13 @@ chown root:root /etc/cron.monthly/zfs-auto-snapshot
 cp -f /tmp/config/zfs-snap-weekly /etc/cron.weekly/zfs-auto-snapshot
 chmod 755 /etc/cron.weekly/zfs-auto-snapshot
 chown root:root /etc/cron.weekly/zfs-auto-snapshot
-## ZFS Scrub & Trim Timers
+
+## ZFS Scrub, Trim, and System Report Timers
 cp -f /tmp/config/zfsutils-linux /etc/cron.d/
 chmod 755 /etc/cron.d/zfsutils-linux
 chown root:root /etc/cron.d/zfsutils-linux
+rm -f /etc/cron.d/zfsutils-linux.dpkg-dist
 rm -f /etc/cron.d/rsnapshot
-systemctl restart cron
 
 ## Disable PVE Replication Service
 systemctl stop pvesr.timer
@@ -200,8 +202,14 @@ systemctl disable pvesr.timer
 systemctl mask pvesr.timer
 rm -f /lib/systemd/system/pvesr.timer
 
-## Clean-up
+## Restart Services
 systemctl daemon-reload
+systemctl restart apcupsd
+systemctl restart actiontrig.timer
+systemctl restart smartmontools
+systemctl restart cron
+
+## Clean-up
 apt-get --yes autoremove
 apt-get --yes clean
 rm -r /tmp/config

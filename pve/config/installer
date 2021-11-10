@@ -139,6 +139,13 @@ cp -f /tmp/config/hddtemp.db /etc/
 chmod 644 /etc/hddtemp.db
 chown root:root /etc/hddtemp.db
 
+## SMART Automatic Drive Checking
+apt-get --yes install smartmontools
+cp -f /tmp/config/smartd.conf /etc/
+chmod 644 /etc/smartd.conf
+chown root:root /etc/smartd.conf
+systemctl enable smartmontools
+
 ## Sensors Configuration
 apt-get --yes install lm-sensors
 cp -f /tmp/config/sensors3.conf /etc/
@@ -192,9 +199,6 @@ systemctl stop pvesr.timer
 systemctl disable pvesr.timer
 systemctl mask pvesr.timer
 rm -f /lib/systemd/system/pvesr.timer
-
-## Disable Automatic SMART Monitoring 
-systemctl disable smartmontools
 
 ## Clean-up
 systemctl daemon-reload

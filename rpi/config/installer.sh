@@ -233,7 +233,7 @@ if [ "${OSVER}" = "bullseye" ]; then
     git clone --depth 1 git://github.com/mstorsjo/fdk-aac.git
     cd fdk-aac
     autoreconf -fiv
-    ./configure --disable-shared
+    ./configure --enable-shared --enable-static
     make
     make install
     make distclean
@@ -602,6 +602,10 @@ cp -f $BIN/bthelper-override.conf /etc/systemd/system/bthelper@.service.d/overri
 chown root:root /etc/systemd/system/bthelper@.service.d/override.conf
 chmod 644 /etc/systemd/system/bthelper@.service.d/override.conf
 # BlueALSA Configuration
+rm -f /etc/systemd/system/bluealsa.service
+cp -f $BIN/bluealsa.service  /lib/systemd/system/
+chown root:root /lib/systemd/system/bluealsa.service
+chmod 644 /lib/systemd/system/bluealsa.service
 mkdir -p /etc/systemd/system/bluealsa.service.d
 cp -f $BIN/bluealsa-override.conf /etc/systemd/system/bluealsa.service.d/override.conf
 chown root:root /etc/systemd/system/bluealsa.service.d/override.conf
@@ -799,8 +803,6 @@ systemctl disable man-db.service
 systemctl disable man-db.timer
 systemctl disable hciuart
 systemctl disable bluetooth
-systemctl disable bluealsa-aplay
-systemctl disable bt-agent@hci0.service
 systemctl disable triggerhappy
 systemctl disable wifiswitch
 systemctl disable usbplug

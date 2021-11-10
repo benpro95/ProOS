@@ -19,8 +19,8 @@ fi
 
 ## Local domain name
 #DOMAIN=".local"
-#DOMAIN=".home"
-DOMAIN=""
+DOMAIN=".home"
+#DOMAIN=""
 
 ## Set to current directory
 ROOTDIR=.
@@ -243,7 +243,7 @@ if [ -e $TMPFLDR/start_sync ]; then
   fi
 
   ## Download & sync software
-  rsync -e "ssh -i $TMPFLDR/id_rsa" --progress --checksum -rtv --exclude=id_rsa --exclude=BaseOS.zip --exclude=photos $ROOTDIR/rpi root@$HOST:/opt/
+  rsync -e "ssh -i $TMPFLDR/id_rsa" --progress --checksum -rtv --exclude=id_rsa --exclude=BaseOS* --exclude=photos $ROOTDIR/rpi root@$HOST:/opt/
   rsync -e "ssh -i $TMPFLDR/id_rsa" --progress --checksum -rtv --exclude=id_rsa --exclude=photos --exclude=sources $ROOTDIR/$MODULE/* root@$HOST:/opt/rpi/
 
   ## Make module name hostname

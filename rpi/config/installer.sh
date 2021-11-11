@@ -99,17 +99,18 @@ mount -o remount,rw /boot
 apt-get -y update --allow-releaseinfo-change
 
 ## Essential Packages
-apt-get install -y --no-upgrade locales console-setup keyboard-configuration \
+apt-get install -y --no-upgrade --ignore-missing locales console-setup \
  aptitude libnss-mdns usbutils zsync  v4l-utils libpq5 htop lsb-release \
  avahi-daemon avahi-discover avahi-utils hostapd dnsmasq unzip wget bc \
  rsync screen parallel sudo sed nano curl insserv wireless-regdb wireless-tools \
- uuid-runtime mpg321 omxplayer vlc mpv mplayer espeak tightvncserver iptables \
+ uuid-runtime mpg321 omxplayer mpv mplayer espeak tightvncserver iptables \
  iw crda firmware-brcm80211 wpasupplicant dirmngr autofs triggerhappy apt-utils \
  build-essential git autoconf make libtool binutils i2c-tools cmake yasm \
- libmariadb3 texi2html socat nmap libtool bpytop autoconf automake pkg-config
+ libmariadb3 texi2html socat nmap libtool bpytop autoconf automake pkg-config \
+ keyboard-configuration ncftp
  
 ## Developer Packages 
-apt-get install -y --no-upgrade libgtk2.0-dev libbluetooth3 libbluetooth-dev \
+apt-get install -y --no-upgrade --ignore-missing libgtk2.0-dev libbluetooth3 libbluetooth-dev \
  libavfilter-dev libavdevice-dev libavcodec-dev libavc1394-dev libatlas-base-dev \
  libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev libdbus-glib-1-dev \
  libass-dev libfreetype6-dev libgpac-dev libsdl1.2-dev libtheora-dev libssl-dev \
@@ -118,9 +119,9 @@ apt-get install -y --no-upgrade libgtk2.0-dev libbluetooth3 libbluetooth-dev \
  libxml2-dev libxslt1-dev portaudio19-dev libffi-dev zlib1g-dev libdbus-1-dev
 
  ## AV Codecs Support
-apt-get install -y --no-upgrade libupnp-dev
+apt-get install -y --no-upgrade --ignore-missing libupnp-dev
 apt-get remove -y --purge libgstreamer0.10-dev
-apt-get install -y --no-upgrade libgstreamer1.0-dev gstreamer1.0-plugins-base \
+apt-get install -y --no-upgrade --ignore-missing libgstreamer1.0-dev gstreamer1.0-plugins-base \
  libx264-dev x264 ffmpeg libswscale-dev libavformat-dev libavcodec-dev \
  gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly \
  gstreamer1.0-tools libgstreamer-plugins-base1.0-0 \
@@ -137,11 +138,10 @@ if [ ! -e /usr/lib/arm-linux-gnueabihf/libbrcmEGL.so ]; then
 fi
 
 ## Install X11 and X Programs
-apt-get install -y --no-upgrade xserver-xorg xorg \
+apt-get install -y --no-upgrade --ignore-missing xserver-xorg xorg \
  x11-common x11-apps xserver-xorg-input-evdev xvfb \
- libxext6 libxtst6 lxde-core libatlas-base-dev x11-common
-apt-get install -y --no-upgrade synaptic \
- lxterminal xprintidle xdotool wmctrl chromium
+ libxext6 libxtst6 lxde-core libatlas-base-dev x11-common \
+ synaptic lxterminal xprintidle xdotool wmctrl chromium
 
 ## Disable Swap
 dphys-swapfile swapoff
@@ -151,10 +151,10 @@ apt-get -y remove --purge dphys-swapfile
 
 ## Perl Support
 if [ "${OSVER}" = "buster" ]; then
-  apt-get install -y --no-upgrade perl perl-modules
+  apt-get install -y --no-upgrade --ignore-missing perl perl-modules
 fi
 if [ "${OSVER}" = "bullseye" ]; then
-  apt-get install -y --no-upgrade perl perl-modules-5.32
+  apt-get install -y --no-upgrade --ignore-missing perl perl-modules-5.32
 fi
 
 ## CPU Specific Packages
@@ -181,19 +181,18 @@ if [ "$CPUTYPE" = "Raspberry Pi Zero W Rev 1.1" ]; then
   apt-get remove -y ca-certificates-java default-jre-headless
 else
   echo "Pi 3+ detected."
-  apt-get install -y --no-upgrade nodejs
-  apt-get install -y --no-upgrade arduino avrdude
+  apt-get install -y --no-upgrade --ignore-missing nodejs
+  apt-get install -y --no-upgrade --ignore-missing arduino avrdude
 fi
 
 ## Python Libraries
-apt-get install -y --no-upgrade net-tools python python3 python3-setuptools
-apt-get install -y --no-upgrade python3-pip python3-dev python3-pygame python3-venv python3-gpiozero
+apt-get install -y --no-upgrade --ignore-missing net-tools python python3 python3-setuptools \
+ python3-pip python3-dev python3-pygame python3-venv python3-gpiozero
 pip3 install --disable-pip-version-check setuptools wheel pyserial xmodem RPi.GPIO \
  ipython pssh PyAudio dam1021 virtualenv virtualenvwrapper numpy
 
 ## Light Web Server
-apt-get install -y --no-upgrade lighttpd
-apt-get install -y --no-upgrade php-common php-cgi php php-mysql
+apt-get install -y --no-upgrade --ignore-missing lighttpd php-common php-cgi php php-mysql
 chown www-data:www-data /var/www
 chmod 775 /var/www
 usermod -a -G www-data pi
@@ -202,32 +201,29 @@ chmod -R 777 /var/www/html
 chown -R www-data:www-data /var/www/html
 
 ## USB File Service
-apt-get install -y --no-upgrade samba samba-common-bin samba-libs usbmount pmount 
+apt-get install -y --no-upgrade --ignore-missing samba samba-common-bin samba-libs usbmount pmount 
 chmod 777 /media
 chmod 777 /media/usb*
 chown root:root /media/usb*
 
-## FTP Client
-apt-get install -y --no-upgrade ncftp
-
 ## Audio Support
-apt-get install -y --no-upgrade alsa-base alsa-utils mpg321 lame sox
-apt-get install -y --no-upgrade libasound2 libupnp6 libmpdclient2 libexpat1 \
- libconfig-dev djmount libexpat1 libimage-exiftool-perl libcurl4 libsoup2.4-1 \
- libao-dev libglib2.0-dev libjson-glib-1.0-0 libjson-glib-dev libao-common \
- libasound2-dev libreadline-dev libsox-dev libsoup2.4-dev
+apt-get install -y --no-upgrade --ignore-missing alsa-base alsa-utils mpg321 lame sox \
+ libasound2 libupnp6 libmpdclient2 libexpat1 libconfig-dev djmount libexpat1 \
+ libimage-exiftool-perl libcurl4 libsoup2.4-1 libao-dev libglib2.0-dev \
+ libjson-glib-1.0-0 libjson-glib-dev libao-common libasound2-dev \
+ libreadline-dev libsox-dev libsoup2.4-dev
 
 ## Bluetooth Support
-apt-get install -y --no-upgrade bluetooth pi-bluetooth bluez bluez-tools
+apt-get install -y --no-upgrade --ignore-missing bluetooth pi-bluetooth bluez bluez-tools
 
 ## Bluetooth Audio Support
 if [ "${OSVER}" = "buster" ]; then
-  apt-get install -y --no-upgrade bluealsa
+  apt-get install -y --no-upgrade --ignore-missing bluealsa
 fi
 if [ "${OSVER}" = "bullseye" ]; then
   if [ ! -e /usr/bin/bluealsa-aplay ]; then
     ## Prerequisites
-    apt-get install -y --no-upgrade dh-autoreconf libortp-dev libusb-dev \
+    apt-get install -y --no-upgrade --ignore-missing dh-autoreconf libortp-dev libusb-dev \
      libudev-dev libical-dev libsbc1 libsbc-dev libdbus-1-dev
     ## Compile FDK AAC from source
     git clone --depth 1 git://github.com/mstorsjo/fdk-aac.git
@@ -249,26 +245,26 @@ if [ "${OSVER}" = "bullseye" ]; then
 fi
 
 ## Music Player Support
-apt-get install -y --no-upgrade mpd mpc
+apt-get install -y --no-upgrade --ignore-missing mpd mpc
 update-rc.d mpd remove
 gpasswd -a mpd audio
 gpasswd -a mpd pulse-access
 
 ## AirPlay Support
-apt-get install -y --no-upgrade xmltoman libsoxr-dev libsndfile1-dev \
+apt-get install -y --no-upgrade --ignore-missing xmltoman libsoxr-dev libsndfile1-dev \
  libdaemon-dev libpopt-dev libconfig-dev libdaemon-dev libpopt-dev \
  libpulse-dev libavahi-client-dev libssl-dev shairport-sync
 
 ## Camera Motion Server
 if [ "${OSVER}" = "buster" ]; then
   if [ ! -e /usr/bin/motion ]; then
-    apt-get install -y --no-upgrade libmicrohttpd12
+    apt-get install -y --no-upgrade --ignore-missing libmicrohttpd12
     dpkg -i /opt/rpi/pkgs/pi_buster_motion_4.3.2-1_armhf.deb
     systemctl stop motion
   fi
 fi
 if [ "${OSVER}" = "bullseye" ]; then
-  apt-get install -y --no-upgrade motion
+  apt-get install -y --no-upgrade --ignore-missing motion
 fi
 groupadd motion
 useradd motion -g motion --shell /bin/false
@@ -282,7 +278,7 @@ apt-get remove --purge -y lxlock xscreensaver xscreensaver-data gvfs gvfs-backen
 apt-get remove --purge -y desktop-file-utils exfat-fuse exfat-utils gdisk gnome-mime-data gvfs-common gvfs-daemons gvfs-libs
 apt-get remove --purge -y libatasmart4 libavahi-glib1 libbonobo2-0 libbonobo2-common libbonoboui2-0 libbonoboui2-common
 apt-get remove --purge -y libssl-doc libudisks2-0 libusbmuxd4 ntfs-3g udisks2 usbmuxd udhcpd wolfram-engine
-apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp
+apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp vlc
 apt-get -y autoremove
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
@@ -290,7 +286,7 @@ rm -rf /var/log/exim4
 rm -rf /etc/cron.*
 
 ## Install Replacement Logger
-apt-get install -y --no-upgrade busybox-syslogd
+apt-get install -y --no-upgrade --ignore-missing busybox-syslogd
 echo "Run command 'logread' to check system logs"
 dpkg --purge rsyslog
 rm -f /var/log/messages

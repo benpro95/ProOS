@@ -23,7 +23,7 @@ echo "*"
 ## Disable Hardware Offload
 ethtool --offload ens18 rx off tx off sg off tso off gso off gro off sg off rxvlan off txvlan off
 
-## Block VM from accessing these IP's
+## Block VM from accessing Router
 iptables -A OUTPUT -p tcp -d 10.177.1.1 --dport 80 -j DROP
 iptables -A OUTPUT -p udp -d 10.177.1.1 --dport 80 -j DROP
 iptables -A INPUT -p tcp -d 10.177.1.1 --dport 80 -j DROP
@@ -32,16 +32,13 @@ iptables -A OUTPUT -p tcp -d 10.177.1.1 --dport 443 -j DROP
 iptables -A OUTPUT -p udp -d 10.177.1.1 --dport 443 -j DROP
 iptables -A INPUT -p tcp -d 10.177.1.1 --dport 443 -j DROP
 iptables -A INPUT -p udp -d 10.177.1.1 --dport 443 -j DROP
-iptables -A OUTPUT -d 10.177.1.8 -j DROP
-iptables -A INPUT -d 10.177.1.8 -j DROP
+## Block VM from accessing IPMI
 iptables -A OUTPUT -d 10.177.1.9 -j DROP
 iptables -A INPUT -d 10.177.1.9 -j DROP
+## Block VM from accessing Switch 
 iptables -A OUTPUT -d 10.177.1.10 -j DROP
 iptables -A INPUT -d 10.177.1.10 -j DROP
-iptables -A OUTPUT -d 10.177.1.11 -j DROP
-iptables -A INPUT -d 10.177.1.11 -j DROP
-iptables -A OUTPUT -d 10.177.1.12 -j DROP
-iptables -A INPUT -d 10.177.1.12 -j DROP
+## Block VM from accessing Unifi controller
 iptables -A OUTPUT -d 10.177.1.13 -j DROP
 iptables -A INPUT -d 10.177.1.13 -j DROP
 

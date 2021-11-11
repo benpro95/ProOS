@@ -663,8 +663,6 @@ rm -f /etc/default/hostapd
 rm -f /etc/hostapd/ifupdown.sh
 rm -f /etc/network/if-pre-up.d/hostapd
 touch /etc/default/hostapd
-systemctl unmask hostapd
-systemctl disable hostapd
 
 ## Set hostname to configurations
 if [ ! -e $BIN/hostname ]; then
@@ -770,9 +768,14 @@ ln -sf /opt/rpi/leds /usr/bin/leds
 ## Services Configuration
 systemctl daemon-reload
 if [ ! -e /etc/rpi-conf.done ]; then
-systemctl enable avahi-daemon
-systemctl enable proinit
+## Active on startup
 systemctl enable ssh
+systemctl enable proinit
+systemctl enable avahi-daemon
+systemctl unmask systemd-journald
+## Disabled on startup
+systemctl unmask hostapd
+systemctl disable hostapd
 systemctl disable dhcpcd
 systemctl disable networking
 systemctl disable wpa_supplicant
@@ -785,16 +788,12 @@ systemctl disable apache2
 systemctl disable lighttpd
 systemctl disable dnsmasq
 systemctl disable systemd-timesyncd
-systemctl disable phpsessionclean.timer
-systemctl disable phpsessionclean.service
 systemctl disable apt-daily.service
 systemctl disable apt-daily.timer
 systemctl disable apt-daily-upgrade.service
 systemctl disable apt-daily-upgrade.timer
 systemctl disable sysstat-collect.timer
 systemctl disable sysstat-summary.timer
-systemctl disable systemd-journald.service
-systemctl mask systemd-journald.service
 systemctl disable man-db.service
 systemctl disable man-db.timer
 systemctl disable hciuart

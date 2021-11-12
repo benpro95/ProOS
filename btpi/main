@@ -10,6 +10,8 @@ mkdir -p /var/lock/rpi
 chmod -R 777 /var/lock/rpi
 ## Light Web Server
 systemctl restart lighttpd
+## AirPlay Support
+systemctl start rpi-airplay
 ## Bluetooth Audio
 systemctl start hciuart
 systemctl start bluetooth

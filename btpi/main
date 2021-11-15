@@ -24,11 +24,6 @@ sleep 5
 echo none | tee /sys/class/leds/led0/trigger
 ## Disable HDMI (saves 30mA of power draw)
 /opt/vc/bin/tvservice -o
-## Auto Hotspot (on boot only)
-sleep 60 # only run if bluetooth not connected
-if [ ! -e /tmp/bt.connected ]; then
-   systemctl start rpi-netdetect.service
-fi
 exit
 ;;
 	    

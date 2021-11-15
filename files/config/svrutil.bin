@@ -232,11 +232,26 @@ then
   echo "##################################"
   echo " "
   echo "(a) attach drives then start backup"
+  echo "(d) show drives status then exit"
   echo "(d) detach drives then exit"
+  echo "(q) quit backup program"
   echo "(enter) start backup" 
   REPLY=""
   read -p "enter option: " -n 1 -r
   echo
+  ## Just quit
+  if [[ $REPLY =~ ^[Qq]$ ]]
+  then
+    echo " "
+    ENDPGRM
+  fi  
+  ## Just show drives status
+  if [[ $REPLY =~ ^[Ss]$ ]]
+  then
+    cat /mnt/extbkps/keytmp/status.txt
+    echo " "
+    ENDPGRM
+  fi  
   ## Just detach drives
   if [[ $REPLY =~ ^[Dd]$ ]]
   then
@@ -345,7 +360,7 @@ HDDRV4=""
 ### Lock file
 if [ -f "/tmp/backupsvr.lock" ]; then
   echo "already running!"
-  echo "run 'backupsvr rmlock' to manually remove lock if program failed"
+  echo "run 'svrutil rmlock' to manually remove lock if program failed"
   ENDPGRM
 else
   touch /tmp/backupsvr.lock
@@ -531,12 +546,6 @@ if [ ! "$USER" = server ]; then
   exit 1
 fi
 ############################
-### Backup Drive Status
-if [ "$1" = "bkpstatus" ] ; then
-  cat /mnt/extbkps/keytmp/status.txt
-  echo " "
-  exit
-fi
 ### Force Quit
 if [ "$1" = "kill" ] ; then
   pkill svrutil.bin

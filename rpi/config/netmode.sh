@@ -159,10 +159,15 @@ case "$1" in
 ##############################################
 
 client)
-## Detect standard client or bridge Mode
+## REQUIRED TO START NETWORKING!!
 if [ ! -e /boot/ap-bridge.enable ]; then
-  echo "Client network mode"
-  CLIENT_MODE
+  if [ ! -e /boot/apd.enable ]; then
+    echo "Client network mode"
+    CLIENT_MODE
+  else
+    echo "Hotspot network mode"
+    APD_MODE
+  fi
 else
   echo "Bridge network mode"
   BRIDGE_MODE
@@ -185,7 +190,6 @@ exit
 
 apd)
 ## Access point mode
-/opt/rpi/main apdled-on || :
 APD_MODE
 /opt/rpi/main apdled-on || :
 exit

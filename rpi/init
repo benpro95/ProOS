@@ -144,9 +144,7 @@ exit
 overtemp)
 ## Over Temperature Action #######################
 ##################################################
-if [ ! -e /tmp/pitemp.log ]; then
-  echo ""  > /dev/null 2>&1
-else
+if [ -e /tmp/pitemp.log ]; then
   rm -f /tmp/pitemp.log
 fi
 echo "Recording system temperature."
@@ -261,6 +259,20 @@ echo 'Copying WiFi configuration...'
 sleep 1.25
 mount -o remount,rw /boot
 cp -f /tmp/wifidata /boot/wpa.conf
+mount -o remount,ro /boot
+exit
+;;
+
+apdonboot)
+mount -o remount,rw /boot
+if [ -e /boot/apd.enable ]; then
+  echo 'Disabling hotspot mode on startup...'
+  rm -f /boot/apd.enable
+else
+  echo 'Enabling hotspot mode on startup...'
+  touch /boot/apd.enable
+fi
+sleep 1.25
 mount -o remount,ro /boot
 exit
 ;;
@@ -531,6 +543,7 @@ exit
           echo "timers - Active timers"
           echo "wifistats - Wi-Fi statistics"
           echo "netdetect - Switch to hotspot if network down"
+          echo "apdonboot - Toggle hotspot mode on startup"
           echo "togglenet - Toggle hotspot/client network"
           echo "resetbt - Clear active bluetooth connections"
           echo "gpumem - GPU statistics"

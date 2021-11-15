@@ -306,11 +306,6 @@ else
 sed -i "s/RaspberryPi/$MODNAME/g" /etc/hostapd/hostapd.conf
 fi
 
-## Reset network settings
-rm -f /etc/netchk.disabled
-rm -f /etc/apd-mode.enable
-rm -f /etc/apd-nodns.enable
-
 ## Reset LED configuration
 rm -f /opt/rpi/remotes/leds
 rm -f /tmp/global-fc.lock
@@ -331,10 +326,12 @@ mount -o remount,rw /boot
 
 ## SSH will be enabled by systemd, do not use this file
 rm -f /boot/ssh
-## Delete flag to disable network bridge mode
+## Delete flag to enable network bridge mode
 rm -f /boot/ap-bridge.enable
-## Delete flag to disable auto hotspot
-rm -f /boot/autohotspot.off
+## Delete flag to enable routed hotspot mode
+rm -f /boot/apd-routed.enable
+## Delete flag to enable auto hotspot
+rm -f /boot/apd.enable
 
 ## Default Boot Config
 cp -f $BIN/config.txt /boot/

@@ -8,4 +8,4 @@ pve/vmbkps
 pve/photos
 unifi/*.unf
 *authorized_keys*
-*id_rsa*
+.ssh

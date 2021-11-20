@@ -4,14 +4,20 @@
 ### by Ben Provenzano III
 ###
 
-echo "Installing..."
+## Update Sources
 apt-get --yes update
 
-## Support Packages
-apt-get install -y --no-upgrade unzip wget htop rsync curl screen scrub 
-apt-get install -y --no-upgrade ethtool aptitude sudo samba sshpass neofetch
-apt-get install -y --no-upgrade libdbus-1-dev libdbus-glib-1-dev bc git
-apt-get install -y --no-upgrade locales apt-transport-https mailutils
+## Install Packages
+apt-get install -y --no-upgrade --ignore-missing unzip wget \
+ rsync curl screen scrub ethtool aptitude sudo samba sshpass \
+ libdbus-1-dev libdbus-glib-1-dev bc git locales mailutils \
+ bpytop neofetch apt-transport-https
+
+## Remove Packages
+apt-get remove -y --purge htop
+
+## Replace Process Monitor
+ln -sf /usr/bin/bpytop /usr/bin/htop
 
 ## Set Locale
 if [ ! -e /etc/locales.generated ]; then

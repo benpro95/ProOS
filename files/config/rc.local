@@ -38,8 +38,5 @@ iptables -A INPUT -d 10.177.1.9 -j DROP
 ## Block VM from accessing Switch 
 iptables -A OUTPUT -d 10.177.1.10 -j DROP
 iptables -A INPUT -d 10.177.1.10 -j DROP
-## Block VM from accessing Unifi controller
-iptables -A OUTPUT -d 10.177.1.13 -j DROP
-iptables -A INPUT -d 10.177.1.13 -j DROP
 
 exit 0

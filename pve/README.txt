@@ -2,6 +2,16 @@
 # Proxmox Virtual Environment (pve) 10.177.1.8:8006 or :22 for SSH #
 ####################################################################
 
+PVE Web Interface 
+(Run 'pve-firewall stop' in SSH to enable)
+Web interface, console password, and SSH keyphrase is master key
+
+Super Micro IPMI
+(Ethernet port disabled in switch)
+URL: https://10.177.1.9/
+Username: admin
+Password: password
+
 Proxmox Web UI Firewall Rule (disables web interface by default)
 
 Use the commands 'pve-firewall stop' to allow login to Web UI

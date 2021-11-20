@@ -9,24 +9,22 @@ echo "Installing..."
 ## Update Sources
 apt-get --yes update
 
-## Support Packages
-apt-get install -y --no-upgrade dirmngr ca-certificates apt-transport-https wget 
-apt-get install -y --no-upgrade unzip gnupg htop rsync curl screen parallel ethtool neofetch
-apt-get install -y --no-upgrade libdbus-1-dev libdbus-glib-1-dev locales cifs-utils iptables
-apt-get install -y --no-upgrade aptitude sudo gnupg mailutils scrub seahorse avahi-daemon avahi-utils
+## Install Packages
+apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates \
+ apt-transport-https wget unzip gnupg htop rsync curl screen parallel ethtool \
+ neofetch libdbus-1-dev libdbus-glib-1-dev locales cifs-utils iptables aptitude \
+ sudo gnupg mailutils scrub seahorse avahi-daemon avahi-utils \
+ firejail firejail-profiles autofs
 
-## X Packages
+## X11 Packages
 systemctl set-default graphical.target
-apt-get install -y --no-upgrade libvirglrenderer0
-apt-get install -y --no-upgrade task-xfce-desktop dbus-x11
-apt-get install -y --no-upgrade libnotify-bin libxext6 libxtst6 wipe scrub
-apt-get install -y --no-upgrade xfce4-goodies crystalcursors gnome-colors-common
-apt-get install -y --no-upgrade mate-themes gnome-icon-theme gnome-human-icon-theme
-apt-get install -y --no-upgrade audacity dosbox blender transmission wxhexeditor
-apt-get install -y --no-upgrade xchm scribus kazam medit luckybackup inkscape meld
-apt-get install -y --no-upgrade gimp gnumeric geany gtkhash git vlc clamtk gdebi
-apt-get install -y --no-upgrade lightdm-gtk-greeter-settings xserver-xorg-input-evdev
-apt-get install -y --no-upgrade xdotool
+apt-get install -y --no-upgrade --ignore-missing libvirglrenderer0 \
+ task-xfce-desktop dbus-x11 libnotify-bin libxext6 libxtst6 wipe scrub \
+ xfce4-goodies crystalcursors gnome-colors-common mate-themes gnome-icon-theme \
+ gnome-human-icon-theme audacity dosbox blender transmission wxhexeditor \
+ xchm scribus kazam medit luckybackup inkscape meld gimp gnumeric geany \
+ gtkhash git vlc clamtk gdebi lightdm-gtk-greeter-settings \
+ xserver-xorg-input-evdev xdotool tightvncserver
 
 ## Set Passwords
 if [ ! -e /etc/passwds.set ]; then
@@ -69,8 +67,7 @@ chmod 755 /etc/rc.local
 chown root:root /etc/rc.local
 systemctl enable rc-local
 
-## VNC Support
-apt-get --yes install tightvncserver
+## VNC Configuration
 cp -f /tmp/config/vncserver.service /etc/systemd/system/
 chmod 644 /etc/systemd/system/vncserver.service
 chown root:root /etc/systemd/system/vncserver.service
@@ -88,7 +85,6 @@ echo "Login to user 'ben' and run 'vncpasswd' to change VNC password."
 systemctl disable lightdm
 
 ## Firejail Sandbox
-apt-get install -y --no-upgrade firejail firejail-profiles
 cp -f /tmp/config/firejail.config /etc/firejail/
 chmod 644 /etc/firejail/firejail.config
 chown root:root /etc/firejail/firejail.config
@@ -114,7 +110,6 @@ chmod 644 /usr/share/applications/start-tor-browser.desktop
 chown root:root /usr/share/applications/start-tor-browser.desktop
 
 ## AutoFS Configuration
-apt-get install -y --no-upgrade autofs
 cp -f /tmp/config/auto.master /etc/
 chmod 644 /etc/auto.master
 chown root:root /etc/auto.master

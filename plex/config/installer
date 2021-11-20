@@ -4,43 +4,38 @@
 ### by Ben Provenzano III
 ###
 
-echo "Installing..."
-
-## Support Packages
-apt-get --yes update
-apt-get install -y --no-upgrade unzip wget htop rsync curl screen parallel ethtool aptitude sudo gnupg iptables
-
 ## Add Plex Repo
 if [ ! -e /etc/apt/sources.list.d/plexmediaserver.list ]; then
    echo deb https://downloads.plex.tv/repo/deb public main | tee /etc/apt/sources.list.d/plexmediaserver.list
    curl "https://downloads.plex.tv/plex-keys/PlexSign.key" | apt-key add -
-else
-  echo ""  > /dev/null 2>&1
 fi
 
-## Support Packages
-apt-get install -y --no-upgrade libdbus-1-dev libdbus-glib-1-dev locales apt-transport-https
+## Update Sources
+apt-get --yes update
 
-## Plex Media Server
-apt-get install -y --no-upgrade plexmediaserver
+## Install Packages
+apt-get install -y --no-upgrade --ignore-missing unzip wget rsync curl screen \
+ parallel ethtool aptitude sudo gnupg iptables libdbus-1-dev libdbus-glib-1-dev \
+ locales apt-transport-https plexmediaserver
+
+## Remove Packages
+apt-get remove -y --purge shellinabox nginx-full nginx nginx-common htop
+
+## Replace Process Monitor
+ln -sf /usr/bin/bpytop /usr/bin/htop
+
+## Set Locale
+if [ ! -e /etc/locales.generated ]; then
+ dpkg-reconfigure locales
+ touch /etc/locales.generated
+fi
+
+## Plex Service Configuration 
 mkdir -p /etc/systemd/system/plexmediaserver.service.d
 cp -r /tmp/config/override.conf /etc/systemd/system/plexmediaserver.service.d/
 chmod 644 /etc/systemd/system/plexmediaserver.service.d/override.conf
 chown root:root /etc/systemd/system/plexmediaserver.service.d/override.conf
 systemctl disable plexmediaserver.service
-
-## Remove Web Management
-apt-get --yes remove --purge nginx nginx-common nginx-full
-apt-get --yes remove --purge webmin shellinabox
-rm -r /var/www/; mkdir /var/www
-
-## Set Locale
-if [ ! -e /etc/locales.generated ]; then
-  dpkg-reconfigure locales
-  touch /etc/locales.generated
-else
-  echo ""  > /dev/null 2>&1
-fi
 
 ## Auto SSH Login Key for root
 mkdir -p /root/.ssh

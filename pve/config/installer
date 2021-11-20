@@ -25,8 +25,9 @@ fi
 apt-get --yes update
 
 ## Support Packages
-apt-get --yes install rsync cron zip screen libsasl2-modules
-apt-get --yes install postfix ethtool htop apt-transport-https
+apt-get install -y --no-upgrade --ignore-missing rsync cron zip screen \
+ libsasl2-modules postfix ethtool htop apt-transport-https lm-sensors \
+ zfs-auto-snapshot smartmontools hddtemp apcupsd
 
 ## Bonded Trunk 802.3ad Network Config
 cp -f /tmp/config/interfaces /etc/network/interfaces
@@ -49,7 +50,6 @@ chown root:root /etc/systemd/system/rc-local.service
 cp -f /tmp/config/rc.local /etc/
 chmod 755 /etc/rc.local
 chown root:root /etc/rc.local
-systemctl enable rc-local
 
 ## Action Script Timer
 cp -f /tmp/config/actiontrig.timer /etc/systemd/system/
@@ -61,7 +61,6 @@ chown root:root /etc/systemd/system/actiontrig.service
 cp -f /tmp/config/actiontrig /usr/bin/
 chmod 755 /usr/bin/actiontrig
 chown root:root /usr/bin/actiontrig
-systemctl enable actiontrig.timer
 
 ## Hosts Configuration
 cp -f /tmp/config/hosts /etc/hosts
@@ -125,7 +124,6 @@ chmod +x /usr/bin/backupvms
 chown root:root /usr/bin/backupvms
 
 ## APC UPS Configuration
-apt-get --yes install apcupsd
 cp -f /tmp/config/apcupsd.conf /etc/apcupsd/
 chmod 644 /etc/apcupsd/apcupsd.conf
 chown root:root /etc/apcupsd/apcupsd.conf
@@ -134,20 +132,16 @@ chmod 644 /lib/systemd/system/apcupsd.service
 chown root:root /lib/systemd/system/apcupsd.service
 
 ## HD Temperature Configuration
-apt-get --yes install hddtemp
 cp -f /tmp/config/hddtemp.db /etc/
 chmod 644 /etc/hddtemp.db
 chown root:root /etc/hddtemp.db
 
 ## SMART Automatic Drive Checking
-apt-get --yes install smartmontools
 cp -f /tmp/config/smartd.conf /etc/
 chmod 644 /etc/smartd.conf
 chown root:root /etc/smartd.conf
-systemctl enable smartmontools
 
 ## Sensors Configuration
-apt-get --yes install lm-sensors
 cp -f /tmp/config/sensors3.conf /etc/
 chmod 644 /etc/sensors3.conf
 chown root:root /etc/sensors3.conf
@@ -159,7 +153,6 @@ chown root:root /etc/systemd/journald.conf
 
 ## ZFS Snapshot Configuration
 if [ ! -e /etc/zfsautosnap.enabled ]; then
-  apt-get --yes install zfs-auto-snapshot
   zfs set com.sun:auto-snapshot=false rpool
   zfs set com.sun:auto-snapshot=false rpool/ROOT
   zfs set com.sun:auto-snapshot=false rpool/data
@@ -202,8 +195,15 @@ systemctl disable pvesr.timer
 systemctl mask pvesr.timer
 rm -f /lib/systemd/system/pvesr.timer
 
-## Restart Services
+## Reload Daemons
 systemctl daemon-reload
+
+## Enable Services
+systemctl enable rc-local
+systemctl enable actiontrig.timer
+systemctl enable smartmontools
+
+## Restart Services
 systemctl restart apcupsd
 systemctl restart actiontrig.timer
 systemctl restart smartmontools

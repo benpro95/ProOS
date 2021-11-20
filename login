@@ -146,7 +146,8 @@ if [ "$MODULE" = "files" ] || \
     ## Downloading host bundle
     scp -i $ROOTDIR/.ssh/$MODULE.rsa -p $TMPFLDR/config.tar root@$HOST:/tmp/
     ## Install files
-    ssh -t -i $ROOTDIR/.ssh/$MODULE.rsa root@$HOST "cd /tmp/; tar -xvf config.tar; rm -f config.tar; chmod +x /tmp/config/installer; /tmp/config/installer"
+    ssh -t -i $ROOTDIR/.ssh/$MODULE.rsa root@$HOST \
+     "cd /tmp/; tar -xvf config.tar; rm -f config.tar; chmod +x /tmp/config/installer; /tmp/config/installer"
     ## Clean-up on logout
     ssh-add -D
     eval $(ssh-agent -k)
@@ -174,12 +175,16 @@ if [ "$ARG2" = "init" ]; then
 else
   ## Sync and reset functions	
   HOST="$MODULE$DOMAIN"
-  if [ "$ARG2" = "sync" ] || [ "$ARG2" = "clean" ] || [ "$ARG2" = "restore" ] || [ "$ARG2" = "reset" ] ; then
+  if [ "$ARG2" = "sync" ] || \
+     [ "$ARG2" = "clean" ] || \
+     [ "$ARG2" = "restore" ] || \
+     [ "$ARG2" = "reset" ] ; then
     touch $TMPFLDR/start_sync
   else
   ## Other argument specified	
     if ! [ "$ARG2" = "" ] ; then
-    ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $ROOTDIR/.ssh/rpi.rsa root@$HOST "/opt/rpi/init $ARG2"
+    ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
+     $ROOTDIR/.ssh/rpi.rsa root@$HOST "/opt/rpi/init $ARG2"
     rm -r $TMPFLDR
     exit
     fi
@@ -192,12 +197,14 @@ if [ -e $TMPFLDR/start_sync ]; then
   echo "*** ProOS NetInstall ***"
   echo ""
   echo "System must be in read-write mode."
-  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $ROOTDIR/.ssh/rpi.rsa root@$HOST "df -h"
+  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
+   $ROOTDIR/.ssh/rpi.rsa root@$HOST "df -h"
   read -p "Do you want to reboot in read-write mode? " -n 1 -r
   echo
   if [[ ! $REPLY =~ ^[Nn]$ ]]
   then
-     ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $ROOTDIR/.ssh/rpi.rsa root@$HOST "/opt/rpi/init rw"
+     ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
+      $ROOTDIR/.ssh/rpi.rsa root@$HOST "/opt/rpi/init rw"
      echo "Waiting 30 seconds..."
      sleep 30
      if ping -c 1 $HOST &> /dev/null ; then
@@ -232,22 +239,27 @@ if [ -e $TMPFLDR/start_sync ]; then
 
   ## Check for reset
   if [ "$ARG2" = "reset" ] ||  [ "$ARG2" = "init" ] ; then
-  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $ROOTDIR/.ssh/rpi.rsa root@$HOST "rm -fv /etc/rpi-conf.done"  
+  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
+   $ROOTDIR/.ssh/rpi.rsa root@$HOST "rm -fv /etc/rpi-conf.done"  
   fi
 
   ## Check for restore
   if [ "$ARG2" = "restore" ] ||  [ "$ARG2" = "clean" ] ; then
     echo "Erasing software..."
-    ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $ROOTDIR/.ssh/rpi.rsa root@$HOST "rm -fv /etc/rpi-conf.done"  
-    ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $ROOTDIR/.ssh/rpi.rsa root@$HOST "rm -rfv /opt/rpi"
+    ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
+     $ROOTDIR/.ssh/rpi.rsa root@$HOST "rm -fv /etc/rpi-conf.done"  
+    ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
+     $ROOTDIR/.ssh/rpi.rsa root@$HOST "rm -rfv /opt/rpi"
     echo "Downloading software..."
   else 
     echo "Syncing software..."
   fi
 
-  ## Download & sync software
-  rsync -e "ssh -i $ROOTDIR/.ssh/rpi.rsa" --progress --checksum -rtv --exclude=BaseOS* --exclude=photos $ROOTDIR/rpi root@$HOST:/opt/
-  rsync -e "ssh -i $ROOTDIR/.ssh/rpi.rsa" --progress --checksum -rtv --exclude=photos --exclude=sources $ROOTDIR/$MODULE/* root@$HOST:/opt/rpi/
+  ## Sync software
+  rsync -e "ssh -i $ROOTDIR/.ssh/rpi.rsa" --progress --checksum -rtv \
+   --exclude=photos --exclude=BaseOS* $ROOTDIR/rpi root@$HOST:/opt/
+  rsync -e "ssh -i $ROOTDIR/.ssh/rpi.rsa" --progress --checksum -rtv \
+   --exclude=photos --exclude=sources $ROOTDIR/$MODULE/* root@$HOST:/opt/rpi/
 
   ## Make module name hostname
   touch $TMPFLDR/modname
@@ -256,7 +268,8 @@ if [ -e $TMPFLDR/start_sync ]; then
 
   ## Installing on Pi
   echo "Installing software..."
-  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $ROOTDIR/.ssh/rpi.rsa root@$HOST "chmod +x /opt/rpi/config/installer.sh; /opt/rpi/config/installer.sh"
+  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
+   $ROOTDIR/.ssh/rpi.rsa root@$HOST "chmod +x /opt/rpi/config/installer.sh; /opt/rpi/config/installer.sh"
 
   ## Reboot in read-only mode
   read -p "Do you want to reboot in read-only mode? " -n 1 -r
@@ -267,7 +280,8 @@ if [ -e $TMPFLDR/start_sync ]; then
     rm -r $TMPFLDR
     exit 1
   fi
-  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $ROOTDIR/.ssh/rpi.rsa root@$HOST "/opt/rpi/init ro"
+  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
+   $ROOTDIR/.ssh/rpi.rsa root@$HOST "/opt/rpi/init ro"
   ## Clean-up
   rm -r $TMPFLDR
   exit
@@ -277,7 +291,8 @@ fi
 ## Exit if host down
 HOSTCHK
 ## Login to SSH
-ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $ROOTDIR/.ssh/rpi.rsa root@$HOST
+ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
+ $ROOTDIR/.ssh/rpi.rsa root@$HOST
 ## Clean-up
 rm -r $TMPFLDR
 exit

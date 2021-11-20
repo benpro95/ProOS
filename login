@@ -11,8 +11,6 @@ then
   echo "Connection established."
 else
   echo "Host $HOST is down, exiting..."
-  ## Clean-up on logout
-  rm -r $TMPFLDR
   exit
 fi
 }
@@ -29,14 +27,6 @@ ROOTDIR=.
 MODULE=$1
 ARG2=$2
 HOST=$3
-
-## Set Temporary Directory
-if [ -e /mnt/scratch/downloads ]; then
-  mkdir -p /mnt/scratch/downloads/.ptmp
-  TMPFLDR=$(mktemp -d /mnt/scratch/downloads/.ptmp/XXXXXXXXX)
-else
-  TMPFLDR=$(mktemp -d /tmp/protmp.XXXXXXXXX)
-fi
 
 ### ProServer Help Menu
 if [ "$MODULE" = "" ]; then
@@ -65,8 +55,6 @@ Command Reference List
 Clean-up Temporary Files
 ./login rmtmp
 \n'
-## Clean-up
-rm -r $TMPFLDR
 exit
 fi
 
@@ -77,8 +65,6 @@ if [ "$MODULE" = "router" ] || \
    [ "$MODULE" = "z97mx" ] || \
    [ "$MODULE" = "sources" ]; then
 echo "Hostname not allowed."
-## Clean-up
-rm -r $TMPFLDR
 exit
 fi
 
@@ -99,8 +85,6 @@ dd bs=128k if=/dev/rpool/proxmox/vm-100-disk-0 of=file.raw
 #### Convert ZFS stored VM disk to QCOW2 disk image
 qemu-img convert -f raw -O qcow2 /dev/rpool/proxmox/vm-100-disk-0 file.qcow2
 \n'
-## Clean-up
-rm -r $TMPFLDR
 exit
 fi
 
@@ -125,6 +109,7 @@ if [ "$MODULE" = "files" ] || \
    [ "$MODULE" = "dev" ] || \
    [ "$MODULE" = "automate" ]; then
 ######################################
+  ## Set hostname
   HOST="$MODULE$DOMAIN"
    ## Check if host is up (don't ping these hosts)
   if [ ! "$MODULE" = "pve" ]; then
@@ -136,6 +121,13 @@ if [ "$MODULE" = "files" ] || \
   ### AutoSync
   if [ "$ARG2" = "sync" ]; then
     echo "ProOS NetInstall for Server"
+    ## Create temporary folder
+    if [ -e /mnt/scratch/downloads ]; then
+      mkdir -p /mnt/scratch/downloads/.ptmp
+      TMPFLDR=$(mktemp -d /mnt/scratch/downloads/.ptmp/XXXXXXXXX)
+    else
+      TMPFLDR=$(mktemp -d /tmp/protmp.XXXXXXXXX)
+    fi
     ## Copying files to temp
     cp -r $ROOTDIR/$MODULE/config $TMPFLDR/
     ## Compressing files
@@ -159,7 +151,6 @@ if [ "$MODULE" = "files" ] || \
   ## Clean-up on logout
   ssh-add -D
   eval $(ssh-agent -k)
-  rm -r $TMPFLDR
   exit
   fi
 ######################################
@@ -167,11 +158,13 @@ fi
 
 ########## Raspberry Pi Configurator ##########
 
+SYNCSTATE="no"
+
 ## Determine script operation
 if [ "$ARG2" = "init" ]; then
   ## Init function
-  touch $TMPFLDR/start_sync
   HOST="$HOST$DOMAIN"
+  SYNCSTATE="start"
 else
   ## Sync and reset functions	
   HOST="$MODULE$DOMAIN"
@@ -179,20 +172,19 @@ else
      [ "$ARG2" = "clean" ] || \
      [ "$ARG2" = "restore" ] || \
      [ "$ARG2" = "reset" ] ; then
-    touch $TMPFLDR/start_sync
+    SYNCSTATE="start"
   else
   ## Other argument specified	
     if ! [ "$ARG2" = "" ] ; then
     ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
      $ROOTDIR/.ssh/rpi.rsa root@$HOST "/opt/rpi/init $ARG2"
-    rm -r $TMPFLDR
     exit
     fi
   fi
 fi
 
 ### Sync ###############
-if [ -e $TMPFLDR/start_sync ]; then
+if [ "$SYNCSTATE" = "start" ]; then
   HOSTCHK
   echo "*** ProOS NetInstall ***"
   echo ""
@@ -220,8 +212,6 @@ if [ -e $TMPFLDR/start_sync ]; then
           echo "Connection established."
         else
           echo "Host is down, exiting..."
-          ## Clean-up
-          rm -r $TMPFLDR
           exit
         fi
      fi
@@ -261,10 +251,9 @@ if [ -e $TMPFLDR/start_sync ]; then
   rsync -e "ssh -i $ROOTDIR/.ssh/rpi.rsa" --progress --checksum -rtv \
    --exclude=photos --exclude=sources $ROOTDIR/$MODULE/* root@$HOST:/opt/rpi/
 
-  ## Make module name hostname
-  touch $TMPFLDR/modname
-  echo "$MODULE" > $TMPFLDR/modname
-  rsync -e "ssh -i $ROOTDIR/.ssh/rpi.rsa" --progress -a $TMPFLDR/modname root@$HOST:/opt/rpi/config/hostname
+  ## Write hostname to Pi
+  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
+   $ROOTDIR/.ssh/rpi.rsa root@$HOST "echo $MODULE > /opt/rpi/config/hostname"
 
   ## Installing on Pi
   echo "Installing software..."
@@ -276,14 +265,10 @@ if [ -e $TMPFLDR/start_sync ]; then
   echo
   if [[ ! $REPLY =~ ^[Yy]$ ]]
   then
-  	## Clean-up
-    rm -r $TMPFLDR
     exit 1
   fi
   ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
    $ROOTDIR/.ssh/rpi.rsa root@$HOST "/opt/rpi/init ro"
-  ## Clean-up
-  rm -r $TMPFLDR
   exit
 fi
 ######### END AUTOSYNC ##########
@@ -293,6 +278,4 @@ HOSTCHK
 ## Login to SSH
 ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
  $ROOTDIR/.ssh/rpi.rsa root@$HOST
-## Clean-up
-rm -r $TMPFLDR
 exit

@@ -7,5 +7,6 @@ pve/network
 pve/vmbkps
 pve/photos
 unifi/*.unf
+unifi/firmware
 *authorized_keys*
 .ssh

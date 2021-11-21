@@ -6,7 +6,6 @@ z97mx
 pve/network
 pve/vmbkps
 pve/photos
-unifi/*.unf
-unifi/firmware
+automate/unifi
 *authorized_keys*
 .ssh

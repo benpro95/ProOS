@@ -114,14 +114,14 @@ then
   curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
   echo " "
   echo "Updating Automate System Configuration..."
-  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i ~/ProOS/automate/id_rsa root@automate.home "rm -rfv /opt/rpi/remotes"
-  rsync -e "ssh -i ~/ProOS/automate/id_rsa" --progress --checksum -rtv ~/ProOS/automate/config/rpi/* root@automate.home:/opt/rpi/
+  ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "rm -rfv /opt/rpi/remotes"
+  rsync -e "ssh -i ~/ProOS/.ssh/automate.rsa" --progress --checksum -rtv ~/ProOS/automate/config/rpi/* root@automate.home:/opt/rpi/
   echo " "
   echo "Restarting Lighttpd Web Server..."
-  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i ~/ProOS/automate/id_rsa root@automate.home "systemctl restart lighttpd"
+  ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl restart lighttpd"
   echo " "
   echo "Restarting Unified Remote Server..."
-  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i ~/ProOS/automate/id_rsa root@automate.home "systemctl restart urserver"
+  ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl restart urserver"
   curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"
   ENDPGRM
 fi
@@ -132,7 +132,6 @@ then
   echo " "	
   echo "(d) Development VM - ssh://root@dev/"
   echo "(x) Xana VPN VM - vnc://ben@xana:5091/"
-  echo "(u) Unifi AP Controller - https://unifi:8443/"
   REPLY=""
   read -p "select VM: " -n 1 -r
   echo
@@ -144,11 +143,6 @@ then
   if [[ $REPLY =~ ^[Xx]$ ]]
   then
   VMHOST="xana"
-  fi
-  ##
-  if [[ $REPLY =~ ^[Uu]$ ]]
-  then
-  VMHOST="unifi"
   fi
   ##
   if [[ ! $VMHOST = "" ]]
@@ -182,7 +176,9 @@ fi
 ## Network share access
 if [[ $REPLY =~ ^[Nn]$ ]]
 then
-  echo " "  
+  echo " "
+  echo "(u) start UniFi controller"
+  echo "(s) stop UniFi controller"
   echo "(e) enable snapshots SMB share"
   echo "(d) disable snapshots SMB share"
   REPLY=""
@@ -220,6 +216,21 @@ then
     rm -fv /mnt/backup/Snapshots
     rm -fv /mnt/backup/Archive
   fi
+  ## Start UniFi controller
+  if [[ $REPLY =~ ^[Uu]$ ]]
+  then
+    echo " "
+    echo "starting UniFi controller..."
+    echo "access at 'https://automate.home:8443/' "
+    ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl restart unifi"
+  fi
+  ## Stop UniFi controller
+  if [[ $REPLY =~ ^[Ss]$ ]]
+  then
+    echo " "
+    echo "shutting down UniFi controller..."
+    ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl stop unifi"
+  fi  
   ENDPGRM  
 fi
 
@@ -231,11 +242,9 @@ then
   echo "#### ProServer Backup Utility ####"
   echo "##################################"
   echo " "
-  echo "(a) attach drives then start backup"
-  echo "(d) show drives status then exit"
-  echo "(d) detach drives then exit"
-  echo "(q) quit backup program"
-  echo "(enter) start backup" 
+  echo "(a) attach drives, start backup"
+  echo "(d) detach drives only"
+  echo "(enter) drives status, start backup"
   REPLY=""
   read -p "enter option: " -n 1 -r
   echo
@@ -244,14 +253,7 @@ then
   then
     echo " "
     ENDPGRM
-  fi  
-  ## Just show drives status
-  if [[ $REPLY =~ ^[Ss]$ ]]
-  then
-    cat /mnt/extbkps/keytmp/status.txt
-    echo " "
-    ENDPGRM
-  fi  
+  fi
   ## Just detach drives
   if [[ $REPLY =~ ^[Dd]$ ]]
   then

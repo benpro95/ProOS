@@ -5,16 +5,26 @@
 
 echo "Installing..."
 
-## Support Packages
+## Update Sources
 apt-get --yes update
-apt-get install -y --no-upgrade dirmngr ca-certificates apt-transport-https wget 
-apt-get install -y --no-upgrade unzip gnupg htop rsync curl screen parallel ethtool 
-apt-get install -y --no-upgrade libdbus-1-dev libdbus-glib-1-dev locales
-apt-get install -y --no-upgrade aptitude sudo gnupg scrub avahi-daemon
-apt-get remove --purge -y cron anacron postfix
+
+## Install Packages
+apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates \
+ apt-transport-https wget unzip gnupg htop rsync curl screen parallel ethtool \
+ libdbus-1-dev libdbus-glib-1-dev locales aptitude sudo gnupg scrub avahi-daemon
+
+## Remove Packages
+apt-get remove -y --purge cron anacron postfix
+
+## UniFi controller
+if [ ! -e /lib/systemd/system/unifi.service ]; then
+  wget https://get.glennr.nl/unifi/install/install_latest/unifi-latest.sh
+  bash unifi-latest.sh
+  systemctl disable unifi
+fi
 
 ## Install Replacement Logger
-apt-get remove --purge -y logrotate
+apt-get remove --purge -y rsyslog
 apt-get install -y --no-upgrade busybox-syslogd
 echo "Run command 'logread' to check system logs"
 dpkg --purge rsyslog

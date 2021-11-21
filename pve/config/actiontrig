@@ -76,19 +76,7 @@ if [ -e /mnt/extbkps/keytmp/unmount.txt ]; then
   echo ""
 fi
 
-### START VMs #########################################   
-if [ -e /mnt/extbkps/keytmp/startunifi.txt ]; then
-###### Runs when file exists ##########################
-  rm -f /mnt/extbkps/keytmp/startunifi.txt
-  if [ ! -e $VMLOGFILE ]; then
-    touch $VMLOGFILE
-  else
-    truncate -s 0 $VMLOGFILE
-  fi
-  echo "starting unifi VM..." &>> $VMLOGFILE
-  qm start 102 &>> $VMLOGFILE
-  date &>> $VMLOGFILE
-fi
+### START VMs #########################################
 #######################################################
 if [ -e /mnt/extbkps/keytmp/startxana.txt ]; then
 ###### Runs when file exists ##########################

@@ -19,7 +19,7 @@ chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-104.conf
 echo ""
 echo "Backing-up Automate LXC 106..."
 vzdump 106 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1
-cp -v /etc/pve/lxc/104.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-106.conf
+cp -v /etc/pve/lxc/106.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-106.conf
 chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-106.conf
 ###
 ### Virtual Machine Backups
@@ -29,12 +29,6 @@ echo "Backing-up Router KVM 100..."
 vzdump 100 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1
 cp -v /etc/pve/qemu-server/100.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-100.conf
 chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-100.conf
-###
-echo ""
-echo "Backing-up Unifi KVM 102..."
-vzdump 102 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1
-cp -v /etc/pve/qemu-server/102.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-102.conf
-chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-102.conf
 ###
 echo ""
 echo "Backing-up Development KVM 103..."

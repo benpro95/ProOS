@@ -67,9 +67,7 @@ lastlog -u server
 echo " "
 echo "(b) Backup utility"
 echo "(l) List drive usage"
-echo "(a) Update automate configuration"
-echo "(v) Virtual machine control"
-echo "(n) Network access control"
+echo "(s) System configuration"
 echo "(g) Generate a server log"
 echo "(p) Backup ProOS to GitHub"
 echo "(enter) Exit to shell"
@@ -108,84 +106,39 @@ then
   ENDPGRM
 fi
 
-## Update Automate Conf
-if [[ $REPLY =~ ^[Aa]$ ]]
-then
-  curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
-  echo " "
-  echo "Updating Automate System Configuration..."
-  ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "rm -rfv /opt/rpi/remotes"
-  rsync -e "ssh -i ~/ProOS/.ssh/automate.rsa" --progress --checksum -rtv ~/ProOS/automate/config/rpi/* root@automate.home:/opt/rpi/
-  echo " "
-  echo "Restarting Lighttpd Web Server..."
-  ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl restart lighttpd"
-  echo " "
-  echo "Restarting Unified Remote Server..."
-  ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl restart urserver"
-  curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"
-  ENDPGRM
-fi
-
-## Virtual machine control
-if [[ $REPLY =~ ^[Vv]$ ]]
-then
-  echo " "	
-  echo "(d) Development VM - ssh://root@dev/"
-  echo "(x) Xana VPN VM - vnc://ben@xana:5091/"
-  REPLY=""
-  read -p "select VM: " -n 1 -r
-  echo
-  if [[ $REPLY =~ ^[Dd]$ ]]
-  then
-  VMHOST="dev"
-  fi
-  ##
-  if [[ $REPLY =~ ^[Xx]$ ]]
-  then
-  VMHOST="xana"
-  fi
-  ##
-  if [[ ! $VMHOST = "" ]]
-  then
-    echo " "
-    REPLY=""
-    read -p "select (b) to boot or (s) to shutdown: " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Bb]$ ]]
-    then
-     touch /mnt/extbkps/keytmp/start$VMHOST.txt
-     temp_cnt=${wait_time}
-     while [[ ${temp_cnt} -gt 0 ]];
-     do
-       printf "\rwait %2d second(s) for startup to trigger." ${temp_cnt}
-       sleep 1
-       ((temp_cnt--))
-     done
-     echo " "
-     cat /mnt/extbkps/keytmp/vmlog.txt
-    fi
-    if [[ $REPLY =~ ^[Ss]$ ]]
-    then
-     echo "stopping $VMHOST virtual machine..."
-     ssh -t -i ~/ProOS/$VMHOST/id_rsa root@$VMHOST "shutdown -h now"
-    fi
-  fi
-  ENDPGRM
-fi  
-
-## Network share access
-if [[ $REPLY =~ ^[Nn]$ ]]
+## Server control
+if [[ $REPLY =~ ^[Ss]$ ]]
 then
   echo " "
-  echo "(u) start UniFi controller"
-  echo "(s) stop UniFi controller"
-  echo "(e) enable snapshots SMB share"
-  echo "(d) disable snapshots SMB share"
+  echo "(1) Start/stop dev - ssh://root@dev/"
+  echo "(2) Start/stop xana - vnc://ben@xana:5091/"
+  echo "(3) Start unifi controller"
+  echo "(4) Stop unifi controller"
+  echo "(5) Attach snapshots share"
+  echo "(6) Detach snapshots share"
+  echo "(7) Update automate configuration"
   REPLY=""
   read -p "select option: " -n 1 -r
   echo
+  ## Update Automate Conf
+  if [[ $REPLY =~ ^[7]$ ]]
+  then
+    curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
+    echo " "
+    echo "Updating Automate System Configuration..."
+    ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "rm -rfv /opt/rpi/remotes"
+    rsync -e "ssh -i ~/ProOS/.ssh/automate.rsa" --progress --checksum -rtv ~/ProOS/automate/config/rpi/* root@automate.home:/opt/rpi/
+    echo " "
+    echo "Restarting Lighttpd Web Server..."
+    ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl restart lighttpd"
+    echo " "
+    echo "Restarting Unified Remote Server..."
+    ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl restart urserver"
+    curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"
+    ENDPGRM
+  fi
   ## Snapshot share access
-  if [[ $REPLY =~ ^[Ee]$ ]]
+  if [[ $REPLY =~ ^[5]$ ]]
   then
     echo " "
     if [ -e "/mnt/backup/Snapshots" ]; then
@@ -209,7 +162,7 @@ then
   fi
   ##
   ## Remove share access
-  if [[ $REPLY =~ ^[Dd]$ ]]
+  if [[ $REPLY =~ ^[6]$ ]]
   then
     echo " "
     echo "detaching shares..."
@@ -217,7 +170,7 @@ then
     rm -fv /mnt/backup/Archive
   fi
   ## Start UniFi controller
-  if [[ $REPLY =~ ^[Uu]$ ]]
+  if [[ $REPLY =~ ^[3]$ ]]
   then
     echo " "
     echo "starting UniFi controller..."
@@ -225,12 +178,49 @@ then
     ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl restart unifi"
   fi
   ## Stop UniFi controller
-  if [[ $REPLY =~ ^[Ss]$ ]]
+  if [[ $REPLY =~ ^[4]$ ]]
   then
     echo " "
     echo "shutting down UniFi controller..."
     ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl stop unifi"
-  fi  
+  fi
+  ## VM control (must be last in script)
+  if [[ $REPLY =~ ^[1]$ ]]
+  then
+  VMHOST="dev"
+  fi
+  ##
+  if [[ $REPLY =~ ^[2]$ ]]
+  then
+  VMHOST="xana"
+  fi
+  ##
+  if [[ ! $VMHOST = "" ]]
+  then
+    echo " "
+    REPLY=""
+    echo "$VMHOST virtual machine selected."
+    read -p "select (b) to boot or (s) to shutdown: " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Bb]$ ]]
+    then
+     touch /mnt/extbkps/keytmp/start$VMHOST.txt
+     temp_cnt=${wait_time}
+     while [[ ${temp_cnt} -gt 0 ]];
+     do
+       printf "\rwait %2d second(s) for startup to trigger." ${temp_cnt}
+       sleep 1
+       ((temp_cnt--))
+     done
+     echo " "
+     cat /mnt/extbkps/keytmp/vmlog.txt
+    fi
+    if [[ $REPLY =~ ^[Ss]$ ]]
+    then
+     echo "stopping $VMHOST virtual machine..."
+     ssh -t -i ~/ProOS/$VMHOST/id_rsa root@$VMHOST "shutdown -h now"
+    fi
+  fi
   ENDPGRM  
 fi
 
@@ -242,8 +232,8 @@ then
   echo "#### ProServer Backup Utility ####"
   echo "##################################"
   echo " "
-  echo "(a) attach drives, start backup"
-  echo "(d) detach drives only"
+  echo "(a) Attach drives, start backup"
+  echo "(d) Detach drives only"
   echo "(enter) drives status, start backup"
   REPLY=""
   read -p "enter option: " -n 1 -r
@@ -300,9 +290,9 @@ then
   ## Backup Drives Status
   cat /mnt/extbkps/keytmp/status.txt
   echo " "
-  echo "(b) start standard backup"
-  echo "(c) start checksum compare backup"
-  echo "(s) re-check drives status"
+  echo "(b) Start standard backup"
+  echo "(c) Start checksum compare backup"
+  echo "(s) Re-check drives status"
   echo "(enter) exit backup program"
   REPLY=""
   read -p "enter option: " -n 1 -r
@@ -311,9 +301,9 @@ then
   then
     cat /mnt/extbkps/keytmp/status.txt
     echo " "
-    echo "(b) start standard backup"
-    echo "(c) start checksum compare backup"
-    echo "(enter) exit backup program"
+    echo "(b) Start standard backup"
+    echo "(c) Start checksum compare backup"
+    echo "(enter) Exit backup program"
     REPLY=""
     read -p "enter option: " -n 1 -r
     echo

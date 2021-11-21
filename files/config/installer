@@ -97,6 +97,9 @@ chown root:root /usr/bin/svrutil
 cp /tmp/config/svrutil.bin /usr/bin/
 chmod 755 /usr/bin/svrutil.bin
 chown root:root /usr/bin/svrutil.bin
+cp /tmp/config/svrbackup.bin /usr/bin/
+chmod 755 /usr/bin/svrbackup.bin
+chown root:root /usr/bin/svrbackup.bin
 
 ## Snapshot Mountpoint
 if [ ! -e /mnt/backup ]; then

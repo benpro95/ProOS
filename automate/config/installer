@@ -9,12 +9,15 @@ echo "Installing..."
 apt-get --yes update
 
 ## Install Packages
-apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates \
+apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates bpytop \
  apt-transport-https wget unzip gnupg htop rsync curl screen parallel ethtool \
  libdbus-1-dev libdbus-glib-1-dev locales aptitude sudo gnupg scrub avahi-daemon
 
 ## Remove Packages
-apt-get remove -y --purge cron anacron postfix
+apt-get remove -y --purge cron anacron postfix htop apache2 apache2-data
+
+## Replace Process Monitor
+ln -sf /usr/bin/bpytop /usr/bin/htop
 
 ## UniFi controller
 if [ ! -e /lib/systemd/system/unifi.service ]; then

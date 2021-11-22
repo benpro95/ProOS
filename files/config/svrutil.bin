@@ -110,9 +110,9 @@ fi
 if [[ $REPLY =~ ^[Ss]$ ]]
 then
   echo " "
-  echo "(1) Start/stop dev - ssh://root@dev/"
-  echo "(2) Start/stop xana - vnc://ben@xana:5091/"
-  echo "(3) Start unifi controller"
+  echo "(1) Start/stop xana - vnc://ben@xana:5091/"
+  echo "(2) Start/stop dev - ssh://root@dev/"
+  echo "(3) Startup unifi controller"
   echo "(4) Stop unifi controller"
   echo "(5) Attach snapshots share"
   echo "(6) Detach snapshots share"
@@ -186,12 +186,12 @@ then
     ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl stop unifi"
   fi
   ## VM control (must be last in script)
-  if [[ $REPLY =~ ^[1]$ ]]
+  if [[ $REPLY =~ ^[2]$ ]]
   then
   VMHOST="dev"
   fi
   ##
-  if [[ $REPLY =~ ^[2]$ ]]
+  if [[ $REPLY =~ ^[1]$ ]]
   then
   VMHOST="xana"
   fi
@@ -219,7 +219,7 @@ then
     if [[ $REPLY =~ ^[Ss]$ ]]
     then
      echo "stopping $VMHOST virtual machine..."
-     ssh -t -i ~/ProOS/$VMHOST/id_rsa root@$VMHOST "shutdown -h now"
+     ssh -t -i ~/ProOS/.ssh/$VMHOST.rsa root@$VMHOST "shutdown -h now"
     fi
   fi
   ENDPGRM  

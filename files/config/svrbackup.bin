@@ -3,6 +3,9 @@
 #### Server Backup Program #################
 # (do not run standalone, svrutil runs this)
 
+## Time to wait for PVE action timer
+wait_time=65 # seconds
+
 #### 256GB Drives ####
 USB256DRV1="usb256-01"
 USB256DRV2="usb256-02"

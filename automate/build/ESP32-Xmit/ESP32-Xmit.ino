@@ -147,7 +147,7 @@ void loop() {
 
     currentTime = millis();
     previousTime = currentTime;
-    Serial.println("New Client.");          // print a message out in the serial port
+    debugln("New Client.");                 // print a message out in the serial port
     String currentLine = "";                // make a String to hold incoming data from the client
     while (client.connected() && currentTime - previousTime <= timeoutTime) {
       currentTime = millis();
@@ -304,7 +304,7 @@ void loop() {
     req = "";
     // Close the connection
     client.stop();
-    Serial.println("Client disconnected.");
-    Serial.println("");
+    debugln("Client disconnected.");
+    debugln("");
   }
 }

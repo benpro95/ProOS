@@ -4,8 +4,6 @@ const char* CONFIG_PSK       = "phonics.87.reply.218";
 const char* HOSTNAME         = "xmit";
 const int   CONFIG_SERIAL    = 115200;
 const int   CONFIG_PORT      = 80;
-const int   CONFIG_TIMEOUT   = 5000;
-
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 // Include libraries
@@ -41,9 +39,20 @@ RCSwitch mySwitch = RCSwitch();
 unsigned long previousMillis = 0;
 unsigned long interval = 30000;
 // Validate Constants
-long valout;
+long intout;
 int base = 10;
 char* behind;
+
+// Variables to store the HTTP request
+String req;
+String req_trunc;
+
+// Current time
+unsigned long currentTime = millis();
+// Previous time
+unsigned long previousTime = 0;        
+// Define timeout time in milliseconds
+const long timeoutTime = 2000;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
@@ -136,164 +145,166 @@ void loop() {
   WiFiClient client = server.available();
   if (client) {
 
-    // New client
-    debugln("New client connected");
+    currentTime = millis();
+    previousTime = currentTime;
+    Serial.println("New Client.");          // print a message out in the serial port
+    String currentLine = "";                // make a String to hold incoming data from the client
+    while (client.connected() && currentTime - previousTime <= timeoutTime) {
+      currentTime = millis();
+      // loop while the client's connected
+      if (client.available()) {             // if there's bytes to read from the client,
+        char c = client.read();             // read a byte, then
+        debug(c);                           // print it out the serial monitor
+        req += c;
+        if (c == '\n') {                    // if the byte is a newline character
+          // if the current line is blank, you got two newline characters in a row.
+          // that's the end of the client HTTP request, so send a response:
+          if (currentLine.length() == 0) {
+            // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
+            // and a content-type so the client knows what's coming, then a blank line:
+            client.println("HTTP/1.1 200 OK");
+            client.println("Content-type:text/html");
+            client.println("Connection: close");
+            client.println();
 
-    // Wait nicely for the client to complete its full request
-    unsigned long timeout = millis() + CONFIG_TIMEOUT;
-    debugln("Waiting for client request to finish...");
-    while (!client.available() && millis() < timeout) {
-      delay(1);
+             // Only process a xmit request  
+             if (req.indexOf(F("/xmit/")) != -1) {
+
+              // Truncate request string
+              String req_trunc = req;
+              req_trunc.remove(0, ((req_trunc.lastIndexOf("/xmit/")) + 6));
+              req_trunc.remove((req_trunc.indexOf(" ")));
+              debug("Valid request: ");
+              debugln(req_trunc);
+              
+              ///////////////////////////////////////////////      
+                    
+              // IR Transmit (must be in integer format)
+              if(req_trunc.indexOf("irtx.") >=0)
+              {
+                if(req_trunc.indexOf("nec.") >=4)
+                {
+                  // NEC IR Transmit 32-bit
+                  debug("IR NEC\n");
+                  req_trunc = req_trunc.substring(9,21);
+                  intout = strtol(req_trunc.c_str(), &behind, base);
+                   irsend.sendNEC(intout, 32);
+                  delay(30);
+                  intout = 0;
+                  behind = 0;
+                  base = 10;                     
+                }
+                if(req_trunc.indexOf("sony20.") >=4)
+                {
+                  // SONY IR Transmit 20-bit
+                  debug("IR Sony 20-bit\n");
+                  req_trunc = req_trunc.substring(12,24);
+                  intout = strtol(req_trunc.c_str(), &behind, base);
+                   irsend.sendSony(intout, 20);
+                  delay(30);
+                  intout = 0;
+                  behind = 0;
+                  base = 10;                     
+                }
+                if(req_trunc.indexOf("sony12.") >=4)
+                {
+                  // SONY IR Transmit 12-bit
+                  debug("IR Sony 12-bit\n");
+                  req_trunc = req_trunc.substring(12,24);
+                  intout = strtol(req_trunc.c_str(), &behind, base);
+                  for (int i = 0; i < 3; i++) {
+                    irsend.sendSony(intout, 12);
+                  }
+                  delay(30);
+                  intout = 0;
+                  behind = 0;
+                  base = 10;   
+                }  
+              }
+
+              // FET Control
+              if(req_trunc.indexOf("fet.") >=0)
+              {
+                if(req_trunc.indexOf("on.") >=3)
+                {
+                  // FET on
+                  debug("FET on\n");
+                  req_trunc = req_trunc.substring(7,9);
+                  intout = strtol(req_trunc.c_str(), &behind, base);
+                  if (intout == 32 ) {
+                    digitalWrite(intout, HIGH);
+                  }
+                  delay(30);
+                  intout = 0;
+                  behind = 0;
+                  base = 10;   
+                }
+                if(req_trunc.indexOf("off.") >=3)
+                {
+                  // FET off
+                  debug("FET off\n");
+                  req_trunc = req_trunc.substring(8,10);
+                  intout = strtol(req_trunc.c_str(), &behind, base);
+                  if (intout == 32 || intout == 5) {
+                    digitalWrite(intout, LOW);
+                  }  
+                  delay(30);
+                  intout = 0;
+                  behind = 0;
+                  base = 10;                     
+                }
+                if(req_trunc.indexOf("tgl.") >=3)
+                {
+                  // FET toggle
+                  debug("FET toggled\n");
+                  req_trunc = req_trunc.substring(8,10);
+                  intout = strtol(req_trunc.c_str(), &behind, base);
+                  if (intout == 32 || intout == 5) {
+                    digitalWrite(intout, HIGH);
+                    delay(300);
+                    digitalWrite(intout, LOW);
+                  }  
+                  delay(30);
+                  intout = 0;
+                  behind = 0;
+                  base = 10;                  
+                }
+              }    
+
+              // 433MHz RF Control
+              if(req_trunc.indexOf("rftx.") >=0)
+              {
+                debug("RF transmit\n");
+                req_trunc = req_trunc.substring(5,20);
+                intout = strtol(req_trunc.c_str(), &behind, base);
+                 mySwitch.send(intout, 24);
+                delay(30);
+                intout = 0;
+                behind = 0;
+                base = 10;
+              }
+                
+              req_trunc = "";
+              ///////////////////////////////////////////////                    
+            }            
+            // The HTTP response ends with another blank line
+            client.println();
+            
+            // Break out of the while loop
+            break;
+          } else { // if you got a newline, then clear currentLine
+            currentLine = "";
+          }
+        } else if (c != '\r') {  // if you got anything else but a carriage return character,
+          currentLine += c;      // add it to the end of the currentLine
+        }
+      }
     }
-
-    // End client connection when timeout is reached to not hold up availability
-    if (millis() < timeout) {
-      debugln("Client request finished!");
-    } else {
-      debugln("Client request timeout!");
-      client.flush();
-      client.stop();
-      debugln();
-      return;
-    }
-
-    // Catch client request
-    String req = client.readStringUntil('\r');
-    debug("Raw request: ");
-    debugln(req);
-    if (req.indexOf(F("/xmit/")) != -1) {
-
-    // Truncate request string
-    String currentLine = req;
-    currentLine.remove(0, ((currentLine.lastIndexOf("/xmit/")) + 6));
-    currentLine.remove((currentLine.indexOf(" ")));
-    debug("Valid request: ");
-    debugln(currentLine);
-    // Turn-on LED when valid request received
-    digitalWrite(5, 0);
-    
-///////////////////////////////////////////////      
-      
-// IR Transmit (must be in integer format)
-if(currentLine.indexOf("irtx.") >=0)
-{
-  if(currentLine.indexOf("nec.") >=4)
-  {
-    // NEC IR Transmit 32-bit
-    debug("IR NEC\n");
-    String code = currentLine.substring(9,21);
-    valdata(code);
-    irsend.sendNEC(valout, 32);
-    delay(30);
-  }
-  if(currentLine.indexOf("sony20.") >=4)
-  {
-    // SONY IR Transmit 20-bit
-    debug("IR Sony 20-bit\n");
-    String code = currentLine.substring(12,24);
-    valdata(code);
-    irsend.sendSony(valout, 20);
-    delay(30);
-  }
-  if(currentLine.indexOf("sony12.") >=4)
-  {
-    // SONY IR Transmit 12-bit
-    debug("IR Sony 12-bit\n");
-    String code = currentLine.substring(12,24);
-    valdata(code);
-    for (int i = 0; i < 3; i++) {
-      irsend.sendSony(valout, 12);
-      delay(30);
-    }  
+    // Clear the request variable
+    req = "";
+    // Close the connection
+    client.stop();
+    Serial.println("Client disconnected.");
+    Serial.println("");
   }
 }
-
-// FET Control
-if(currentLine.indexOf("fet.") >=0)
-{
-  if(currentLine.indexOf("on.") >=3)
-  {
-    // FET on
-    debug("FET on\n");
-    String code = currentLine.substring(7,9);
-    valdata(code);
-    if (valout == 32 ) {
-      digitalWrite(valout, HIGH);
-    }
-    delay(30);
-  }
-  if(currentLine.indexOf("off.") >=3)
-  {
-    // FET off
-    debug("FET off\n");
-    String code = currentLine.substring(8,10);
-    valdata(code);
-    if (valout == 32 || valout == 5) {
-      digitalWrite(valout, LOW);
-    }  
-    delay(30);
-  }
-  if(currentLine.indexOf("tgl.") >=3)
-  {
-    // FET toggle
-    debug("FET toggled\n");
-    String code = currentLine.substring(8,10);
-    valdata(code);
-    if (valout == 32 || valout == 5) {
-      digitalWrite(valout, HIGH);
-      delay(300);
-      digitalWrite(valout, LOW);
-    }  
-    delay(30);
-  }
-}    
-
-// 433MHz RF Control
-if(currentLine.indexOf("rftx.") >=0)
-{
-  debug("RF transmit\n");
-  String code = currentLine.substring(5,20);
-  valdata(code);
-  mySwitch.send(valout, 24);
-  delay(30);
-}
-        
-/////////////////////////////////
-
- // Send HTTP response
-      client.println("HTTP/1.1 200 OK");
-      client.println("Content-Type: text/plain");
-      client.println("Connection: close");
-      client.println();
-      // Turn-off LED when request is finished
-      digitalWrite(5, 1);
-
-    } else {
-
-      // Invalid request
-      debugln("Invalid client request");
-      debugln("Sending HTTP/1.1 404 response");
-      client.println("HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE HTML>\r\n<html><body>Not found</body></html>");
-
-    }
-
-    // Flush output buffer
-    debugln("Flushing output buffer");
-    client.flush();
-    debugln();
-    return;
-
-  }
-
-}
-
-// Data validation function, converts string to integers
-int valdata(String code)
-{
-  valout = strtol(code.c_str(), &behind, base);
-  debug("Discarded: ");
-  debugln(base);
-  debug("Validated output: ");
-  debugln(valout);
-}
-

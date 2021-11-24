@@ -4,7 +4,8 @@
 # (do not run standalone, svrutil runs this)
 
 ## Time to wait for PVE action timer
-wait_time=65 # seconds
+## read from first command line argument
+wait_time=$1
 
 #### 256GB Drives ####
 USB256DRV1="usb256-01"

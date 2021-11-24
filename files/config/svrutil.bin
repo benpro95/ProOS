@@ -72,7 +72,7 @@ echo "(g) Generate a server log"
 echo "(p) Backup ProOS to GitHub"
 echo "(enter) Exit to shell"
 echo " "
-read -p "select mode: " -n 1 -r
+read -p "select option: " -n 1 -r
 echo
 
 ## Backup ProOS to GitHub
@@ -110,19 +110,19 @@ fi
 if [[ $REPLY =~ ^[Ss]$ ]]
 then
   echo " "
-  echo "(1) Start/stop xana - vnc://ben@xana:5091/"
-  echo "(2) Start/stop dev - ssh://root@dev/"
-  echo "(3) Startup unifi controller"
-  echo "(4) Stop unifi controller"
-  echo "(5) Attach snapshots share"
-  echo "(6) Detach snapshots share"
-  echo "(7) Update automate configuration"
+  echo "(a) Update automate configuration"  
+  echo "(x) Start/stop xana - vnc://ben@xana:5091"
+  echo "(d) Start/stop dev - ssh://root@dev"
+  echo "(u) Startup unifi controller"
+  echo "(s) Stop unifi controller"
+  echo "(n) Attach/detach shares"
   echo " "
   REPLY=""
   read -p "select option: " -n 1 -r
   echo
-  ## Update Automate Conf
-  if [[ $REPLY =~ ^[7]$ ]]
+  ## Update Automate Configuration
+  ##################################    
+  if [[ $REPLY =~ ^[Aa]$ ]]
   then
     curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
     echo " "
@@ -136,66 +136,81 @@ then
     echo "Restarting Unified Remote Server..."
     ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl restart urserver"
     curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"
-    ENDPGRM
+    REPLY=""
   fi
-  ## Snapshot share access
-  if [[ $REPLY =~ ^[5]$ ]]
-  then
-    echo " "
-    if [ -e "/mnt/backup/Snapshots" ]; then
-      echo "already attached!"  	
-    else
-      echo "attaching snapshots share..."
-      ln -s /mnt/datastore/.zfs/snapshot /mnt/backup/Snapshots
-    fi
-  fi
-  ##
-  ## Archive share access
-  if [[ $REPLY =~ ^[Aa]$ ]]
-  then
-    echo " "
-    if [ -e "/mnt/backup/Archive" ]; then
-      echo "already attached!"  	
-    else
-      echo "attaching archive share..."
-      ln -s /mnt/datastore/.Archive /mnt/backup/Archive
-    fi
-  fi
-  ##
-  ## Remove share access
-  if [[ $REPLY =~ ^[6]$ ]]
-  then
-    echo " "
-    echo "detaching shares..."
-    rm -fv /mnt/backup/Snapshots
-    rm -fv /mnt/backup/Archive
-  fi
+  ##################################  
   ## Start UniFi controller
-  if [[ $REPLY =~ ^[3]$ ]]
+  if [[ $REPLY =~ ^[Uu]$ ]]
   then
     echo " "
     echo "starting UniFi controller..."
     echo "access at 'https://automate.home:8443/' "
     ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl restart unifi"
+    REPLY=""
   fi
   ## Stop UniFi controller
-  if [[ $REPLY =~ ^[4]$ ]]
+  if [[ $REPLY =~ ^[Ss]$ ]]
   then
     echo " "
     echo "shutting down UniFi controller..."
     ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl stop unifi"
+    REPLY=""
   fi
+  ##################################  
+  ## Share Drive Access
+  if [[ $REPLY =~ ^[Nn]$ ]]
+  then
+    echo " "
+    echo "(s) Attach snapshot share"
+    echo "(d) Detach snapshot share"
+    echo " "
+    REPLY=""
+    read -p "select option: " -n 1 -r
+    echo
+    ## Snapshot share access
+    if [[ $REPLY =~ ^[Ss]$ ]]
+    then
+      echo " "
+      if [ -e "/mnt/backup/Snapshots" ]; then
+        echo "already attached!"    
+      else
+        echo "attaching snapshots share..."
+        ln -s /mnt/datastore/.zfs/snapshot /mnt/backup/Snapshots
+      fi
+    fi
+    ##
+    ## Archive share access
+    if [[ $REPLY =~ ^[Aa]$ ]]
+    then
+      echo " "
+      if [ -e "/mnt/backup/Archive" ]; then
+        echo "already attached!"    
+      else
+        echo "attaching archive share..."
+        ln -s /mnt/datastore/.Archive /mnt/backup/Archive
+      fi
+    fi
+    ##
+    ## Remove share access
+    if [[ $REPLY =~ ^[Dd]$ ]]
+    then
+      echo " "
+      echo "detaching shares..."
+      rm -fv /mnt/backup/Snapshots
+      rm -fv /mnt/backup/Archive
+    fi
+    REPLY=""
+  fi  
+  ##################################  
   ## VM control (must be last in script)
-  if [[ $REPLY =~ ^[2]$ ]]
+  if [[ $REPLY =~ ^[Dd]$ ]]
   then
   VMHOST="dev"
   fi
-  ##
-  if [[ $REPLY =~ ^[1]$ ]]
+  if [[ $REPLY =~ ^[Xx]$ ]]
   then
   VMHOST="xana"
   fi
-  ##
   if [[ ! $VMHOST = "" ]]
   then
     echo " "
@@ -221,7 +236,10 @@ then
      echo "stopping $VMHOST virtual machine..."
      ssh -t -i ~/ProOS/.ssh/$VMHOST.rsa root@$VMHOST "shutdown -h now"
     fi
+    VMHOST=""
+    REPLY=""
   fi
+  ##################################   
   ENDPGRM  
 fi
 
@@ -240,12 +258,6 @@ then
   REPLY=""
   read -p "enter option: " -n 1 -r
   echo
-  ## Just quit
-  if [[ $REPLY =~ ^[Qq]$ ]]
-  then
-    echo " "
-    ENDPGRM
-  fi
   ## Just detach drives
   if [[ $REPLY =~ ^[Dd]$ ]]
   then
@@ -332,26 +344,19 @@ fi
 
 BKPPGRM () {
 ##### BEGIN BACKUP FUNCTION #####
-/usr/bin/svrbackup.bin
+/usr/bin/svrbackup.bin $wait_time
 ##### END BACKUP FUNCTION #####
 }
-
 
 #### BEGIN MAIN SCRIPT #####
 ############################
 ### Only run if server user
 if [ ! "$USER" = server ]; then
   echo "this script should only be ran by server user, aborting."
-  exit 1
+  exit
 fi
 ############################
 ### Force Quit
-if [ "$1" = "kill" ] ; then
-  pkill svrutil.bin
-  rm -f /tmp/backupsvr.lock
-  echo "removed lockfile."
-  exit
-fi
 if [ "$1" = "quit" ] ; then
   pkill svrutil.bin
   rm -f /tmp/backupsvr.lock
@@ -365,7 +370,6 @@ if [ "$1" = "rmlock" ] ; then
   echo "removed lockfile."
   exit
 fi
-sleep 0.25
 clear
 MAINPGRM
 #### END MAIN SCRIPT #####

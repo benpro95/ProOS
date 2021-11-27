@@ -6,7 +6,7 @@
 ###
 echo ""
 echo "Backing-up Files LXC 101..."
-vzdump 101 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1 --exclude-path /mnt/backup --exclude-path /mnt/extbkps
+vzdump 101 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1 --exclude-path /mnt
 cp -v /etc/pve/lxc/101.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-101.conf
 chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-101.conf
 ###

@@ -1,0 +1,1 @@
+C:\Scripts\exes\nircmd.exe savescreenshot \\files\Downloads\Screenshot.png

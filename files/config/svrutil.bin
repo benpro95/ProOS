@@ -325,14 +325,14 @@ then
   if [[ $REPLY =~ ^[Bb]$ ]]
   then
     echo " "
-    CHECKSUM=""
+    checksum="no"
     BKPPGRM
   fi
   ##
   if [[ $REPLY =~ ^[Cc]$ ]]
   then
     echo " "
-    CHECKSUM="--checksum"
+    checksum="yes"
     BKPPGRM
   fi
   ENDPGRM
@@ -344,7 +344,7 @@ fi
 
 BKPPGRM () {
 ##### BEGIN BACKUP FUNCTION #####
-/usr/bin/svrbackup.bin $wait_time
+/usr/bin/svrbackup.bin $wait_time $checksum
 ##### END BACKUP FUNCTION #####
 }
 

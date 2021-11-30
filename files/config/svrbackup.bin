@@ -6,6 +6,8 @@
 ## Time to wait for PVE action timer
 ## read from first command line argument
 wait_time=$1
+## read from second command line argument
+chksum=$2
 
 #### 256GB Drives ####
 USB256DRV1="usb256-01"
@@ -27,7 +29,7 @@ HDDRV4=""
 if [ -f "/tmp/backupsvr.lock" ]; then
   echo "already running!"
   echo "run 'svrutil rmlock' to manually remove lock if program failed"
-  ENDPGRM
+  exit
 else
   touch /tmp/backupsvr.lock
 fi
@@ -39,10 +41,11 @@ echo "press ctrl+a then ctrl+d to detach terminal"
 echo "run 'screen -r' to reattach to this terminal"
 echo "***************************************************"
 echo " "
-if [[ "$CHECKSUM" == "--checksum" ]]
+if [[ "$chksum" == "yes" ]]
 then
   echo "checksum compare option selected, this backup will take awhile!"
   echo " "
+  CHECKSUM="--checksum"
 fi
 
 ###################################

@@ -14,6 +14,7 @@ truncate -s 0 /root/.bash_history
 truncate -s 0 /home/pi/.xsession-errors
 truncate -s 0 /home/pi/.bash_history
 truncate -s 0 /tmp/netstat.txt
+rm -rf /home/pi/.config/chromium/hyphen-data/*
 rm -rf /var/www/sessions/*
 
 exit

@@ -171,7 +171,7 @@ exit
 
 ## PC Power
 pcon)
-if ping -W 1 -c 1 z97mx.home > /dev/null 2> /dev/null
+if ping -W 1 -c 1 wkst.home > /dev/null 2> /dev/null
 then
   echo "Host is up"
 else
@@ -181,7 +181,7 @@ exit
 ;;
 ##
 pcoff)
-if ping -W 1 -c 1 z97mx.home > /dev/null 2> /dev/null
+if ping -W 1 -c 1 wkst.home > /dev/null 2> /dev/null
 then
   /opt/rpi/xmit rfb3
 else
@@ -276,7 +276,7 @@ roomon)
 ## Desktop Power
 /opt/rpi/xmit rfb2 on
 ## PC Power On
-if ping -W 1 -c 1 z97mx.home > /dev/null 2> /dev/null
+if ping -W 1 -c 1 wkst.home > /dev/null 2> /dev/null
 then
   echo "Host is up"
 else
@@ -299,7 +299,7 @@ roomoff)
 ## Desktop Power
 /opt/rpi/xmit rfb2 off
 ## PC Power Off
-if ping -W 1 -c 1 z97mx.home > /dev/null 2> /dev/null
+if ping -W 1 -c 1 wkst.home > /dev/null 2> /dev/null
 then
   /opt/rpi/xmit rfb3
 else

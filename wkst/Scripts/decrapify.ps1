@@ -11,7 +11,6 @@ If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 }
 
 
-
 ##########
 # Privacy Settings
 ##########
@@ -138,55 +137,6 @@ Set-Service "DiagTrack" -StartupType Disabled
 ##########
 # Service Tweaks
 ##########
-
-# Lower UAC level
-# Write-Host "Lowering UAC level..."
-# Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Type DWord -Value 0
-# Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 0
-
-# Raise UAC level
-# Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Type DWord -Value 5
-# Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -Type DWord -Value 1
-
-# Enable sharing mapped drives between users
-# Write-Host "Enabling sharing mapped drives between users..."
-# Set-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLinkedConnections" -Type DWord -Value 1
-
-# Disable sharing mapped drives between users
-# Remove-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLinkedConnections"
-
-# Disable Firewall
-# Write-Host "Disabling Firewall..."
-# Set-NetFirewallProfile -Profile * -Enabled False
-
-# Enable Firewall
-# Set-NetFirewallProfile -Profile * -Enabled True
-
-# Disable Windows Defender
-# Write-Host "Disabling Windows Defender..."
-# Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware" -Type DWord -Value 1
-
-# Enable Windows Defender
-# Remove-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows Defender" -Name "DisableAntiSpyware"
-
-# Disable Windows Update automatic restart
-Write-Host "Disabling Windows Update automatic restart..."
-Set-ItemProperty -Path "HKLM:\Software\Microsoft\WindowsUpdate\UX\Settings" -Name "UxOption" -Type DWord -Value 1
-
-# Enable Windows Update automatic restart
-# Set-ItemProperty -Path "HKLM:\Software\Microsoft\WindowsUpdate\UX\Settings" -Name "UxOption" -Type DWord -Value 0
-
-# Stop and disable Home Groups services
-Write-Host "Stopping and disabling Home Groups services..."
-Stop-Service "HomeGroupListener"
-Set-Service "HomeGroupListener" -StartupType Disabled
-Stop-Service "HomeGroupProvider"
-Set-Service "HomeGroupProvider" -StartupType Disabled
-
-# Enable and start Home Groups services
-# Set-Service "HomeGroupListener" -StartupType Manual
-# Set-Service "HomeGroupProvider" -StartupType Manual
-# Start-Service "HomeGroupProvider"
 
 # Disable Remote Assistance
 Write-Host "Disabling Remote Assistance..."
@@ -371,48 +321,12 @@ If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive")) {
 }
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC" -Type DWord -Value 1
 
-# Enable OneDrive
-# Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive" -Name "DisableFileSyncNGSC"
-
-# Uninstall OneDrive (WINDOWS WILL NOT SYSPREP WITHOUT IT!)
-# Write-Host "Uninstalling OneDrive..."
-# Stop-Process -Name OneDrive -ErrorAction SilentlyContinue
-# Start-Sleep -s 3
-# $onedrive = "$env:SYSTEMROOT\SysWOW64\OneDriveSetup.exe"
-# If (!(Test-Path $onedrive)) {
-# 	$onedrive = "$env:SYSTEMROOT\System32\OneDriveSetup.exe"
-# }
-# Start-Process $onedrive "/uninstall" -NoNewWindow -Wait
-# Start-Sleep -s 3
-# Stop-Process -Name explorer -ErrorAction SilentlyContinue
-# Start-Sleep -s 3
-# Remove-Item "$env:USERPROFILE\OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
-# Remove-Item "$env:LOCALAPPDATA\Microsoft\OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
-# Remove-Item "$env:PROGRAMDATA\Microsoft OneDrive" -Force -Recurse -ErrorAction SilentlyContinue
-# If (Test-Path "$env:SYSTEMDRIVE\OneDriveTemp") {
-# 	Remove-Item "$env:SYSTEMDRIVE\OneDriveTemp" -Force -Recurse -ErrorAction SilentlyContinue
-# }
-# If (!(Test-Path "HKCR:")) {
-# 	New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT | Out-Null
-# }
-# Remove-Item -Path "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
-# Remove-Item -Path "HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}" -Recurse -ErrorAction SilentlyContinue
-
-# Install OneDrive
-# $onedrive = "$env:SYSTEMROOT\SysWOW64\OneDriveSetup.exe"
-# If (!(Test-Path $onedrive)) {
-# 	$onedrive = "$env:SYSTEMROOT\System32\OneDriveSetup.exe"
-# }
-# Start-Process $onedrive -NoNewWindow
-
 # Uninstall default Microsoft applications
 Write-Host "Uninstalling default Microsoft applications..."
-Get-AppxPackage "Microsoft.Windows.Photos" | Remove-AppxPackage
 Get-AppxPackage "Microsoft.CommsPhone" | Remove-AppxPackage
 Get-AppxPackage "Microsoft.YourPhone" | Remove-AppxPackage
 Get-AppxPackage "Microsoft.WindowsPhone" | Remove-AppxPackage
 Get-AppxPackage "Microsoft.SkypeApp" | Remove-AppxPackage
-Get-AppxPackage "Microsoft.WindowsSoundRecorder" | Remove-AppxPackage
 Get-AppxPackage "Microsoft.XboxApp" | Remove-AppxPackage
 Get-AppxPackage "Microsoft.ZuneMusic" | Remove-AppxPackage
 Get-AppxPackage "Microsoft.ZuneVideo" | Remove-AppxPackage
@@ -460,13 +374,6 @@ Get-AppBackgroundTask "Microsoft.XboxIdentityProvider" | Remove-AppPackage
 # robocopy /S /SEC /R:0 "C:\Mnt\Program Files\WindowsApps" "C:\Program Files\WindowsApps"
 # dism /Unmount-Image /Discard /MountDir:C:\Mnt
 # Remove-Item -Path C:\Mnt -Recurse
-
-# Uninstall Windows Media Player
-# Write-Host "Uninstalling Windows Media Player..."
-# dism /online /Disable-Feature /FeatureName:MediaPlayback /Quiet /NoRestart
-
-# Install Windows Media Player
-# dism /online /Enable-Feature /FeatureName:MediaPlayback /Quiet /NoRestart
 
 # Uninstall Work Folders Client
 Write-Host "Uninstalling Work Folders Client..."

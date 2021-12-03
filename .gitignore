@@ -3,6 +3,7 @@ rpi/manager
 rpi/BaseOS*
 sources
 wkst/*.pdf
+wkst/*.zip
 wkst/ProductKeys.txt
 wkst/Scripts/exes
 pve/network

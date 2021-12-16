@@ -336,6 +336,12 @@ rm -f /boot/apd.enable
 ## Default Boot Config
 cp -f $BIN/config.txt /boot/
 
+## Pi Zero W 2 Support
+if [ ! -e /boot/bcm2710-rpi-zero-2.dtb ]; then
+  echo "Copying Pi Zero W 2 ROM file to boot partition."
+  cp -f /opt/rpi/pkgs/bcm2710-rpi-zero-2.dtb /boot/
+fi
+
 ## OverlayFS Configuration
 cp -f $BIN/overlayRoot.sh /sbin
 chmod 755 /sbin/overlayRoot.sh
@@ -354,6 +360,7 @@ chmod 644 /boot/cmdline.txt
 chown root:root /boot/cmdline.txt
 
 ## WiFi Configuration
+raspi-config nonint do_wifi_country US
 cp -f $BIN/wpa.empty /etc/wpa_supplicant/wpa_supplicant.empty
 chmod 644 /etc/wpa_supplicant/wpa_supplicant.empty
 chown root:root /etc/wpa_supplicant/wpa_supplicant.empty

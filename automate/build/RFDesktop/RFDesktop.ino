@@ -2,14 +2,11 @@
  * Ben Provenzano III
  * -----------------
  * Nov. 22th 2015
- 433MHz Wireless Receiver Paired with Arduino UNO running on channel characters (j,k,l,m,n,o,p,q) RS232 1200baud
- ** Patent Pending **
- * Wireless 433Mhz Desktop Automation Controller/Receiver
+ * Wireless 433Mhz Automation Controller/Receiver
  * v2
  *
  */
  
-
 #include <RCSwitch.h>
 
 RCSwitch mySwitch = RCSwitch();
@@ -21,13 +18,12 @@ boolean lastToggleState0;  // hold last state to sense when switch is changed
 boolean toggleState1; // hold current state of switch
 boolean lastToggleState1;  // hold last state to sense when switch is changed
 
-#define switch1 5 // [Pin #11] (Overhead Light)
-#define switch2 6 // [Pin #12] (Desktop E-Stop)
+#define switch1 5 // [Pin #11]
+#define switch2 6 // [Pin #12]
 
-#define relay1 9 //(Light 2 / Overhead Light) // [Pin #15]
-#define relay2 10 //(Desk Power) // [Pin #16]
-#define relay3 11 // (Desk Power HC) // [Pin #17]
-
+#define relay1 9  // [Pin #15]
+#define relay2 10 // [Pin #16]
+#define relay3 11 // [Pin #17]
 
 void setup() {
   //Serial.begin(1200);
@@ -46,7 +42,7 @@ void setup() {
 
 void loop () {
 
-  toggleState0 = digitalRead(switch1); 
+toggleState0 = digitalRead(switch1); 
 
 if (millis() - toggleTimer0 > 100){  // debounce switch 100ms timer
   if (toggleState0 && !lastToggleState0) {  // if switch is on but was previously off
@@ -69,13 +65,13 @@ if (millis() - toggleTimer1 > 100){  // debounce switch 100ms timer
   if (toggleState1 && !lastToggleState1) {  // if switch is on but was previously off
     lastToggleState1 = true;  // switch is now on
     toggleTimer1 = millis();  // reset timer
-    digitalWrite(relay3, HIGH);
+    digitalWrite(relay2, HIGH);
   }
 
   if (!toggleState1 && lastToggleState1){  // if switch is off but was previously on
     lastToggleState1 = false; // switch is now off
     toggleTimer1 = millis(); // reset timer
-    digitalWrite(relay3, LOW);
+    digitalWrite(relay2, LOW);
     }
 }
 
@@ -84,38 +80,41 @@ if (millis() - toggleTimer1 > 100){  // debounce switch 100ms timer
     unsigned long value = mySwitch.getReceivedValue();
     
     
-    if (value == 864341) //relay 1 on (Overhead Light On)
+    if (value == 864341) //relay 1 on
     {
       digitalWrite(relay1, HIGH);
-      delay(100); 
+      delay(50); 
     }
     
-    if (value == 864342) //relay 1 off (Overhead Light Off)
+    if (value == 864342) //relay 1 off
     {
       digitalWrite(relay1, LOW);
-      delay(100);
+      delay(50);
     } 
     
-    if (value == 864343) //relay 2 (12v Aux Pulse)
+    if (value == 864343) //relay 2 on
     {
       digitalWrite(relay2, HIGH);
-      delay(275);
+      delay(50);
+    }
+
+    if (value == 864344) //relay 2 off
+    {
       digitalWrite(relay2, LOW);
-      delay(100);
+      delay(50);
     }
     
-    if (value == 864345) //relay 3 on (Desk Power On)
+    if (value == 864345) //relay 3 on
     {
       digitalWrite(relay3, HIGH);
-      delay(100);
+      delay(50);
     }
     
-    if (value == 864346) //relay 3 off (Desk Power Off)
+    if (value == 864346) //relay 3 off
     {
       digitalWrite(relay3, LOW);
-      delay(100);  
+      delay(50);  
     } 
-    
     
     {
 

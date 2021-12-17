@@ -255,38 +255,38 @@ if [[ "$CMD" == "rfa3off" ]]; then
    XMIT
 fi
 
-if [[ "$CMD" == "rfb1on" ]]; then
-   XMITCMD="rftx.864341"
-   XMIT
-fi
-
-if [[ "$CMD" == "rfb1off" ]]; then
-   XMITCMD="rftx.864342"
-   XMIT
-fi
-
-if [[ "$CMD" == "rfb2on" ]]; then
-   XMITCMD="rftx.864345"
-   XMIT
-fi
-
-if [[ "$CMD" == "rfb2off" ]]; then
-   XMITCMD="rftx.864346"
-   XMIT
-fi
-
 if [[ "$CMD" == "rfb3" ]]; then
    XMITCMD="fet.tgl.32"
    XMIT
 fi
 
 if [[ "$CMD" == "rfc1on" ]]; then
-   XMITCMD="rftx.834511"
+   XMITCMD="rftx.864341"
    XMIT
 fi
 
 if [[ "$CMD" == "rfc1off" ]]; then
-   XMITCMD="rftx.834512"
+   XMITCMD="rftx.864342"
+   XMIT
+fi
+
+if [[ "$CMD" == "rfc2on" ]]; then
+   XMITCMD="rftx.864343"
+   XMIT
+fi
+
+if [[ "$CMD" == "rfc2off" ]]; then
+   XMITCMD="rftx.864344"
+   XMIT
+fi
+
+if [[ "$CMD" == "rfc3on" ]]; then
+   XMITCMD="rftx.864345"
+   XMIT
+fi
+
+if [[ "$CMD" == "rfc3off" ]]; then
+   XMITCMD="rftx.864346"
    XMIT
 fi
 

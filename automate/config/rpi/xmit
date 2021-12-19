@@ -212,18 +212,7 @@ if [[ "$CMD" == "inauto" ]]; then
    XMIT
 fi
 
-### External Power Outputs (disabled)
-
-#if [[ "$CMD" == "fet0on" ]]; then
-#   XMITCMD="fet.on.6"
-#   XMIT
-#fi
-#If [[ "$CMD" == "fet0off" ]]; then
-#   XMITCMD="fet.off.6"
-#   XMIT
-#fi
-
-### 433MHz RF Controller
+## RF Power Controller (under dresser)
 
 if [[ "$CMD" == "rfa1on" ]]; then
    XMITCMD="rftx.734735"
@@ -255,38 +244,54 @@ if [[ "$CMD" == "rfa3off" ]]; then
    XMIT
 fi
 
+## ESP32 Toggle PC Power
+
 if [[ "$CMD" == "rfb3" ]]; then
    XMITCMD="fet.tgl.32"
    XMIT
 fi
 
-if [[ "$CMD" == "rfc1on" ]]; then
+## RF Relay Controller Board 
+
+if [[ "$CMD" == "rfb1on" ]]; then
    XMITCMD="rftx.864341"
    XMIT
 fi
 
-if [[ "$CMD" == "rfc1off" ]]; then
+if [[ "$CMD" == "rfb1off" ]]; then
    XMITCMD="rftx.864342"
    XMIT
 fi
 
-if [[ "$CMD" == "rfc2on" ]]; then
+if [[ "$CMD" == "rfb2on" ]]; then
    XMITCMD="rftx.864343"
    XMIT
 fi
 
-if [[ "$CMD" == "rfc2off" ]]; then
+if [[ "$CMD" == "rfb2off" ]]; then
    XMITCMD="rftx.864344"
    XMIT
 fi
 
-if [[ "$CMD" == "rfc3on" ]]; then
+if [[ "$CMD" == "rfb3on" ]]; then
    XMITCMD="rftx.864345"
    XMIT
 fi
 
-if [[ "$CMD" == "rfc3off" ]]; then
+if [[ "$CMD" == "rfb3off" ]]; then
    XMITCMD="rftx.864346"
+   XMIT
+fi
+
+## Main Lamp Controller
+
+if [[ "$CMD" == "rfc1on" ]]; then
+   XMITCMD="rftx.834511"
+   XMIT
+fi
+
+if [[ "$CMD" == "rfc1off" ]]; then
+   XMITCMD="rftx.834512"
    XMIT
 fi
 

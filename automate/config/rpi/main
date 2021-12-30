@@ -317,6 +317,20 @@ fi
 exit
 ;;
 
+unifi)
+## Toggle Unifi Controller
+SYSDSTAT="$(systemctl is-active unifi.service)"
+if [ "${SYSDSTAT}" = "active" ]; then
+  echo "UniFi running, stopping service..."
+  systemctl stop unifi
+else 
+  echo "UniFi not running, starting service..."  
+  systemctl start unifi
+  echo "access at 'https://automate.home:8443/' "
+fi
+exit
+;;
+
 ### Examples of URL strings ###
 # http://automate:9300/exec.php?var=&arg=lightson&action=main
 # http://automate:9300/exec.php?var=&arg=lightsoff&action=main

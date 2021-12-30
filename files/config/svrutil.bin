@@ -110,19 +110,18 @@ fi
 if [[ $REPLY =~ ^[Ss]$ ]]
 then
   echo " "
-  echo "(a) Update automate configuration"  
+  echo "(u) Update automate configuration"  
   echo "(x) Start/stop xana - vnc://ben@xana:5091"
   echo "(d) Start/stop dev - ssh://root@dev"
-  echo "(u) Startup unifi controller"
-  echo "(s) Stop unifi controller"
-  echo "(n) Attach/detach shares"
+  echo "(c) Start/stop unifi controller"
+  echo "(a) Attach/detach shares"
   echo " "
   REPLY=""
   read -p "select option: " -n 1 -r
   echo
   ## Update Automate Configuration
   ##################################    
-  if [[ $REPLY =~ ^[Aa]$ ]]
+  if [[ $REPLY =~ ^[Uu]$ ]]
   then
     curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
     echo " "
@@ -139,26 +138,16 @@ then
     REPLY=""
   fi
   ##################################  
-  ## Start UniFi controller
-  if [[ $REPLY =~ ^[Uu]$ ]]
+  ## Start/Stop UniFi controller
+  if [[ $REPLY =~ ^[Cc]$ ]]
   then
     echo " "
-    echo "starting UniFi controller..."
-    echo "access at 'https://automate.home:8443/' "
-    ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl restart unifi"
-    REPLY=""
-  fi
-  ## Stop UniFi controller
-  if [[ $REPLY =~ ^[Ss]$ ]]
-  then
-    echo " "
-    echo "shutting down UniFi controller..."
-    ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl stop unifi"
+    ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "/opt/rpi/main unifi"
     REPLY=""
   fi
   ##################################  
   ## Share Drive Access
-  if [[ $REPLY =~ ^[Nn]$ ]]
+  if [[ $REPLY =~ ^[Aa]$ ]]
   then
     echo " "
     echo "(s) Attach snapshot share"

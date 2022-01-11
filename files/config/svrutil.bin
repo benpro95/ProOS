@@ -66,8 +66,9 @@ echo "last login:"
 lastlog -u server
 echo " "
 echo "(b) Backup utility"
-echo "(l) List drive usage"
-echo "(s) System configuration"
+echo "(l) List server disk usage"
+echo "(n) Port scan active network devices"
+echo "(s) Server configuration"
 echo "(g) Generate a server log"
 echo "(p) Backup ProOS to GitHub"
 echo "(enter) Exit to shell"
@@ -93,6 +94,17 @@ if [[ $REPLY =~ ^[Ll]$ ]]
 then
   echo " "
   df -h
+  ENDPGRM
+fi
+
+## Port scan active network devices
+if [[ $REPLY =~ ^[Nn]$ ]]
+then
+  echo " "
+  echo "Scanning network range 10.177.1.1 to 10.177.1.253..."
+  nmap --unprivileged -v --open -PT 10.177.1.0/24 > /tmp/nmap.txt
+  nmap --unprivileged -v --open -sn 10.177.1.0/24 >> /tmp/nmap.txt
+  cat /tmp/nmap.txt
   ENDPGRM
 fi
 

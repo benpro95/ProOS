@@ -207,7 +207,7 @@ rm -f /opt/rpi/manager/client.css
 cp -r /opt/rpi/manager/client.orig.css /opt/rpi/manager/client.css
 sed -i 's/HoverOverTop/891c2f/g' /opt/rpi/manager/client.css
 sed -i 's/ButtonShadowFrame/703b3e/g' /opt/rpi/manager/client.css
-sed -i 's/ButtonColour/470415/g' /opt/rpi/manager/client.css
+sed -i 's/ButtonColour/32020C/g' /opt/rpi/manager/client.css
 sed -i 's/ActiveMenuTop/8e0202/g' /opt/rpi/manager/client.css
 sed -i 's/ActiveMenuBtm/440b14/g' /opt/rpi/manager/client.css
 sed -i 's/BackgroundTop/5e0115/g' /opt/rpi/manager/client.css

@@ -11,7 +11,7 @@ apt-get --yes update
 apt-get install -y --no-upgrade --ignore-missing unzip wget \
  rsync curl screen scrub ethtool aptitude sudo samba sshpass \
  libdbus-1-dev libdbus-glib-1-dev bc git locales mailutils \
- bpytop neofetch apt-transport-https
+ bpytop neofetch apt-transport-https nmap
 
 ## Remove Packages
 apt-get remove -y --purge htop

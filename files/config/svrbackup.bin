@@ -54,10 +54,7 @@ fi
 for ((i=1; i<5; i++))
 do
   USB256VAR="USB256DRV$i"
-  if [ "${!USB256VAR}" = "" ] ; then
-    echo "no drive specified."
-    echo " "
-  else
+  if [ "${USB256VAR}" = "" ] ; then
     if [ ! -e /mnt/extbkps/${!USB256VAR}/Ben ] ; then
       echo "drive not connected ${!USB256VAR}"
       echo " "
@@ -99,10 +96,7 @@ done
 for ((i=1; i<5; i++))
 do
   USB128VAR="USB128DRV$i"
-  if [ "${!USB128VAR}" = "" ] ; then
-    echo "no drive specified."
-    echo " "
-  else
+  if [ "${USB128VAR}" = "" ] ; then
     if [ ! -e /mnt/extbkps/${!USB128VAR}/Ben ]; then
       echo "drive not connected ${!USB128VAR}"
       echo " "
@@ -137,10 +131,7 @@ done
 for ((i=1; i<5; i++))
 do
   HDDVAR="HDDRV$i"
-  if [ "${!HDDVAR}" = "" ] ; then
-    echo "no drive specified."
-    echo " "
-  else
+  if [ "${HDDVAR}" = "" ] ; then
     if [ ! -e /mnt/extbkps/${!HDDVAR}/Ben ]; then
       echo "drive not connected ${!HDDVAR}"
       echo " "

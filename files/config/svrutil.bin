@@ -13,11 +13,12 @@ echo " "
 REPLY=""
 read -p "select (s) for shell or (enter) to return: " -n 1 -r
 echo
-clear
 if [[ $REPLY =~ ^[Ss]$ ]]
 then
+  clear
   exit
 else
+  clear
   MAINPGRM
 fi
 ###############################

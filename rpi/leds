@@ -78,10 +78,7 @@ fi
 
 ## Read LED Type
 if [ ! -e /opt/rpi/ledtype.txt ]; then
-  echo "LEDtype not defined."
   exit
-else
-  echo ""  > /dev/null 2>&1
 fi
 LEDTYPE=`cat /opt/rpi/ledtype.txt`
 

@@ -13,11 +13,11 @@ echo " "
 REPLY=""
 read -p "select (s) for shell or (enter) to return: " -n 1 -r
 echo
+clear
 if [[ $REPLY =~ ^[Ss]$ ]]
 then
   exit
 else
-  clear
   MAINPGRM
 fi
 ###############################
@@ -345,7 +345,10 @@ fi
 
 BKPPGRM () {
 ##### BEGIN BACKUP FUNCTION #####
-/usr/bin/svrbackup.bin $wait_time $checksum
+scr_num=$(echo $RANDOM) 
+/usr/bin/screen -dmS $scr_num /usr/bin/svrbackup.bin $wait_time $checksum
+sleep 0.25
+screen -rS $scr_num
 ##### END BACKUP FUNCTION #####
 }
 

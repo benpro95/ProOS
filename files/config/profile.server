@@ -10,10 +10,9 @@ alias ll='ls $LS_OPTIONS -l'
 alias l='ls $LS_OPTIONS -lA'
 
 ## Start Main Menu
-/usr/bin/svrutil
+/usr/bin/svrutil.bin
 
 uname -m -n -s -o -r
-echo "enter 'screen -r' to resume detached menu"
 echo "enter 'svrutil' to return to main menu"
 cd ~/ProOS
 ls

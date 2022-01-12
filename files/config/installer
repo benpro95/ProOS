@@ -91,12 +91,11 @@ chown root:root /etc/rsyslog.d/ignore-session-slice.conf
 systemctl restart rsyslog
 
 ## Main Menu Script
-cp /tmp/config/svrutil /usr/bin/
-chmod 755 /usr/bin/svrutil
-chown root:root /usr/bin/svrutil
+rm -f /usr/bin/svrutil
 cp /tmp/config/svrutil.bin /usr/bin/
 chmod 755 /usr/bin/svrutil.bin
 chown root:root /usr/bin/svrutil.bin
+ln -s /usr/bin/svrutil.bin /usr/bin/svrutil
 cp /tmp/config/svrbackup.bin /usr/bin/
 chmod 755 /usr/bin/svrbackup.bin
 chown root:root /usr/bin/svrbackup.bin

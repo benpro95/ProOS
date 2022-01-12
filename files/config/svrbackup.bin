@@ -201,3 +201,5 @@ if [[ $REPLY =~ ^[Ss]$ ]]
 then
   cat /mnt/extbkps/keytmp/status.txt
 fi
+
+exit

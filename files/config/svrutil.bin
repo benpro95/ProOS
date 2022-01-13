@@ -15,6 +15,7 @@ read -p "select (s) for shell or (enter) to return: " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Ss]$ ]]
 then
+  tput clear
   exit
 else
   clear
@@ -70,7 +71,7 @@ echo "(l) List server disk usage"
 echo "(n) Port scan active network devices"
 echo "(s) Server configuration"
 echo "(g) Generate a server log"
-echo "(p) Backup ProOS to GitHub"
+echo "(p) Push ProOS to GitHub"
 echo "(enter) Exit to shell"
 echo " "
 read -p "select option: " -n 1 -r
@@ -80,7 +81,7 @@ echo
 if [[ $REPLY =~ ^[pP]$ ]]
 then
   TIMESTMP=$(date '+%Y-%m-%d %H:%M')
-  echo "Uploading changes to GitHub..."
+  echo "uploading changes to GitHub..."
   cd /mnt/datastore/Ben/ProOS
   git add .
   git commit -m "$TIMESTMP"
@@ -101,7 +102,7 @@ fi
 if [[ $REPLY =~ ^[Nn]$ ]]
 then
   echo " "
-  echo "Scanning network range 10.177.1.1 to 10.177.1.253..."
+  echo "scanning network range 10.177.1.1 to 10.177.1.253..."
   nmap --unprivileged -v --open -PT 10.177.1.0/24 > /tmp/nmap.txt
   nmap --unprivileged -v --open -sn 10.177.1.0/24 >> /tmp/nmap.txt
   cat /tmp/nmap.txt
@@ -113,7 +114,7 @@ if [[ $REPLY =~ ^[Gg]$ ]]
 then
   touch /mnt/extbkps/keytmp/createlog.txt
   echo " "
-  echo "Wait one-minute, server log will be created at"
+  echo "wait one-minute, server log will be created at"
   echo "SMB: \\files\Downloads\Server.log"
   ENDPGRM
 fi
@@ -122,11 +123,11 @@ fi
 if [[ $REPLY =~ ^[Ss]$ ]]
 then
   echo " "
-  echo "(u) Update automate configuration"  
-  echo "(x) Start/stop xana - vnc://ben@xana:5091"
-  echo "(d) Start/stop dev - ssh://root@dev"
-  echo "(c) Start/stop unifi controller"
-  echo "(a) Attach/detach shares"
+  echo "(u) update automate configuration"  
+  echo "(x) start/stop xana - vnc://ben@xana:5091"
+  echo "(d) start/stop dev - ssh://root@dev"
+  echo "(c) start/stop unifi controller"
+  echo "(a) attach/detach shares"
   echo " "
   REPLY=""
   read -p "select option: " -n 1 -r
@@ -137,14 +138,14 @@ then
   then
     curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
     echo " "
-    echo "Updating Automate System Configuration..."
+    echo "updating automate system configuration..."
     ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "rm -rfv /opt/rpi/remotes"
     rsync -e "ssh -i ~/ProOS/.ssh/automate.rsa" --progress --checksum -rtv ~/ProOS/automate/config/rpi/* root@automate.home:/opt/rpi/
     echo " "
-    echo "Restarting Lighttpd Web Server..."
+    echo "restarting lighttpd web server..."
     ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl restart lighttpd"
     echo " "
-    echo "Restarting Unified Remote Server..."
+    echo "restarting unified remote server..."
     ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl restart urserver"
     curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"
     REPLY=""
@@ -162,8 +163,8 @@ then
   if [[ $REPLY =~ ^[Aa]$ ]]
   then
     echo " "
-    echo "(s) Attach snapshot share"
-    echo "(d) Detach snapshot share"
+    echo "(s) attach snapshot share"
+    echo "(d) detach snapshot share"
     echo " "
     REPLY=""
     read -p "select option: " -n 1 -r
@@ -244,7 +245,7 @@ then
   ENDPGRM  
 fi
 
-## Backup to external drives (must be last)
+## Backup to external drives
 if [[ $REPLY =~ ^[Bb]$ ]]
 then
   echo " "
@@ -252,8 +253,8 @@ then
   echo "#### ProServer Backup Utility ####"
   echo "##################################"
   echo " "
-  echo "(a) Attach drives, start backup"
-  echo "(d) Detach drives only"
+  echo "(a) attach drives, start backup"
+  echo "(d) detach drives only"
   echo "(enter) drives status, start backup"
   echo " "
   REPLY=""
@@ -302,9 +303,9 @@ then
   ## Backup Drives Status
   cat /mnt/extbkps/keytmp/status.txt
   echo " "
-  echo "(b) Start standard backup"
-  echo "(c) Start checksum compare backup"
-  echo "(s) Re-check drives status"
+  echo "(b) start standard backup"
+  echo "(c) start checksum compare backup"
+  echo "(s) re-check drives status"
   echo "(enter) exit backup program"
   echo " "
   REPLY=""
@@ -314,9 +315,9 @@ then
   then
     cat /mnt/extbkps/keytmp/status.txt
     echo " "
-    echo "(b) Start standard backup"
-    echo "(c) Start checksum compare backup"
-    echo "(enter) Exit backup program"
+    echo "(b) start standard backup"
+    echo "(c) start checksum compare backup"
+    echo "(enter) exit backup program"
     echo " "
     REPLY=""
     read -p "enter option: " -n 1 -r
@@ -337,9 +338,10 @@ then
     BKPPGRM
   fi
   ENDPGRM
-else
-  exit
 fi
+### runs when (enter) on main menu
+tput clear
+exit
 ##### END MAIN FUNCTION #####
 }
 

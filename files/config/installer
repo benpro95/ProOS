@@ -127,17 +127,9 @@ chmod 644 /etc/hosts.deny
 chown root:root /etc/hosts.deny
 
 ## Clean-up
-rm -f /usr/bin/vmutil
-rm -f /usr/bin/bkputil.bin
-rm -f /usr/bin/bkputil
-rm -f /usr/bin/logutil
-rm -f /usr/bin/backupsvr
-rm -f /usr/bin/backupsvr.bin
-rm -f /usr/bin/archiveshare
-rm -f /usr/bin/snapshare
 systemctl daemon-reload
 rm -r /tmp/config/
 apt-get autoremove -y
+sleep 1.25
 apt-get autoclean -y
-apt-get clean -y
 exit

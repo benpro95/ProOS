@@ -15,7 +15,6 @@ read -p "select (s) for shell or (enter) to return: " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Ss]$ ]]
 then
-  clear
   exit
 else
   clear

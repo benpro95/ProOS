@@ -23,6 +23,8 @@ systemctl start motion
 systemctl start rpi-camcleanup.timer
 ## Auto Restart Motion
 systemctl start rpi-motionping.timer
+## Auto Restart Pi Weekly
+systemctl start rpi-rebootpi.timer
 ## Disable HDMI
 /usr/bin/tvservice -o
 exit

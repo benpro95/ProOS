@@ -15,7 +15,7 @@ VARB=$2
 #echo "$VARB" | tee -a /tmp/motionfile.log
 
 ## Copy video to Google Drive
-if ! ping -c 1 8.8.8.8 > /dev/null 2> /dev/null; then
+if [ ! -e /mnt/gsync/Current ]; then
   echo "Google Drive not connected."
   if [ ! -e /media/usb0/cameras ]; then
     echo "Flash drive not connected."

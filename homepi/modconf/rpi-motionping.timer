@@ -2,8 +2,7 @@
 Description=Restart motion if cameras disconnect
 
 [Timer]
-OnBootSec=10min
-OnUnitActiveSec=4min
+OnActiveSec=10min
 
 [Install]
 WantedBy=timers.target

@@ -1,0 +1,8 @@
+[Unit]
+Description=Restart Pi six days
+
+[Timer]
+OnActiveSec=144h
+
+[Install]
+WantedBy=timers.target

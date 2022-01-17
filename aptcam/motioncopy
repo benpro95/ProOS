@@ -5,8 +5,6 @@
 
 ## File Share IP
 SERVERIP=10.177.1.4
-## Google's IP
-GOOGLEIP=8.8.8.8
 
 ## Read camera name
 VARA=$1
@@ -21,9 +19,9 @@ VARB=$2
 
 ########################################################
 if ! ping -c 1 $SERVERIP > /dev/null 2> /dev/null; then
-  #echo "Server not connected."
-  if ! ping -c 1 $GOOGLEIP > /dev/null 2> /dev/null; then
-    #echo "Google Drive and server not connected."
+  echo "Server not connected."
+  if [ ! -e /mnt/gsync/Current ]; then
+    echo "Google Drive and server not connected."
     if [ ! -e /media/usb0/cameras ]; then
       echo "Flash drive not connected, discarding video."
     else
@@ -41,7 +39,7 @@ else
   mkdir -p /mnt/smb/Cameras/Current/$VARA
   cp -f $VARB.mp4 /mnt/smb/Cameras/Current/$VARA/
   ################################################
-  if ! ping -c 1 $GOOGLEIP > /dev/null 2> /dev/null; then
+  if [ ! -e /mnt/gsync/Current ]; then
     echo "Google Drive not connected."
   else
     #echo "Copying to Google Drive..."

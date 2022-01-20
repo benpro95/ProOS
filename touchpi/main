@@ -1,6 +1,6 @@
 #!/bin/bash
 ###########################################################
-## TouchPi main script by Ben Provenzano III ###############
+## TouchPi main script by Ben Provenzano III ##############
 ###########################################################
 ###########################################################
 
@@ -13,6 +13,7 @@ sh -c 'echo "120" > /sys/class/backlight/rpi_backlight/brightness'
 systemctl start lighttpd
 ## Start X Interface
 systemctl start rpi-x11
+systemctl start rpi-restartx.timer
 ## Disable HDMI (saves 30mA of power draw)
 /opt/vc/bin/tvservice -o
 ## Auto Hotspot (on boot only)

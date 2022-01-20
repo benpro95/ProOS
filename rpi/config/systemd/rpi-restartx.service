@@ -1,0 +1,8 @@
+[Unit]
+Description=Restart X11 Session
+
+[Service]
+LogLevelMax=notice
+Type=oneshot
+RemainAfterExit=no
+ExecStart=/bin/systemctl restart rpi-x11

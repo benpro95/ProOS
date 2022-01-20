@@ -34,6 +34,11 @@ dpkg --purge rsyslog
 rm -f /var/log/messages
 rm -f /var/log/syslog
 
+## System Configuration
+cp /tmp/config/sysctl.conf /etc
+chmod 644 /etc/sysctl.conf
+chown root:root /etc/sysctl.conf
+
 ## RPi Directory
 rm -rf /opt/rpi
 mkdir -p /opt/rpi

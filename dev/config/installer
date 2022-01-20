@@ -24,6 +24,11 @@ cp -f /tmp/config/sshd_config /etc/ssh/
 chmod 644 /etc/ssh/sshd_config
 chown root:root /etc/ssh/sshd_config
 
+## System Configuration
+cp /tmp/config/sysctl.conf /etc
+chmod 644 /etc/sysctl.conf
+chown root:root /etc/sysctl.conf
+
 ## AutoFS Configuration
 cp -f /tmp/config/auto.master /etc/
 chmod 644 /etc/auto.master

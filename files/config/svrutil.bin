@@ -102,7 +102,7 @@ fi
 if [[ $REPLY =~ ^[Nn]$ ]]
 then
   echo " "
-  echo "scanning network range 10.177.1.1 to 10.177.1.253..."
+  echo "scanning network..."
   nmap --unprivileged -v --open -PT 10.177.1.0/24 > /tmp/nmap.txt
   nmap --unprivileged -v --open -sn 10.177.1.0/24 >> /tmp/nmap.txt
   cat /tmp/nmap.txt

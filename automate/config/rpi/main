@@ -11,33 +11,12 @@ ARG2=$2
 ## Read the 1st Argument
 case "$1" in
 
-### Relaxation Sound Playback
-stoprelax)
-if ping -W 1 -c 1 hifimini.home > /dev/null 2> /dev/null
-then
-  echo "HiFi mini Found."
-  ## Stop Audio on HiFi mini
-  /usr/bin/curl -N -f -m 5 --silent "http://hifimini.home/exec.php?var=&arg=stoprelax&action=main"
-else
-  echo "HiFi mini Not Found."
-  ## Stop Audio on System
-  /usr/bin/curl -N -f -m 5 --silent "http://hifi.home/exec.php?var=&arg=stoprelax&action=main"
-  ## USB Decoder Input
-  /opt/rpi/xmit usb
-  ## Preamp DAC Input
-  /opt/rpi/xmit dac
-fi
-exit
-;;
-
 relax)
 if ping -W 1 -c 1 hifimini.home > /dev/null 2> /dev/null
 then
-  echo "HiFi-Mini Found."
   ## Play Audio in Loop on HiFi mini
   /usr/bin/curl -N -f -m 5 --silent "http://hifimini.home/exec.php?var=$ARG2&arg=relax&action=main"
 else
-  echo "HiFi-Mini Not Found."
   ## Play Audio in Loop on System
   /usr/bin/curl -N -f -m 5 --silent "http://hifi.home/exec.php?var=$ARG2&arg=relax&action=main"
   ## Optical Decoder Input
@@ -48,15 +27,30 @@ fi
 exit
 ;;
 
+### Relaxation Sound Playback
+stoprelax)
+if ping -W 1 -c 1 hifimini.home > /dev/null 2> /dev/null
+then
+  ## Stop Audio on HiFi mini
+  /usr/bin/curl -N -f -m 5 --silent "http://hifimini.home/exec.php?var=&arg=stoprelax&action=main"
+else
+  ## Stop Audio on System
+  /usr/bin/curl -N -f -m 5 --silent "http://hifi.home/exec.php?var=&arg=stoprelax&action=main"
+  ## USB Decoder Input
+  /opt/rpi/xmit usb
+  ## Preamp DAC Input
+  /opt/rpi/xmit dac
+fi
+exit
+;;
+
 ### Relaxation Volume Up
 relaxvup)
 if ping -W 1 -c 1 hifimini.home > /dev/null 2> /dev/null
 then
-  echo "HiFi-Mini Found."
   ## Increasing Volume on HiFi mini
   /usr/bin/curl -N -f -m 5 --silent "http://hifimini.home/exec.php?var=&arg=vup&action=main"
 else
-  echo "HiFi-Mini Not Found."
   ## Increasing Volume on System
   /opt/rpi/xmit upc
 fi
@@ -67,11 +61,9 @@ exit
 relaxvdwn)
 if ping -W 1 -c 1 hifimini.home > /dev/null 2> /dev/null
 then
-  echo "HiFi-Mini Found."
   ## Decreasing Volume on HiFi mini
   /usr/bin/curl -N -f -m 5 --silent "http://hifimini.home/exec.php?var=&arg=vdwn&action=main"
 else
-  echo "HiFi-Mini Not Found."
   ## Decreasing Volume on System
   /opt/rpi/xmit dwnc
 fi

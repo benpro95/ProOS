@@ -17,8 +17,8 @@ fi
 
 ## Local domain name
 #DOMAIN=".local"
-DOMAIN=".home"
-#DOMAIN=""
+#DOMAIN=".home"
+DOMAIN=""
 
 ## Set to current directory
 ROOTDIR=.

@@ -425,18 +425,7 @@ if [ ! -e /etc/systemd/system/proinit.service ]; then
   rm -f /etc/rpi-conf.done
 fi
 
-## Original Services (Restoring Stock Files)
-cp -f $BIN/systemd-tmpfiles-clean.service /lib/systemd/system/
-chmod -f 644 /lib/systemd/system/systemd-tmpfiles-clean.service
-chown -f root:root /lib/systemd/system/systemd-tmpfiles-clean.service
-cp -f $BIN/systemd-tmpfiles-setup.service /lib/systemd/system/
-chmod -f 644 /lib/systemd/system/systemd-tmpfiles-setup.service
-chown -f root:root /lib/systemd/system/systemd-tmpfiles-setup.service
-
 ## Replacement / New Services
-cp -f $BIN/systemd-udevd.service /lib/systemd/system/
-chmod -f 644 /lib/systemd/system/systemd-udevd.service
-chown -f root:root /lib/systemd/system/systemd-udevd.service
 cp -fvr $BIN/systemd/* /etc/systemd/system/
 chmod -fR 644 /etc/systemd/system/*.timer
 chown -fR root:root /etc/systemd/system/*.timer
@@ -746,9 +735,13 @@ fi
 cp -f $BIN/usbmount.conf /etc/usbmount
 chmod 644 /etc/usbmount/usbmount.conf
 chown root:root /etc/usbmount/usbmount.conf
-
-## USB Drive Detect
-cp -f $BIN/10-udev-disks.rules /etc/udev/rules.d
+## Automount Fix System Override
+mkdir -p /etc/systemd/system/systemd-udevd.service.d
+cp -f $BIN/udevd-override.conf /etc/systemd/system/systemd-udevd.service.d/override.conf
+chmod -f 644 /etc/systemd/system/systemd-udevd.service.d/override.conf
+chown -f root:root /etc/systemd/system/systemd-udevd.service.d/override.conf
+## Run script when USB drive plugged in 
+cp -f $BIN/10-udev-disks.rules /etc/udev/rules.d/
 chmod 644 /etc/udev/rules.d/10-udev-disks.rules
 chown root:root /etc/udev/rules.d/10-udev-disks.rules
 udevadm control --reload-rules

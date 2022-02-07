@@ -99,3 +99,15 @@ end
 actions.classical = function ()
 script.default('/usr/bin/screen -dm /bin/bash /opt/rpi/main relax classical');
 end
+
+actions.fan = function ()
+script.default('/usr/bin/screen -dm /bin/bash /opt/rpi/main relax fan');
+end
+
+actions.islands = function ()
+script.default('/usr/bin/screen -dm /bin/bash /opt/rpi/main relax islands');
+end
+
+actions.fields = function ()
+script.default('/usr/bin/screen -dm /bin/bash /opt/rpi/main relax fields');
+end

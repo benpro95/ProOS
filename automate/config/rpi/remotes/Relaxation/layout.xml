@@ -37,6 +37,11 @@
         <button text="Warp" ontap="warp" />
         <button text="Classical" ontap="classical" />
     </row>
+     <row>
+        <button text="Fan" ontap="fan" />
+        <button text="Islands" ontap="islands" />
+        <button text="Fields" ontap="fields" />
+    </row>
     <row>
         <button icon="pause" ontap="stop" />
     </row>

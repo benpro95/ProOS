@@ -100,14 +100,14 @@ apt-get -y update --allow-releaseinfo-change
 
 ## Essential Packages
 apt-get install -y --no-upgrade --ignore-missing locales console-setup \
- aptitude libnss-mdns usbutils zsync  v4l-utils libpq5 htop lsb-release \
+ aptitude libnss-mdns usbutils zsync v4l-utils libpq5 htop lsb-release \
  avahi-daemon avahi-discover avahi-utils hostapd dnsmasq unzip wget bc \
  rsync screen parallel sudo sed nano curl insserv wireless-regdb wireless-tools \
  uuid-runtime mpg321 omxplayer mpv mplayer espeak tightvncserver iptables \
  iw crda firmware-brcm80211 wpasupplicant dirmngr autofs triggerhappy apt-utils \
  build-essential git autoconf make libtool binutils i2c-tools cmake yasm \
- libmariadb3 texi2html socat nmap libtool bpytop autoconf automake pkg-config \
- keyboard-configuration ncftp
+ libmariadb3 texi2html socat nmap libtool autoconf automake pkg-config \
+ keyboard-configuration ncftp open-cobol
  
 ## Developer Packages 
 apt-get install -y --no-upgrade --ignore-missing libgtk2.0-dev libbluetooth3 libbluetooth-dev \
@@ -243,6 +243,9 @@ if [ "${OSVER}" = "bullseye" ]; then
     cd $BIN
   fi
 fi
+
+## Compile COBOL Programs
+cobc -x --free /opt/rpi/sources/colorscan.cbl -o /opt/rpi/colorscan
 
 ## Music Player Support
 apt-get install -y --no-upgrade --ignore-missing mpd mpc

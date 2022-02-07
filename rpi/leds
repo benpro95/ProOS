@@ -25,8 +25,7 @@ if [ -f "/tmp/ledstate.lock" ]; then
 else
     touch /tmp/ledstate.lock
 fi
-nice -n 10 /opt/rpi/pythproc /opt/rpi/color.py $RGB
-echo "Set LEDs to RGB values: $RGB"
+nice -n 10 /opt/rpi/colorscan "$VARA" | /opt/rpi/opc_client 127.0.0.1:7890
 rm -f /tmp/ledstate.lock
 }
 
@@ -39,9 +38,9 @@ if [ -f "/tmp/ledstate.lock" ]; then
 else
     touch /tmp/ledstate.lock
 fi
+echo "Set LEDs to perl program $VARA"
 export PERL5LIB=/opt/rpi
 /usr/bin/perl /opt/rpi/$VARA.pl
-echo "Set LEDs to perl program $VARA"
 rm -f /tmp/ledstate.lock
 }
 
@@ -54,12 +53,12 @@ if [ -f "/tmp/ledstate.lock" ]; then
 else
     touch /tmp/ledstate.lock
 fi
+echo "Set LEDs to python program $VARA"
 if [ "$VARA" = "rave"  ] || [ "$VARA" = "chase" ]; then
 	/usr/bin/nice -n 10 /opt/rpi/pythproc /opt/rpi/$VARA.py
 else
 	/usr/bin/nice -n 10 /opt/rpi/pythproc /opt/rpi/$VARA.py --layout /opt/rpi/wall.json	
 fi
-echo "Set LEDs to python program $VARA"
 rm -f /tmp/ledstate.lock
 }
 
@@ -82,7 +81,7 @@ if [ ! -e /opt/rpi/ledtype.txt ]; then
 fi
 LEDTYPE=`cat /opt/rpi/ledtype.txt`
 
-## If file exists run Node.js effect parser
+## Node.js effect parser
 if [ ! -e /opt/rpi/effects/$LEDTYPE/$VARA.opc ]; then
   echo "Node effect not found looking for others.."
 else
@@ -100,288 +99,95 @@ else
   exit
 fi
 
-############ THIS SECTION RAN IF NODE EFFECT NOT FOUND ###########
-
-case "$1" in
-
-fc)
-LEDSTOP
-if [ -f "/tmp/fcstate.lock" ]; then
+if [ "$VARA" = "fc" ]; then
+  LEDSTOP
+  if [ -f "/tmp/fcstate.lock" ]; then
     echo "already running"
     exit
-else
+  else
     touch /tmp/fcstate.lock
+  fi
+  ln -sf /opt/rpi/effects/$LEDTYPE/fcbin/fc$VARB.json /opt/rpi/effects/fc.json
+  systemctl restart rpi-fcserver
+  systemctl restart rpi-nodeopc
+  echo "LEDs brightness changed to $VARB%"
+  rm -f /tmp/fcstate.lock
+  exit
 fi
-ln -sf /opt/rpi/effects/$LEDTYPE/fcbin/fc$VARB.json /opt/rpi/effects/fc.json
-systemctl restart rpi-fcserver
-systemctl restart rpi-nodeopc
-echo "LEDs brightness changed to $VARB%"
-rm -f /tmp/fcstate.lock
-exit
-;;
 
-stop)
-LEDSTOP
-export PERL5LIB=/opt/rpi
-/usr/bin/perl /opt/rpi/blank.pl
-sleep 0.15
-/usr/bin/perl /opt/rpi/blank.pl
-killall -s KILL -w perl
-echo "LEDs blanked"
-## Clear Locks
-rm -f /tmp/ledstate.lock
-rm -f /tmp/fcstate.lock
-exit
-;;
+if [ "$VARA" = "stop" ]; then
+  ## Clear Locks
+  rm -f /tmp/ledstate.lock
+  rm -f /tmp/fcstate.lock
+  ## Don't exit here
+fi
 
-pause)
-LEDSTOP
-exit
-;;
-
-## Solid Colors
-
-red)
-RGB="255 0 0"
-COLOR_FUNC
-exit
-;;
-
-maroon)
-RGB="178 34 34"
-COLOR_FUNC
-exit
-;;
-
-pink)
-RGB="255 25 147"
-COLOR_FUNC
-exit
-;;
-
-lavender)
-RGB="255 192 203"
-COLOR_FUNC
-exit
-;;
-
-forest)
-RGB="68 180 57"
-COLOR_FUNC
-exit
-;;
-
-green)
-RGB="0 255 0"
-COLOR_FUNC
-exit
-;;
-
-blue)
-RGB="0 0 255"
-COLOR_FUNC
-exit
-;;
-
-indigo)
-RGB="75 0 230"
-COLOR_FUNC
-exit
-;;
-
-yellow)
-RGB="255 255 0"
-COLOR_FUNC
-exit
-;;
-
-purple)
-RGB="167 0 220"
-COLOR_FUNC
-exit
-;;
-
-violet)
-RGB="255 6 255"
-COLOR_FUNC
-exit
-;;
-
-plum)
-RGB="208 122 208"
-COLOR_FUNC
-exit
-;;
-
-salmon)
-RGB="238 130 98"
-COLOR_FUNC
-exit
-;;
-
-orange)
-RGB="242 109 1"
-COLOR_FUNC
-exit
-;;
-
-candle)
-RGB="255 147 41"
-COLOR_FUNC
-exit
-;;
-
-halogen)
-RGB="255 240 221"
-COLOR_FUNC
-exit
-;;
-
-tungsten)
-RGB="255 197 143"
-COLOR_FUNC
-exit
-;;
-
-sodium)
-RGB="255 183 76"
-COLOR_FUNC
-exit
-;;
-
-sunlight)
-RGB="255 247 255"
-COLOR_FUNC
-exit
-;;
-
-sky)
-RGB="64 156 255"
-COLOR_FUNC
-exit
-;;
-
-overcast)
-RGB="201 226 255"
-COLOR_FUNC
-exit
-;;
+if [ "$VARA" = "pause" ]; then
+  LEDSTOP
+  exit
+fi
 
 ## Python LED Effects
+if [ "$VARA" = "rave" ] || [ "$VARA" = "chase" ] || \
+   [ "$VARA" = "miami" ] || [ "$VARA" = "spark" ] || \
+   [ "$VARA" = "stripes" ] || [ "$VARA" = "lava" ] ; then
+  PYTH_FUNC
+  exit
+fi
 
-rave)
-PYTH_FUNC
-exit
-;;
-
-chase)
-PYTH_FUNC
-exit
-;;
-
-miami)
-PYTH_FUNC
-exit
-;;
-
-spark)
-PYTH_FUNC
-exit
-;;
-
-stripes)
-PYTH_FUNC
-exit
-;;
-
-lava)
-PYTH_FUNC
-exit
-;;
-
-## Java LED Effect Modifiers (Local)
-# spectro = gain adjust
-
-plus)
-export DISPLAY=":1"
-xdotool key plus
-exit
-;;
-
-minus)
-export DISPLAY=":1"
-xdotool key minus
-exit
-;;
+## Perl Effects
+if [ "$VARA" = "noise3" ] || [ "$VARA" = "blocks" ] || \
+   [ "$VARA" = "mandelbrot" ] || [ "$VARA" = "multitomaton" ] || \
+   [ "$VARA" = "ripple" ] || [ "$VARA" = "random" ] ; then
+  PERL_FUNC
+  exit
+fi
 
 ## Java LED Effects
 
-spectro)
-LEDSTOP
-if [ -f "/tmp/ledstate.lock" ]; then
-    echo "already running"
-    exit
-else
-    touch /tmp/ledstate.lock
+# Spectro Gain Adjust
+if [ "$VARA" = "plus" ]; then
+  export DISPLAY=":1"
+  xdotool key plus
+  exit
 fi
-/usr/bin/Xvfb :1 -screen 0 640x640x24 &
-sleep 1.0
-/opt/rpi/effects/spectro/SpectroGraph
-rm -f /tmp/ledstate.lock
-exit
-;;
 
-rainbow)
-LEDSTOP
-if [ -f "/tmp/ledstate.lock" ]; then
-    echo "already running"
-    exit
-else
-    touch /tmp/ledstate.lock
+if [ "$VARA" = "minus" ]; then
+  export DISPLAY=":1"
+  xdotool key minus
+  exit
 fi
-/usr/bin/Xvfb :1 -screen 0 640x640x24 &
-sleep 1.0
-/opt/rpi/effects/rainbow/rainbow
-rm -f /tmp/ledstate.lock
-exit
-;;
 
-## Perl Effects
+if [ "$VARA" = "spectro" ]; then
+  LEDSTOP
+  if [ -f "/tmp/ledstate.lock" ]; then
+      echo "already running"
+      exit
+  else
+      touch /tmp/ledstate.lock
+  fi
+  /usr/bin/Xvfb :1 -screen 0 640x640x24 &
+  sleep 1.0
+  /opt/rpi/effects/spectro/SpectroGraph
+  rm -f /tmp/ledstate.lock
+  exit
+fi
 
-noise3)
-PERL_FUNC
-exit
-;;
+if [ "$VARA" = "rainbow" ]; then
+  LEDSTOP
+  if [ -f "/tmp/ledstate.lock" ]; then
+      echo "already running"
+      exit
+  else
+      touch /tmp/ledstate.lock
+  fi
+  /usr/bin/Xvfb :1 -screen 0 640x640x24 &
+  sleep 1.0
+  /opt/rpi/effects/rainbow/rainbow
+  rm -f /tmp/ledstate.lock
+  exit
+fi
 
-blocks)
-PERL_FUNC
-exit
-;;
-
-mandelbrot)
-PERL_FUNC
-exit
-;;
-
-multitomaton)
-PERL_FUNC
-exit
-;;
-
-ripple)
-PERL_FUNC
-exit
-;;
-
-random)
-PERL_FUNC
-exit
-;;
-
-############ END OF ARGUMENT PARSING ############
-
-*)
-    echo "No effect found, exiting."
-	exit 1
-	;;
-esac
+## Solid Color
+COLOR_FUNC
+exit 

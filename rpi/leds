@@ -1,6 +1,6 @@
 #!/bin/bash
 ###########################################################
-####### LED parser script by Ben Provenzano III v12 #######
+###### LED Effects Script by Ben Provenzano III v15 #######
 ###########################################################
 
 ## Read Input Arguments
@@ -20,12 +20,12 @@ echo "Paused effects"
 COLOR_FUNC(){
 LEDSTOP
 if [ -f "/tmp/ledstate.lock" ]; then
-    echo "already running"
-    exit
+  echo "already running"
+  exit
 else
-    touch /tmp/ledstate.lock
+  touch /tmp/ledstate.lock
 fi
-nice -n 10 /opt/rpi/colorscan "$VARA" | /opt/rpi/opc_client 127.0.0.1:7890
+/usr/bin/nice -n 10 /opt/rpi/colorscan "$VARA" | /opt/rpi/opc_client 127.0.0.1:7890
 rm -f /tmp/ledstate.lock
 }
 
@@ -33,10 +33,10 @@ rm -f /tmp/ledstate.lock
 PERL_FUNC(){
 LEDSTOP
 if [ -f "/tmp/ledstate.lock" ]; then
-    echo "already running"
-    exit
+  echo "already running"
+  exit
 else
-    touch /tmp/ledstate.lock
+  touch /tmp/ledstate.lock
 fi
 echo "Set LEDs to perl program $VARA"
 export PERL5LIB=/opt/rpi
@@ -48,16 +48,16 @@ rm -f /tmp/ledstate.lock
 PYTH_FUNC(){
 LEDSTOP
 if [ -f "/tmp/ledstate.lock" ]; then
-    echo "already running"
-    exit
+  echo "already running"
+  exit
 else
-    touch /tmp/ledstate.lock
+  touch /tmp/ledstate.lock
 fi
 echo "Set LEDs to python program $VARA"
 if [ "$VARA" = "rave"  ] || [ "$VARA" = "chase" ]; then
-	/usr/bin/nice -n 10 /opt/rpi/pythproc /opt/rpi/$VARA.py
+  /usr/bin/nice -n 10 /opt/rpi/pythproc /opt/rpi/$VARA.py
 else
-	/usr/bin/nice -n 10 /opt/rpi/pythproc /opt/rpi/$VARA.py --layout /opt/rpi/wall.json	
+  /usr/bin/nice -n 10 /opt/rpi/pythproc /opt/rpi/$VARA.py --layout /opt/rpi/wall.json	
 fi
 rm -f /tmp/ledstate.lock
 }
@@ -69,9 +69,9 @@ if [ -e /opt/rpi/ledsync.txt ]; then
   LEDFILE='/opt/rpi/ledsync.txt'
   exec 4<$LEDFILE
   while read -u4 PSYNC ; do
-      echo "Sending $VARA command to $PSYNC LED server..."
-      /usr/bin/curl -N -f -m 10 --silent --data "var=$VARB&arg=$VARA&action=leds" http://$PSYNC:9300/exec.php
-      sleep 0.25
+    echo "Sending $VARA command to $PSYNC LED server..."
+    /usr/bin/curl -N -f -m 10 --silent --data "var=$VARB&arg=$VARA&action=leds" http://$PSYNC:9300/exec.php
+    sleep 0.25
   done
 fi
 

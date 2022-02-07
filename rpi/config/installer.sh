@@ -43,6 +43,9 @@ echo ""
 ## Turn off LEDs if installed
 /opt/rpi/leds stop
 
+## Disable Auto Reboot
+systemctl stop rpi-rebootpi.timer
+
 ###################################################
 ### Initial Configuration #########################
 if [ ! -e /etc/rpi-conf.done ]; then
@@ -275,13 +278,12 @@ groupmod -g 1005 motion
 usermod -u 1005 motion
 
 ## Remove Conflicts ***
-apt-get remove --purge -y exim4 exim4-base exim4-config exim4-daemon-light 
-apt-get remove --purge -y tigervnc-common tigervnc-standalone-server iptables-persistent bridge-utils
-apt-get remove --purge -y lxlock xscreensaver xscreensaver-data gvfs gvfs-backends vnc4server light-locker
-apt-get remove --purge -y desktop-file-utils exfat-fuse exfat-utils gdisk gnome-mime-data gvfs-common gvfs-daemons gvfs-libs
-apt-get remove --purge -y libatasmart4 libavahi-glib1 libbonobo2-0 libbonobo2-common libbonoboui2-0 libbonoboui2-common
-apt-get remove --purge -y libssl-doc libudisks2-0 libusbmuxd4 ntfs-3g udisks2 usbmuxd udhcpd wolfram-engine
-apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp vlc
+apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp udhcpd usbmuxd
+apt-get remove --purge -y exim4 exim4-base exim4-config exim4-daemon-light udisks2 \
+tigervnc-common tigervnc-standalone-server iptables-persistent bridge-utils vlc ntfs-3g \
+lxlock xscreensaver xscreensaver-data gvfs gvfs-backends vnc4server light-locker libudisks2-0 \
+desktop-file-utils exfat-fuse exfat-utils gdisk gnome-mime-data wolfram-engine libssl-doc \
+libatasmart4 libavahi-glib1 gvfs-common gvfs-daemons gvfs-libs 
 apt-get -y autoremove
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
@@ -329,11 +331,9 @@ mount -o remount,rw /boot
 
 ## SSH will be enabled by systemd, do not use this file
 rm -f /boot/ssh
-## Delete flag to enable network bridge mode
+## Delete flags, return to default
 rm -f /boot/ap-bridge.enable
-## Delete flag to enable routed hotspot mode
 rm -f /boot/apd-routed.enable
-## Delete flag to enable auto hotspot
 rm -f /boot/apd.enable
 
 ## Default Boot Config

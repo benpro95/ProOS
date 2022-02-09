@@ -4,6 +4,9 @@
 ###########################################################
 ###########################################################
 
+## Auto Relax Sound
+RELAX="fan"
+
 ## Read the 2nd Argument
 ARG2=$2
 
@@ -13,11 +16,10 @@ boot)
 ## Light Web Server
 systemctl start lighttpd
 ## Startup Sound
-/usr/bin/amixer set PCM 45%
-/usr/bin/aplay /opt/rpi/sounds/ps1.wav
-sleep 1.25
+/usr/bin/amixer set PCM 50%
+/usr/bin/aplay /opt/rpi/sounds/ps2.wav
 ## Set Volume
-/usr/bin/amixer set PCM 96%
+/usr/bin/amixer set PCM 95%
 ## AirPlay Support
 systemctl start rpi-airplay
 ## Attach Server SMB Share
@@ -25,31 +27,29 @@ sleep 5.75
 if ping -c 1 files.home > /dev/null 2> /dev/null
 then
   systemctl start autofs
+  ## Start Relaxation Sound Automatically
+  DOW=$(date +%u)  
+  HOUR=$(date +%H)
+  if [ "$DOW" = "5" ] || [ "$DOW" = "6" ]; then
+	echo "is Fri or Sat, hour is $HOUR"
+	if (( 9 <= 10#$HOUR && 10#$HOUR < 23 )); then 
+	  echo "not between 11pm and 8am, not starting."
+	else  
+	  echo "starting $RELAX sound..."
+	  screen -dm /opt/rpi/main relax $RELAX
+	fi
+  else
+	echo "is Sun or weekday, hour is $HOUR"
+	if (( 9 <= 10#$HOUR && 10#$HOUR < 21 )); then 
+	  echo "not between 9pm and 8am, not starting."
+	else  
+	  echo "starting $RELAX sound..."
+	  screen -dm /opt/rpi/main relax $RELAX
+	fi
+  fi
 fi
 ## Disable HDMI (saves 30mA of power draw)
 /opt/vc/bin/tvservice -o
-## Start Relaxation Sound Automatically
-DOW=$(date +%u)
-HOUR=$(date +%H)
-if [ "$DOW" = "5" ] || [ "$DOW" = "6" ]; then
-  echo "is Fri or Sat, hour is $HOUR"
-  if (( 9 <= 10#$HOUR && 10#$HOUR < 24 )); then 
-    echo "not between midnight and 8am, not starting."
-  else  
-    echo "starting relax sound..."
-    sleep 5.25
-    screen -dm /opt/rpi/main relax rain
-  fi
-else
-  echo "is Sun or weekday, hour is $HOUR"
-  if (( 9 <= 10#$HOUR && 10#$HOUR < 21 )); then 
-    echo "not between 9pm and 8am, not starting."
-  else  
-    echo "starting relax sound..."
-    sleep 5.25
-    screen -dm /opt/rpi/main relax rain
-  fi
-fi
 ## Disable Activity LED
 echo none | tee /sys/class/leds/led0/trigger
 ## Auto Hotspot (on boot only)

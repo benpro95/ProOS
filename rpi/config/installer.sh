@@ -248,7 +248,7 @@ if [ "${OSVER}" = "bullseye" ]; then
 fi
 
 ## Compile COBOL Programs
-cobc -x --free /opt/rpi/sources/colorscan.cbl -o /opt/rpi/colorscan
+cobc -x --free /opt/rpi/build/colorscan.cbl -o /opt/rpi/colorscan
 
 ## Music Player Support
 apt-get install -y --no-upgrade --ignore-missing mpd mpc

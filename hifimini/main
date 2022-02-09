@@ -5,7 +5,7 @@
 ###########################################################
 
 ## Auto Relax Sound
-RELAX="fan"
+RELAX=fan
 
 ## Read the 2nd Argument
 ARG2=$2

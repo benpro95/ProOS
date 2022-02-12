@@ -119,6 +119,20 @@ then
   ENDPGRM
 fi
 
+## Archive Share
+if [[ $REPLY =~ ^[@]$ ]]
+then
+  echo " "
+  if [ -e "/mnt/backup/Archive" ]; then
+    echo "detaching archive share..."   
+    rm /mnt/backup/Archive 
+  else
+    echo "attaching archive share..."
+    ln -s /mnt/datastore/.Archive /mnt/backup/Archive
+  fi
+  ENDPGRM
+fi
+
 ## Server control
 if [[ $REPLY =~ ^[Ss]$ ]]
 then
@@ -127,7 +141,7 @@ then
   echo "(x) start/stop xana - vnc://ben@xana:5091"
   echo "(d) start/stop dev - ssh://root@dev"
   echo "(c) start/stop unifi controller"
-  echo "(a) attach/detach shares"
+  echo "(s) attach/detach snapshot share"
   echo " "
   REPLY=""
   read -p "select option: " -n 1 -r
@@ -159,50 +173,20 @@ then
     REPLY=""
   fi
   ##################################  
-  ## Share Drive Access
-  if [[ $REPLY =~ ^[Aa]$ ]]
+  ## Snapshot Share
+  if [[ $REPLY =~ ^[Ss]$ ]]
   then
     echo " "
-    echo "(s) attach snapshot share"
-    echo "(d) detach snapshot share"
-    echo " "
-    REPLY=""
-    read -p "select option: " -n 1 -r
-    echo
-    ## Snapshot share access
-    if [[ $REPLY =~ ^[Ss]$ ]]
-    then
-      echo " "
-      if [ -e "/mnt/backup/Snapshots" ]; then
-        echo "already attached!"    
-      else
-        echo "attaching snapshots share..."
-        ln -s /mnt/datastore/.zfs/snapshot /mnt/backup/Snapshots
-      fi
+    if [ -e "/mnt/backup/Snapshots" ]; then
+      echo "detaching snapshots share..."
+      rm /mnt/backup/Snapshots   
+    else
+      echo "attaching snapshots share..."
+      echo "access at 'SMB://files/Backup/Snapshots'"
+      ln -s /mnt/datastore/.zfs/snapshot /mnt/backup/Snapshots
     fi
-    ##
-    ## Archive share access
-    if [[ $REPLY =~ ^[Aa]$ ]]
-    then
-      echo " "
-      if [ -e "/mnt/backup/Archive" ]; then
-        echo "already attached!"    
-      else
-        echo "attaching archive share..."
-        ln -s /mnt/datastore/.Archive /mnt/backup/Archive
-      fi
-    fi
-    ##
-    ## Remove share access
-    if [[ $REPLY =~ ^[Dd]$ ]]
-    then
-      echo " "
-      echo "detaching shares..."
-      rm -fv /mnt/backup/Snapshots
-      rm -fv /mnt/backup/Archive
-    fi
-    REPLY=""
-  fi  
+    REPLY=""  
+  fi
   ##################################  
   ## VM control (must be last in script)
   if [[ $REPLY =~ ^[Dd]$ ]]

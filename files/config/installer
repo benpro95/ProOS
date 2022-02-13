@@ -91,11 +91,9 @@ chown root:root /etc/rsyslog.d/ignore-session-slice.conf
 systemctl restart rsyslog
 
 ## Main Menu Script
-rm -f /usr/bin/svrutil
 cp /tmp/config/svrutil.bin /usr/bin/
 chmod 755 /usr/bin/svrutil.bin
 chown root:root /usr/bin/svrutil.bin
-ln -s /usr/bin/svrutil.bin /usr/bin/svrutil
 cp /tmp/config/svrbackup.bin /usr/bin/
 chmod 755 /usr/bin/svrbackup.bin
 chown root:root /usr/bin/svrbackup.bin
@@ -128,6 +126,7 @@ chown root:root /etc/hosts.deny
 
 ## Clean-up
 systemctl daemon-reload
+rm -f /usr/bin/svrutil
 rm -r /tmp/config/
 apt-get autoremove -y
 sleep 1.25

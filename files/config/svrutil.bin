@@ -115,8 +115,11 @@ then
   touch /mnt/extbkps/keytmp/createlog.txt
   echo " "
   echo "wait one-minute, server log will be created at"
-  echo "SMB: \\files\Downloads\Server.log"
-  ENDPGRM
+  echo "smb://files/Downloads/Server.log"
+  echo "returning to main menu in 3 seconds..."
+  sleep 3
+  clear
+  MAINPGRM
 fi
 
 ## Archive Share
@@ -182,7 +185,7 @@ then
       rm /mnt/backup/Snapshots   
     else
       echo "attaching snapshots share..."
-      echo "access at 'SMB://files/Backup/Snapshots'"
+      echo "access at 'smb://files/Backup/Snapshots'"
       ln -s /mnt/datastore/.zfs/snapshot /mnt/backup/Snapshots
     fi
     REPLY=""  

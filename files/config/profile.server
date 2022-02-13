@@ -1,5 +1,9 @@
 # ~/.profile: executed by Bourne-compatible login shells.
 
+## Command Aliases
+alias svrutil='/usr/bin/svrutil.bin'
+alias svr='/usr/bin/svrutil.bin'
+
 ######## Custom login scripts below ###########
 
 # You may uncomment the following lines if you want `ls' to be colorized:
@@ -13,6 +17,6 @@ alias l='ls $LS_OPTIONS -lA'
 /usr/bin/svrutil.bin
 
 uname -m -n -s -o -r
-echo "enter 'svrutil' to return to main menu"
+echo "enter 'svr' to return to main menu"
 cd ~/ProOS
 ls

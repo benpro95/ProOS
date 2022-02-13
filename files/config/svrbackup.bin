@@ -66,8 +66,7 @@ do
         echo "//files/Ben not connected."
       else
         echo "syncing 'Ben' share to ${!USB256VAR} drive..."
-        rsync --progress $CHECKSUM -aP --exclude="Software/WindowsImageBackup" \
-        --exclude='Software/Nintendo' --exclude='Software/Playstation' --exclude='Software/**.ipsw' \
+        rsync --progress $CHECKSUM -aP --exclude="Software/WindowsImageBackup" --exclude='Software/Playstation' \
         --exclude='Software/**VM.zip' --exclude='Software/**HD.zip' --exclude='Software/**HD.7z' \
         /mnt/datastore/Ben/ /mnt/extbkps/${!USB256VAR}/Ben/ -delete --delete-excluded
       fi

@@ -116,8 +116,14 @@ then
   echo " "
   echo "wait one-minute, server log will be created at"
   echo "smb://files/Downloads/Server.log"
-  echo "returning to main menu in 3 seconds..."
-  sleep 3
+  log_wait=3 
+  temp_cnt=${log_wait}
+  while [[ ${temp_cnt} -gt 0 ]];
+  do
+    printf "\rreturning to main menu in %1d second(s)..." ${temp_cnt}
+    sleep 1
+    ((temp_cnt--))
+  done
   clear
   MAINPGRM
 fi

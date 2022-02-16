@@ -111,10 +111,15 @@ if [ "$MODULE" = "files" ] || \
 ######################################
   ## Set hostname
   HOST="$MODULE$DOMAIN"
-   ## Check if host is up (don't ping these hosts)
-  if [ ! "$MODULE" = "pve" ]; then
-    HOSTCHK
+  ## Translate hostname to IP
+  if [ "$MODULE" = "pve" ]; then
+    MODULE="pve"
+    HOST="10.177.1.8" 
   fi 
+  if [ "$MODULE" = "files" ]; then
+    MODULE="files"
+    HOST="10.177.1.4" 
+  fi
   ## SSH key prompt
   eval `ssh-agent -s`
   ssh-add $ROOTDIR/.ssh/$MODULE.rsa 2>/dev/null

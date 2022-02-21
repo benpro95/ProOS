@@ -23,7 +23,7 @@ systemctl start lighttpd
 ## AirPlay Support
 systemctl start rpi-airplay
 ## Attach Server SMB Share
-sleep 5.75
+sleep 10
 if ping -c 1 files.home > /dev/null 2> /dev/null
 then
   systemctl start autofs

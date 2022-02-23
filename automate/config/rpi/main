@@ -12,61 +12,46 @@ ARG2=$2
 case "$1" in
 
 relax)
-if ping -W 1 -c 1 hifimini.home > /dev/null 2> /dev/null
-then
-  ## Play Audio in Loop on HiFi mini
-  /usr/bin/curl -N -f -m 5 --silent "http://hifimini.home/exec.php?var=$ARG2&arg=relax&action=main"
-else
-  ## Play Audio in Loop on System
-  /usr/bin/curl -N -f -m 5 --silent "http://hifi.home/exec.php?var=$ARG2&arg=relax&action=main"
-  ## Optical Decoder Input
-  /opt/rpi/xmit coaxial
-  ## Preamp DAC Input
-  /opt/rpi/xmit dac
-fi
+## Play Audio in Loop on HiFi mini
+
+/usr/bin/screen -dm /usr/bin/curl -N -f -m 10 --silent --data \
+ "var=$ARG2&arg=relax&action=main" http://hifimini.home/exec.php
+## Play Audio in Loop on System
+/usr/bin/screen -dm /usr/bin/curl -N -f -m 10 --silent --data \
+ "var=$ARG2&arg=relax&action=main" http://hifi.home/exec.php
+## Optical Decoder Input
+/opt/rpi/xmit coaxial
+## Preamp DAC Input
+/opt/rpi/xmit dac
 exit
 ;;
 
 ### Relaxation Sound Playback
 stoprelax)
-if ping -W 1 -c 1 hifimini.home > /dev/null 2> /dev/null
-then
-  ## Stop Audio on HiFi mini
-  /usr/bin/curl -N -f -m 5 --silent "http://hifimini.home/exec.php?var=&arg=stoprelax&action=main"
-else
-  ## Stop Audio on System
-  /usr/bin/curl -N -f -m 5 --silent "http://hifi.home/exec.php?var=&arg=stoprelax&action=main"
-  ## USB Decoder Input
-  /opt/rpi/xmit usb
-  ## Preamp DAC Input
-  /opt/rpi/xmit dac
-fi
+## Stop Audio on HiFi mini
+/usr/bin/screen -dm /usr/bin/curl -N -f -m 10 --silent --data \
+ "var=$ARG2&arg=stoprelax&action=main" http://hifimini.home/exec.php
+## Stop Audio on System
+/usr/bin/screen -dm /usr/bin/curl -N -f -m 10 --silent --data \
+ "var=$ARG2&arg=stoprelax&action=main" http://hifi.home/exec.php
+## USB Decoder Input
+/opt/rpi/xmit usb
+## Preamp DAC Input
+/opt/rpi/xmit dac
 exit
 ;;
 
 ### Relaxation Volume Up
 relaxvup)
-if ping -W 1 -c 1 hifimini.home > /dev/null 2> /dev/null
-then
-  ## Increasing Volume on HiFi mini
-  /usr/bin/curl -N -f -m 5 --silent "http://hifimini.home/exec.php?var=&arg=vup&action=main"
-else
-  ## Increasing Volume on System
-  /opt/rpi/xmit upc
-fi
+/usr/bin/screen -dm /usr/bin/curl -N -f -m 10 --silent --data \
+ "var=$ARG2&arg=vup&action=main" http://hifimini.home/exec.php
 exit
 ;;
 
 ### Relaxation Volume Down
 relaxvdwn)
-if ping -W 1 -c 1 hifimini.home > /dev/null 2> /dev/null
-then
-  ## Decreasing Volume on HiFi mini
-  /usr/bin/curl -N -f -m 5 --silent "http://hifimini.home/exec.php?var=&arg=vdwn&action=main"
-else
-  ## Decreasing Volume on System
-  /opt/rpi/xmit dwnc
-fi
+/usr/bin/screen -dm /usr/bin/curl -N -f -m 10 --silent --data \
+ "var=$ARG2&arg=vdwn&action=main" http://hifimini.home/exec.php
 exit
 ;;
 

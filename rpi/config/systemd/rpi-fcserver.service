@@ -4,10 +4,7 @@ Conflicts=shutdown.target
 
 [Service]
 User=root
-ExecStart=/opt/rpi/fcserver /opt/rpi/effects/fc.json
+ExecStart=/bin/bash -c "/opt/rpi/fcserver /opt/rpi/effects/$rpi_ledtype/fcbin/$rpi_fcsetup"
 WorkingDirectory=/opt/rpi/effects
 Restart=always
 RestartSec=5
-
-[Install]
-#WantedBy=multi-user.target

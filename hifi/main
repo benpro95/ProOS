@@ -22,10 +22,11 @@ systemctl start bluetooth
 systemctl start bt-agent@hci0
 systemctl start bluealsa-aplay
 ## Attach Server SMB Share
-sleep 5.75
-if ping -c 1 files.home > /dev/null 2> /dev/null
+if ping -c 1 10.177.1.4 > /dev/null 2> /dev/null
 then
   systemctl start autofs
+else
+  echo "server not found."  
 fi
 ## Auto Hotspot (on boot only)
 sleep 60 # only run if bluetooth not connected
@@ -35,25 +36,24 @@ fi
 exit
 ;;
 
-### Relaxation Sound Playback
-stoprelax)
-killall -s KILL -w omxplayer
-exit
-;;
-##
 relax)
-killall -s KILL -w omxplayer
-## Capitialize first letter of argument
-ARG2="${ARG2^}"
-## Play Audio in Loop
-/usr/bin/omxplayer -o alsa --loop "/mnt/smb/Media/Sounds/Relaxation/$ARG2.mp3"
+## Play sound in loop
+systemctl stop rpi-relaxloop
+systemctl set-environment rpi_relaxmode=$ARG2
+systemctl start rpi-relaxloop
 exit
 ;;
+
+stoprelax)
+systemctl stop rpi-relaxloop
+exit
+;;
+
 
 
         *)
           echo "HiFi System"
-	        echo "  by Ben Provenzano III "
+	      echo "  by Ben Provenzano III "
           exit 1
           ;;
     esac   

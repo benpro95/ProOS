@@ -58,7 +58,7 @@ exit
 
     
         *)
-	      echo "  AirZero Portable"
+	      echo "  AirPi Portable"
 	      echo "  by Ben Provenzano III"
 	      echo " "
 	      echo "Enter a valid command line argument."

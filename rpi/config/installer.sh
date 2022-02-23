@@ -769,44 +769,16 @@ ln -sf /opt/rpi/leds /usr/bin/leds
 systemctl daemon-reload
 if [ ! -e /etc/rpi-conf.done ]; then
 ## Active on startup
-systemctl enable ssh
-systemctl enable proinit
-systemctl enable avahi-daemon
+systemctl enable ssh proinit avahi-daemon systemd-time-wait-sync
 systemctl unmask systemd-journald
 ## Disabled on startup
 systemctl unmask hostapd
-systemctl disable hostapd
-systemctl disable dhcpcd
-systemctl disable networking
-systemctl disable wpa_supplicant
-systemctl disable keyboard-setup
-systemctl disable plymouth-log
-systemctl disable plymouth
-systemctl disable sysstat
-systemctl disable lightdm
-systemctl disable apache2
-systemctl disable lighttpd
-systemctl disable dnsmasq
-systemctl disable systemd-timesyncd
-systemctl disable apt-daily.service
-systemctl disable apt-daily.timer
-systemctl disable apt-daily-upgrade.service
-systemctl disable apt-daily-upgrade.timer
-systemctl disable sysstat-collect.timer
-systemctl disable sysstat-summary.timer
-systemctl disable man-db.service
-systemctl disable man-db.timer
-systemctl disable hciuart
-systemctl disable bluetooth
-systemctl disable triggerhappy
-systemctl disable wifiswitch
-systemctl disable usbplug
-systemctl disable motion
-systemctl disable mpd
-systemctl disable nmbd
-systemctl disable smbd
-systemctl disable autofs
-systemctl disable shairport-sync
+systemctl disable hostapd dhcpcd networking wpa_supplicant keyboard-setup plymouth-log \
+plymouth sysstat lightdm apache2 lighttpd dnsmasq systemd-timesyncd apt-daily.service \
+apt-daily.timer apt-daily-upgrade.service apt-daily-upgrade.timer sysstat-collect.timer \
+sysstat-summary.timer man-db.service man-db.timer hciuart bluetooth triggerhappy \
+usbplug motion mpd nmbd smbd autofs shairport-sync wifiswitch
+
 echo "Initial setup (phase II) complete."
 touch /etc/rpi-conf.done
 else

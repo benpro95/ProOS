@@ -4,9 +4,6 @@
 ###########################################################
 ###########################################################
 
-## Auto Relax Sound
-RELAX=fan
-
 ## Read the 2nd Argument
 ARG2=$2
 
@@ -22,31 +19,14 @@ systemctl start lighttpd
 /usr/bin/amixer set PCM 95%
 ## AirPlay Support
 systemctl start rpi-airplay
-## Attach Server SMB Share
-sleep 10
-if ping -c 1 files.home > /dev/null 2> /dev/null
+## Attach Server Shares / Relax Sound Loop
+if ping -c 1 10.177.1.4 > /dev/null 2> /dev/null
 then
   systemctl start autofs
-  ## Start Relaxation Sound Automatically
-  DOW=$(date +%u)  
-  HOUR=$(date +%H)
-  if [ "$DOW" = "5" ] || [ "$DOW" = "6" ]; then
-	echo "is Fri or Sat, hour is $HOUR"
-	if (( 9 <= 10#$HOUR && 10#$HOUR < 23 )); then 
-	  echo "not between 11pm and 8am, not starting."
-	else  
-	  echo "starting $RELAX sound..."
-	  screen -dm /opt/rpi/main relax $RELAX
-	fi
-  else
-	echo "is Sun or weekday, hour is $HOUR"
-	if (( 9 <= 10#$HOUR && 10#$HOUR < 21 )); then 
-	  echo "not between 9pm and 8am, not starting."
-	else  
-	  echo "starting $RELAX sound..."
-	  screen -dm /opt/rpi/main relax $RELAX
-	fi
-  fi
+  systemctl set-environment rpi_relaxmode=boot
+  systemctl start rpi-relaxloop
+else
+  echo "server not found."  
 fi
 ## Disable HDMI (saves 30mA of power draw)
 /opt/vc/bin/tvservice -o
@@ -54,22 +34,20 @@ fi
 echo none | tee /sys/class/leds/led0/trigger
 ## Auto Hotspot (on boot only)
 sleep 60
-systemctl start rpi-netdetect.service
+systemctl start rpi-netdetect
 exit
 ;;
 
-### Relaxation Sound Playback
-stoprelax)
-killall -s KILL -w omxplayer
+relax)
+## Play sound in loop
+systemctl stop rpi-relaxloop
+systemctl set-environment rpi_relaxmode=$ARG2
+systemctl start rpi-relaxloop
 exit
 ;;
-##
-relax)
-killall -s KILL -w omxplayer
-## Capitialize first letter of argument
-ARG2="${ARG2^}"
-## Play Audio in Loop
-/usr/bin/omxplayer -o alsa --loop "/mnt/smb/Media/Sounds/Relaxation/$ARG2.mp3"
+
+stoprelax)
+systemctl stop rpi-relaxloop
 exit
 ;;
 

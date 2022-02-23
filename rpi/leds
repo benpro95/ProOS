@@ -69,9 +69,9 @@ if [ -e /opt/rpi/ledsync.txt ]; then
   LEDFILE='/opt/rpi/ledsync.txt'
   exec 4<$LEDFILE
   while read -u4 PSYNC ; do
-    echo "Sending $VARA command to $PSYNC LED server..."
-    /usr/bin/curl -N -f -m 10 --silent --data "var=$VARB&arg=$VARA&action=leds" http://$PSYNC:9300/exec.php
-    sleep 0.25
+      echo "Sending $VARA command to $PSYNC LED server..."
+      /usr/bin/screen -dm /usr/bin/curl -N -f -m 10 --silent --data "var=$VARB&arg=$VARA&action=leds" http://$PSYNC:9300/exec.php
+      sleep 0.25
   done
 fi
 
@@ -93,7 +93,8 @@ else
       touch /tmp/ledstate.lock
   fi
   ln -sf /opt/rpi/effects/$LEDTYPE/$VARA.opc /opt/rpi/nodeopc/server/animations/opc
-  /usr/bin/curl --silent --output /dev/null -d '{"playlistname":"Playlist"}' -H "Content-Type: application/json" -X POST http://127.0.0.1:9387/api/playlists/play
+  /usr/bin/curl --silent --output /dev/null -d '{"playlistname":"Playlist"}' -H \
+    "Content-Type: application/json" -X POST http://127.0.0.1:9387/api/playlists/play
   echo "Set LEDs to node.js effect"
   rm -f /tmp/ledstate.lock
   exit
@@ -107,9 +108,8 @@ if [ "$VARA" = "fc" ]; then
   else
     touch /tmp/fcstate.lock
   fi
-  ln -sf /opt/rpi/effects/$LEDTYPE/fcbin/fc$VARB.json /opt/rpi/effects/fc.json
-  systemctl restart rpi-fcserver
-  systemctl restart rpi-nodeopc
+  systemctl set-environment rpi_ledtype=$LEDTYPE rpi_fcsetup=fc$VARB.json
+  systemctl restart rpi-fcserver rpi-nodeopc
   echo "LEDs brightness changed to $VARB%"
   rm -f /tmp/fcstate.lock
   exit

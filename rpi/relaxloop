@@ -1,0 +1,36 @@
+#!/bin/bash
+###########################################################
+###########################################################
+## Start Relax Loop (triggered by systemd) ################
+###########################################################
+###########################################################
+
+## Loop on Startup
+if [ "$rpi_relaxmode" = "boot" ]; then
+  rpi_relaxmode=`cat /mnt/smb/Media/Sounds/Relaxation/MiniBoot.txt`
+  DOW=$(date +%u)
+  HOUR=$(date +%H)
+  if [ "$DOW" = "5" ] || [ "$DOW" = "6" ]; then
+    echo "is Fri or Sat, hour is $HOUR"
+    if (( 9 <= 10#$HOUR && 10#$HOUR < 23 )); then
+      echo "not starting, time is between 9am-11pm"
+      exit
+    fi
+  else
+    echo "is Sun or weekday, hour is $HOUR"
+    if (( 9 <= 10#$HOUR && 10#$HOUR < 21 )); then
+      echo "not starting, time is between 9am-9pm"
+      exit
+    fi
+  fi
+  echo "time is between 9pm-9am"
+fi
+
+## Capitialize first letter of argument
+relaxmode="${rpi_relaxmode^}"
+
+## Play Audio in Loop
+echo "starting $relaxmode sound..."
+/usr/bin/omxplayer -o alsa --loop "/mnt/smb/Media/Sounds/Relaxation/$relaxmode.mp3"
+
+exit

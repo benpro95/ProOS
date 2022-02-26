@@ -48,10 +48,17 @@ if [ ! -e $BIN_PATH/effects/$LEDTYPE/$VARA.opc ]; then
   echo "Node.js effect not found"
 else
   LEDSTOP
+  if [ -f "/tmp/ledstate.lock" ]; then
+      echo "already running"
+      exit
+  else
+      touch /tmp/ledstate.lock
+  fi
   ln -sf $BIN_PATH/effects/$LEDTYPE/$VARA.opc $BIN_PATH/nodeopc/server/animations/opc
   /usr/bin/curl --silent --output /dev/null -d '{"playlistname":"Playlist"}' -H \
     "Content-Type: application/json" -X POST http://127.0.0.1:9387/api/playlists/play
   echo "Set LEDs to Node.js effect"
+  rm -f /tmp/ledstate.lock  
   exit
 fi
 
@@ -66,6 +73,7 @@ fi
 
 if [ "$VARA" = "stop" ]; then
   echo "Blanking effects"
+  rm -f /tmp/ledstate.lock
 fi
 
 if [ "$VARA" = "pause" ]; then
@@ -78,9 +86,16 @@ if [ "$VARA" = "rave" ] || [ "$VARA" = "chase" ] || \
    [ "$VARA" = "miami" ] || [ "$VARA" = "spark" ] || \
    [ "$VARA" = "stripes" ] || [ "$VARA" = "lava" ] ; then
   LEDSTOP
+  if [ -f "/tmp/ledstate.lock" ]; then
+      echo "already running"
+      exit
+  else
+      touch /tmp/ledstate.lock
+  fi  
   systemctl set-environment rpi_fceffect=pyth-$VARA
   systemctl start rpi-fcleds
   echo "Set LEDs to Python effect"
+  rm -f /tmp/ledstate.lock
   exit
 fi
 
@@ -89,18 +104,32 @@ if [ "$VARA" = "noise3" ] || [ "$VARA" = "blocks" ] || \
    [ "$VARA" = "mandelbrot" ] || [ "$VARA" = "multitomaton" ] || \
    [ "$VARA" = "ripple" ] || [ "$VARA" = "random" ] ; then
   LEDSTOP 	
+  if [ -f "/tmp/ledstate.lock" ]; then
+      echo "already running"
+      exit
+  else
+      touch /tmp/ledstate.lock
+  fi   
   systemctl set-environment rpi_fceffect=perl-$VARA
   systemctl start rpi-fcleds
   echo "Set LEDs to Perl effect"
+  rm -f /tmp/ledstate.lock
   exit
 fi
 
 ## Java Effects
 if [ "$VARA" = "rainbow" ] || [ "$VARA" = "spectro" ] ; then
-  LEDSTOP 	
+  LEDSTOP
+  if [ -f "/tmp/ledstate.lock" ]; then
+      echo "already running"
+      exit
+  else
+      touch /tmp/ledstate.lock
+  fi  
   systemctl set-environment rpi_fceffect=java-$VARA
   systemctl start rpi-fcleds
   echo "Set LEDs to Java effect"
+  rm -f /tmp/ledstate.lock
   exit
 fi
 
@@ -119,6 +148,13 @@ fi
 
 ## Solid Color
 LEDSTOP
+if [ -f "/tmp/ledstate.lock" ]; then
+    echo "already running"
+    exit
+else
+    touch /tmp/ledstate.lock
+fi 
 $BIN_PATH/effects/colorscan "$VARA" | $BIN_PATH/effects/opc_client 127.0.0.1:7890
 echo "Set LEDs to solid color"
+rm -f /tmp/ledstate.lock
 exit 

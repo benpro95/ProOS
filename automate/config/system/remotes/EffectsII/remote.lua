@@ -8,6 +8,10 @@ actions.stop = function ()
 script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds stop");
 end
 
+actions.shuffle = function ()
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds shuffle");
+end
+
 actions.eightbit = function ()
 script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds 8bit");
 end

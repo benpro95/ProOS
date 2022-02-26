@@ -31,8 +31,9 @@
         <button text="Gold" ontap="gold" color="#000030" />
     </row>
     <row>
-        <button icon="pause" ontap="pause" color="#252629" />
-        <button icon="off" ontap="stop" color="#000000" />
+        <button icon="shuffle" ontap="shuffle"/>
+        <button icon="pause" ontap="pause"/>
+        <button icon="off" ontap="stop"/>
     </row>
 </layout>
 

@@ -10,8 +10,6 @@ ARG2=$2
 case "$1" in
 
 boot)
-## Light Web Server
-systemctl start lighttpd
 ## Startup Sound
 /usr/bin/amixer set PCM 50%
 /usr/bin/aplay /opt/rpi/sounds/ps2.wav

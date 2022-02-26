@@ -23,8 +23,6 @@ systemctl start rpi-airplay
 /usr/bin/aplay /opt/rpi/sounds/ds.wav
 sleep 1.25
 /usr/bin/amixer set PCM 99%
-## Light Web Server
-systemctl start lighttpd
 ## Reset Bluetooth Connections
 /opt/rpi/init resetbt
 ## Auto Hotspot (on boot only)

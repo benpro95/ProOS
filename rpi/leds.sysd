@@ -1,0 +1,59 @@
+#!/bin/bash
+###########################################################
+###### LED Effects Loop ## by Ben Provenzano III ##########
+###########################################################
+### (triggered by systemd) ################################
+
+## Main Path
+BIN_PATH=/opt/rpi
+
+## Split up input variable
+PRGM_TYPE=${rpi_fceffect%-*}
+EFFECT=${rpi_fceffect#*-}
+#echo "Set LEDs to $PRGM_TYPE program $EFFECT"
+
+## Perl Effects
+if [ "$PRGM_TYPE" = "perl" ]; then
+##  
+  export PERL5LIB=$BIN_PATH/effects
+  /usr/bin/nice -n 10 /usr/bin/perl $BIN_PATH/effects/$EFFECT.pl
+  exit
+##
+fi
+
+## Python Effects
+if [ "$PRGM_TYPE" = "pyth" ]; then
+##  
+  if [ "$EFFECT" = "rave"  ] || [ "$EFFECT" = "chase" ]; then
+    /usr/bin/nice -n 10 $BIN_PATH/effects/pythproc $BIN_PATH/effects/$EFFECT.py
+    exit
+  else
+    /usr/bin/nice -n 10 $BIN_PATH/effects/pythproc $BIN_PATH/effects/$EFFECT.py \
+     --layout $BIN_PATH/effects/wall.json
+    exit
+  fi
+##
+fi
+
+## Java Effects
+if [ "$PRGM_TYPE" = "java" ]; then
+##
+  if [ "$EFFECT" = "spectro" ]; then
+    /usr/bin/Xvfb :1 -screen 0 640x640x24 &
+    sleep 1.0
+    /usr/bin/nice -n 10 $BIN_PATH/effects/spectro/SpectroGraph
+    exit
+  fi
+##
+  if [ "$EFFECT" = "rainbow" ]; then
+    /usr/bin/Xvfb :1 -screen 0 640x640x24 &
+    sleep 1.0
+    /usr/bin/nice -n 10 $BIN_PATH/effects/rainbow/rainbow
+    exit
+  fi
+##
+else
+  echo "Invalid command"   
+fi
+
+exit

@@ -131,18 +131,16 @@ else
   systemctl start rpi-rclone
   sleep 5.75
 fi
-## Light Web Server
-systemctl start lighttpd
 ## Motion Server
 systemctl start motion
 ## Cameras Cleanup Timer
 systemctl start rpi-camcleanup.timer
-## IR Control
+## Automatic Infrared LED
 systemctl start rpi-ldr.service
-## Disable HDMI (saves 30mA of power draw)
-/opt/vc/bin/tvservice -o
 ## Auto Hotspot (on boot only)
 systemctl start rpi-netdetect.service
+## Disable HDMI (saves 30mA)
+tvservice -o
 exit
 ;;
 

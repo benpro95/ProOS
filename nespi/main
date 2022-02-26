@@ -7,8 +7,6 @@
 case "$1" in
 
 boot)
-## Light Web Server
-systemctl start lighttpd
 ## RetroPie will autostart on boot
 exit
 ;;

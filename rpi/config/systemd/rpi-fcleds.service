@@ -1,0 +1,9 @@
+[Unit]
+Description=Fadecandy LED Effects Loop
+Conflicts=shutdown.target
+
+[Service]
+User=root
+ExecStart=/opt/rpi/leds.sysd
+Restart=on-failure
+RestartSec=5

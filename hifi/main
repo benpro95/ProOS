@@ -8,12 +8,6 @@ ARG2=$2
 case "$1" in
 
 boot)
-## State Folder
-rm -rf /var/lock/rpi
-mkdir -p /var/lock/rpi
-chmod -R 777 /var/lock/rpi
-## Light Web Server
-systemctl start lighttpd
 ## AirPlay Support
 systemctl start rpi-airplay
 ## Bluetooth Audio

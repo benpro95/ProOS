@@ -10,62 +10,12 @@ VARB=$2
 ## Main Path
 BIN_PATH=/opt/rpi
 
-############### FUNCTIONS ###############
-
 ## Stop LED processes
 LEDSTOP(){
 /usr/bin/curl --silent --output /dev/null -X POST http://127.0.0.1:9387/api/anim/stop
-killall -q -s KILL -w pythproc java perl Xvfb
+systemctl stop rpi-fcleds
 echo "Paused effects"
 }
-
-## RGB color
-COLOR_FUNC(){
-LEDSTOP
-if [ -f "/tmp/ledstate.lock" ]; then
-  echo "already running"
-  exit
-else
-  touch /tmp/ledstate.lock
-fi
-/usr/bin/nice -n 10 $BIN_PATH/effects/colorscan "$VARA" | $BIN_PATH/effects/opc_client 127.0.0.1:7890
-rm -f /tmp/ledstate.lock
-}
-
-## Perl effects
-PERL_FUNC(){
-LEDSTOP
-if [ -f "/tmp/ledstate.lock" ]; then
-  echo "already running"
-  exit
-else
-  touch /tmp/ledstate.lock
-fi
-echo "Set LEDs to perl program $VARA"
-export PERL5LIB=$BIN_PATH
-/usr/bin/perl $BIN_PATH/effects/$VARA.pl
-rm -f /tmp/ledstate.lock
-}
-
-## Python effects
-PYTH_FUNC(){
-LEDSTOP
-if [ -f "/tmp/ledstate.lock" ]; then
-  echo "already running"
-  exit
-else
-  touch /tmp/ledstate.lock
-fi
-echo "Set LEDs to python program $VARA"
-if [ "$VARA" = "rave"  ] || [ "$VARA" = "chase" ]; then
-  /usr/bin/nice -n 10 $BIN_PATH/effects/pythproc $BIN_PATH/effects/$VARA.py
-else
-  /usr/bin/nice -n 10 $BIN_PATH/effects/pythproc $BIN_PATH/effects/$VARA.py --layout $BIN_PATH/effects/wall.json	
-fi
-rm -f /tmp/ledstate.lock
-}
-
-############### START OF MAIN PROCESS ###############
 
 ## LEDsync Command Dispatcher (make sure .txt file has newline at end)
 if [ -e $BIN_PATH/ledsync.txt ]; then
@@ -73,7 +23,8 @@ if [ -e $BIN_PATH/ledsync.txt ]; then
   exec 4<$LEDFILE
   while read -u4 PSYNC ; do
       echo "Sending $VARA command to $PSYNC LED server..."
-      /usr/bin/screen -dm /usr/bin/curl -N -f -m 10 --silent --data "var=$VARB&arg=$VARA&action=leds" http://$PSYNC:9300/exec.php
+      /usr/bin/screen -dm /usr/bin/curl -N -f -m 10 --silent --data \
+       "var=$VARB&arg=$VARA&action=leds" http://$PSYNC:9300/exec.php
       sleep 0.25
   done
 fi
@@ -89,48 +40,32 @@ if [ "$VARA" = "shuffle" ]; then
   SHUF_IN=$BIN_PATH/effects/shuffle.txt
   SHUF_OUT=$(<$SHUF_IN sort | uniq | sort -R | head -n 1)
   VARA="${SHUF_OUT//$'\r'/}"
+  echo "Choosing random effect"
 fi
 
 ## Node.js effect parser
 if [ ! -e $BIN_PATH/effects/$LEDTYPE/$VARA.opc ]; then
-  echo "Node effect not found looking for others.."
+  echo "Node.js effect not found"
 else
   LEDSTOP
-  if [ -f "/tmp/ledstate.lock" ]; then
-      echo "already running"
-      exit
-  else
-      touch /tmp/ledstate.lock
-  fi
   ln -sf $BIN_PATH/effects/$LEDTYPE/$VARA.opc $BIN_PATH/nodeopc/server/animations/opc
   /usr/bin/curl --silent --output /dev/null -d '{"playlistname":"Playlist"}' -H \
     "Content-Type: application/json" -X POST http://127.0.0.1:9387/api/playlists/play
-  echo "Set LEDs to node.js effect"
-  rm -f /tmp/ledstate.lock
+  echo "Set LEDs to Node.js effect"
   exit
 fi
 
 if [ "$VARA" = "fc" ]; then
   LEDSTOP
-  if [ -f "/tmp/fcstate.lock" ]; then
-    echo "already running"
-    exit
-  else
-    touch /tmp/fcstate.lock
-  fi
   systemctl set-environment rpi_ledtype=$LEDTYPE rpi_fcsetup=fc$VARB.json
   systemctl restart rpi-fcserver 
   systemctl restart rpi-nodeopc
   echo "LEDs brightness changed to $VARB%"
-  rm -f /tmp/fcstate.lock
   exit
 fi
 
 if [ "$VARA" = "stop" ]; then
-  ## Clear Locks
-  rm -f /tmp/ledstate.lock
-  rm -f /tmp/fcstate.lock
-  ## Don't exit here
+  echo "Blanking effects"
 fi
 
 if [ "$VARA" = "pause" ]; then
@@ -142,7 +77,10 @@ fi
 if [ "$VARA" = "rave" ] || [ "$VARA" = "chase" ] || \
    [ "$VARA" = "miami" ] || [ "$VARA" = "spark" ] || \
    [ "$VARA" = "stripes" ] || [ "$VARA" = "lava" ] ; then
-  PYTH_FUNC
+  LEDSTOP
+  systemctl set-environment rpi_fceffect=pyth-$VARA
+  systemctl start rpi-fcleds
+  echo "Set LEDs to Python effect"
   exit
 fi
 
@@ -150,11 +88,21 @@ fi
 if [ "$VARA" = "noise3" ] || [ "$VARA" = "blocks" ] || \
    [ "$VARA" = "mandelbrot" ] || [ "$VARA" = "multitomaton" ] || \
    [ "$VARA" = "ripple" ] || [ "$VARA" = "random" ] ; then
-  PERL_FUNC
+  LEDSTOP 	
+  systemctl set-environment rpi_fceffect=perl-$VARA
+  systemctl start rpi-fcleds
+  echo "Set LEDs to Perl effect"
   exit
 fi
 
-## Java LED Effects
+## Java Effects
+if [ "$VARA" = "rainbow" ] || [ "$VARA" = "spectro" ] ; then
+  LEDSTOP 	
+  systemctl set-environment rpi_fceffect=java-$VARA
+  systemctl start rpi-fcleds
+  echo "Set LEDs to Java effect"
+  exit
+fi
 
 # Spectro Gain Adjust
 if [ "$VARA" = "plus" ]; then
@@ -169,36 +117,8 @@ if [ "$VARA" = "minus" ]; then
   exit
 fi
 
-if [ "$VARA" = "spectro" ]; then
-  LEDSTOP
-  if [ -f "/tmp/ledstate.lock" ]; then
-      echo "already running"
-      exit
-  else
-      touch /tmp/ledstate.lock
-  fi
-  /usr/bin/Xvfb :1 -screen 0 640x640x24 &
-  sleep 1.0
-  $BIN_PATH/effects/spectro/SpectroGraph
-  rm -f /tmp/ledstate.lock
-  exit
-fi
-
-if [ "$VARA" = "rainbow" ]; then
-  LEDSTOP
-  if [ -f "/tmp/ledstate.lock" ]; then
-      echo "already running"
-      exit
-  else
-      touch /tmp/ledstate.lock
-  fi
-  /usr/bin/Xvfb :1 -screen 0 640x640x24 &
-  sleep 1.0
-  $BIN_PATH/effects/rainbow/rainbow
-  rm -f /tmp/ledstate.lock
-  exit
-fi
-
 ## Solid Color
-COLOR_FUNC
+LEDSTOP
+$BIN_PATH/effects/colorscan "$VARA" | $BIN_PATH/effects/opc_client 127.0.0.1:7890
+echo "Set LEDs to solid color"
 exit 

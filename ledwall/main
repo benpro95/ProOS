@@ -7,8 +7,6 @@
 case "$1" in
 
 boot)
-## Light Web Server
-systemctl start lighttpd
 ## Unified Web Server
 systemctl start rpi-urserver
 ## WiFi Toggle Switch

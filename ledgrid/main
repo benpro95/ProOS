@@ -7,16 +7,14 @@
 case "$1" in
 
 boot)
-## Light Web Server
-systemctl start lighttpd
 ## Unified Web Server
 systemctl start rpi-urserver
 ## LED Controller
 /opt/rpi/leds fc 40
-## Disable HDMI (saves 30mA)
-tvservice -o
 ## Auto Hotspot (on boot only)
 systemctl start rpi-netdetect.service
+## Disable HDMI (saves 30mA)
+tvservice -o
 exit
 ;;
 

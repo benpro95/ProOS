@@ -833,6 +833,8 @@ chown -R root:root /opt/rpi
 
 ## Remove Installer Files
 rm -rf /opt/rpi/config
+rm -f /opt/rpi/pythproc 
+rm -f /opt/rpi/effects/pythproc
 rm -f /etc/preinit
 
 echo "Configuration Complete."

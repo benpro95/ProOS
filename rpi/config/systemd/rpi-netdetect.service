@@ -4,7 +4,7 @@ Conflicts=shutdown.target
 Before=shutdown.target
 
 [Service]
-Type=forking
+Type=oneshot
 LogLevelMax=notice
 StandardOutput=append:/tmp/netstat.txt
 ExecStartPre=-sleep 60

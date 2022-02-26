@@ -7,6 +7,9 @@
 VARA=$1
 VARB=$2
 
+## Main Path
+BIN_PATH=/opt/rpi
+
 ############### FUNCTIONS ###############
 
 ## Stop LED processes
@@ -25,7 +28,7 @@ if [ -f "/tmp/ledstate.lock" ]; then
 else
   touch /tmp/ledstate.lock
 fi
-/usr/bin/nice -n 10 /opt/rpi/colorscan "$VARA" | /opt/rpi/opc_client 127.0.0.1:7890
+/usr/bin/nice -n 10 $BIN_PATH/effects/colorscan "$VARA" | $BIN_PATH/effects/opc_client 127.0.0.1:7890
 rm -f /tmp/ledstate.lock
 }
 
@@ -39,8 +42,8 @@ else
   touch /tmp/ledstate.lock
 fi
 echo "Set LEDs to perl program $VARA"
-export PERL5LIB=/opt/rpi
-/usr/bin/perl /opt/rpi/$VARA.pl
+export PERL5LIB=$BIN_PATH
+/usr/bin/perl $BIN_PATH/effects/$VARA.pl
 rm -f /tmp/ledstate.lock
 }
 
@@ -55,9 +58,9 @@ else
 fi
 echo "Set LEDs to python program $VARA"
 if [ "$VARA" = "rave"  ] || [ "$VARA" = "chase" ]; then
-  /usr/bin/nice -n 10 /opt/rpi/pythproc /opt/rpi/$VARA.py
+  /usr/bin/nice -n 10 $BIN_PATH/effects/pythproc $BIN_PATH/effects/$VARA.py
 else
-  /usr/bin/nice -n 10 /opt/rpi/pythproc /opt/rpi/$VARA.py --layout /opt/rpi/wall.json	
+  /usr/bin/nice -n 10 $BIN_PATH/effects/pythproc $BIN_PATH/effects/$VARA.py --layout $BIN_PATH/effects/wall.json	
 fi
 rm -f /tmp/ledstate.lock
 }
@@ -65,8 +68,8 @@ rm -f /tmp/ledstate.lock
 ############### START OF MAIN PROCESS ###############
 
 ## LEDsync Command Dispatcher (make sure .txt file has newline at end)
-if [ -e /opt/rpi/ledsync.txt ]; then
-  LEDFILE='/opt/rpi/ledsync.txt'
+if [ -e $BIN_PATH/ledsync.txt ]; then
+  LEDFILE='$BIN_PATH/ledsync.txt'
   exec 4<$LEDFILE
   while read -u4 PSYNC ; do
       echo "Sending $VARA command to $PSYNC LED server..."
@@ -76,13 +79,19 @@ if [ -e /opt/rpi/ledsync.txt ]; then
 fi
 
 ## Read LED Type
-if [ ! -e /opt/rpi/ledtype.txt ]; then
+if [ ! -e $BIN_PATH/ledtype.txt ]; then
   exit
 fi
-LEDTYPE=`cat /opt/rpi/ledtype.txt`
+LEDTYPE=`cat $BIN_PATH/ledtype.txt`
+
+## Pick a random effect
+if [ "$VARA" = "shuffle" ] ; then
+  SHUF=$BIN_PATH/effects/shuffle.txt
+  VARA=$(<$SHUF sort | uniq | sort -R | head -n 1)
+fi
 
 ## Node.js effect parser
-if [ ! -e /opt/rpi/effects/$LEDTYPE/$VARA.opc ]; then
+if [ ! -e $BIN_PATH/effects/$LEDTYPE/$VARA.opc ]; then
   echo "Node effect not found looking for others.."
 else
   LEDSTOP
@@ -92,7 +101,7 @@ else
   else
       touch /tmp/ledstate.lock
   fi
-  ln -sf /opt/rpi/effects/$LEDTYPE/$VARA.opc /opt/rpi/nodeopc/server/animations/opc
+  ln -sf $BIN_PATH/effects/$LEDTYPE/$VARA.opc $BIN_PATH/nodeopc/server/animations/opc
   /usr/bin/curl --silent --output /dev/null -d '{"playlistname":"Playlist"}' -H \
     "Content-Type: application/json" -X POST http://127.0.0.1:9387/api/playlists/play
   echo "Set LEDs to node.js effect"
@@ -168,7 +177,7 @@ if [ "$VARA" = "spectro" ]; then
   fi
   /usr/bin/Xvfb :1 -screen 0 640x640x24 &
   sleep 1.0
-  /opt/rpi/effects/spectro/SpectroGraph
+  $BIN_PATH/effects/spectro/SpectroGraph
   rm -f /tmp/ledstate.lock
   exit
 fi
@@ -183,7 +192,7 @@ if [ "$VARA" = "rainbow" ]; then
   fi
   /usr/bin/Xvfb :1 -screen 0 640x640x24 &
   sleep 1.0
-  /opt/rpi/effects/rainbow/rainbow
+  $BIN_PATH/effects/rainbow/rainbow
   rm -f /tmp/ledstate.lock
   exit
 fi

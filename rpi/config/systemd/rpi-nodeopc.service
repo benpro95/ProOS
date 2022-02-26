@@ -9,5 +9,3 @@ WorkingDirectory=/opt/rpi/nodeopc/server
 Restart=always
 RestartSec=5
 
-[Install]
-#WantedBy=multi-user.target

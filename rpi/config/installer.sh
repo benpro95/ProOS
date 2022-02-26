@@ -248,7 +248,7 @@ if [ "${OSVER}" = "bullseye" ]; then
 fi
 
 ## Compile COBOL Programs
-cobc -x --free /opt/rpi/build/colorscan.cbl -o /opt/rpi/colorscan
+cobc -x --free /opt/rpi/build/colorscan.cbl -o /opt/rpi/effects/colorscan
 
 ## Music Player Support
 apt-get install -y --no-upgrade --ignore-missing mpd mpc
@@ -634,6 +634,7 @@ chown root:root /etc/dhcpcd.net
 cp -f $BIN/dhcpcd.bridge /etc/dhcpcd.bridge
 chmod 644 /etc/dhcpcd.bridge
 chown root:root /etc/dhcpcd.bridge
+rm -f /etc/systemd/system/dhcpcd.service.d/wait.conf
 
 # Hotspot Configuration
 cp -f $BIN/dhcpcd.apd /etc/dhcpcd.apd
@@ -785,10 +786,6 @@ else
 echo "Skipping services configuration."
 fi
 
-## File Permissions
-chmod -R 755 /opt/rpi
-chown -R root:root /opt/rpi
-
 ## Run module script if found
 if [ ! -e /opt/rpi/modconf/modinit ]; then
   echo "Module script not found."
@@ -801,9 +798,6 @@ fi
 
 ## Regenerate Update Database
 systemctl start man-db.service
-
-## Remove Installer Files
-rm -rf /opt/rpi/config
 
 ## Re-create Null Device
 rm -f /dev/null
@@ -840,18 +834,12 @@ chmod -R 777 /var/log/Xorg.0.log /var/log/Xorg.0.log.old
 chmod -R 644 /home/pi/.xsession-errors /home/pi/.bash_history
 chown -R pi:pi /var/log/Xorg.0.log /var/log/Xorg.0.log.old /home/pi/.xsession-errors /home/pi/.bash_history
 
-## Cleanup Obsolete Files
-rm -f /etc/systemd/system/dhcpcd.service.d/wait.conf
-rm -f /etc/systemd/system/systemd-udevd.service
-rm -f /etc/systemd/system/tmpfiles-clean.service
-rm -f /etc/systemd/system/tmpfiles-setup.service
-rm -f /etc/systemd/system/wifiswitch.service
-rm -f /etc/systemd/system/rpi-timer.service
-rm -f /etc/systemd/system/rpi-timer.timer
-rm -f /etc/cron.daily/lighttpd
-rm -f /etc/cron.daily/sysstat
-rm -f /etc/cron.daily/dpkg
-rm -f /opt/rpi/leds.txt
+## File Permissions
+chmod -R 755 /opt/rpi
+chown -R root:root /opt/rpi
+
+## Remove Installer Files
+rm -rf /opt/rpi/config
 
 echo "Configuration Complete."
 exit

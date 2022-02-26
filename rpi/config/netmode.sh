@@ -197,7 +197,7 @@ exit
 
 netdetect)
 ## Invoked by systemd only
-sleep 40
+sleep 60
 NETDETECT
 exit
 ;;
@@ -205,9 +205,9 @@ exit
 
         *)
         echo "RPi Network Startup II"
-	    echo "by Ben Provenzano III"
-	    echo " "
-	    echo "Enter Valid Arguments."
+	      echo "by Ben Provenzano III"
+	      echo " "
+	      echo "Enter Valid Arguments."
         echo " "
         exit 1
         ;;

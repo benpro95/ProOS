@@ -10,8 +10,8 @@ apt-get --yes update
 
 ## Install Packages
 apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates bpytop \
- apt-transport-https wget unzip gnupg htop rsync curl screen parallel ethtool \
- libdbus-1-dev libdbus-glib-1-dev locales aptitude sudo gnupg scrub avahi-daemon
+ apt-transport-https wget unzip gnupg rsync curl screen parallel ethtool avahi-daemon \
+ libdbus-1-dev libdbus-glib-1-dev locales aptitude sudo gnupg scrub
 
 ## Remove Packages
 apt-get remove -y --purge cron anacron postfix htop apache2 apache2-data
@@ -42,7 +42,7 @@ chown root:root /etc/sysctl.conf
 ## RPi Directory
 rm -rf /opt/rpi
 mkdir -p /opt/rpi
-mv -f /tmp/config/rpi/* /opt/rpi/
+mv -f /tmp/config/system/* /opt/rpi/
 chmod -R 755 /opt/rpi
 chown -R root:root /opt/rpi
 

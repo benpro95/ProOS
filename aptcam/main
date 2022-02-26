@@ -142,7 +142,6 @@ systemctl start rpi-ldr.service
 ## Disable HDMI (saves 30mA of power draw)
 /opt/vc/bin/tvservice -o
 ## Auto Hotspot (on boot only)
-sleep 60
 systemctl start rpi-netdetect.service
 exit
 ;;

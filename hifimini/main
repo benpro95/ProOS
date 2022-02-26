@@ -28,12 +28,12 @@ then
 else
   echo "server not found."  
 fi
-## Disable HDMI (saves 30mA of power draw)
-/opt/vc/bin/tvservice -o
 ## Disable Activity LED
 echo none | tee /sys/class/leds/led0/trigger
 ## Auto Hotspot (on boot only)
 systemctl start rpi-netdetect
+## Disable HDMI (saves 30mA)
+tvservice -o
 exit
 ;;
 

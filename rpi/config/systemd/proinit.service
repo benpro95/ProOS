@@ -1,14 +1,16 @@
 [Unit]
 Description=ProOS Init Service by Ben Provenzano III
 DefaultDependencies=no
+Conflicts=shutdown.target
 After=sysinit.target local-fs.target
-Before=basic.target
 
 [Service]
-Type=forking
-ExecStart=/usr/bin/screen -dm /bin/bash /etc/preinit
-TimeoutSec=1
+Type=oneshot
+ExecStartPre=-/etc/netmode.sh boot
+ExecStartPre=-/bin/systemctl start rpi-cleanup.timer
+ExecStart=-/opt/rpi/main boot
 RemainAfterExit=yes
+TimeoutSec=240
 
 [Install]
 WantedBy=basic.target

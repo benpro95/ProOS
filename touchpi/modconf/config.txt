@@ -81,5 +81,5 @@ dtparam=spi=off
 temp_limit=75
 
 #------Disable Bluetooth-----
-dtoverlay=pi3-disable-bt
+dtoverlay=disable-bt
 

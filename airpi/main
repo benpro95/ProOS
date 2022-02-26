@@ -25,8 +25,6 @@ sleep 1.25
 /usr/bin/amixer set PCM 99%
 ## Light Web Server
 systemctl start lighttpd
-## Disable HDMI (saves 30mA of power draw)
-/opt/vc/bin/tvservice -o
 ## Reset Bluetooth Connections
 /opt/rpi/init resetbt
 ## Auto Hotspot (on boot only)
@@ -34,6 +32,8 @@ systemctl start lighttpd
 if [ ! -e /tmp/bt.connected ]; then
    systemctl start rpi-netdetect.service
 fi
+## Disable HDMI (saves 30mA)
+tvservice -o
 exit
 ;;
 

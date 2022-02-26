@@ -3,37 +3,28 @@
 #### RUN FROM '/opt/rpi/init CMD'
 
 STOP_NET(){
-## Clear Tables
-iptables -F
-## Stop Hotspot Service
-systemctl stop hostapd
-systemctl stop dnsmasq
-systemctl stop rpi-wpaempty
-## Stop Wi-Fi Service
-systemctl stop wpa_supplicant
-## Stop Networking
-systemctl stop dhcpcd
-systemctl restart networking
-ip addr flush dev eth0
-ip addr flush dev wlan0
+if [ "$BOOTUP" = "yes" ]; then
+  ## Start Networking
+  systemctl start networking
+else
+  ## Clear Tables
+  iptables -F
+  ## Stop DHCP, Hotspot and Wi-Fi Service
+  systemctl stop wpa_supplicant
+  systemctl stop rpi-wpaempty
+  systemctl stop hostapd
+  systemctl stop dnsmasq
+  ## Restart Networking
+  systemctl stop dhcpcd
+  systemctl restart networking
+  ip addr flush dev eth0
+  ip addr flush dev wlan0
+fi
 ## Disable WiFi Power Management
 /sbin/iw dev wlan0 set power_save off
 ## Turn off hotspot LED if exists
-/opt/rpi/main apdled-off || :
-sleep 2.5
-}
-
-CPWIFI_CONF(){
-if [ ! -e /boot/wpa.conf ]; then
-  echo "WiFi config not found resetting."
-  cp -f /etc/wpa_supplicant/wpa_supplicant.empty /etc/wpa_supplicant/wpa_supplicant.conf
-  chmod 644 /etc/wpa_supplicant/wpa_supplicant.conf
-  chown root:root /etc/wpa_supplicant/wpa_supplicant.conf
-else
-  cp -f /boot/wpa.conf /etc/wpa_supplicant/wpa_supplicant.conf
-  chmod 644 /etc/wpa_supplicant/wpa_supplicant.conf
-  chown root:root /etc/wpa_supplicant/wpa_supplicant.conf
-fi
+/opt/rpi/main apdled-off
+sleep 3.5
 }
 
 CLIENT_MODE(){
@@ -75,10 +66,22 @@ chown root:root /etc/dnsmasq.conf
 systemctl start dnsmasq
 }
 
+CPWIFI_CONF(){
+if [ ! -e /boot/wpa.conf ]; then
+  echo "WiFi config not found resetting."
+  cp -f /etc/wpa_supplicant/wpa_supplicant.empty /etc/wpa_supplicant/wpa_supplicant.conf
+  chmod 644 /etc/wpa_supplicant/wpa_supplicant.conf
+  chown root:root /etc/wpa_supplicant/wpa_supplicant.conf
+else
+  cp -f /boot/wpa.conf /etc/wpa_supplicant/wpa_supplicant.conf
+  chmod 644 /etc/wpa_supplicant/wpa_supplicant.conf
+  chown root:root /etc/wpa_supplicant/wpa_supplicant.conf
+fi
+}
+
 DELWIFI_MODE(){
 ## Stop Networking
 STOP_NET
-
 ## DHCP Client Mode
 cp -f /etc/dhcpcd.net /etc/dhcpcd.conf
 chmod 644 /etc/dhcpcd.conf
@@ -88,6 +91,9 @@ systemctl start dhcpcd
 systemctl start wpa_supplicant
 ## Default Firewall Rules
 iptables -t mangle -I POSTROUTING 1 -o wlan0 -p udp --dport 123 -j TOS --set-tos 0x00
+## Switch to hotspot if network connection not found
+sleep 60
+NETDETECT
 }
 
 APD_MODE(){
@@ -158,8 +164,9 @@ case "$1" in
 
 ##############################################
 
-client)
+boot)
 ## REQUIRED TO START NETWORKING!!
+BOOTUP="yes"
 if [ ! -e /boot/ap-bridge.enable ]; then
   if [ ! -e /boot/apd.enable ]; then
     echo "Client network mode"
@@ -175,8 +182,22 @@ fi
 exit
 ;;
 
+client)
+## Switch to client network mode
+BOOTUP="no"
+if [ ! -e /boot/ap-bridge.enable ]; then
+  echo "Client network mode"
+  CLIENT_MODE
+else
+  echo "Bridge network mode"
+  BRIDGE_MODE
+fi
+exit
+;;
+
 delwifi)
 ## Delete Wi-Fi credentials
+BOOTUP="no"
 cp -f /etc/wpa_supplicant/wpa_supplicant.empty /etc/wpa_supplicant/wpa_supplicant.conf
 chmod 644 /etc/wpa_supplicant/wpa_supplicant.conf
 chown root:root /etc/wpa_supplicant/wpa_supplicant.conf
@@ -189,15 +210,16 @@ exit
 ;;
 
 apd)
-## Access point mode
+## Switch to access point mode
+BOOTUP="no"
 APD_MODE
 /opt/rpi/main apdled-on || :
 exit
 ;;
 
 netdetect)
-## Invoked by systemd only
-sleep 60
+## Switch to hotspot if network down
+BOOTUP="no"
 NETDETECT
 exit
 ;;

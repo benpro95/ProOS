@@ -85,9 +85,10 @@ fi
 LEDTYPE=`cat $BIN_PATH/ledtype.txt`
 
 ## Pick a random effect
-if [ "$VARA" = "shuffle" ] ; then
-  SHUF=$BIN_PATH/effects/shuffle.txt
-  VARA=$(<$SHUF sort | uniq | sort -R | head -n 1)
+if [ "$VARA" = "shuffle" ]; then
+  SHUF_IN=$BIN_PATH/effects/shuffle.txt
+  SHUF_OUT=$(<$SHUF_IN sort | uniq | sort -R | head -n 1)
+  VARA="${SHUF_OUT//$'\r'/}"
 fi
 
 ## Node.js effect parser
@@ -118,7 +119,8 @@ if [ "$VARA" = "fc" ]; then
     touch /tmp/fcstate.lock
   fi
   systemctl set-environment rpi_ledtype=$LEDTYPE rpi_fcsetup=fc$VARB.json
-  systemctl restart rpi-fcserver rpi-nodeopc
+  systemctl restart rpi-fcserver 
+  systemctl restart rpi-nodeopc
   echo "LEDs brightness changed to $VARB%"
   rm -f /tmp/fcstate.lock
   exit

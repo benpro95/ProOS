@@ -435,13 +435,7 @@ chown -fR root:root /etc/systemd/system/*.timer
 chmod -fR 644 /etc/systemd/system/*.service
 chown -fR root:root /etc/systemd/system/*.service
 
-## Startup Script
-cp -f $BIN/rc.local /etc
-chmod 755 /etc/rc.local
-chown root:root /etc/rc.local
-cp -f $BIN/preinit /etc
-chmod 755 /etc/preinit
-chown root:root /etc/preinit
+## Network Startup
 cp -f $BIN/netmode.sh /etc
 chmod 755 /etc/netmode.sh
 chown root:root /etc/netmode.sh
@@ -770,16 +764,15 @@ ln -sf /opt/rpi/leds /usr/bin/leds
 systemctl daemon-reload
 if [ ! -e /etc/rpi-conf.done ]; then
 ## Active on startup
-systemctl enable ssh proinit avahi-daemon systemd-time-wait-sync
+systemctl enable ssh proinit avahi-daemon systemd-timesyncd systemd-time-wait-sync
 systemctl unmask systemd-journald
 ## Disabled on startup
 systemctl unmask hostapd
-systemctl disable hostapd dhcpcd networking wpa_supplicant keyboard-setup plymouth-log \
-plymouth sysstat lightdm apache2 lighttpd dnsmasq systemd-timesyncd apt-daily.service \
-apt-daily.timer apt-daily-upgrade.service apt-daily-upgrade.timer sysstat-collect.timer \
-sysstat-summary.timer man-db.service man-db.timer hciuart bluetooth triggerhappy \
-usbplug motion mpd nmbd smbd autofs shairport-sync wifiswitch
-
+systemctl disable hostapd dhcpcd networking wpa_supplicant keyboard-setup \
+plymouth sysstat lightdm apache2 lighttpd dnsmasq apt-daily.service wifiswitch plymouth-log \
+apt-daily.timer apt-daily-upgrade.service apt-daily-upgrade.timer sysstat-collect.timer motion \
+sysstat-summary.timer man-db.service man-db.timer hciuart bluetooth triggerhappy usbplug \
+mpd nmbd smbd autofs shairport-sync
 echo "Initial setup (phase II) complete."
 touch /etc/rpi-conf.done
 else
@@ -840,6 +833,7 @@ chown -R root:root /opt/rpi
 
 ## Remove Installer Files
 rm -rf /opt/rpi/config
+rm -f /etc/preinit
 
 echo "Configuration Complete."
 exit

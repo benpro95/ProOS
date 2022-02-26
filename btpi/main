@@ -22,8 +22,8 @@ sleep 5
 /opt/rpi/init resetbt
 ## Disable Activity LED
 echo none | tee /sys/class/leds/led0/trigger
-## Disable HDMI (saves 30mA of power draw)
-/opt/vc/bin/tvservice -o
+## Disable HDMI (saves 30mA)
+tvservice -o
 exit
 ;;
 	    

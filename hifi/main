@@ -33,6 +33,8 @@ fi
 if [ ! -e /tmp/bt.connected ]; then
    systemctl start rpi-netdetect.service
 fi
+## Disable HDMI (saves 30mA)
+tvservice -o
 exit
 ;;
 

@@ -29,4 +29,9 @@ cp -f $BIN/modconf/lighttpd.conf /etc/lighttpd/
 chmod 644 /etc/lighttpd/lighttpd.conf
 chown root:root /etc/lighttpd/lighttpd.conf
 
+## X11 Setup
+cp -f $BIN/modconf/xautostart /home/pi/.config/lxsession/LXDE/autostart
+chmod 755 /home/pi/.config/lxsession/LXDE/autostart
+chown pi:pi /home/pi/.config/lxsession/LXDE/autostart
+
 exit

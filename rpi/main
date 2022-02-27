@@ -6,8 +6,6 @@
 case "$1" in
 
 boot)
-## Light Web Server
-systemctl start lighttpd
 ## Unified Web Server
 systemctl start rpi-urserver
 ## Start X11 Server
@@ -21,9 +19,9 @@ systemctl start rpi-urserver
 #sleep 5
 #/opt/rpi/init resetbt
 ## Disable HDMI (saves 30mA of power draw)
-#/opt/vc/bin/tvservice -o
+#tvservice -o
 ## Auto Hotspot
-sleep 60 # only run if bluetooth not connected
+# only run if bluetooth not connected
 if [ ! -e /tmp/bt.connected ]; then
    # (on boot only)	
    systemctl start rpi-netdetect.service
@@ -33,48 +31,17 @@ fi
 exit
 ;;
 
-x11)
-## Desktop environment
-## Start as pi user!
-export DISPLAY=":0"
-pkill Xorg
-sleep 1.25
-rm -rf /home/pi/.cache/menus
-rm -rf /home/pi/.cache/lxsession
-mkdir -p /home/pi/.cache/lxsession/LXDE
-ln -sf /dev/null /home/pi/.cache/lxsession/LXDE/run.log
-rm -rf /home/pi/.cache/openbox
-mkdir -p /home/pi/.cache/openbox
-ln -sf /dev/null /home/pi/.cache/openbox/openbox.log
-echo "Starting X11-LXDE..."
-startx &
-sleep 4.25
-## Disable Screen Blanking
-xset s 0 0 s noblank s noexpose
-xset -dpms
-## Start Web Kiosk Interface
-#/opt/rpi/init kiosk
-## Start On-Screen Keyboard
-#/opt/rpi/init osk
-exit
-;;
-
 usbplug)
 ## This script is ran after USB drive attached and when its removed.
 echo "no function assigned"
 exit
 ;;
 
-
-
-
-
-
         *)
           echo "RPi Server v3 for Raspberry Pi"
-	      echo "  by Ben Provenzano III"
-	      echo " "
-	      echo "Enter a valid command line argument."
+	        echo "  by Ben Provenzano III"
+	        echo " "
+	        echo "Enter a valid command line argument."
           exit 1
           ;;
     esac

@@ -564,6 +564,9 @@ mkdir -p /home/pi/.config/lxsession
 chown -R pi:pi /home/pi/.config/lxsession
 mkdir -p /home/pi/.config/lxsession/LXDE
 chown -R pi:pi /home/pi/.config/lxsession/LXDE
+cp -f $BIN/xdesktop.conf /home/pi/.config/lxsession/LXDE/desktop.conf
+chmod 644 /home/pi/.config/lxsession/LXDE/desktop.conf
+chown pi:pi /home/pi/.config/lxsession/LXDE/desktop.conf
 cp -f $BIN/xautostart /home/pi/.config/lxsession/LXDE/autostart
 chmod 755 /home/pi/.config/lxsession/LXDE/autostart
 chown pi:pi /home/pi/.config/lxsession/LXDE/autostart

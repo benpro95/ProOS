@@ -3,9 +3,12 @@ Description=Start the Graphical User Interface
 
 [Service]
 User=pi
-Type=oneshot
+Type=forking
 RemainAfterExit=yes
-ExecStart=/opt/rpi/main x11
+ExecStart=/bin/bash -c 'export DISPLAY=":0"; startx &'
+WorkingDirectory=/home/pi
+Restart=on-failure
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target

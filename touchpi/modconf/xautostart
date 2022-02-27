@@ -19,11 +19,8 @@
 @rm -rf /home/pi/.config/chromium
 @rm -rf /home/pi/.cache/chromium
 
-## Processing 
-#@/opt/rpi/processing/processing
-
-## On-screen Keyboard
-#@florence --use-config /usr/share/florence/florence.conf
+## LCD Sleep Mode
+@/opt/rpi/lcdsleep.sh
 
 ## Start Browser 
-#@chromium --kiosk --no-first-run --disable-plugins --disk-cache-size=80000 --media-cache-size=80000 --enable-features=OverlayScrollbar,OverlayScrollbarFlashAfterAnyScrollUpdate,OverlayScrollbarFlashWhenMouseEnter --incognito --disable-restore-session-state --disable-session-crashed-bubble --noerrdialogs --disable-infobars http://google.com
+@chromium --kiosk --no-first-run --disable-plugins --disk-cache-size=80000 --media-cache-size=80000 --enable-features=OverlayScrollbar,OverlayScrollbarFlashAfterAnyScrollUpdate,OverlayScrollbarFlashWhenMouseEnter --incognito --disable-restore-session-state --disable-session-crashed-bubble --noerrdialogs --disable-infobars http://automate.home

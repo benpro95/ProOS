@@ -6,37 +6,6 @@ case "$1" in
 ##############################################
 ########### SYSTEM PROGRAMS ##################
 
-osk)
-## X11 On-Screen Keyboard
-killall florence
-sleep 1.25
-## Connect to X
-export DISPLAY=":0"
-florence --use-config /usr/share/florence/florence.conf &
-exit
-;;
-
-processing)
-## Connect to X
-export DISPLAY=":0"
-/opt/rpi/processing/processing > /dev/null 2>&1 &
-exit
-;;
-
-kiosk)
-## X11 Web Kiosk
-killall chromium
-sleep 1.25
-## Connect to X
-export DISPLAY=":0"
-## Clear Web Cache
-rm -rf ~/.config/chromium
-rm -rf ~/.cache/chromium
-chromium --kiosk --no-first-run --disable-plugins --disk-cache-size=80000 --media-cache-size=80000 \
- --incognito --disable-session-crashed-bubble --noerrdialogs --disable-infobars localhost/ &
-exit
-;;
-
 keycap)
 ## Capture Keystrokes and Events
 echo "List of all known events"

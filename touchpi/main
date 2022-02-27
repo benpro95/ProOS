@@ -19,43 +19,6 @@ tvservice -o
 exit
 ;;
 
-x11)
-## Desktop environment
-## Start as pi user!
-export DISPLAY=":0"
-pkill Xorg
-sleep 1.25
-rm -rf /home/pi/.cache/menus
-rm -rf /home/pi/.cache/lxsession
-mkdir -p /home/pi/.cache/lxsession/LXDE
-ln -sf /dev/null /home/pi/.cache/lxsession/LXDE/run.log
-rm -rf /home/pi/.cache/openbox
-mkdir -p /home/pi/.cache/openbox
-ln -sf /dev/null /home/pi/.cache/openbox/openbox.log
-echo "Starting X11-LXDE..."
-startx &
-sleep 4.25
-## Disable Screen Blanking
-xset s 0 0 s noblank s noexpose
-xset -dpms
-## LCD Sleep Mode
-/opt/rpi/lcdsleep.sh &
-#################
-## X11 Web Kiosk
-killall chromium
-sleep 1.25
-## Clear Cache
-rm -rf /home/pi/.config/chromium
-rm -rf /home/pi/.cache/chromium
-## Start Browser 
-chromium --kiosk --no-first-run --disable-plugins --disk-cache-size=80000 --media-cache-size=80000 \
- --enable-features=OverlayScrollbar,OverlayScrollbarFlashAfterAnyScrollUpdate,OverlayScrollbarFlashWhenMouseEnter \
- --incognito --disable-restore-session-state --disable-session-crashed-bubble --noerrdialogs --disable-infobars \
- http://automate.home/ &
- ################
-exit
-;;
-
 lcdon)
 ## LCD on
 sudo sh -c 'echo 0 > /sys/class/backlight/rpi_backlight/bl_power'

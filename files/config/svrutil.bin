@@ -66,12 +66,12 @@ echo " "
 echo "last login:"
 lastlog -u server
 echo " "
+echo "(d) Drive usage"
+echo "(n) Network scan"
 echo "(b) Backup utility"
-echo "(l) List server disk usage"
-echo "(n) Port scan active network devices"
-echo "(s) Server configuration"
-echo "(g) Generate a server log"
+echo "(g) Generate a log file"
 echo "(p) Push ProOS to GitHub"
+echo "(s) System configuration"
 echo "(enter) Exit to shell"
 echo " "
 read -p "select option: " -n 1 -r
@@ -91,7 +91,7 @@ then
 fi
 
 ## List drive usage
-if [[ $REPLY =~ ^[Ll]$ ]]
+if [[ $REPLY =~ ^[Dd]$ ]]
 then
   echo " "
   df -h

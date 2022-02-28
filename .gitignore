@@ -10,6 +10,7 @@ wkst/Scripts/exes
 pve/network
 pve/vmbkps
 pve/photos
+pvr/xana/bookmarks.html
 pve/automate/unifi
 *authorized_keys*
 .ssh

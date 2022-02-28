@@ -113,11 +113,9 @@ if [ "$MODULE" = "files" ] || \
   HOST="$MODULE$DOMAIN"
   ## Translate hostname to IP
   if [ "$MODULE" = "pve" ]; then
-    MODULE="pve"
     HOST="10.177.1.8" 
   fi 
   if [ "$MODULE" = "files" ]; then
-    MODULE="files"
     HOST="10.177.1.4" 
   fi
   ## SSH key prompt
@@ -126,15 +124,19 @@ if [ "$MODULE" = "files" ] || \
   ### AutoSync
   if [ "$ARG2" = "sync" ]; then
     echo "ProOS NetInstall for Server"
-    ## Create temporary folder
+    ## Create work folder
     if [ -e /mnt/scratch/downloads ]; then
       mkdir -p /mnt/scratch/downloads/.ptmp
       TMPFLDR=$(mktemp -d /mnt/scratch/downloads/.ptmp/XXXXXXXXX)
     else
       TMPFLDR=$(mktemp -d /tmp/protmp.XXXXXXXXX)
     fi
-    ## Copying files to temp
-    cp -r $ROOTDIR/$MODULE/config $TMPFLDR/
+    ## Copying files to work folder
+    if [ "$MODULE" = "pve" ]; then
+      cp -r $ROOTDIR/$MODULE/config $TMPFLDR/
+    else
+      cp -r $ROOTDIR/pve/$MODULE/config $TMPFLDR/
+    fi
     ## Compressing files
     cd $TMPFLDR
     export COPYFILE_DISABLE=true

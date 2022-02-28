@@ -11,13 +11,10 @@ apt-get --yes update
 apt-get install -y --no-upgrade --ignore-missing unzip wget \
  rsync curl screen scrub ethtool aptitude sudo samba sshpass \
  libdbus-1-dev libdbus-glib-1-dev bc git locales mailutils \
- bpytop neofetch apt-transport-https nmap
+ neofetch apt-transport-https nmap bpytop htop
 
-## Remove Packages
-apt-get remove -y --purge htop
-
-## Replace Process Monitor
-ln -sf /usr/bin/bpytop /usr/bin/htop
+## Process Monitor Symlink
+ln -sf /usr/bin/bpytop /usr/bin/pytop
 
 ## Set Locale
 if [ ! -e /etc/locales.generated ]; then

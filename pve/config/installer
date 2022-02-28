@@ -24,10 +24,15 @@ fi
 ## Update Sources
 apt-get --yes update
 
+apt-get remove -y htop bpytop
+
 ## Support Packages
 apt-get install -y --no-upgrade --ignore-missing rsync cron zip screen \
- libsasl2-modules postfix ethtool htop apt-transport-https lm-sensors \
+ libsasl2-modules postfix ethtool bpytop htop apt-transport-https lm-sensors \
  zfs-auto-snapshot smartmontools hddtemp apcupsd
+
+## Process Monitor Symlink
+ln -sf /usr/bin/bpytop /usr/bin/pytop
 
 ## Bonded Trunk 802.3ad Network Config
 cp -f /tmp/config/interfaces /etc/network/interfaces

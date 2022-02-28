@@ -6,5 +6,5 @@ Before=shutdown.target
 [Service]
 Type=oneshot
 RemainAfterExit=no
-ExecStart=/opt/rpi/cleanup
+ExecStart=-/opt/rpi/cleanup
 IOSchedulingClass=idle

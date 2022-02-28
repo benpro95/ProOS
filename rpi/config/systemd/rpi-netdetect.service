@@ -7,6 +7,6 @@ Before=shutdown.target
 Type=oneshot
 LogLevelMax=notice
 StandardOutput=append:/tmp/netstat.txt
-ExecStartPre=-sleep 60
+ExecStartPre=/bin/sleep 60
 ExecStart=-/etc/netmode.sh netdetect
 RemainAfterExit=yes

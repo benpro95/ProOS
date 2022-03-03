@@ -417,6 +417,11 @@ cp -f $BIN/journald.conf /etc/systemd
 chmod 644 /etc/systemd/journald.conf
 chown root:root /etc/systemd/journald.conf
 
+## Supress Logging (Random Number Generator)
+if [ "${OSVER}" = "bullseye" ]; then
+  sed -i 's/RNGDOPTIONS=.*/RNGDOPTIONS=--stats-interval=0/' /etc/init.d/rng-tools-debian
+fi
+
 ## Kernel Drivers Configuration
 cp -f $BIN/modules /etc
 chmod 644 /etc/modules

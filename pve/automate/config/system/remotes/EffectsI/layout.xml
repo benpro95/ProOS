@@ -31,9 +31,9 @@
         <button text="Fireworks" ontap="fireworks" color="#000030" />
     </row>
     <row>
-        <button icon="shuffle" ontap="shuffle"/>
-        <button icon="pause" ontap="pause"/>
-        <button icon="off" ontap="stop"/>
+        <button icon="shuffle" ontap="shuffle" />
+        <button icon="pause" ontap="pause" />
+        <button icon="off" ontap="stop" />
     </row>
 </layout>
 

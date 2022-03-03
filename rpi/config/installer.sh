@@ -247,9 +247,6 @@ if [ "${OSVER}" = "bullseye" ]; then
   fi
 fi
 
-## Compile COBOL Programs
-cobc -x --free /opt/rpi/build/colorscan.cbl -o /opt/rpi/effects/colorscan
-
 ## Music Player Support
 apt-get install -y --no-upgrade --ignore-missing mpd mpc
 update-rc.d mpd remove
@@ -767,6 +764,9 @@ ln -sf /opt/rpi/leds /usr/bin/leds
 
 ## Set web server default theme
 /opt/rpi/init dred
+
+## Compile COBOL Programs
+cobc -x --free /opt/rpi/build/colorscan.cbl -o /opt/rpi/effects/colorscan
 
 ## Services Configuration
 systemctl daemon-reload

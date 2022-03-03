@@ -32,7 +32,8 @@
         <button text="Candle" ontap="candle" color="#cc6600" />
     </row>
     <row>
-        <button icon="pause" ontap="pause" color="grey" />
-        <button icon="off" ontap="stop" color="black" />
+        <button icon="shuffle" ontap="shuffle" />    	
+        <button icon="pause" ontap="pause" />
+        <button icon="off" ontap="stop" />
     </row>
 </layout>

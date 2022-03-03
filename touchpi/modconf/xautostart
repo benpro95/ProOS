@@ -1,6 +1,6 @@
-## LXDE Desktop
-@lxpanel --profile LXDE
-@pcmanfm --desktop --profile LXDE
+## LXDE Desktop (disabled)
+##@lxpanel --profile LXDE
+##@pcmanfm --desktop --profile LXDE
 ##@xscreensaver -no-splash
 
 ## Disable Blanking
@@ -12,9 +12,9 @@
 @rm -rf /home/pi/.cache/menus
 @rm -rf /home/pi/.cache/lxsession
 @mkdir -p /home/pi/.cache/lxsession/LXDE
-@ln -sf /dev/null /home/pi/.cache/lxsession/LXDE/run.log
 @rm -rf /home/pi/.cache/openbox
 @mkdir -p /home/pi/.cache/openbox
+@ln -sf /dev/null /home/pi/.cache/lxsession/LXDE/run.log
 @ln -sf /dev/null /home/pi/.cache/openbox/openbox.log
 @rm -rf /home/pi/.config/chromium
 @rm -rf /home/pi/.cache/chromium

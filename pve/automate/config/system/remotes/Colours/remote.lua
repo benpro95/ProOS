@@ -1,12 +1,15 @@
 local script = libs.script;
 
-
 actions.pause = function ()
 script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds pause");
 end
 
 actions.stop = function ()
 script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds stop");
+end
+
+actions.shuffle = function ()
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds randcolor");
 end
 
 actions.candle = function ()

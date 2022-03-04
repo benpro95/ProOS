@@ -19,8 +19,8 @@
         <button text="50%" ontap="fc50" color="#00003e" />
     </row>
     <row>
+    	<button icon="off" ontap="stop" color="#000000" />
         <button icon="pause" ontap="pause" color="#252629" />
-        <button icon="off" ontap="stop" color="#000000" />
     </row>
 </layout>
 

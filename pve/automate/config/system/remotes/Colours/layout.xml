@@ -44,8 +44,8 @@
         <button text="Olive" ontap="olive" />
     </row>
     <row>
-        <button icon="shuffle" ontap="shuffle" />    	
-        <button icon="pause" ontap="pause" />
-        <button icon="off" ontap="stop" />
+        <button icon="off" ontap="stop"/>
+        <button icon="pause" ontap="pause"/>
+        <button icon="shuffle" ontap="shuffle"/>   
     </row>
 </layout>

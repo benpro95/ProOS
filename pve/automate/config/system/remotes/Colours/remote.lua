@@ -95,3 +95,40 @@ end
 actions.violet = function ()
 script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds violet");
 end
+
+actions.orchid = function ()
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds orchid1");
+end
+
+actions.coral = function ()
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds coral3");
+end
+
+actions.tomato = function ()
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds tomato1");
+end
+
+actions.khaki = function ()
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds khaki1");
+end
+
+actions.tan = function ()
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds tan1");
+end
+
+actions.olive = function ()
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds olivedrab1");
+end
+
+actions.aquamarine = function ()
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds aquamarine2");
+end
+
+actions.orangered = function ()
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds orangered");
+end
+
+actions.turquoise = function ()
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds turquoise");
+end
+

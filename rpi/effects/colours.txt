@@ -377,6 +377,7 @@
 238 121 159 palevioletred2
 205 104 137 palevioletred3
 139  71 93  palevioletred4
+215   7  81 maroon
 255  52 179 maroon1
 238  48 167 maroon2
 205  41 144 maroon3

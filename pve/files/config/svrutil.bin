@@ -163,7 +163,7 @@ then
     echo " "
     echo "updating automate system configuration..."
     ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "rm -rfv /opt/rpi/remotes"
-    rsync -e "ssh -i ~/ProOS/.ssh/automate.rsa" --progress --checksum -rtv ~/ProOS/automate/config/system/* root@automate.home:/opt/rpi/
+    rsync -e "ssh -i ~/ProOS/.ssh/automate.rsa" --progress --checksum -rtv ~/ProOS/pve/automate/config/system/* root@automate.home:/opt/rpi/
     echo " "
     echo "restarting lighttpd web server..."
     ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl restart lighttpd"

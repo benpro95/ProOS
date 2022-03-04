@@ -1,35 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
     <row>
-        <button text="Yellow" ontap="yellow" color="#cccc00" />
-        <button text="Red" ontap="red" color="red" />
-        <button text="Green" ontap="green" color="green" />
-        <button text="Blue" ontap="blue" color="blue" />
-        <button text="Indigo" ontap="indigo" color="#200066" />
+        <button text="Yellow" ontap="yellow" />
+        <button text="Red" ontap="red" />
+        <button text="Green" ontap="green" />
+        <button text="Blue" ontap="blue" />
+        <button text="Indigo" ontap="indigo" />
     </row>
     <row>
-        <button text="Orange" ontap="orange" color="#e65c00" />
-	    <button text="Lavender" ontap="lavender" color="#e699e6" />
-	    <button text="Violet" ontap="violet" color="#9d159d" />
-	    <button text="Purple" ontap="purple" color="#750099" />
+        <button text="Orange" ontap="orange" />
+	    <button text="Lavender" ontap="lavender" />
+	    <button text="Violet" ontap="violet" />
+	    <button text="Purple" ontap="purple" />
     </row>
     <row>
-        <button text="Salmon" ontap="salmon" color="#ff8c69" />
-        <button text="Pink" ontap="pink" color="#ff69b4" />
-        <button text="Maroon" ontap="maroon" color="#620000" />
-	    <button text="Forest" ontap="forest" color="#1f3d0c" />
-	    <button text="Plum" ontap="plum" color="#d07ad0" />
+        <button text="Salmon" ontap="salmon" />
+        <button text="Pink" ontap="pink" />
+        <button text="Maroon" ontap="maroon" />
+	    <button text="Forest" ontap="forest" />
+	    <button text="Plum" ontap="plum" />
     </row>
     <row>
-        <button text="Clear Sky" ontap="sky" color="#409CFF" />
-        <button text="Overcast" ontap="overcast" color="#80bbff" />
-        <button text="Sunlight" ontap="sunlight" color="#9fbbdf" />
+        <button text="Clear Sky" ontap="sky" />
+        <button text="Overcast" ontap="overcast" />
+        <button text="Sunlight" ontap="sunlight" />
     </row>    
     <row>
-        <button text="Halogen" ontap="halogen" color="#ecb879" />
-        <button text="Tungsten" ontap="tungsten" color="#ffa31a" />
-	    <button text="Sodium" ontap="sodium" color="#FF9329" />
-        <button text="Candle" ontap="candle" color="#cc6600" />
+        <button text="Halogen" ontap="halogen" />
+        <button text="Tungsten" ontap="tungsten" />
+	    <button text="Sodium" ontap="sodium" />
+        <button text="Candle" ontap="candle" />
+    </row>
+    <row>
+        <button text="Aquamarine" ontap="aquamarine" />
+        <button text="Orange Red" ontap="orangered" />
+        <button text="Turquoise" ontap="turquoise" />
+    </row>    
+    <row>
+        <button text="Orchid" ontap="orchid" />
+        <button text="Coral" ontap="coral" />
+        <button text="Tomato" ontap="tomato" />
+        <button text="Khaki" ontap="candle" />
+        <button text="Olive" ontap="olive" />
     </row>
     <row>
         <button icon="shuffle" ontap="shuffle" />    	

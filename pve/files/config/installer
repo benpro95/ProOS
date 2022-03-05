@@ -113,14 +113,6 @@ cp /tmp/config/smb.conf /etc/samba
 chmod 644 /etc/samba/smb.conf
 chown root:root /etc/samba/smb.conf
 
-## Hosts Configuration
-cp /tmp/config/hosts.allow /etc/
-chmod 644 /etc/hosts.allow
-chown root:root /etc/hosts.allow
-cp /tmp/config/hosts.deny /etc/
-chmod 644 /etc/hosts.deny
-chown root:root /etc/hosts.deny
-
 ## Clean-up
 systemctl daemon-reload
 rm -f /usr/bin/svrutil

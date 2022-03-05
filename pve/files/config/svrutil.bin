@@ -343,6 +343,7 @@ BKPPGRM () {
 scr_num=$(echo $RANDOM) 
 /usr/bin/screen -dmS $scr_num /usr/bin/svrbackup.bin $wait_time $checksum
 sleep 0.25
+clear
 screen -rS $scr_num
 ##### END BACKUP FUNCTION #####
 }

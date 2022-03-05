@@ -28,11 +28,11 @@ else
 fi
 rm -f /mnt/cameras/.camclean.vars
 
-## Move videos to archive when current folder is larger than 60GB
+## Move videos to archive when current folder is larger than 40GB
 rm -f /mnt/cameras/.camclean.vars
-du -sh -t60000000000 /mnt/cameras/Current | awk -F" " '{print $2}' > /mnt/cameras/.camclean.vars
+du -sh -t40000000000 /mnt/cameras/Current | awk -F" " '{print $2}' > /mnt/cameras/.camclean.vars
 if [[ -s /mnt/cameras/.camclean.vars ]] ; then
-	echo "Cameras current folder above 60GB limit moving video files..."
+	echo "Cameras current folder above 40GB limit moving video files..."
 	mkdir -p /mnt/cameras/Archive
 	mkdir -p /mnt/cameras/Archive/Driveway
 	mkdir -p /mnt/cameras/Archive/Porch

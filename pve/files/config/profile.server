@@ -17,6 +17,9 @@ alias l='ls $LS_OPTIONS -lA'
 /usr/bin/svrutil.bin
 
 uname -m -n -s -o -r
-echo "enter 'svr' to return to main menu"
+echo "Enter 'svr' to return to main menu"
 cd ~/ProOS
+echo "Server modules:"
+ls ~/ProOS/pve
+echo "Pi modules:"
 ls

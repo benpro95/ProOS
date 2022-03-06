@@ -8,8 +8,8 @@ ExecStart=/usr/bin/python3 /opt/rpi/ldr.py
 Restart=always
 RestartSec=5
 LogLevelMax=notice
-StandardOutput=/dev/null
-StandardError=/dev/null
+StandardOutput=null
+StandardError=null
 
 [Install]
 #WantedBy=multi-user.target

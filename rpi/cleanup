@@ -2,7 +2,7 @@
 ####### RPi Cleanup by Ben Provenzano III #######
 ## This script runs 5hr after boot and every 12 hrs
 
-## Cleanup Files
+## Cleanup logs
 truncate -s 0 /var/log/wtmp
 truncate -s 0 /var/log/btmp
 truncate -s 0 /var/log/lastlog
@@ -14,8 +14,13 @@ truncate -s 0 /root/.bash_history
 truncate -s 0 /home/pi/.xsession-errors
 truncate -s 0 /home/pi/.bash_history
 truncate -s 0 /tmp/netstat.txt
+
+## Clean cache
 rm -rf /home/pi/.config/chromium/hyphen-data/*
 rm -rf /var/www/sessions/*
-rm -rf /var/log/journal/*
+
+## Clean systemd logs
+journalctl --flush --rotate
+journalctl -m --vacuum-time=1hr
 
 exit

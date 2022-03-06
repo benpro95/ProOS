@@ -1,7 +1,0 @@
-## Disable Persistent Network Rules (keep eth0, wlan0 as network interface names)
-
-## Onboard Ethernet
-SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{type}=="1", KERNEL=="eth*"
-
-## Onboard Wi-Fi
-SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{type}=="1", KERNEL=="wlan*"

@@ -138,13 +138,10 @@ exit
 rw)
 ## Enable Read/Write Mode
 echo 'Rebooting in read/write mode...'
-killall Xorg
-/opt/rpi/leds stop
-sleep 1.25
+systemctl stop rpi-*
 mount -o remount,rw /boot
 cp -f /boot/cmdline.rw /boot/cmdline.txt
 mount -o remount,ro /boot
-sleep 1.25
 shutdown -r now
 exit
 ;;
@@ -152,13 +149,10 @@ exit
 ro)
 ## Enable Read/Only Mode
 echo 'Rebooting in read/only mode...'
-killall Xorg
-/opt/rpi/leds stop
-sleep 1.25
+systemctl stop rpi-*
 mount -o remount,rw /boot
 cp -f /boot/cmdline.ro /boot/cmdline.txt
 mount -o remount,ro /boot
-sleep 1.25
 shutdown -r now
 exit
 ;;

@@ -26,8 +26,8 @@ sleep 1.25
 cp -r $BIN/modconf/config.txt /boot/
 mount -o remount,ro /boot
 
-## lighttpd Configuration
-cp -f $BIN/modconf/lighttpd.conf /etc/lighttpd/
+## Light Web Server (disable redirection to port :9510)
+cp -f /etc/lighttpd/lighttpd-noredir.conf /etc/lighttpd/lighttpd.conf
 chmod 644 /etc/lighttpd/lighttpd.conf
 chown root:root /etc/lighttpd/lighttpd.conf
 

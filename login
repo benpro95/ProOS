@@ -265,7 +265,7 @@ if [ "$SYNCSTATE" = "start" ]; then
   ## Installing on Pi
   echo "Installing software..."
   ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-   $ROOTDIR/.ssh/rpi.rsa root@$HOST "chmod +x /opt/rpi/config/installer.sh; /opt/rpi/config/installer.sh"
+   $ROOTDIR/.ssh/rpi.rsa root@$HOST "cd /opt/rpi/config; chmod +x installer.sh; ./installer.sh"
 
   ## Reboot in read-only mode
   read -p "Do you want to reboot in read-only mode? " -n 1 -r

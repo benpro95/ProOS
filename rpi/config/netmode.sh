@@ -4,6 +4,8 @@
 
 STOP_NET(){
 if [ "$BOOTUP" = "yes" ]; then
+  ## Unblock Wi-Fi
+  rfkill unblock wifi 
   ## Start Networking
   systemctl start networking
 else

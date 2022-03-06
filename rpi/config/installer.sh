@@ -40,36 +40,24 @@ echo "############## Configurator ##############"
 echo "######### by Ben Provenzano III ##########"
 echo ""
 
-## Turn off LEDs if installed
-/opt/rpi/leds stop
-
-## Disable Auto Reboot
-systemctl stop rpi-rebootpi.timer
+## Stop RPi Services
+systemctl stop rpi-*
 
 ###################################################
-### Initial Configuration #########################
+### Initial configuration #########################
 if [ ! -e /etc/rpi-conf.done ]; then
 echo "*"
 echo "Resettings to defaults..."
 echo "*"
 
-## Set location
-cp /etc/locale.gen /etc/locale.gen.dist
-sed -i -e "/^[^#]/s/^/#/" -e "/en_US.UTF-8/s/^#//" /etc/locale.gen
-cp /var/cache/debconf/config.dat /var/cache/debconf/config.dat.dist
-sed -i -e "/^Value: en_GB.UTF-8/s/en_GB/en_US/" \
-       -e "/^ locales = en_GB.UTF-8/s/en_GB/en_US/" /var/cache/debconf/config.dat
-locale-gen
-update-locale LANG=en_US.UTF-8
+## Set locale
+raspi-config nonint do_change_locale LANG=en_US.UTF-8
+
 ## Set time zone
-echo "America/New_York" > /etc/timezone
-timedatectl set-timezone America/New_York
-## Regenerate configuration
-dpkg-reconfigure -f noninteractive tzdata locales
+raspi-config nonint do_change_timezone America/New_York
 
 ## Set keyboard layout
-sed -i -e "/XKBLAYOUT=/s/gb/us/" /etc/default/keyboard
-service keyboard-setup restart
+raspi-config nonint do_configure_keyboard us
 
 ## Create pi user
 adduser pi
@@ -106,11 +94,11 @@ apt-get install -y --no-upgrade --ignore-missing locales console-setup \
  aptitude libnss-mdns usbutils zsync v4l-utils libpq5 htop lsb-release \
  avahi-daemon avahi-discover avahi-utils hostapd dnsmasq unzip wget bc \
  rsync screen parallel sudo sed nano curl insserv wireless-regdb wireless-tools \
- uuid-runtime mpg321 omxplayer mpv mplayer espeak tightvncserver iptables \
+ uuid-runtime mpg321 mpv mplayer espeak tightvncserver iptables open-cobol \
  iw crda firmware-brcm80211 wpasupplicant dirmngr autofs triggerhappy apt-utils \
  build-essential git autoconf make libtool binutils i2c-tools cmake yasm \
  libmariadb3 texi2html socat nmap libtool autoconf automake pkg-config \
- keyboard-configuration ncftp open-cobol
+ keyboard-configuration ncftp
  
 ## Developer Packages 
 apt-get install -y --no-upgrade --ignore-missing libgtk2.0-dev libbluetooth3 libbluetooth-dev \
@@ -248,10 +236,16 @@ if [ "${OSVER}" = "bullseye" ]; then
 fi
 
 ## Music Player Support
+apt-get remove --purge -y mpd mpc
 apt-get install -y --no-upgrade --ignore-missing mpd mpc
-update-rc.d mpd remove
+update-rc.d mpd disable
 gpasswd -a mpd audio
 gpasswd -a mpd pulse-access
+
+## OMX-Player
+if [ ! -e /usr/bin/omxplayer ]; then
+  dpkg -i /opt/rpi/pkgs/omxplayer_20190723_armhf.deb
+fi
 
 ## AirPlay Support
 apt-get install -y --no-upgrade --ignore-missing xmltoman libsoxr-dev libsndfile1-dev \
@@ -452,14 +446,18 @@ else
 sed -i "s/RaspberryPi/$MODNAME/g" /etc/systemd/system/rpi-airplay.service
 fi
 
-## LightTPD Configuration
-cp -f $BIN/lighttpd.conf /etc/lighttpd
-chmod 644 /etc/lighttpd/lighttpd.conf
-chown root:root /etc/lighttpd/lighttpd.conf
-lighttpd-enable-mod fastcgi fastcgi-php; lighty-enable-mod fastcgi-php
+## Light Web Server Configuration
+lighttpd-enable-mod fastcgi fastcgi-php
+lighty-enable-mod fastcgi-php
 ln -sf /etc/lighttpd/conf-available/10-fastcgi.conf /etc/lighttpd/conf-enabled/
 ln -sf /etc/lighttpd/conf-available/15-fastcgi-php.conf /etc/lighttpd/conf-enabled/
 ln -sf /usr/share/lighttpd/create-mime.conf.pl /usr/share/lighttpd/create-mime.assign.pl
+cp -f $BIN/lighttpd-noredir.conf /etc/lighttpd/
+chmod 644 /etc/lighttpd/lighttpd-noredir.conf
+chown root:root /etc/lighttpd/lighttpd-noredir.conf
+cp -f $BIN/lighttpd-redirect.conf /etc/lighttpd/lighttpd.conf
+chmod 644 /etc/lighttpd/lighttpd.conf
+chown root:root /etc/lighttpd/lighttpd.conf
 
 ## PHP Configuration
 PHP_VERSION=$(php -v | tac -r | tail -n 1 | cut -d " " -f 2 | cut -c 1-3)
@@ -613,10 +611,8 @@ cp -f $BIN/btinput.conf /etc/bluetooth/input.conf
 chmod 644 /etc/bluetooth/input.conf
 chown root:root /etc/bluetooth/input.conf
 
-## Udev Network Rules
-cp -f $BIN/70-persistent-net.rules /etc/udev/rules.d
-chmod 644 /etc/udev/rules.d/70-persistent-net.rules
-chown root:root /etc/udev/rules.d/70-persistent-net.rules
+## Remove unused udev network rules
+rm -f /etc/udev/rules.d/70-persistent-net.rules
 rm -f /lib/udev/rules.d/75-persistent-net-generator.rules
 
 ## Enable Network Time Sync
@@ -718,10 +714,6 @@ chown pi:pi /home/pi/.config/pulse/client.conf
 cp -f $BIN/mpd.conf /etc
 chmod 644 /etc/mpd.conf
 chown root:root /etc/mpd.conf
-rm -rf /lib/systemd/system/mpd*
-rm -rf /lib/systemd/system/mpc*
-rm -rf /usr/bin/mpd
-rm -rf /usr/bin/mpc
 
 ## Samba USB Share Configuration
 cp -f $BIN/smb.conf /etc/samba
@@ -779,8 +771,8 @@ systemctl unmask hostapd
 systemctl disable hostapd dhcpcd networking wpa_supplicant keyboard-setup \
 plymouth sysstat lightdm apache2 lighttpd dnsmasq apt-daily.service wifiswitch plymouth-log \
 apt-daily.timer apt-daily-upgrade.service apt-daily-upgrade.timer sysstat-collect.timer motion \
-sysstat-summary.timer man-db.service man-db.timer hciuart bluetooth triggerhappy usbplug \
-mpd nmbd smbd autofs shairport-sync
+sysstat-summary.timer man-db.service man-db.timer hciuart bluetooth usbplug mpd nmbd smbd autofs \
+shairport-sync triggerhappy.service triggerhappy.socket
 echo "Initial setup (phase II) complete."
 touch /etc/rpi-conf.done
 else
@@ -845,6 +837,11 @@ rm -f /opt/rpi/pythproc
 rm -f /opt/rpi/effects/pythproc
 rm -f /etc/preinit
 
+## Clean systemd logs
+journalctl --flush --rotate
+journalctl -m --vacuum-time=1s
+
+echo ""
 echo "Configuration Complete."
 exit
 

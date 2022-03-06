@@ -29,16 +29,7 @@ ln -sf /opt/rpi/effects/remotes /opt/rpi/remotes/leds
 
 ## Set LEDgrid Type
 rm -f /opt/rpi/ledtype.txt
-if ping -c 1 10.177.1.1 > /dev/null 2> /dev/null
-then
-  LEDTYPE="8x8revgrid"
-  echo "Home domain detected, setting LEDtype to $LEDTYPE..."
-  echo "$LEDTYPE" > /opt/rpi/ledtype.txt
-else
-  LEDTYPE="8x8grid"
-  echo "Home domain not detected, setting LEDtype to $LEDTYPE..."
-  echo "$LEDTYPE" > /opt/rpi/ledtype.txt
-fi
+echo "8x8revgrid" > /opt/rpi/ledtype.txt
 
 ## Stage II - Set module name to configs
 if [ ! -e $BIN/modconf/brand.txt ]; then
@@ -46,18 +37,9 @@ echo "Skip module naming."
 else
 echo "Setting module name."
 ## Module specific home page
-if ping -c 1 10.177.1.1 > /dev/null 2> /dev/null
-then
-  echo "Home domain detected, installing custom web page..."
-  cp -fv $BIN/modconf/client.home.html /opt/rpi/manager/client.html
-  chmod 644 /opt/rpi/manager/client.html
-  chown root:root /opt/rpi/manager/client.html
-else
-  echo "Home domain not detected, installing standard web page..."
-  cp -fv $BIN/modconf/client.html /opt/rpi/manager/
-  chmod 644 /opt/rpi/manager/client.html
-  chown root:root /opt/rpi/manager/client.html
-fi
+cp -fv $BIN/modconf/client.home.html /opt/rpi/manager/client.html
+chmod 644 /opt/rpi/manager/client.html
+chown root:root /opt/rpi/manager/client.html
 ## Set module name to unified server
 sed -i "s/RaspberryPi/$MODNAME/g" /opt/rpi/manager/client.html
 sed -i "s/raspberrypi/$HOSTNAME/g" /opt/rpi/manager/client.html

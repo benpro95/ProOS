@@ -199,10 +199,9 @@ chown root:root /media/usb*
 
 ## Audio Support
 apt-get install -y --no-upgrade --ignore-missing alsa-base alsa-utils mpg321 lame sox \
- libasound2 libupnp6 libmpdclient2 libexpat1 libconfig-dev djmount libexpat1 \
- libimage-exiftool-perl libcurl4 libsoup2.4-1 libao-dev libglib2.0-dev \
- libjson-glib-1.0-0 libjson-glib-dev libao-common libasound2-dev \
- libreadline-dev libsox-dev libsoup2.4-dev
+ libasound2 libupnp6 libexpat1 libconfig-dev djmount libexpat1 libsox-dev libsoup2.4-dev \
+ libimage-exiftool-perl libcurl4 libsoup2.4-1 libao-dev libglib2.0-dev libreadline-dev \
+ libjson-glib-1.0-0 libjson-glib-dev libao-common libasound2-dev
 
 ## Bluetooth Support
 apt-get install -y --no-upgrade --ignore-missing bluetooth pi-bluetooth bluez bluez-tools
@@ -234,13 +233,6 @@ if [ "${OSVER}" = "bullseye" ]; then
     cd $BIN
   fi
 fi
-
-## Music Player Support
-apt-get remove --purge -y mpd mpc
-apt-get install -y --no-upgrade --ignore-missing mpd mpc
-update-rc.d mpd disable
-gpasswd -a mpd audio
-gpasswd -a mpd pulse-access
 
 ## OMX-Player
 if [ ! -e /usr/bin/omxplayer ]; then
@@ -274,7 +266,7 @@ apt-get remove --purge -y exim4 exim4-base exim4-config exim4-daemon-light udisk
 tigervnc-common tigervnc-standalone-server iptables-persistent bridge-utils vlc ntfs-3g \
 lxlock xscreensaver xscreensaver-data gvfs gvfs-backends vnc4server light-locker libudisks2-0 \
 desktop-file-utils exfat-fuse exfat-utils gdisk gnome-mime-data wolfram-engine libssl-doc \
-libatasmart4 libavahi-glib1 gvfs-common gvfs-daemons gvfs-libs 
+libatasmart4 libavahi-glib1 gvfs-common gvfs-daemons gvfs-libs mpd mpc
 apt-get -y autoremove
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
@@ -710,11 +702,6 @@ cp -f $BIN/client.conf /home/pi/.config/pulse/
 chmod 644 /home/pi/.config/pulse/client.conf
 chown pi:pi /home/pi/.config/pulse/client.conf
 
-## MPD/MPC Configuration
-cp -f $BIN/mpd.conf /etc
-chmod 644 /etc/mpd.conf
-chown root:root /etc/mpd.conf
-
 ## Samba USB Share Configuration
 cp -f $BIN/smb.conf /etc/samba
 chmod 644 /etc/samba/smb.conf
@@ -771,7 +758,7 @@ systemctl unmask hostapd
 systemctl disable hostapd dhcpcd networking wpa_supplicant keyboard-setup \
 plymouth sysstat lightdm apache2 lighttpd dnsmasq apt-daily.service wifiswitch plymouth-log \
 apt-daily.timer apt-daily-upgrade.service apt-daily-upgrade.timer sysstat-collect.timer motion \
-sysstat-summary.timer man-db.service man-db.timer hciuart bluetooth usbplug mpd nmbd smbd autofs \
+sysstat-summary.timer man-db.service man-db.timer hciuart bluetooth usbplug nmbd smbd autofs \
 shairport-sync triggerhappy.service triggerhappy.socket
 echo "Initial setup (phase II) complete."
 touch /etc/rpi-conf.done

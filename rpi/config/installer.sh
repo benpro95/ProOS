@@ -68,8 +68,9 @@ chsh -s /bin/bash pi
 insserv -r bootlogs
 insserv -r console-setup
 
-## APT Keys
-curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
+## Node.js APT Key
+curl --silent -L https://deb.nodesource.com/gpgkey/nodesource.gpg.key | \
+  gpg --no-default-keyring --keyring /etc/apt/trusted.gpg --import -
 
 ## Custom Source List
 if [ "${OSVER}" = "buster" ]; then
@@ -132,7 +133,21 @@ fi
 apt-get install -y --no-upgrade --ignore-missing xserver-xorg xorg \
  x11-common x11-apps xserver-xorg-input-evdev xvfb \
  libxext6 libxtst6 lxde-core libatlas-base-dev x11-common \
- synaptic lxterminal xprintidle xdotool wmctrl chromium
+ synaptic lxterminal xprintidle xdotool wmctrl
+
+## Install Chromium (manual, lastest version GPU support broken)
+if [ ! -e /usr/bin/chromium-browser ]; then
+  apt-get remove --allow-change-held-packages --purge -y chromium-browser chromium-codecs-ffmpeg chromium-codecs-ffmpeg-extra
+  wget "http://archive.raspberrypi.org/debian/pool/main/c/chromium-browser/chromium-browser_88.0.4324.187-rpt1_armhf.deb"
+  wget "http://archive.raspberrypi.org/debian/pool/main/c/chromium-browser/chromium-codecs-ffmpeg_88.0.4324.187-rpt1_armhf.deb"
+  wget "http://archive.raspberrypi.org/debian/pool/main/c/chromium-browser/chromium-codecs-ffmpeg-extra_88.0.4324.187-rpt1_armhf.deb"
+  dpkg -i chromium-codecs-ffmpeg_88.0.4324.187-rpt1_armhf.deb
+  dpkg -i chromium-codecs-ffmpeg-extra_88.0.4324.187-rpt1_armhf.deb
+  dpkg -i chromium-browser_88.0.4324.187-rpt1_armhf.deb
+  apt-mark hold chromium-browser
+  apt-mark hold chromium-codecs-ffmpeg
+  apt-mark hold chromium-codecs-ffmpeg-extra
+fi
 
 ## Disable Swap
 dphys-swapfile swapoff

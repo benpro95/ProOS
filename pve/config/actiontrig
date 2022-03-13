@@ -3,13 +3,13 @@
 ################################
 
 ## External Backup Drives
-ZFSPOOL1="usb256-01" # SanDisk Ultra 256GB USB 3.0
-ZFSPOOL2="usb128-01" # SanDisk Ultra 128GB USB 3.0
-ZFSPOOL3="usb256-02" # SanDisk Ultra 256GB USB 3.0
-ZFSPOOL4="usb128-02" # SanDisk Ultra 128GB USB 3.0
-ZFSPOOL5="hdd4tb-01" # HGST 4GB Hard Drive (Oldest)
+ZFSPOOL1="usb256-01" # SanDisk Ultra 256GB (2020)
+ZFSPOOL2="usb256-02" # SanDisk Ultra 256GB (2021)
+ZFSPOOL3="usb256-03" # SanDisk Ultra 256GB (2022)
+ZFSPOOL4="usb256-04" # SanDisk Ultra 256GB (2022)
+ZFSPOOL5="hdd4tb-01" # HGST 4GB Hard Drive (2016)
 ZFSPOOL6="hdd4tb-02" # HGST 4GB Hard Drive (2017)
-ZFSPOOL7="hdd4tb-03" # WD 4TB Blue Hard Drive (Newest)
+ZFSPOOL7="hdd4tb-03" # WD 4TB Blue Hard Drive (2018)
 ZFSPOOL8=""
 ZFSPOOL9=""
 ZFSPOOL10=""

@@ -12,13 +12,10 @@ chksum=$2
 #### 256GB Drives ####
 USB256DRV1="usb256-01"
 USB256DRV2="usb256-02"
-USB256DRV3=""
-USB256DRV4=""
-#### 128GB Drives ####
-USB128DRV1="usb128-01"
-USB128DRV2="usb128-02"
-USB128DRV3=""
-USB128DRV4=""
+USB256DRV3="usb256-03"
+USB256DRV4="usb256-04"
+USB256DRV5=""
+USB256DRV6=""
 #### 4TB Drives ####
 HDDRV1="hdd4tb-01"
 HDDRV2="hdd4tb-02"
@@ -50,8 +47,8 @@ fi
 
 ###################################
 ###################################
-## 256GB Backup Drives Loop #######
-for ((i=1; i<5; i++))
+## 256GB Backup ###################
+for ((i=1; i<7; i++))
 do
   USB256VAR="USB256DRV$i"
   if [ ! "${!USB256VAR}" = "" ] ; then
@@ -92,43 +89,7 @@ do
 done
 ###################################
 ###################################
-## 128GB Backup Drives Loop #######
-for ((i=1; i<5; i++))
-do
-  USB128VAR="USB128DRV$i"
-  if [ ! "${!USB128VAR}" = "" ] ; then
-    #################################
-    if [ ! -e /mnt/extbkps/${!USB128VAR}/Ben ]; then
-      echo "drive not connected ${!USB128VAR}"
-      echo " "
-    else
-      ##### BEGIN BACKUP #####
-      #### Ben Share ####
-      if [ ! -e /mnt/datastore/Ben/ProOS ]; then
-        echo "//files/Ben not connected."
-      else
-        echo "syncing 'Ben' share to ${!USB128VAR} drive..."
-        rsync --progress $CHECKSUM -aP --exclude="Software/WindowsImageBackup" \
-        --exclude='Software/Nintendo' --exclude='Software/Playstation' --exclude='Software/**.ipsw' \
-        --exclude='Software/**.img' --exclude='Software/**.iso'  --exclude='Software/**HD.zip' --exclude='Software/**HD.7z' \
-        --exclude='Software/**VM.zip' --exclude='Software/**USB.zip' --exclude='Documents/Family/Media-**.zip' \
-        /mnt/datastore/Ben/ /mnt/extbkps/${!USB128VAR}/Ben/ -delete --delete-excluded
-      fi
-      #### Archive Share ####
-      if [ ! -e /mnt/datastore/.Archive/Local ]; then
-        echo "//files/Archive not connected."
-      else
-        echo "syncing 'Archive' share to ${!USB128VAR} drive..."
-        rsync --progress -aP --exclude="Movies/" \
-        /mnt/datastore/.Archive/ /mnt/extbkps/${!USB128VAR}/.Archive/ -delete --delete-excluded
-      fi
-      ##### END BACKUP #####
-    fi
-  fi  
-done
-###################################
-###################################
-## Hard Disk Backup Drives Loop ###
+## Hard Disk Backup ###############
 for ((i=1; i<5; i++))
 do
   HDDVAR="HDDRV$i"

@@ -27,11 +27,12 @@ echo ""
 
 ## 4TB Western Digital Red
 $Bkp3_Label="Bkp4TBRed"
+$Bkp3_Exc='"\\files\Ben\ProOS\.ssh" "\\files\Ben\ProOS\.git"'
 $Bkp3_Letter = Get-Volume -FileSystemLabel "$Bkp3_Label" | % DriveLetter
 if (Test-Path -Path "${Bkp3_Letter}:\Ben"){
   echo "Starting backup on $Bkp3_Label..."
   robocopy \\files\Media ${Bkp3_Letter}:\Media /MIR /XJD /FFT /R:3 /W:10 /Z
-  robocopy \\files\Ben ${Bkp3_Letter}:\Ben /MIR /XJD /FFT /R:3 /W:10 /Z /XD "\\files\Ben\ProOS\.ssh" "\\files\Ben\ProOS\.git"
+  robocopy \\files\Ben ${Bkp3_Letter}:\Ben /MIR /XJD /FFT /R:3 /W:10 /Z /XD $Bkp3_Exc
 }else{
   echo "$Bkp3_Label not connected."
 }

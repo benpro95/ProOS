@@ -2,7 +2,7 @@ rpi/urserver
 rpi/manager
 rpi/BaseOS*
 rpi/java
-sources
+rpi/sources
 wkst/*.pdf
 wkst/*.zip
 wkst/ProductKeys.txt

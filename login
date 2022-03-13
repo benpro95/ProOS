@@ -254,7 +254,7 @@ if [ "$SYNCSTATE" = "start" ]; then
 
   ## Sync software
   rsync -e "ssh -i $ROOTDIR/.ssh/rpi.rsa" --progress --checksum -rtv \
-   --exclude=photos --exclude=BaseOS* $ROOTDIR/rpi root@$HOST:/opt/
+   --exclude=photos --exclude=sources $ROOTDIR/rpi root@$HOST:/opt/
   rsync -e "ssh -i $ROOTDIR/.ssh/rpi.rsa" --progress --checksum -rtv \
    --exclude=photos --exclude=sources $ROOTDIR/$MODULE/* root@$HOST:/opt/rpi/
 

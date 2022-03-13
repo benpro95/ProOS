@@ -760,7 +760,7 @@ ln -sf /opt/rpi/leds /usr/bin/leds
 /opt/rpi/init dred
 
 ## Compile COBOL Programs
-cobc -x --free /opt/rpi/build/colorscan.cbl -o /opt/rpi/effects/colorscan
+cobc -x --free /opt/rpi/effects/colorscan.cbl -o /opt/rpi/effects/colorscan
 
 ## Services Configuration
 systemctl daemon-reload

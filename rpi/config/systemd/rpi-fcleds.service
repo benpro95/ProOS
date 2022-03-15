@@ -4,6 +4,7 @@ Conflicts=shutdown.target
 
 [Service]
 User=root
+Type=simple
 ExecStart=/opt/rpi/leds.sysd
 Restart=on-failure
 RestartSec=5

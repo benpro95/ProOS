@@ -16,7 +16,7 @@ EFFECT=${rpi_fceffect#*-}
 if [ "$PRGM_TYPE" = "perl" ]; then
 ##  
   export PERL5LIB=$BIN_PATH/effects
-  /usr/bin/nice -n 10 /usr/bin/perl $BIN_PATH/effects/$EFFECT.pl
+  /usr/bin/perl $BIN_PATH/effects/$EFFECT.pl
   exit
 ##
 fi
@@ -25,10 +25,10 @@ fi
 if [ "$PRGM_TYPE" = "pyth" ]; then
 ##  
   if [ "$EFFECT" = "rave"  ] || [ "$EFFECT" = "chase" ]; then
-    /usr/bin/nice -n 10 /usr/bin/python2 $BIN_PATH/effects/$EFFECT.py
+    /usr/bin/python2 $BIN_PATH/effects/$EFFECT.py
     exit
   else
-    /usr/bin/nice -n 10 /usr/bin/python2 $BIN_PATH/effects/$EFFECT.py \
+    /usr/bin/python2 $BIN_PATH/effects/$EFFECT.py \
      --layout $BIN_PATH/effects/wall.json
     exit
   fi

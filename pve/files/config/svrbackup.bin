@@ -68,7 +68,7 @@ do
         /mnt/datastore/Ben/ /mnt/extbkps/${!USB256VAR}/Ben/ -delete --delete-excluded
       fi
       #### Archive Share ####
-      if [ ! -e /mnt/datastore/.Archive/Local ]; then
+      if [ ! -e /mnt/datastore/.Archive/Saved ]; then
         echo "//files/Archive not connected."
       else
         echo "syncing 'Archive' share to ${!USB256VAR} drive..."

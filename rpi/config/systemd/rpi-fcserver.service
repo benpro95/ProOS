@@ -4,7 +4,8 @@ Conflicts=shutdown.target
 
 [Service]
 User=root
+Type=simple
 ExecStart=/bin/bash -c "/opt/rpi/effects/fcserver /opt/rpi/effects/$rpi_ledtype/fcbin/$rpi_fcsetup"
 WorkingDirectory=/opt/rpi/effects
-Restart=always
+Restart=on-failure
 RestartSec=5

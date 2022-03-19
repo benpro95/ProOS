@@ -116,7 +116,7 @@ boot)
 ## Video RAM Disk
 mkdir -p /mnt/ramdisk
 chmod 777 /mnt/ramdisk
-mount -t tmpfs -o size=200m ramdisk /mnt/ramdisk
+mount -t tmpfs -o size=256m ramdisk /mnt/ramdisk
 sleep 25
 ## Attach Server SMB Share
 if ping -c 1 files.home > /dev/null 2> /dev/null
@@ -153,14 +153,22 @@ exit
 ;;
 
 redoff)
-## Disable Red LED
+## Disable Red Status LED
 echo 1 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
 exit
 ;;
 
 redon)
-## Enable Red LED
+## Enable Red Status LED
 echo 0 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
+exit
+;;
+
+redpulse)
+## Pulse Red Status LED
+echo 0 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
+sleep 7.5
+echo 1 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
 exit
 ;;
 

@@ -1,0 +1,135 @@
+#!/bin/bash
+###########################################################
+####### Motion copy script by Ben Provenzano III v3 #######
+###########################################################
+
+function COPYFILE {
+    blocksize=4096
+    count=256
+    blocks_read=0
+    # check if the file exists on source
+    if [ -e $destfile ]; then
+	  timeout 500 rm -f "$destfile"
+	  # check the status after command is finished
+	  status=$?
+	  # if command was killed by timeout or rm returned error (I/O error)
+	  if [[ ("$status" -gt 100 ) || ("$status" -eq 1) ]]
+	  then
+	    # log path to the source file into log
+	    echo "Timeout exceeded could not delete, $destfile $(date)" >> /tmp/motioncopy.log
+	    # exit function
+	    return
+	  fi      
+    fi  
+    # check the size of source file in bytes
+    filesize=$(stat -c%s "$sourcefile")
+    echo "Copy of $sourcefile to $destfile started:"
+    # copy until all bytes of file are not copied
+    while [ "$((blocks_read*blocksize))" -lt "$filesize" ]
+    do
+	# copy 4096 bytes to destination file with timeout
+	timeout 45 dd if="$sourcefile" iflag=nofollow status=none \
+	  bs=$blocksize count=$count skip=$blocks_read  >> "$destfile"
+	# check the status after command is finished
+	status=$?
+	# if command was killed by timeout or dd returned error (I/O error)
+	if [[ ("$status" -eq 124 ) || ("$status" -eq 1) ]]
+	then
+	    # delete destination file
+	    rm -f "$destfile"
+	    # log path to the source file into log
+	    echo "Timeout exceeded $destfile not copied, $(date)" >> /tmp/motioncopy.log
+	    # copy video to flash drive if server or google drive copy fails
+	    FLASHDRV="yes" 
+	    # exit function
+	    return
+	fi
+	# update number of bytes copied
+	blocks_read=$((blocks_read+count))
+    done
+    echo "Copy of $sourcefile to $destfile finished"
+}
+
+## Read camera name
+CAM_NAME=$1
+## Read file name
+FILE_NAME=$2
+
+## Delete videos from RAM cache if size limit exceeded 
+if [ $FILE_NAME = "spacechk" ]; then
+  ## Turn on status LED for 10 seconds
+  screen -dm sudo /opt/rpi/main redpulse	
+  rm -f /tmp/camcleanup.vars
+  du -sh -t215000000 /mnt/ramdisk | awk -F" " '{print $2}' > /tmp/camcleanup.vars
+  if [[ -s /tmp/camcleanup.vars ]] ; then
+    echo "RAM cache over 215MB moving files! $(date)" >> /tmp/motioncopy.log
+    if [ ! -e /media/usb0/cameras ]; then
+      echo "Flash drive not connected, discarding videos $(date)" >> /tmp/motioncopy.log
+    else
+      DEST_PATH="/media/usb0/cameras/$CAM_NAME"
+	  if [ ! -e "$DEST_PATH" ]; then
+	    mkdir -p "$DEST_PATH"
+	  fi
+      cp -rvf /mnt/ramdisk/* "$DEST_PATH"/   
+    fi
+    rm -rf /mnt/ramdisk/*
+  fi
+exit
+fi
+
+## Server copy (1st)
+if [ ! -e /mnt/smb/Cameras/Current ]; then
+  SERVER="na"	
+  echo "Server not connected, $(date)" >> /tmp/motioncopy.log
+else
+  DEST_PATH="/mnt/smb/Cameras/Current/$CAM_NAME"
+  if [ ! -e "$DEST_PATH" ]; then
+    mkdir -p "$DEST_PATH"
+  fi
+  sourcefile="$FILE_NAME.mp4"
+  destfile="$DEST_PATH/$(basename $FILE_NAME.mp4)"
+  if [ -e "$sourcefile" ]; then
+    COPYFILE
+  fi
+fi
+
+## Google drive copy (2nd)
+if [ ! -e /mnt/gsync/Current ]; then
+  echo "Google drive not connected, $(date)" >> /tmp/motioncopy.log
+  if [ "$SERVER" = "na" ]; then
+    FLASHDRV="yes"   
+  fi  
+else
+  DEST_PATH="/mnt/gsync/Current/$CAM_NAME"
+  if [ ! -e "$DEST_PATH" ]; then
+    mkdir -p "$DEST_PATH"
+  fi
+  sourcefile="$FILE_NAME.mp4"
+  destfile="$DEST_PATH/$(basename $FILE_NAME.mp4)"
+  if [ -e "$sourcefile" ]; then
+    COPYFILE
+  fi  
+fi
+
+## Flash drive copy (last)
+if [ "$FLASHDRV" = "yes" ]; then
+  if [ ! -e /media/usb0/cameras ]; then
+    echo "Flash drive not connected, discarding video $(date)" >> /tmp/motioncopy.log
+  else
+    echo "Copying video to flash drive, $(date)" >> /tmp/motioncopy.log
+    DEST_PATH="/media/usb0/cameras/$CAM_NAME"
+	if [ ! -e "$DEST_PATH" ]; then
+	  mkdir -p "$DEST_PATH"
+	fi
+	sourcefile="$FILE_NAME.mp4"
+	destfile="$DEST_PATH/$(basename $FILE_NAME.mp4)"
+    if [ -e "$sourcefile" ]; then
+      COPYFILE
+    fi
+  fi
+fi 
+
+## Delete video from RAM Disk
+rm -f "$FILE_NAME.mp4"
+
+exit

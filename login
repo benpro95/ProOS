@@ -60,9 +60,10 @@ fi
 
 ### Exit if matches this hosts
 if [ "$MODULE" = "router" ] || \
+   [ "$MODULE" = "login" ] || \
    [ "$MODULE" = ".ssh" ] || \
    [ "$MODULE" = "rpi" ] || \
-   [ "$MODULE" = "z97mx" ] || \
+   [ "$MODULE" = "wkst" ] || \
    [ "$MODULE" = "sources" ]; then
 echo "Hostname not allowed."
 exit
@@ -129,6 +130,7 @@ if [ "$MODULE" = "files" ] || \
       mkdir -p /mnt/scratch/downloads/.ptmp
       TMPFLDR=$(mktemp -d /mnt/scratch/downloads/.ptmp/XXXXXXXXX)
     else
+      echo "Scratch drive not connected using /tmp" 	
       TMPFLDR=$(mktemp -d /tmp/protmp.XXXXXXXXX)
     fi
     ## Copying files to work folder

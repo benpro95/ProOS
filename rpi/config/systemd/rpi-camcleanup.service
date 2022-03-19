@@ -4,4 +4,4 @@ Description=Camera Cleanup
 [Service]
 Type=oneshot
 RemainAfterExit=no
-ExecStart=/opt/rpi/camcleanup > /dev/null 2>&1 &
+ExecStart=-/opt/rpi/camcleanup

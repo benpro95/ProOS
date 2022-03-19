@@ -1,7 +1,7 @@
 ## Created by Ben Provenzano III
 
 #-------GPU memory-------
-gpu_mem=200
+gpu_mem=192
 
 #-------Max USB Current-------
 max_usb_current=1

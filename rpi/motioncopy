@@ -60,9 +60,9 @@ if [ $FILE_NAME = "spacechk" ]; then
   ## Turn on status LED for 10 seconds
   screen -dm sudo /opt/rpi/main redpulse	
   rm -f /tmp/camcleanup.vars
-  du -sh -t215000000 /mnt/ramdisk | awk -F" " '{print $2}' > /tmp/camcleanup.vars
+  du -sh -t275000000 /mnt/ramdisk | awk -F" " '{print $2}' > /tmp/camcleanup.vars
   if [[ -s /tmp/camcleanup.vars ]] ; then
-    echo "RAM cache over 215MB moving files! $(date)" >> /tmp/motioncopy.log
+    echo "RAM cache over 275MB moving files! $(date)" >> /tmp/motioncopy.log
     if [ ! -e /media/usb0/cameras ]; then
       echo "Flash drive not connected, discarding videos $(date)" >> /tmp/motioncopy.log
     else
@@ -74,6 +74,7 @@ if [ $FILE_NAME = "spacechk" ]; then
     fi
     rm -rf /mnt/ramdisk/*
   fi
+mkdir -p /mnt/ramdisk/$CAM_NAME
 exit
 fi
 

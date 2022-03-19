@@ -116,7 +116,7 @@ boot)
 ## Video RAM Disk
 mkdir -p /mnt/ramdisk
 chmod 777 /mnt/ramdisk
-mount -t tmpfs -o size=256m ramdisk /mnt/ramdisk
+mount -t tmpfs -o size=284m ramdisk /mnt/ramdisk
 sleep 25
 ## Attach Server SMB Share
 if ping -c 1 files.home > /dev/null 2> /dev/null

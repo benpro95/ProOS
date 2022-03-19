@@ -1,9 +1,0 @@
-#!/bin/bash
-
-## Stop Google Drive Service
-umount -f /mnt/gsync || :
-umount -f /mnt/gsync || :
-sleep 1.25
-killall -s KILL -w rclone || :
-
-exit

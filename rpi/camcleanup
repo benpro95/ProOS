@@ -3,8 +3,6 @@
 ## Cameras Cleanup Script for Pi
 ### run as root user only!
 
-CAMERA1="Doorway"
-
 ## Check if Google Drive connected before cleanup
 if [ ! -e /mnt/gsync/Current ]; then
   echo "Google Drive not connected."
@@ -25,12 +23,14 @@ else
 	  echo "Google Drive current folder above 6GB limit moving video files..."
 	  service motion stop
 	  mkdir -p /mnt/gsync/Archive
-	  mkdir -p /mnt/gsync/Archive/$CAMERA1
-	  mv /mnt/gsync/Current/$CAMERA1/* /mnt/gsync/Archive/$CAMERA1/
+    TIMESTAMP="$(date +%H-%m-%d)"
+    mkdir -p /mnt/gsync/Archive/$TIMESTAMP
+	  mv /mnt/gsync/Current /mnt/gsync/Archive/$TIMESTAMP/
 	  service motion start
   else
     echo "Google Drive current folder under 6GB."
   fi
+  ##
   ## Delete archived videos, when larger than 14GB
   rm -f /tmp/camcleanup.vars
   timeout 500 du -sh -t14000000000 /mnt/gsync | awk -F" " '{print $2}' > /tmp/camcleanup.vars
@@ -45,9 +45,9 @@ else
   if [[ -s /tmp/camcleanup.vars ]] ; then
 	  echo "Google Drive above 14GB limit deleting archived video files..."
 	  service motion stop
-	  rm -rf /mnt/gsync/Archive/$CAMERA1
-	  mkdir -p /mnt/gsync/Archive/$CAMERA1
-	  chmod -R 777 /mnt/gsync/Archive/$CAMERA1
+	  rm -rf /mnt/gsync/Archive
+	  mkdir -p /mnt/gsync/Archive
+	  chmod -R 777 /mnt/gsync/Archive
 	  service motion start
   else
     echo "Google Drive under 14GB."
@@ -65,9 +65,9 @@ else
   if [[ -s /tmp/camcleanup.vars ]] ; then
 	  echo "Flash drive above 15GB limit deleting video files..."
 	  service motion stop
-	  rm -rf /media/usb0/cameras/$CAMERA1
-	  mkdir -p /media/usb0/cameras/$CAMERA1
-	  chmod -R 777 /media/usb0/cameras/$CAMERA1
+	  rm -rf /media/usb0/cameras
+	  mkdir -p /media/usb0/cameras
+	  chmod -R 777 /media/usb0/cameras
 	  service motion start
   else
     echo "Flash drive under 15GB."

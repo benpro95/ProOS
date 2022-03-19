@@ -7,7 +7,7 @@ function COPYFILE {
     blocksize=4096
     count=256
     blocks_read=0
-    # check if the file exists on source
+    # check if the file exists on source, remove if found
     if [ -e $destfile ]; then
 	  timeout 500 rm -f "$destfile"
 	  # check the status after command is finished
@@ -16,7 +16,7 @@ function COPYFILE {
 	  if [[ ("$status" -gt 100 ) || ("$status" -eq 1) ]]
 	  then
 	    # log path to the source file into log
-	    echo "Timeout exceeded could not delete, $destfile $(date)" >> /tmp/motioncopy.log
+	    echo "Timeout exceeded could not delete, $destfile $(date)" >> $LOGFILE
 	    # exit function
 	    return
 	  fi      
@@ -27,8 +27,8 @@ function COPYFILE {
     # copy until all bytes of file are not copied
     while [ "$((blocks_read*blocksize))" -lt "$filesize" ]
     do
-	# copy 4096 bytes to destination file with timeout
-	timeout 45 dd if="$sourcefile" iflag=nofollow status=none \
+	# copy 4096 bytes to destination file with timeout in seconds
+	timeout 60 dd if="$sourcefile" iflag=nofollow status=none \
 	  bs=$blocksize count=$count skip=$blocks_read  >> "$destfile"
 	# check the status after command is finished
 	status=$?
@@ -38,7 +38,7 @@ function COPYFILE {
 	    # delete destination file
 	    rm -f "$destfile"
 	    # log path to the source file into log
-	    echo "Timeout exceeded $destfile not copied, $(date)" >> /tmp/motioncopy.log
+	    echo "Timeout exceeded $destfile not copied, $(date)" >> $LOGFILE
 	    # copy video to flash drive if server or google drive copy fails
 	    FLASHDRV="yes" 
 	    # exit function
@@ -50,10 +50,22 @@ function COPYFILE {
     #echo "Copy of $sourcefile to $destfile finished"
 }
 
-## Read camera name
+## Read camera name (1st arg)
 CAM_NAME=$1
-## Read file name
+## Read file name (2nd arg)
 FILE_NAME=$2
+
+## Folder paths
+SERVER_PATH="/mnt/smb/Cameras/Current"
+GDRIVE_PATH="/mnt/gsync/Current"
+FLASH_PATH="/media/usb0/cameras"
+
+## Log file path
+if [ ! -e $FLASH_PATH ]; then
+  LOGFILE="/tmp/motioncopy.log"
+else
+  LOGFILE="$FLASH_PATH/motioncopy.log"
+fi  
 
 ## Delete videos from RAM cache if size limit exceeded 
 if [ $FILE_NAME = "spacechk" ]; then
@@ -62,11 +74,11 @@ if [ $FILE_NAME = "spacechk" ]; then
   rm -f /tmp/camcleanup.vars
   du -sh -t275000000 /mnt/ramdisk | awk -F" " '{print $2}' > /tmp/camcleanup.vars
   if [[ -s /tmp/camcleanup.vars ]] ; then
-    echo "RAM cache over 275MB moving files! $(date)" >> /tmp/motioncopy.log
-    if [ ! -e /media/usb0/cameras ]; then
-      echo "Flash drive not connected, discarding videos $(date)" >> /tmp/motioncopy.log
+    echo "RAM cache over 275MB moving files! $(date)" >> $LOGFILE
+    if [ ! -e $FLASH_PATH ]; then
+      echo "Flash drive not connected, discarding videos $(date)" >> $LOGFILE
     else
-      DEST_PATH="/media/usb0/cameras/$CAM_NAME"
+      DEST_PATH="$FLASH_PATH/$CAM_NAME"
 	  if [ ! -e "$DEST_PATH" ]; then
 	    mkdir -p "$DEST_PATH"
 	  fi
@@ -79,11 +91,11 @@ exit
 fi
 
 ## Server copy (1st)
-if [ ! -e /mnt/smb/Cameras/Current ]; then
+if [ ! -e $SERVER_PATH ]; then
   SERVER="na"	
-  echo "Server not connected, $(date)" >> /tmp/motioncopy.log
+  echo "Server not connected, $(date)" >> $LOGFILE
 else
-  DEST_PATH="/mnt/smb/Cameras/Current/$CAM_NAME"
+  DEST_PATH="$SERVER_PATH/$CAM_NAME"
   if [ ! -e "$DEST_PATH" ]; then
     mkdir -p "$DEST_PATH"
   fi
@@ -95,13 +107,13 @@ else
 fi
 
 ## Google drive copy (2nd)
-if [ ! -e /mnt/gsync/Current ]; then
-  echo "Google drive not connected, $(date)" >> /tmp/motioncopy.log
+if [ ! -e $GDRIVE_PATH ]; then
+  echo "Google drive not connected, $(date)" >> $LOGFILE
   if [ "$SERVER" = "na" ]; then
     FLASHDRV="yes"   
   fi  
 else
-  DEST_PATH="/mnt/gsync/Current/$CAM_NAME"
+  DEST_PATH="$GDRIVE_PATH/$CAM_NAME"
   if [ ! -e "$DEST_PATH" ]; then
     mkdir -p "$DEST_PATH"
   fi
@@ -114,11 +126,11 @@ fi
 
 ## Flash drive copy (last)
 if [ "$FLASHDRV" = "yes" ]; then
-  if [ ! -e /media/usb0/cameras ]; then
-    echo "Flash drive not connected, discarding video $(date)" >> /tmp/motioncopy.log
+  if [ ! -e $FLASH_PATH ]; then
+    echo "Flash drive not connected, discarding video $(date)" >> $LOGFILE
   else
-    echo "Copying video to flash drive, $(date)" >> /tmp/motioncopy.log
-    DEST_PATH="/media/usb0/cameras/$CAM_NAME"
+    echo "Copying video to flash drive, $(date)" >> $LOGFILE
+    DEST_PATH="$FLASH_PATH/$CAM_NAME"
 	if [ ! -e "$DEST_PATH" ]; then
 	  mkdir -p "$DEST_PATH"
 	fi

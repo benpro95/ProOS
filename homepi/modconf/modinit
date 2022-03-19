@@ -53,14 +53,6 @@ cp -f $BIN/modconf/rpi-motionping.timer /etc/systemd/system/
 chmod -f 644 /etc/systemd/system/rpi-motionping.timer
 chown -f root:root /etc/systemd/system/rpi-motionping.timer
 
-## Camera Cleanup Timer
-cp -f $BIN/modconf/rpi-camcleanup.service /etc/systemd/system/
-chmod -f 644 /etc/systemd/system/rpi-camcleanup.service
-chown -f root:root /etc/systemd/system/rpi-camcleanup.service
-cp -f $BIN/modconf/rpi-camcleanup.timer /etc/systemd/system/
-chmod -f 644 /etc/systemd/system/rpi-camcleanup.timer
-chown -f root:root /etc/systemd/system/rpi-camcleanup.timer
-
 ## AutoFS Configuration
 cp -f $BIN/modconf/auto.master /etc/
 chmod 644 /etc/auto.master

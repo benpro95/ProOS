@@ -23,7 +23,7 @@ function COPYFILE {
     fi  
     # check the size of source file in bytes
     filesize=$(stat -c%s "$sourcefile")
-    echo "Copy of $sourcefile to $destfile started:"
+    #echo "Copy of $sourcefile to $destfile started:"
     # copy until all bytes of file are not copied
     while [ "$((blocks_read*blocksize))" -lt "$filesize" ]
     do
@@ -47,7 +47,7 @@ function COPYFILE {
 	# update number of bytes copied
 	blocks_read=$((blocks_read+count))
     done
-    echo "Copy of $sourcefile to $destfile finished"
+    #echo "Copy of $sourcefile to $destfile finished"
 }
 
 ## Read camera name

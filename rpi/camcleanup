@@ -59,6 +59,7 @@ if [ ! -e /media/usb0/cameras ]; then
   echo "Flash drive not connected."
 else
   echo "Flash drive connected."
+  truncate -s '<5MB' /media/usb0/cameras/motioncopy.log
   ## Delete videos, when larger than 15GB
   rm -f /tmp/camcleanup.vars
   du -sh -t15000000000 /media/usb0/cameras | awk -F" " '{print $2}' > /tmp/camcleanup.vars
@@ -73,5 +74,9 @@ else
     echo "Flash drive under 15GB."
   fi
 fi
+
+## Log file trim
+truncate -s '<128KB' /tmp/motionping.log
+truncate -s '<128KB' /tmp/motioncopy.log
 
 exit

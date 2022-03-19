@@ -14,8 +14,6 @@ truncate -s 0 /root/.bash_history
 truncate -s 0 /home/pi/.xsession-errors
 truncate -s 0 /home/pi/.bash_history
 truncate -s 128k /tmp/netstat.txt
-truncate -s 128k /tmp/motionping.log
-truncate -s 128k /tmp/motioncopy.log
 
 ## Clean cache
 rm -rf /home/pi/.config/chromium/hyphen-data/*

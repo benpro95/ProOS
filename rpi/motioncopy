@@ -1,6 +1,6 @@
 #!/bin/bash
 ###########################################################
-####### Motion copy script by Ben Provenzano III v3 #######
+#### Camera Video Copy Script by Ben Provenzano III v3 ####
 ###########################################################
 
 function COPYFILE {

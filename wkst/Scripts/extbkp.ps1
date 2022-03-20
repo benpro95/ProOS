@@ -1,5 +1,8 @@
 ## Backup Server to External NTFS Drives
 
+$Bkp0_Label="Aux"
+$Bkp0_Letter = Get-Volume -FileSystemLabel "$Bkp0_Label" | % DriveLetter
+
 ## 128GB Flash Drive I
 $Bkp1_Label="Bkp128-I"
 $Bkp1_Letter = Get-Volume -FileSystemLabel "$Bkp1_Label" | % DriveLetter

@@ -50,6 +50,14 @@ echo "*"
 echo "Resettings to defaults..."
 echo "*"
 
+## Re-install Manual Sources
+REINSTALL="no"
+if [ -e /etc/rpi-reinitsource.done ]; then
+  echo "Reinstalling manually installed packages..."  
+  rm -f /etc/rpi-reinitsource.done
+  REINSTALL="yes"
+fi
+
 ## Set locale
 raspi-config nonint do_change_locale LANG=en_US.UTF-8
 
@@ -136,6 +144,9 @@ apt-get install -y --no-upgrade --ignore-missing xserver-xorg xorg \
  synaptic lxterminal xprintidle xdotool wmctrl
 
 ## Install Chromium (manual, lastest version GPU support broken)
+if [ "$REINSTALL" = "yes" ]; then
+  rm -f /usr/bin/chromium-browser
+fi
 if [ ! -e /usr/bin/chromium-browser ]; then
   apt-get remove --allow-change-held-packages --purge -y chromium-browser chromium-codecs-ffmpeg chromium-codecs-ffmpeg-extra
   wget "http://archive.raspberrypi.org/debian/pool/main/c/chromium-browser/chromium-browser_88.0.4324.187-rpt1_armhf.deb"
@@ -166,10 +177,11 @@ fi
 ## CPU Specific Packages
 if [ "$CPUTYPE" = "Raspberry Pi Zero W Rev 1.1" ]; then
 	##### Install Node.js from 'pkgs' folder #####
+  if [ "$REINSTALL" = "yes" ]; then
+    rm -f /usr/bin/node
+  fi 
 	NODEVERSION="14.17.1"
-	## Uncomment to reinstall
-  #rm -f /usr/bin/node
-  echo "Pi Zero detected."
+  echo "Pi Zero detected, installing Node.js for ARMv6..."
   if [ ! -e /usr/bin/node ]; then
     tar xvfJ /opt/rpi/pkgs/node-v$NODEVERSION-linux-armv6l.tar.xz -C /opt/rpi/pkgs/
     cd /opt/rpi/pkgs/node-v$NODEVERSION-linux-armv6l/
@@ -186,7 +198,7 @@ if [ "$CPUTYPE" = "Raspberry Pi Zero W Rev 1.1" ]; then
   apt-get remove -y arduino default-jre openjdk-11-jre
   apt-get remove -y ca-certificates-java default-jre-headless
 else
-  echo "Pi 3+ detected."
+  echo "ARMv7 CPU detected, installing Arduino & Node.js..."
   apt-get install -y --no-upgrade --ignore-missing nodejs
   apt-get install -y --no-upgrade --ignore-missing arduino avrdude
 fi
@@ -213,11 +225,22 @@ chmod 777 /media/usb*
 chown root:root /media/usb*
 
 ## Cloud Drive Support
-apt-get install -y --no-upgrade fuse
-if [ ! -e /usr/bin/rclone ]; then
-  curl https://rclone.org/install.sh | sudo bash
-  rclone --version
-  cd $BIN
+if [ "$CPUTYPE" = "Raspberry Pi Zero W Rev 1.1" ]; then
+  echo "Pi Zero detected, not installing rclone."
+else
+  echo "ARM7v CPU detected, installing rclone..."
+  apt-get install -y --no-upgrade fuse
+  if [ "$REINSTALL" = "yes" ]; then
+    rm -f /usr/bin/rclone
+  fi 
+  if [ ! -e /usr/bin/rclone ]; then
+    ## Newest Version
+    #curl https://rclone.org/install.sh | sudo bash
+    ## 1.58 Version
+    dpkg -i /opt/rpi/pkgs/rclone-v1.58.0-linux-arm-v7.deb
+    rclone --version
+    cd $BIN
+  fi
 fi
 
 ## Audio Support
@@ -259,6 +282,9 @@ fi
 
 ## OMX-Player
 if [ ! -e /usr/bin/omxplayer ]; then
+  if [ "$REINSTALL" = "yes" ]; then
+    rm -f /usr/bin/omxplayer
+  fi
   dpkg -i /opt/rpi/pkgs/omxplayer_20190723_armhf.deb
 fi
 
@@ -269,6 +295,9 @@ apt-get install -y --no-upgrade --ignore-missing xmltoman libsoxr-dev libsndfile
 
 ## Camera Motion Server
 if [ "${OSVER}" = "buster" ]; then
+  if [ "$REINSTALL" = "yes" ]; then
+    rm -f /usr/bin/motion
+  fi
   if [ ! -e /usr/bin/motion ]; then
     apt-get install -y --no-upgrade --ignore-missing libmicrohttpd12
     dpkg -i /opt/rpi/pkgs/pi_buster_motion_4.3.2-1_armhf.deb
@@ -286,10 +315,10 @@ usermod -u 1005 motion
 ## Remove Conflicts ***
 apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp udhcpd usbmuxd
 apt-get remove --purge -y exim4 exim4-base exim4-config exim4-daemon-light udisks2 \
-tigervnc-common tigervnc-standalone-server iptables-persistent bridge-utils vlc ntfs-3g \
-lxlock xscreensaver xscreensaver-data gvfs gvfs-backends vnc4server light-locker libudisks2-0 \
-desktop-file-utils exfat-fuse exfat-utils gdisk gnome-mime-data wolfram-engine libssl-doc \
-libatasmart4 libavahi-glib1 gvfs-common gvfs-daemons gvfs-libs mpd mpc
+  tigervnc-common tigervnc-standalone-server iptables-persistent bridge-utils vlc ntfs-3g \
+  lxlock xscreensaver xscreensaver-data gvfs gvfs-backends vnc4server light-locker libudisks2-0 \
+  desktop-file-utils exfat-fuse exfat-utils gdisk gnome-mime-data wolfram-engine libssl-doc \
+  libatasmart4 libavahi-glib1 gvfs-common gvfs-daemons gvfs-libs mpd mpc
 apt-get -y autoremove
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
@@ -311,10 +340,10 @@ cp -f $BIN/hostapd.conf /etc/hostapd
 chmod 644 /etc/hostapd/hostapd.conf
 chown root:root /etc/hostapd/hostapd.conf
 if [ ! -e /opt/rpi/modconf/brand.txt ]; then
-echo "Skipping module modification."
+  echo "Skipping module modification."
 else
-## Set module name to hotspot config
-sed -i "s/RaspberryPi/$MODNAME/g" /etc/hostapd/hostapd.conf
+  ## Set module name to hotspot config
+  sed -i "s/RaspberryPi/$MODNAME/g" /etc/hostapd/hostapd.conf
 fi
 
 ## Reset LED configuration
@@ -455,10 +484,10 @@ chown root:root /etc/netmode.sh
 rm -f /etc/init.d/shairport-sync
 rm -f /lib/systemd/system/shairport-sync.service
 if [ ! -e /opt/rpi/modconf/brand.txt ]; then
-echo "Skipping module modification."
+  echo "Skipping module modification."
 else
-## ShairPort configuration
-sed -i "s/RaspberryPi/$MODNAME/g" /etc/systemd/system/rpi-airplay.service
+  ## ShairPort configuration
+  sed -i "s/RaspberryPi/$MODNAME/g" /etc/systemd/system/rpi-airplay.service
 fi
 
 ## Light Web Server Configuration

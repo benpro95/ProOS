@@ -43,6 +43,9 @@ Sync ProOS (quick run config script) Pi / Server
 Reset ProOS (full config script) Pi Only
 ./login "Hostname" reset
 
+Reset ProOS & Reinstall Packages (full config script) Pi Only
+./login "Hostname" reinstall
+
 Clean/Restore ProOS (delete /opt/rpi and run full config script) Pi Only
 ./login "Hostname" clean
 
@@ -179,7 +182,7 @@ else
   HOST="$MODULE$DOMAIN"
   if [ "$ARG2" = "sync" ] || \
      [ "$ARG2" = "clean" ] || \
-     [ "$ARG2" = "restore" ] || \
+     [ "$ARG2" = "reinstall" ] || \
      [ "$ARG2" = "reset" ] ; then
     SYNCSTATE="start"
   else
@@ -192,7 +195,7 @@ else
   fi
 fi
 
-### Sync ###############
+######### START AUTOSYNC ##########
 if [ "$SYNCSTATE" = "start" ]; then
   HOSTCHK
   echo "*** ProOS NetInstall ***"
@@ -237,16 +240,22 @@ if [ "$SYNCSTATE" = "start" ]; then
   echo ""
 
   ## Check for reset
-  if [ "$ARG2" = "reset" ] ||  [ "$ARG2" = "init" ] ; then
-  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-   $ROOTDIR/.ssh/rpi.rsa root@$HOST "rm -fv /etc/rpi-conf.done"  
+  if [ "$ARG2" = "reset" ] || \
+  	 [ "$ARG2" = "restore" ] || \
+     [ "$ARG2" = "reinstall" ] || \
+     [ "$ARG2" = "clean" ] || \
+     [ "$ARG2" = "init" ] ; then
+    ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
+    $ROOTDIR/.ssh/rpi.rsa root@$HOST "rm -fv /etc/rpi-conf.done"
+    if [ "$ARG2" = "reinstall" ] ; then
+      ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
+      $ROOTDIR/.ssh/rpi.rsa root@$HOST "touch /etc/rpi-reinitsource.done"
+    fi   
   fi
 
   ## Check for restore
-  if [ "$ARG2" = "restore" ] ||  [ "$ARG2" = "clean" ] ; then
+  if [ "$ARG2" = "restore" ] || [ "$ARG2" = "clean" ] ; then
     echo "Erasing software..."
-    ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-     $ROOTDIR/.ssh/rpi.rsa root@$HOST "rm -fv /etc/rpi-conf.done"  
     ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
      $ROOTDIR/.ssh/rpi.rsa root@$HOST "rm -rfv /opt/rpi"
     echo "Downloading software..."
@@ -279,8 +288,9 @@ if [ "$SYNCSTATE" = "start" ]; then
   ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
    $ROOTDIR/.ssh/rpi.rsa root@$HOST "/opt/rpi/init ro"
   exit
-fi
+
 ######### END AUTOSYNC ##########
+fi
 
 ## Exit if host down
 HOSTCHK

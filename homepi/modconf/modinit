@@ -27,7 +27,6 @@ cp -r $BIN/modconf/config.txt /boot/
 mount -o remount,ro /boot
 
 ## Google Drive Support
-apt-get install -y --no-upgrade rclone fuse
 rm -f /root/.config/rclone/rclone.conf
 if [ ! -e /media/usb0/rclone/rclone.conf ]; then
   echo "API key not found on flash drive, running setup..."

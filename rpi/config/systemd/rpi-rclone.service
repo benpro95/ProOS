@@ -4,11 +4,12 @@ Description=rclone: Remote FUSE filesystem for cloud storage config
 [Service]
 User=root
 Group=root
+Type=notify
 ExecStartPre=/bin/mkdir -p /mnt/gsync
 ExecStart=/usr/bin/rclone --config /media/usb0/rclone/rclone.conf \
-  mount --allow-other --no-modtime --buffer-size=16M --dir-cache-time=30m \
-  --vfs-cache-mode=writes --vfs-cache-max-age=5m --vfs-read-chunk-size=16M \
-  --drive-use-trash=false --umask=0 gsync:/ /mnt/gsync
+  mount --allow-other --no-modtime --dir-cache-time=30m --umask=0 --bwlimit=8.5M \
+  --vfs-cache-mode=writes --vfs-cache-max-age=10m --vfs-read-chunk-size=16M \
+  --drive-use-trash=false gsync:/ /mnt/gsync
 ExecStop=/bin/fusermount -uz /mnt/gsync
 Restart=on-failure
 RestartSec=5

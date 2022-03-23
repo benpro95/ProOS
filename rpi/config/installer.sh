@@ -212,6 +212,14 @@ chmod 777 /media
 chmod 777 /media/usb*
 chown root:root /media/usb*
 
+## Cloud Drive Support
+apt-get install -y --no-upgrade fuse
+if [ ! -e /usr/bin/rclone ]; then
+  curl https://rclone.org/install.sh | sudo bash
+  rclone --version
+  cd $BIN
+fi
+
 ## Audio Support
 apt-get install -y --no-upgrade --ignore-missing alsa-base alsa-utils mpg321 lame sox \
  libasound2 libupnp6 libexpat1 libconfig-dev djmount libexpat1 libsox-dev libsoup2.4-dev \

@@ -90,7 +90,7 @@ mkdir -p /mnt/ramdisk/$CAM_NAME
 exit
 fi
 
-## Server copy (1st)
+## Server copy (I)
 if [ ! -e $SERVER_PATH ]; then
   SERVER="na"	
   echo "Server not connected, $(date)" >> $LOGFILE
@@ -106,13 +106,9 @@ else
   fi
 fi
 
-## Google drive copy (2nd)
-if [ ! -e $GDRIVE_PATH ]; then
-  echo "Google drive not connected, $(date)" >> $LOGFILE
-  if [ "$SERVER" = "na" ]; then
-    FLASHDRV="yes"   
-  fi  
-else
+## Google drive copy (II)
+if ping -W 10 -c 1 8.8.8.8 > /dev/null 2> /dev/null
+then
   DEST_PATH="$GDRIVE_PATH/$CAM_NAME"
   if [ ! -e "$DEST_PATH" ]; then
     mkdir -p "$DEST_PATH"
@@ -122,9 +118,14 @@ else
   if [ -e "$sourcefile" ]; then
     COPYFILE
   fi  
+else
+  echo "Google ping exceeded 10 seconds, $(date)" >> $LOGFILE
+  if [ "$SERVER" = "na" ]; then
+    FLASHDRV="yes"   
+  fi 
 fi
 
-## Flash drive copy (last)
+## Flash drive copy (III)
 if [ "$FLASHDRV" = "yes" ]; then
   if [ ! -e $FLASH_PATH ]; then
     echo "Flash drive not connected, discarding video $(date)" >> $LOGFILE
@@ -144,5 +145,4 @@ fi
 
 ## Delete video from RAM Disk
 rm -f "$FILE_NAME.mp4"
-
 exit

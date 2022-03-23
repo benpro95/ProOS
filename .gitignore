@@ -2,6 +2,7 @@ rpi/urserver
 rpi/manager
 rpi/BaseOS*
 rpi/java
+rpi/pkgs
 rpi/sources
 wkst/*.pdf
 wkst/*.zip

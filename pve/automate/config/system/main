@@ -4,6 +4,7 @@
 ## Main Home Automation Script by Ben Provenzano III v18 ##
 ###########################################################
 ###########################################################
+## Do not use the screen command in this script ##
 
 ## Read the 2nd Argument
 ARG2=$2
@@ -11,50 +12,74 @@ ARG2=$2
 ## Read the 1st Argument
 case "$1" in
 
+####################################
+
 relax)
-## Play Audio in Loop on HiFi mini
-
-/usr/bin/screen -dm /usr/bin/curl -N -f -m 10 --silent --data \
- "var=$ARG2&arg=relax&action=main" http://hifimini.home/exec.php
+### Relax Sounds Playback
+if [ ! -e /var/lock/rpi/relaxrec.save ]; then
+  RELAXHOST="hifimini"
+else
+  RELAXHOST="hifi"
+  ## Optical Decoder Input
+  /opt/rpi/xmit coaxial
+  ## Preamp DAC Input
+  /opt/rpi/xmit dac
+fi
 ## Play Audio in Loop on System
-/usr/bin/screen -dm /usr/bin/curl -N -f -m 10 --silent --data \
- "var=$ARG2&arg=relax&action=main" http://hifi.home/exec.php
-## Optical Decoder Input
-/opt/rpi/xmit coaxial
-## Preamp DAC Input
-/opt/rpi/xmit dac
+/usr/bin/curl -N -f -m 10 --silent --data \
+ "var=$ARG2&arg=relax&action=main" http://$RELAXHOST.home/exec.php
 exit
 ;;
 
-### Relaxation Sound Playback
 stoprelax)
-## Stop Audio on HiFi mini
-/usr/bin/screen -dm /usr/bin/curl -N -f -m 10 --silent --data \
- "var=$ARG2&arg=stoprelax&action=main" http://hifimini.home/exec.php
-## Stop Audio on System
-/usr/bin/screen -dm /usr/bin/curl -N -f -m 10 --silent --data \
- "var=$ARG2&arg=stoprelax&action=main" http://hifi.home/exec.php
-## USB Decoder Input
-/opt/rpi/xmit usb
-## Preamp DAC Input
-/opt/rpi/xmit dac
+## Stop Relax Sounds
+if [ ! -e /var/lock/rpi/relaxrec.save ]; then
+  RELAXHOST="hifimini"
+else
+  RELAXHOST="hifi"
+  ## USB Decoder Input
+  /opt/rpi/xmit usb
+  ## Preamp DAC Input
+  /opt/rpi/xmit dac
+fi   
+/usr/bin/curl -N -f -m 10 --silent --data \
+ "var=$ARG2&arg=stoprelax&action=main" http://$RELAXHOST.home/exec.php
 exit
 ;;
 
-### Relaxation Volume Up
+### Relax Sounds Volume Up
 relaxvup)
-/usr/bin/screen -dm /usr/bin/curl -N -f -m 10 --silent --data \
- "var=$ARG2&arg=vup&action=main" http://hifimini.home/exec.php
+if [ ! -e /var/lock/rpi/relaxrec.save ]; then
+  /usr/bin/curl -N -f -m 10 --silent --data \
+   "var=$ARG2&arg=vup&action=main" http://hifimini.home/exec.php
+else
+  /opt/rpi/xmit upc
+fi   
 exit
 ;;
 
-### Relaxation Volume Down
+### Relax Sounds Volume Down
 relaxvdwn)
-/usr/bin/screen -dm /usr/bin/curl -N -f -m 10 --silent --data \
- "var=$ARG2&arg=vdwn&action=main" http://hifimini.home/exec.php
+if [ ! -e /var/lock/rpi/relaxrec.save ]; then
+  /usr/bin/curl -N -f -m 10 --silent --data \
+   "var=$ARG2&arg=vdwn&action=main" http://hifimini.home/exec.php
+else
+  /opt/rpi/xmit dwnc
+fi
 exit
 ;;
 
+## Toggle Relax Sounds Playback Device
+relaxhost)
+if [ ! -e /var/lock/rpi/relaxrec.save ]; then
+  touch /var/lock/rpi/relaxrec.save
+else
+  rm -f /var/lock/rpi/relaxrec.save 
+fi
+exit
+;;
+
+####################################
 ## Automated Multi-Functions
 
 lights)
@@ -127,7 +152,7 @@ exit
 
 ## Audio Power
 hifion)
-if ping -W 1 -c 1 hifi.home > /dev/null 2> /dev/null
+if ping -W 2 -c 1 hifi.home > /dev/null 2> /dev/null
 then
   echo "Host is up"
 else
@@ -137,7 +162,7 @@ exit
 ;;
 ##
 hifioff)
-if ping -W 1 -c 1 hifi.home > /dev/null 2> /dev/null
+if ping -W 2 -c 1 hifi.home > /dev/null 2> /dev/null
 then
   /opt/rpi/xmit pwrhifi
 else
@@ -148,7 +173,7 @@ exit
 
 ## PC Power
 pcon)
-if ping -W 1 -c 1 wkst.home > /dev/null 2> /dev/null
+if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
   echo "Host is up"
 else
@@ -158,7 +183,7 @@ exit
 ;;
 ##
 pcoff)
-if ping -W 1 -c 1 wkst.home > /dev/null 2> /dev/null
+if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
   /opt/rpi/xmit rfb3
 else
@@ -253,7 +278,7 @@ roomon)
 ## Desktop Power
 /opt/rpi/xmit rfb2 on
 ## PC Power On
-if ping -W 1 -c 1 wkst.home > /dev/null 2> /dev/null
+if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
   echo "Host is up"
 else
@@ -276,14 +301,14 @@ roomoff)
 ## Desktop Power
 /opt/rpi/xmit rfb2 off
 ## PC Power Off
-if ping -W 1 -c 1 wkst.home > /dev/null 2> /dev/null
+if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
   /opt/rpi/xmit rfb3
 else
   echo "Host is down"
 fi
 ## Audio System Power Off
-if ping -W 1 -c 1 hifi.home > /dev/null 2> /dev/null
+if ping -W 2 -c 1 hifi.home > /dev/null 2> /dev/null
 then
   /opt/rpi/xmit pwrhifi
 else

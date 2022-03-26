@@ -43,6 +43,7 @@
         <button text="Fields" ontap="fields" />
     </row>
     <row>
-        <button icon="pause" ontap="stop" />
+        <button icon="stop" ontap="stop" />
+        <button icon="docswitch" ontap="relaxhost" />
     </row>
 </layout>

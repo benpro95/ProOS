@@ -5,6 +5,7 @@
 ## run ./xmit CMD toggle (toggle on/off state & append on/off to end of serial command)
 ## run ./xmit CMD on (create state file & append on to end of serial command then send)
 ## run ./xmit CMD off (delete state file & append off to end of serial command then send)
+## Do not use the screen command in this script ##
 
 ## Set to "on" for HTML Xmit, or "off" for RS-232 Xmit
 HTML="on"

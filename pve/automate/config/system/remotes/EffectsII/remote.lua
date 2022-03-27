@@ -1,109 +1,109 @@
 local script = libs.script;
 
 actions.pause = function ()
-script.default("/opt/rpi/leds pause");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds pause");
 end
 
 actions.stop = function ()
-script.default("/opt/rpi/leds stop");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds stop");
 end
 
 actions.shuffle = function ()
-script.default("/opt/rpi/leds shuffle");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds shuffle");
 end
 
 actions.eightbit = function ()
-script.default("/opt/rpi/leds 8bit");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds 8bit");
 end
 
 actions.ink = function ()
-script.default("/opt/rpi/leds ink");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds ink");
 end
 
 actions.plasma = function ()
-script.default("/opt/rpi/leds plasma");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds plasma");
 end
 
 actions.prism = function ()
-script.default("/opt/rpi/leds prism");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds prism");
 end
 
 actions.paint = function ()
-script.default("/opt/rpi/leds paint");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds paint");
 end
 
 actions.beachball = function ()
-script.default("/opt/rpi/leds beachball");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds beachball");
 end
 
 actions.blur = function ()
-script.default("/opt/rpi/leds blur");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds blur");
 end
 
 actions.rings = function ()
-script.default("/opt/rpi/leds rings");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds rings");
 end
 
 actions.gas = function ()
-script.default("/opt/rpi/leds gas");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds gas");
 end
 
 actions.vibrant = function ()
-script.default("/opt/rpi/leds vibrant");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds vibrant");
 end
 
 actions.voltage = function ()
-script.default("/opt/rpi/leds voltage");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds voltage");
 end
 
 actions.abstract = function ()
-script.default("/opt/rpi/leds abstract");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds abstract");
 end
 
 actions.gold = function ()
-script.default("/opt/rpi/leds gold");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds gold");
 end
 
 actions.bubbles = function ()
-script.default("/opt/rpi/leds bubbles");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds bubbles");
 end
 
 actions.ripple = function ()
-script.default("/opt/rpi/leds ripple");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds ripple");
 end
 
 actions.blocks = function ()
-script.default("/opt/rpi/leds blocks");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds blocks");
 end
 
 actions.fuse = function ()
-script.default("/opt/rpi/leds fuse");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds fuse");
 end
 
 actions.lumin = function ()
-script.default("/opt/rpi/leds lumin");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds lumin");
 end
 
 actions.pixel = function ()
-script.default("/opt/rpi/leds pixel");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds pixel");
 end
 
 actions.fireworks = function ()
-script.default("/opt/rpi/leds fireworks");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds fireworks");
 end
 
 actions.rays = function ()
-script.default("/opt/rpi/leds rays");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds rays");
 end
 
 actions.spectrum = function ()
-script.default("/opt/rpi/leds spectrum");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds spectrum");
 end
 
 actions.warp = function ()
-script.default("/opt/rpi/leds warp");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds warp");
 end
 
 actions.gold = function ()
-script.default("/opt/rpi/leds gold");
+script.default("/usr/bin/screen -dm /bin/bash /opt/rpi/leds gold");
 end

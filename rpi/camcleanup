@@ -60,18 +60,21 @@ if [ ! -e /media/usb0/cameras ]; then
 else
   echo "Flash drive connected."
   truncate -s '<5MB' /media/usb0/cameras/motioncopy.log
-  ## Delete videos, when larger than 15GB
+  ## Delete videos, when flash drive has only 2GB free
+  USBDEV=$(findmnt /media/usb0 -o SOURCE -r | grep -v -e "SOURCE")
+  USBSIZE=$(lsblk -b --output SIZE -n -d $USBDEV)
+  USBSIZE="$(($USBSIZE-2147483648))"
   rm -f /tmp/camcleanup.vars
-  du -sh -t15000000000 /media/usb0/cameras | awk -F" " '{print $2}' > /tmp/camcleanup.vars
+  du -sh -t$USBSIZE /media/usb0/cameras | awk -F" " '{print $2}' > /tmp/camcleanup.vars
   if [[ -s /tmp/camcleanup.vars ]] ; then
-	  echo "Flash drive above 15GB limit deleting video files..."
+	  echo "Flash drive above $(echo "scale=2; $USBSIZE/1000000000" | bc -l)GB limit deleting video files..."
 	  service motion stop
 	  rm -rf /media/usb0/cameras
 	  mkdir -p /media/usb0/cameras
 	  chmod -R 777 /media/usb0/cameras
 	  service motion start
   else
-    echo "Flash drive under 15GB."
+    echo "Flash drive under $(echo "scale=2; $USBSIZE/1000000000" | bc -l)GB."
   fi
 fi
 

@@ -108,7 +108,7 @@ do
         rsync --progress $CHECKSUM -aP /mnt/datastore/Ben/ /mnt/extbkps/${!HDDVAR}/Ben/ -delete --delete-excluded
       fi
       #### Archive Share ####
-      if [ ! -e /mnt/datastore/.Archive/Local ]; then
+      if [ ! -e /mnt/datastore/.Archive/Saved ]; then
         echo "//files/Archive not connected."
       else
         echo "syncing 'Archive' share to ${!HDDVAR} drive..."

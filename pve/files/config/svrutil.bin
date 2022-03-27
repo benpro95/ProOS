@@ -241,6 +241,7 @@ fi
 ## Backup to external drives
 if [[ $REPLY =~ ^[Bb]$ ]]
 then
+  curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"	
   echo " "
   echo "##################################"
   echo "#### ProServer Backup Utility ####"
@@ -330,6 +331,7 @@ then
     checksum="yes"
     BKPPGRM
   fi
+  curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"
   ENDPGRM
 fi
 ### runs when (enter) on main menu

@@ -13,8 +13,11 @@ BIN_PATH=/opt/rpi
 ## Stop LED processes
 LEDSTOP(){
 /usr/bin/curl --silent --output /dev/null -X POST http://127.0.0.1:9387/api/anim/stop
-systemctl stop rpi-fcleds
-echo "Paused effects"
+if (systemctl -q is-active rpi-fcleds)
+then
+  echo "Stopping LEDs daemon"	
+  systemctl stop rpi-fcleds
+fi
 }
 
 ## Read LED Type
@@ -62,6 +65,7 @@ fi
 if [ "$VARA" = "stop" ]; then
   echo "Blanking effects"
   rm -f /tmp/ledstate.lock
+  VARA="black"
 fi
 
 if [ "$VARA" = "pause" ]; then

@@ -1,2 +1,2 @@
-ledwall
-ledgrid
+ledwall.local
+ledgrid.local

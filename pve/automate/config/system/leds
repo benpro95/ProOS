@@ -8,9 +8,9 @@ VARA=$1
 VARB=$2
 
 if [ -e /opt/rpi/ledsync.txt ]; then
-  cat /opt/rpi/ledsync.txt | xargs -P 10 -I % \
-    /usr/bin/curl --no-keepalive --fail --max-time 30 --silent --data \
-    "var=$VARB&arg=$VARA&action=leds" http://%:9300/exec.php
+  cat /opt/rpi/ledsync.txt | xargs -P 5 -I % \
+    /usr/bin/curl --no-keepalive --fail --max-time 30 --silent --ipv4 \
+    --data "var=$VARB&arg=$VARA&action=leds" http://%:9300/exec.php
 else
   echo "ledsync.txt not found."    
 fi

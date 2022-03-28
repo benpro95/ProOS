@@ -20,9 +20,15 @@ VMLOGFILE="/mnt/extbkps/keytmp/vmlog.txt"
 ## Server Log Directory
 SYSLOGDIR="/mnt/pve/scratch/files/downloads"
 
+if [ -e /tmp/actiontrig.lock ]; then
+  echo "process locked! exiting."
+  exit
+fi
+
 ### IMPORT ZFS ########################################   
 if [ -e /mnt/extbkps/keytmp/pass.txt ]; then
 ###### Runs when file exists ##########################
+  touch /tmp/actiontrig.lock
   if [ ! -e /mnt/extbkps/keytmp/status.txt ]; then
     touch /mnt/extbkps/keytmp/status.txt
   else
@@ -32,7 +38,10 @@ if [ -e /mnt/extbkps/keytmp/pass.txt ]; then
   for ((i=1; i<11; i++))
   do
     ZFSVAR0="ZFSPOOL$i"
-    if [ "${!ZFSVAR0}" = "" ] || [ "${!ZFSVAR0}" = "datastore" ] || [ "${!ZFSVAR0}" = "tank" ] || [ "${!ZFSVAR0}" = "rpool" ] ; then
+    if [ "${!ZFSVAR0}" = "" ] || \
+       [ "${!ZFSVAR0}" = "tank" ] || \
+       [ "${!ZFSVAR0}" = "datastore" ] || \
+       [ "${!ZFSVAR0}" = "rpool" ] ; then
       echo "no pool specified."
       echo ""
     else
@@ -48,15 +57,21 @@ if [ -e /mnt/extbkps/keytmp/pass.txt ]; then
   echo ""
   shred -n 2 -z -u /mnt/extbkps/keytmp/pass.txt
   echo "imported ZFS backup volumes"
+  rm -f /tmp/actiontrig.lock
 fi
+
 ### EXPORT ZFS ########################################
 if [ -e /mnt/extbkps/keytmp/unmount.txt ]; then
 ###### Runs when file exists ##########################
+  touch /tmp/actiontrig.lock
   echo ""
   for ((i=1; i<11; i++))
   do
     ZFSVAR1="ZFSPOOL$i"
-    if [ "${!ZFSVAR1}" = "" ] || [ "${!ZFSVAR1}" = "datastore" ] || [ "${!ZFSVAR1}" = "tank" ] || [ "${!ZFSVAR1}" = "rpool" ] ; then
+    if [ "${!ZFSVAR1}" = "" ] || \
+       [ "${!ZFSVAR1}" = "tank" ] || \
+       [ "${!ZFSVAR1}" = "datastore" ] || \
+       [ "${!ZFSVAR1}" = "rpool" ] ; then
       echo "no pool specified."
       echo ""
     else
@@ -74,6 +89,7 @@ if [ -e /mnt/extbkps/keytmp/unmount.txt ]; then
   echo "unmounted ZFS backup volumes"
   date
   echo ""
+  rm -f /tmp/actiontrig.lock
 fi
 
 ### START VMs #########################################

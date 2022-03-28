@@ -5,7 +5,7 @@
 #######################
 
 ## Time to wait for PVE action timer
-wait_time=65 # seconds
+wait_time=60 # seconds
 
 ##### END SESSION FUNCTION #####
 ENDPGRM () {

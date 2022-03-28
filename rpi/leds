@@ -12,7 +12,7 @@ BIN_PATH=/opt/rpi
 
 ## Stop LED processes
 LEDSTOP(){
-/usr/bin/curl --silent --output /dev/null -X POST http://127.0.0.1:9387/api/anim/stop
+/usr/bin/curl -N -f -m 10 --silent -X POST 127.0.0.1:9387/api/anim/stop
 if (systemctl -q is-active rpi-fcleds)
 then
   echo "Stopping LEDs daemon"	
@@ -46,8 +46,8 @@ else
       touch /tmp/ledstate.lock
   fi
   ln -sf $BIN_PATH/effects/$LEDTYPE/$VARA.opc $BIN_PATH/nodeopc/server/animations/opc
-  /usr/bin/curl --silent --output /dev/null -d '{"playlistname":"Playlist"}' -H \
-    "Content-Type: application/json" -X POST http://127.0.0.1:9387/api/playlists/play
+  /usr/bin/curl -N -f -m 10 --silent -d '{"playlistname":"Playlist"}' -H \
+    "Content-Type: application/json" -X POST 127.0.0.1:9387/api/playlists/play
   echo "Set LEDs to Node.js effect"
   rm -f /tmp/ledstate.lock  
   exit

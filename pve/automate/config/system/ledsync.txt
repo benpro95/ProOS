@@ -1,2 +1,3 @@
+ledstrips.local
 ledwall.local
 ledgrid.local

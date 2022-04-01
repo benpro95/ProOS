@@ -219,16 +219,18 @@ fi
 
 ## RF Power Controller (under dresser)
 
+## Vintage Macs
 if [[ "$CMD" == "rfa1on" ]]; then
-   XMITCMD="rftx.734735"
+   XMITCMD="rftx.734733"
    XMIT
 fi
 
 if [[ "$CMD" == "rfa1off" ]]; then
-   XMITCMD="rftx.734736"
+   XMITCMD="rftx.734734"
    XMIT
 fi
 
+## Dresser Lamp
 if [[ "$CMD" == "rfa2on" ]]; then
    XMITCMD="rftx.734731"
    XMIT
@@ -239,13 +241,14 @@ if [[ "$CMD" == "rfa2off" ]]; then
    XMIT
 fi
 
+## RetroPi
 if [[ "$CMD" == "rfa3on" ]]; then
-   XMITCMD="rftx.734733"
+   XMITCMD="rftx.734735"
    XMIT
 fi
 
 if [[ "$CMD" == "rfa3off" ]]; then
-   XMITCMD="rftx.734734"
+   XMITCMD="rftx.734736"
    XMIT
 fi
 

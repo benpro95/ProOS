@@ -63,7 +63,7 @@ cp -f /tmp/config/rc-local.service /etc/systemd/system/
 chmod 644 /etc/systemd/system/rc-local.service
 chown root:root /etc/systemd/system/rc-local.service
 cp -f /tmp/config/rc.local /etc/
-chmod 755 /etc/rc.local
+chmod +x /etc/rc.local
 chown root:root /etc/rc.local
 systemctl enable rc-local
 
@@ -71,18 +71,17 @@ systemctl enable rc-local
 cp -f /tmp/config/vncserver.service /etc/systemd/system/
 chmod 644 /etc/systemd/system/vncserver.service
 chown root:root /etc/systemd/system/vncserver.service
-if [ ! -e /etc/vncserver.installed ]; then
-  echo ""
-  systemctl enable vncserver
-  echo "Login to user 'ben' and run 'vncserver' initially to setup."
-  touch /etc/vncserver.installed
-  echo ""
-fi
+systemctl enable vncserver
+cp -f /tmp/config/vncserver /usr/bin/
+chmod +x /usr/bin/vncserver
+chown root:root /usr/bin/vncserver
 cp -f /tmp/config/xstartup /home/ben/.vnc/
 chmod +x /home/ben/.vnc/xstartup
 chown ben:ben /home/ben/.vnc/xstartup
-echo "Login to user 'ben' and run 'vncpasswd' to change VNC password."
 systemctl disable lightdm
+touch /home/ben/.vnc/passwd
+chown ben:ben /home/ben/.vnc/passwd
+chmod 600 /home/ben/.vnc/passwd
 
 ## Firejail Sandbox
 cp -f /tmp/config/firejail.config /etc/firejail/
@@ -105,9 +104,6 @@ chown root:root /usr/share/applications/firefox-esr.desktop
 cp -f /tmp/config/exo-web-browser.desktop /usr/share/applications/
 chmod 644 /usr/share/applications/exo-web-browser.desktop
 chown root:root /usr/share/applications/exo-web-browser.desktop
-cp -f /opt/tor-browser_en-US/start-tor-browser.desktop /usr/share/applications/
-chmod 644 /usr/share/applications/start-tor-browser.desktop
-chown root:root /usr/share/applications/start-tor-browser.desktop
 
 ## AutoFS Configuration
 cp -f /tmp/config/auto.master /etc/

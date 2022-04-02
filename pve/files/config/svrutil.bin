@@ -159,7 +159,7 @@ then
   ##################################    
   if [[ $REPLY =~ ^[Uu]$ ]]
   then
-    curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"
+    curl -N -f -m 5 --silent "http://ledwall.local:9300/exec.php?var=&arg=whtledon&action=main"
     echo " "
     echo "updating automate system configuration..."
     ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "rm -rfv /opt/rpi/remotes"
@@ -170,7 +170,7 @@ then
     echo " "
     echo "restarting unified remote server..."
     ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl restart urserver"
-    curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"
+    curl -N -f -m 5 --silent "http://ledwall.local:9300/exec.php?var=&arg=whtledoff&action=main"
     REPLY=""
   fi
   ##################################  
@@ -241,7 +241,6 @@ fi
 ## Backup to external drives
 if [[ $REPLY =~ ^[Bb]$ ]]
 then
-  curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledon&action=main"	
   echo " "
   echo "##################################"
   echo "#### ProServer Backup Utility ####"
@@ -331,7 +330,6 @@ then
     checksum="yes"
     BKPPGRM
   fi
-  curl -N -f -m 1 --silent "http://ledwall:9300/exec.php?var=&arg=whtledoff&action=main"
   ENDPGRM
 fi
 ### runs when (enter) on main menu
@@ -342,11 +340,13 @@ exit
 
 BKPPGRM () {
 ##### BEGIN BACKUP FUNCTION #####
+curl -N -f -m 5 --silent "http://ledwall.local:9300/exec.php?var=&arg=whtledon&action=main"
 scr_num=$(echo $RANDOM) 
 /usr/bin/screen -dmS $scr_num /usr/bin/svrbackup.bin $wait_time $checksum
 sleep 0.25
 clear
-screen -rS $scr_num
+/usr/bin/screen -rS $scr_num
+curl -N -f -m 5 --silent "http://ledwall.local:9300/exec.php?var=&arg=whtledoff&action=main"
 ##### END BACKUP FUNCTION #####
 }
 

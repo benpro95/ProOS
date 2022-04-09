@@ -12,14 +12,16 @@ eval "`dircolors`"
 alias ls='ls $LS_OPTIONS'
 alias ll='ls $LS_OPTIONS -l'
 alias l='ls $LS_OPTIONS -lA'
+greentty=`tput setaf 2`
+resettty=`tput sgr0`
 
 ## Start Main Menu
 /usr/bin/svrutil.bin
 
 uname -m -n -s -o -r
-echo "Enter 'svr' to return to main menu"
+echo "Enter '${greentty}svr${resettty}' to return to main menu"
 cd ~/ProOS
-echo "Server modules:"
-ls ~/ProOS/pve
-echo "Pi modules:"
-ls
+echo "${greentty}Server modules:${resettty}"
+ls ~/ProOS/pve --hide=network --hide=config --hide=README.txt --hide=vmbkps --hide=photos
+echo "${greentty}Pi modules:${resettty}"
+ls --hide=pve --hide=login --hide=rpi --hide=sources --hide=wkst

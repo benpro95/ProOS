@@ -3,7 +3,8 @@ Description=Fadecandy LED Effects Loop
 
 [Service]
 User=root
+Type=notify
 ExecStart=/opt/rpi/leds.sysd
 Restart=on-failure
-KillSignal=SIGKILL
+##KillSignal=SIGKILL
 RestartSec=5

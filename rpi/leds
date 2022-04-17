@@ -13,11 +13,11 @@ BIN_PATH=/opt/rpi
 ## Stop LED processes
 LEDSTOP(){
 /usr/bin/curl -N -f -m 10 --silent -X POST 127.0.0.1:9387/api/anim/stop
-if (systemctl -q is-active rpi-fcleds)
-then
+#if (systemctl -q is-active rpi-fcleds)
+#then
   echo "Stopping LEDs daemon"	
   systemctl stop rpi-fcleds
-fi
+#fi
 }
 
 ## Read LED Type
@@ -85,7 +85,7 @@ if [ "$VARA" = "rave" ] || [ "$VARA" = "chase" ] || \
       touch /tmp/ledstate.lock
   fi  
   systemctl set-environment rpi_fceffect=pyth-$VARA
-  systemctl start rpi-fcleds
+  systemctl restart rpi-fcleds
   echo "Set LEDs to Python effect"
   rm -f /tmp/ledstate.lock
   exit
@@ -103,7 +103,7 @@ if [ "$VARA" = "noise3" ] || [ "$VARA" = "blocks" ] || \
       touch /tmp/ledstate.lock
   fi   
   systemctl set-environment rpi_fceffect=perl-$VARA
-  systemctl start rpi-fcleds
+  systemctl restart rpi-fcleds
   echo "Set LEDs to Perl effect"
   rm -f /tmp/ledstate.lock
   exit
@@ -119,7 +119,7 @@ if [ "$VARA" = "rainbow" ] || [ "$VARA" = "spectro" ] ; then
       touch /tmp/ledstate.lock
   fi  
   systemctl set-environment rpi_fceffect=java-$VARA
-  systemctl start rpi-fcleds
+  systemctl restart rpi-fcleds
   echo "Set LEDs to Java effect"
   rm -f /tmp/ledstate.lock
   exit

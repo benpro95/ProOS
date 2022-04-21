@@ -39,12 +39,6 @@ systemctl list-units --type=service --state=running
 exit
 ;;
 
-gpumem)
-echo "GPU memory."
-/opt/vc/bin/vcdbg reloc stats
-exit
-;;
-
 timers)
 ## List Active Timers
 systemctl list-timers --all
@@ -54,6 +48,12 @@ exit
 loadtimes)
 ## Display list of system daemons and startup times
 systemd-analyze blame
+exit
+;;
+
+gpu)
+echo "GPU statistics."
+vcdbg reloc stats
 exit
 ;;
 
@@ -92,7 +92,7 @@ systemctl start smbd
 exit
 ;;
 
-alsa)
+restart-alsa)
 ## Restart ALSA Audio Subsystems
 /etc/init.d/alsa-utils stop
 alsactl kill quit
@@ -103,7 +103,7 @@ exit
 
 temp)
 ## Read System CPU Temp
-tm=`/opt/vc/bin/vcgencmd measure_temp`
+tm=`vcgencmd measure_temp`
 tc=`echo $tm| cut -d '=' -f2 | sed 's/..$//'`
 tf=$(echo "scale=2;((9/5) * $tc) + 32" |bc)
 echo temp = $tf\'F \($tc\'C\)
@@ -499,19 +499,20 @@ exit
           echo "ro - Enable read/only mode"
           echo "rw - Enable read/write mode"
           echo "update - Update/upgrade system"
-          echo "mon - Resource monitor"
           echo "loadtimes - Startup services"
-          echo "active - Active services"
           echo "running - Running services"
+          echo "active - Active services"
           echo "timers - Active timers"
           echo "wifistats - Wi-Fi statistics"
+          echo "restart-alsa - Restart audio subsystem"
           echo "netdetect - Switch to hotspot if network down"
           echo "apdonboot - Toggle hotspot mode on startup"
           echo "togglenet - Toggle hotspot/client network"
           echo "resetbt - Clear active bluetooth connections"
-          echo "gpumem - GPU statistics"
           echo "ftp - List file transfer command"
+          echo "gpu - GPU usage statistics"
           echo "temp - System temperature"
+          echo "mon - Resource monitor"
           echo " "
           exit 1
           ;;

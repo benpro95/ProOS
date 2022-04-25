@@ -12,12 +12,11 @@ BIN_PATH=/opt/rpi
 
 ## Stop LED processes
 LEDSTOP(){
-/usr/bin/curl -N -f -m 10 --silent -X POST 127.0.0.1:9387/api/anim/stop
-#if (systemctl -q is-active rpi-fcleds)
-#then
-  echo "Stopping LEDs daemon"	
-  systemctl stop rpi-fcleds
-#fi
+echo "Stopping LEDs daemon"
+/usr/bin/curl --fail --no-buffer --max-time 5 --silent \
+ --retry 5 --retry-all-errors --retry-delay 1 \
+ -X POST 127.0.0.1:9387/api/anim/stop
+systemctl stop rpi-fcleds
 }
 
 ## Read LED Type
@@ -45,9 +44,12 @@ else
   else
       touch /tmp/ledstate.lock
   fi
-  ln -sf $BIN_PATH/effects/$LEDTYPE/$VARA.opc $BIN_PATH/nodeopc/server/animations/opc
-  /usr/bin/curl -N -f -m 10 --silent -d '{"playlistname":"Playlist"}' -H \
-    "Content-Type: application/json" -X POST 127.0.0.1:9387/api/playlists/play
+  ln -sf $BIN_PATH/effects/$LEDTYPE/$VARA.opc \
+   $BIN_PATH/effects/nodeopc/server/animations/opc
+  /usr/bin/curl --fail --no-buffer --max-time 5 --silent \
+   --retry 5 --retry-all-errors --retry-delay 1 \
+   -d '{"playlistname":"Playlist"}' -H "Content-Type: application/json" \
+   -X POST 127.0.0.1:9387/api/playlists/play
   echo "Set LEDs to Node.js effect"
   rm -f /tmp/ledstate.lock  
   exit
@@ -56,7 +58,7 @@ fi
 if [ "$VARA" = "fc" ]; then
   LEDSTOP
   systemctl set-environment rpi_ledtype=$LEDTYPE rpi_fcsetup=fc$VARB.json
-  systemctl restart rpi-fcserver 
+  systemctl restart rpi-fcserver
   systemctl restart rpi-nodeopc
   echo "LEDs brightness changed to $VARB%"
   exit

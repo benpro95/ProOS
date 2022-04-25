@@ -4,8 +4,9 @@ Conflicts=shutdown.target
 
 [Service]
 User=root
+Type=simple
 ExecStart=/usr/bin/nodejs server.js
-WorkingDirectory=/opt/rpi/nodeopc/server
+WorkingDirectory=/opt/rpi/effects/nodeopc/server
 Restart=always
 RestartSec=5
 

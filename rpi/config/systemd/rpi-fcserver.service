@@ -7,5 +7,6 @@ User=root
 Type=simple
 ExecStart=/bin/bash -c "/opt/rpi/effects/fcserver /opt/rpi/effects/$rpi_ledtype/fcbin/$rpi_fcsetup"
 WorkingDirectory=/opt/rpi/effects
-Restart=on-failure
+KillSignal=SIGKILL
+Restart=always
 RestartSec=5

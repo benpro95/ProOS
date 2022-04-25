@@ -2,6 +2,7 @@ lava
 orbits
 candle
 miami
+noise1
 noise2
 flames
 spark

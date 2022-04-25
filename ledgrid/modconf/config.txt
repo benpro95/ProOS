@@ -18,10 +18,6 @@ disable_splash=1
 #dtparam=i2s=on
 #dtoverlay=hifiberry-dac
 
-#---------Disable ACT LED---------
-dtparam=act_led_trigger=none
-dtparam=act_led_activelow=on
-
 #-------Audio support (disabled)-------
 dtparam=audio=off
 

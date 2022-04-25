@@ -176,31 +176,28 @@ fi
 
 ## CPU Specific Packages
 if [ "$CPUTYPE" = "Raspberry Pi Zero W Rev 1.1" ]; then
-	##### Install Node.js from 'pkgs' folder #####
-  if [ "$REINSTALL" = "yes" ]; then
-    rm -f /usr/bin/node
-  fi 
-	NODEVERSION="14.17.1"
-  echo "Pi Zero detected, installing Node.js for ARMv6..."
-  if [ ! -e /usr/bin/node ]; then
-    tar xvfJ /opt/rpi/pkgs/node-v$NODEVERSION-linux-armv6l.tar.xz -C /opt/rpi/pkgs/
-    cd /opt/rpi/pkgs/node-v$NODEVERSION-linux-armv6l/
-    cp -vR * /usr/local/
-    ln -sf /usr/local/bin/node /usr/bin/node
-    rm -rf /opt/rpi/pkgs/node-v$NODEVERSION-linux-armv6l
-    cd $BIN
-  else
-    echo "Node already installed."
-  fi
-  ln -sf /usr/local/bin/node /usr/bin/nodejs
-  ###########################
-  echo "Removing Java and Arduino Support..."
-  apt-get remove -y arduino default-jre openjdk-11-jre
-  apt-get remove -y ca-certificates-java default-jre-headless
+  echo "Pi Zero detected, not installing rclone."
+  echo "Removing Java, Arduino, Node.js Support..."
+  apt-get remove -y ca-certificates-java default-jre-headless default-jre \
+   openjdk-11-jre nodejs arduino avrdude 
 else
-  echo "ARMv7 CPU detected, installing Arduino & Node.js..."
-  apt-get install -y --no-upgrade --ignore-missing nodejs
-  apt-get install -y --no-upgrade --ignore-missing arduino avrdude
+  echo "ARMv7 CPU detected, installing Java, Arduino, Node.js..."
+  ## Note: Tested Node.js version 14.17.1
+  apt-get install -y --no-upgrade --ignore-missing nodejs arduino avrdude openjdk-11-jre
+  ## Cloud Drive Support
+  echo "Installing rclone..."
+  apt-get install -y --no-upgrade fuse
+  if [ "$REINSTALL" = "yes" ]; then
+    rm -f /usr/bin/rclone
+  fi 
+  if [ ! -e /usr/bin/rclone ]; then
+    ## Newest Version
+    #curl https://rclone.org/install.sh | sudo bash
+    ## 1.58 Version
+    dpkg -i /opt/rpi/pkgs/rclone-v1.58.0-linux-arm-v7.deb
+    rclone --version
+    cd $BIN
+  fi
 fi
 
 ## Python Libraries
@@ -223,25 +220,6 @@ apt-get install -y --no-upgrade --ignore-missing samba samba-common-bin samba-li
 chmod 777 /media
 chmod 777 /media/usb*
 chown root:root /media/usb*
-
-## Cloud Drive Support
-if [ "$CPUTYPE" = "Raspberry Pi Zero W Rev 1.1" ]; then
-  echo "Pi Zero detected, not installing rclone."
-else
-  echo "ARM7v CPU detected, installing rclone..."
-  apt-get install -y --no-upgrade fuse
-  if [ "$REINSTALL" = "yes" ]; then
-    rm -f /usr/bin/rclone
-  fi 
-  if [ ! -e /usr/bin/rclone ]; then
-    ## Newest Version
-    #curl https://rclone.org/install.sh | sudo bash
-    ## 1.58 Version
-    dpkg -i /opt/rpi/pkgs/rclone-v1.58.0-linux-arm-v7.deb
-    rclone --version
-    cd $BIN
-  fi
-fi
 
 ## Audio Support
 apt-get install -y --no-upgrade --ignore-missing alsa-base alsa-utils mpg321 lame sox \
@@ -872,6 +850,7 @@ chown -R root:root /opt/rpi
 
 ## Remove Installer Files
 rm -rf /opt/rpi/config
+rm -rf /opt/rpi/nodeopc
 rm -f /opt/rpi/pythproc 
 rm -f /opt/rpi/effects/pythproc
 rm -f /etc/preinit

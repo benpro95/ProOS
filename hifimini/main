@@ -26,8 +26,8 @@ then
 else
   echo "server not found."  
 fi
-## Disable Activity LED
-echo none | tee /sys/class/leds/led0/trigger
+## Turn-off Power LED (boot complete)
+echo none | tee /sys/class/leds/led0/trigger &>/dev/null
 ## Auto Hotspot (on boot only)
 systemctl start rpi-netdetect
 ## Disable HDMI (saves 30mA)

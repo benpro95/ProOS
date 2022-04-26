@@ -1,5 +1,5 @@
 #!/bin/bash
-## ProOS for RPi, INIT Script by Ben Provenzano III
+## ProOS for RPi, Commands Script by Ben Provenzano III
 
 case "$1" in
 
@@ -7,7 +7,7 @@ case "$1" in
 ########### SYSTEM PROGRAMS ##################
 
 keycap)
-## Capture Keystrokes and Events
+## Capture keystrokes and events
 echo "List of all known events"
 thd --listevents
 echo "Press Ctrl+C to exit"
@@ -16,7 +16,7 @@ exit
 ;;
 
 mon)
-## System Resource Monitor
+## System resource monitor
 bpytop
 exit
 ;;
@@ -40,7 +40,7 @@ exit
 ;;
 
 timers)
-## List Active Timers
+## List active timers
 systemctl list-timers --all
 exit
 ;;
@@ -58,7 +58,7 @@ exit
 ;;
 
 ftp)
-## List FTP Transfer Command
+## List FTP transfer command
 echo 'ncftpput -R -v -u "ben" z97mx.home / local-folder'
 exit
 ;;
@@ -80,7 +80,7 @@ exit
 ;;
 
 ufs)
-## USB File Server
+## USB file server
 systemctl stop nmbd
 systemctl stop smbd
 rm -rf /var/cache/samba/*
@@ -93,7 +93,7 @@ exit
 ;;
 
 restart-alsa)
-## Restart ALSA Audio Subsystems
+## Restart ALSA audio subsystem
 /etc/init.d/alsa-utils stop
 alsactl kill quit
 alsactl restore
@@ -102,7 +102,7 @@ exit
 ;;
 
 temp)
-## Read System CPU Temp
+## Read system CPU temp
 tm=`vcgencmd measure_temp`
 tc=`echo $tm| cut -d '=' -f2 | sed 's/..$//'`
 tf=$(echo "scale=2;((9/5) * $tc) + 32" |bc)
@@ -111,7 +111,7 @@ exit
 ;;
 
 overtemp)
-## Over Temperature Action #######################
+## Over temperature action #######################
 ##################################################
 if [ -e /tmp/pitemp.log ]; then
   rm -f /tmp/pitemp.log
@@ -136,7 +136,7 @@ exit
 ;;
 
 rw)
-## Enable Read/Write Mode
+## Enable read/write mode
 echo 'Rebooting in read/write mode...'
 systemctl stop rpi-*
 mount -o remount,rw /boot
@@ -147,7 +147,7 @@ exit
 ;;
 
 ro)
-## Enable Read/Only Mode
+## Enable read/only mode
 echo 'Rebooting in read/only mode...'
 systemctl stop rpi-*
 mount -o remount,rw /boot
@@ -158,7 +158,7 @@ exit
 ;;
 
 update)
-### Debian System Update
+### System update/upgrade
 echo " "
 echo "System must be in read-write mode."
 echo " "
@@ -279,10 +279,36 @@ exit
 ;;
 
 resetbt)
-## Reset Bluetooth Connections 
+## Reset bluetooth connections 
 for device in $(bluetoothctl devices  | grep -o "[[:xdigit:]:]\{8,17\}"); do
-    echo "removing bluetooth device: $device | $(bluetoothctl remove $device)"
+  echo "removing bluetooth device: $device | $(bluetoothctl remove $device)"
 done
+exit
+;;
+
+
+id)
+## Capture current LED status
+LEDSTATUS=$( cat /sys/class/leds/led0/trigger | grep -oP '\[\K[^][]*(?=])' )
+## Flash activity LED until key is pressed
+echo "Flashing activity LED... [q] to stop"
+stty -echo -icanon time 0 min 0 # Don't wait when read the input
+IDLOOP=1
+while [ 1 ]; do
+   echo -ne "$IDLOOP\r"
+   ((IDLOOP+=1))
+   read key
+   if [ "$key" == "q" ]
+   then 
+      break
+   fi # if [q] is hit, break the loop
+   echo default-on | tee /sys/class/leds/led0/trigger &>/dev/null
+   sleep 0.5
+   echo none | tee /sys/class/leds/led0/trigger &>/dev/null
+   sleep 0.5
+done
+stty sane # Come back to the classic behavior
+echo "$LEDSTATUS" | tee /sys/class/leds/led0/trigger &>/dev/null
 exit
 ;;
 
@@ -492,9 +518,9 @@ exit
 
         *)
           echo "RPi Init Script v15"
-	      echo "by Ben Provenzano III"
-	      echo " "
-	      echo "Enter Valid Arguments."
+	        echo "by Ben Provenzano III"
+	        echo " "
+	        echo "Enter Valid Arguments."
           echo " "
           echo "ro - Enable read/only mode"
           echo "rw - Enable read/write mode"
@@ -512,6 +538,7 @@ exit
           echo "ftp - List file transfer command"
           echo "gpu - GPU usage statistics"
           echo "temp - System temperature"
+          echo "id - Flash activity LED"
           echo "mon - Resource monitor"
           echo " "
           exit 1

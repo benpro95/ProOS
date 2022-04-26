@@ -6,6 +6,8 @@
 case "$1" in
 
 boot)
+## Activity LED Mode
+echo actpwr | tee /sys/class/leds/led0/trigger &>/dev/null
 ## Unified Web Server
 systemctl start rpi-urserver
 ## Start X11 Server

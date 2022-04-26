@@ -10,7 +10,7 @@ VARB=$2
 ## Main Path
 BIN_PATH=/opt/rpi
 
-## Stop LED processes
+## Stop effects
 LEDSTOP(){
 echo "Stopping LEDs daemon"
 /usr/bin/curl --fail --no-buffer --max-time 5 --silent \
@@ -33,6 +33,52 @@ if [ "$VARA" = "shuffle" ]; then
   echo "Choosing random effect"
 fi
 
+## Brightness control
+if [ "$VARA" = "fc" ]; then
+  ## Stop Effects & OPC Servers
+  LEDSTOP
+  rm -f /tmp/ledstate.lock
+  systemctl stop rpi-fcserver
+  systemctl stop rpi-nodeopc
+  ## Reset Fadecandy
+  usbreset 1d50:607a
+  ## Start OPC Servers
+  systemctl set-environment rpi_ledtype=$LEDTYPE rpi_fcsetup=fc$VARB.json
+  systemctl start rpi-fcserver
+  systemctl start rpi-nodeopc
+  echo "LEDs brightness changed to $VARB%"
+  ## Restart Effects
+  if [[ -f /tmp/fc-last-a ]] && [[ -f /tmp/fc-last-b ]]; then
+  	echo "files exist, restarting effect..."
+    VARA=$(cat /tmp/fc-last-a)
+    VARB=$(cat /tmp/fc-last-b)
+  else
+    exit 
+  fi
+fi
+
+## Stop function (1st)
+if [ "$VARA" = "stop" ]; then
+  echo "Blanking effects"
+  rm -f /tmp/ledstate.lock
+  VARA="black"
+fi
+
+## Pause function (2nd)
+if [ "$VARA" = "pause" ]; then
+  LEDSTOP
+  exit
+fi
+
+## Store last effect (3rd)
+if [ "$VARA" = "black" ] ; then
+ rm -f /tmp/fc-last-a
+ rm -f /tmp/fc-last-b
+else
+ echo "$VARA" > /tmp/fc-last-a
+ echo "$VARB" > /tmp/fc-last-b
+fi
+
 ## Node.js effect parser
 if [ ! -e $BIN_PATH/effects/$LEDTYPE/$VARA.opc ]; then
   echo "Node.js effect not found"
@@ -46,32 +92,12 @@ else
   fi
   ln -sf $BIN_PATH/effects/$LEDTYPE/$VARA.opc \
    $BIN_PATH/effects/nodeopc/server/animations/opc
-  /usr/bin/curl --fail --no-buffer --max-time 5 --silent \
-   --retry 5 --retry-all-errors --retry-delay 1 \
+   /usr/bin/curl --fail --no-buffer --max-time 5 --silent \
+    --retry 5 --retry-all-errors --retry-delay 1 \
    -d '{"playlistname":"Playlist"}' -H "Content-Type: application/json" \
    -X POST 127.0.0.1:9387/api/playlists/play
   echo "Set LEDs to Node.js effect"
   rm -f /tmp/ledstate.lock  
-  exit
-fi
-
-if [ "$VARA" = "fc" ]; then
-  LEDSTOP
-  systemctl set-environment rpi_ledtype=$LEDTYPE rpi_fcsetup=fc$VARB.json
-  systemctl restart rpi-fcserver
-  systemctl restart rpi-nodeopc
-  echo "LEDs brightness changed to $VARB%"
-  exit
-fi
-
-if [ "$VARA" = "stop" ]; then
-  echo "Blanking effects"
-  rm -f /tmp/ledstate.lock
-  VARA="black"
-fi
-
-if [ "$VARA" = "pause" ]; then
-  LEDSTOP
   exit
 fi
 
@@ -87,7 +113,7 @@ if [ "$VARA" = "rave" ] || [ "$VARA" = "chase" ] || \
       touch /tmp/ledstate.lock
   fi  
   systemctl set-environment rpi_fceffect=pyth-$VARA
-  systemctl restart rpi-fcleds
+  systemctl start rpi-fcleds
   echo "Set LEDs to Python effect"
   rm -f /tmp/ledstate.lock
   exit
@@ -105,7 +131,7 @@ if [ "$VARA" = "noise3" ] || [ "$VARA" = "blocks" ] || \
       touch /tmp/ledstate.lock
   fi   
   systemctl set-environment rpi_fceffect=perl-$VARA
-  systemctl restart rpi-fcleds
+  systemctl start rpi-fcleds
   echo "Set LEDs to Perl effect"
   rm -f /tmp/ledstate.lock
   exit
@@ -121,7 +147,7 @@ if [ "$VARA" = "rainbow" ] || [ "$VARA" = "spectro" ] ; then
       touch /tmp/ledstate.lock
   fi  
   systemctl set-environment rpi_fceffect=java-$VARA
-  systemctl restart rpi-fcleds
+  systemctl start rpi-fcleds
   echo "Set LEDs to Java effect"
   rm -f /tmp/ledstate.lock
   exit

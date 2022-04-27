@@ -17,6 +17,10 @@ echo "Stopping LEDs daemon"
  --retry 5 --retry-all-errors --retry-delay 1 \
  -X POST 127.0.0.1:9387/api/anim/stop
 systemctl stop rpi-fcleds
+## Reset Fadecandy (disabled causes flickering)
+#if [[ "$VARA" != "fc" ]] || [[ "$VARA" != "pause" ]]; then
+#  usbreset 1d50:607a
+#fi
 }
 
 ## Read LED Type
@@ -90,10 +94,12 @@ else
   else
       touch /tmp/ledstate.lock
   fi
+  ## Link Effect
   ln -sf $BIN_PATH/effects/$LEDTYPE/$VARA.opc \
    $BIN_PATH/effects/nodeopc/server/animations/opc
-   /usr/bin/curl --fail --no-buffer --max-time 5 --silent \
-    --retry 5 --retry-all-errors --retry-delay 1 \
+  ## Start Request
+  /usr/bin/curl --fail --no-buffer --max-time 5 --silent \
+   --retry 5 --retry-all-errors --retry-delay 1 \
    -d '{"playlistname":"Playlist"}' -H "Content-Type: application/json" \
    -X POST 127.0.0.1:9387/api/playlists/play
   echo "Set LEDs to Node.js effect"
@@ -111,7 +117,8 @@ if [ "$VARA" = "rave" ] || [ "$VARA" = "chase" ] || \
       exit
   else
       touch /tmp/ledstate.lock
-  fi  
+  fi
+  ## Start Effect
   systemctl set-environment rpi_fceffect=pyth-$VARA
   systemctl start rpi-fcleds
   echo "Set LEDs to Python effect"
@@ -129,7 +136,8 @@ if [ "$VARA" = "noise3" ] || [ "$VARA" = "blocks" ] || \
       exit
   else
       touch /tmp/ledstate.lock
-  fi   
+  fi
+  ## Start Effect  
   systemctl set-environment rpi_fceffect=perl-$VARA
   systemctl start rpi-fcleds
   echo "Set LEDs to Perl effect"
@@ -145,7 +153,8 @@ if [ "$VARA" = "rainbow" ] || [ "$VARA" = "spectro" ] ; then
       exit
   else
       touch /tmp/ledstate.lock
-  fi  
+  fi
+  ## Start Effect
   systemctl set-environment rpi_fceffect=java-$VARA
   systemctl start rpi-fcleds
   echo "Set LEDs to Java effect"
@@ -173,7 +182,8 @@ if [ -f "/tmp/ledstate.lock" ]; then
     exit
 else
     touch /tmp/ledstate.lock
-fi 
+fi
+## Start Effect
 $BIN_PATH/effects/colorscan "$VARA" | $BIN_PATH/effects/opc_client 127.0.0.1:7890
 echo "Set LEDs to solid color"
 rm -f /tmp/ledstate.lock

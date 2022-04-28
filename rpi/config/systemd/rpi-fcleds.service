@@ -4,7 +4,7 @@ Conflicts=shutdown.target
 
 [Service]
 User=root
-Type=notify
+Type=forking
 ExecStart=/opt/rpi/leds.sysd
 Restart=always
 KillSignal=SIGKILL

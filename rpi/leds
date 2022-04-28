@@ -17,10 +17,6 @@ echo "Stopping LEDs daemon"
  --retry 5 --retry-all-errors --retry-delay 1 \
  -X POST 127.0.0.1:9387/api/anim/stop
 systemctl stop rpi-fcleds
-## Reset Fadecandy (disabled causes flickering)
-#if [[ "$VARA" != "fc" ]] || [[ "$VARA" != "pause" ]]; then
-#  usbreset 1d50:607a
-#fi
 }
 
 ## Read LED Type

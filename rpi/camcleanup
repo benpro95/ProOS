@@ -3,10 +3,18 @@
 ## Cameras Cleanup Script for Pi
 ### run as root user only!
 
-## Check if Google Drive connected before cleanup
-if [ ! -e /mnt/gsync/Current ]; then
-  echo "Google Drive not connected."
+FLASH_PATH="/media/usb0"
+
+## Log file path
+if [ ! -e $FLASH_PATH/cameras ]; then
+  LOGFILE="/tmp/camcleanup.log"
 else
+  LOGFILE="$FLASH_PATH/cameras/camcleanup.log"
+fi  
+
+## Check if Google Drive connected before cleanup
+if ping -W 10 -c 1 8.8.8.8 > /dev/null 2> /dev/null
+then
   echo "Google Drive connected."
   ## Move videos to archive when Google Drive is larger than 6GB
   rm -f /tmp/camcleanup.vars
@@ -14,19 +22,17 @@ else
   TM_STATUS=$?
   if [[ ("$TM_STATUS" -gt 100 ) || ("$TM_STATUS" -eq 1) ]]
   then
-    echo "Timeout exceeded restarting rclone..."
+    echo "Folder usage list exceeded 500 seconds restarting rclone... $(date)" >> $LOGFILE
     service motion stop
     service rpi-rclone restart
     service motion start   
   fi
   if [[ -s /tmp/camcleanup.vars ]] ; then
-	  echo "Google Drive current folder above 6GB limit moving video files..."
-	  service motion stop
+	  echo "Google Drive above 6GB limit moving videos to archive... $(date)" >> $LOGFILE
 	  mkdir -p /mnt/gsync/Archive
-    TIMESTAMP="$(date +%H-%m-%d)"
-    mkdir -p /mnt/gsync/Archive/$TIMESTAMP
-	  mv /mnt/gsync/Current /mnt/gsync/Archive/$TIMESTAMP/
-	  service motion start
+      TIMESTAMP="$(date +%H-%m-%d)"
+      mkdir -p /mnt/gsync/Archive/$TIMESTAMP
+	  mv /mnt/gsync/Current/* /mnt/gsync/Archive/$TIMESTAMP/
   else
     echo "Google Drive current folder under 6GB."
   fi
@@ -37,42 +43,40 @@ else
   TM_STATUS=$?
   if [[ ("$TM_STATUS" -gt 100 ) || ("$TM_STATUS" -eq 1) ]]
   then
-    echo "Timeout exceeded restarting rclone..."
+    echo "Folder usage list exceeded 500 seconds restarting rclone... $(date)" >> $LOGFILE
     service motion stop
     service rpi-rclone restart
     service motion start   
   fi  
   if [[ -s /tmp/camcleanup.vars ]] ; then
-	  echo "Google Drive above 14GB limit deleting archived video files..."
-	  service motion stop
+	  echo "Google Drive above 14GB limit deleting archived video files... $(date)" >> $LOGFILE
 	  rm -rf /mnt/gsync/Archive
 	  mkdir -p /mnt/gsync/Archive
 	  chmod -R 777 /mnt/gsync/Archive
-	  service motion start
   else
     echo "Google Drive under 14GB."
   fi
+else
+  echo "Google ping exceeded 10 seconds, cleanup not ran $(date)" >> $LOGFILE
 fi
 
 ## Check if flash drive is connected before cleanup
-if [ ! -e /media/usb0/cameras ]; then
+if [ ! -e $FLASH_PATH/cameras ]; then
   echo "Flash drive not connected."
 else
   echo "Flash drive connected."
   truncate -s '<5MB' /media/usb0/cameras/motioncopy.log
+  truncate -s '<5MB' /media/usb0/cameras/camcleanup.log
   ## Delete videos, when flash drive has only 2GB free
-  USBDEV=$(findmnt /media/usb0 -o SOURCE -r | grep -v -e "SOURCE")
+  USBDEV=$(findmnt $FLASH_PATH -o SOURCE -r | grep -v -e "SOURCE")
   USBSIZE=$(lsblk -b --output SIZE -n -d $USBDEV)
-  USBSIZE="$(($USBSIZE-2147483648))"
+  USBSIZE="$(($USBSIZE-9000000000))"
   rm -f /tmp/camcleanup.vars
-  du -sh -t$USBSIZE /media/usb0/cameras | awk -F" " '{print $2}' > /tmp/camcleanup.vars
+  du -sh -t$USBSIZE $FLASH_PATH/cameras | awk -F" " '{print $2}' > /tmp/camcleanup.vars
   if [[ -s /tmp/camcleanup.vars ]] ; then
-	  echo "Flash drive above $(echo "scale=2; $USBSIZE/1000000000" | bc -l)GB limit deleting video files..."
-	  service motion stop
-	  rm -rf /media/usb0/cameras
-	  mkdir -p /media/usb0/cameras
-	  chmod -R 777 /media/usb0/cameras
-	  service motion start
+	  echo "Flash drive above $(echo "scale=2; $USBSIZE/1000000000" | bc -l)GB limit deleting video files... $(date)" >> $LOGFILE
+	  rm -rf $FLASH_PATH/cameras/*/*.mp4
+	  chmod -R 777 $FLASH_PATH/cameras
   else
     echo "Flash drive under $(echo "scale=2; $USBSIZE/1000000000" | bc -l)GB."
   fi
@@ -81,5 +85,6 @@ fi
 ## Log file trim
 truncate -s '<128KB' /tmp/motionping.log
 truncate -s '<128KB' /tmp/motioncopy.log
+truncate -s '<128KB' /tmp/camcleanup.log
 
 exit

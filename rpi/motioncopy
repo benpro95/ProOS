@@ -82,11 +82,11 @@ if [ $FILE_NAME = "spacechk" ]; then
 	  if [ ! -e "$DEST_PATH" ]; then
 	    mkdir -p "$DEST_PATH"
 	  fi
-      cp -rvf /mnt/ramdisk/* "$DEST_PATH"/   
+      cp -rvf /mnt/ramdisk/"$CAM_NAME"/* "$DEST_PATH"/
     fi
     rm -rf /mnt/ramdisk/*
   fi
-mkdir -p /mnt/ramdisk/$CAM_NAME
+mkdir -p /mnt/ramdisk/"$CAM_NAME"
 exit
 fi
 

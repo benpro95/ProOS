@@ -16,8 +16,9 @@ IP="10.177.1.17"
 XMIT(){
 if [[ "$HTML" == "on" ]]; then
 ### Transmit to ESP32 WiFi MCU
-/usr/bin/curl --no-keepalive --fail --max-time 30 \
-  --silent --url "http://$IP:80/xmit/$XMITCMD"
+/usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 30 \
+ --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive \
+ --url "http://$IP:80/xmit/$XMITCMD"
 ###  
 else
 ### Transmit to RS-232 serial

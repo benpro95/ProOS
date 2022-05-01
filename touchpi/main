@@ -12,6 +12,8 @@ sh -c 'echo "120" > /sys/class/backlight/rpi_backlight/brightness'
 ## Start X Interface
 systemctl start rpi-x11
 systemctl start rpi-restartx.timer
+## LED Controller
+/opt/rpi/leds fc norm
 ## Auto Hotspot (on boot only)
 systemctl restart rpi-netdetect
 ## Disable HDMI (saves 30mA)

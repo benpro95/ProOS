@@ -18,6 +18,13 @@ echo "Components integrity verified."
 fi
 echo "Starting $MODNAME configuration..."
 
+## Enable LED remotes
+ln -sf /opt/rpi/effects/remotes /opt/rpi/remotes/leds
+
+## Set LED Type
+rm -f /opt/rpi/ledtype.txt
+echo "8x60strips" > /opt/rpi/ledtype.txt
+
 ## Copy Boot Config
 mount -o remount,rw /boot
 sleep 1.25

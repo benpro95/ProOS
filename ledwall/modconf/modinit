@@ -32,6 +32,10 @@ mount -o remount,ro /boot
 ## Enable LED remotes
 ln -sf /opt/rpi/effects/remotes /opt/rpi/remotes/leds
 
+## Set LED Type
+rm -f /opt/rpi/ledtype.txt
+echo "93ring" > /opt/rpi/ledtype.txt
+
 ## Stage II - Set module name to configs
 if [ ! -e $BIN/modconf/brand.txt ]; then
 echo "Skip module naming."

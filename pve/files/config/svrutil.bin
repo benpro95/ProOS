@@ -128,16 +128,17 @@ then
   MAINPGRM
 fi
 
-## Archive Share
+## Region Share
 if [[ $REPLY =~ ^[@]$ ]]
 then
   echo " "
-  if [ -e "/mnt/backup/Archive" ]; then
-    echo "detaching archive share..."   
-    rm /mnt/backup/Archive 
+  SYMPATH="/mnt/datastore/Ben/Documents/Regions/Public"
+  if [ -e "$SYMPATH" ]; then
+    echo "detaching public region..."   
+    rm $SYMPATH
   else
-    echo "attaching archive share..."
-    ln -s /mnt/datastore/.Archive /mnt/backup/Archive
+    echo "attaching public region..."
+    ln -s /mnt/datastore/.Archive/Public $SYMPATH
   fi
   ENDPGRM
 fi
@@ -150,7 +151,8 @@ then
   echo "(x) start/stop xana - vnc://ben@xana:5091"
   echo "(d) start/stop dev - ssh://root@dev"
   echo "(c) start/stop unifi controller"
-  echo "(s) attach/detach snapshot share"
+  echo "(p) attach/detach private region"
+  echo "(s) attach/detach snapshot region"
   echo " "
   REPLY=""
   read -p "select option: " -n 1 -r
@@ -182,17 +184,32 @@ then
     REPLY=""
   fi
   ##################################  
+  ## Private Share
+  if [[ $REPLY =~ ^[Pp]$ ]]
+  then
+    echo " "
+    SYMPATH="/mnt/datastore/Ben/Documents/Regions/Private"
+    if [ -e "$SYMPATH" ]; then
+      echo "detaching private region..."
+      rm $SYMPATH
+    else
+      echo "attaching private region..."
+      ln -s /mnt/datastore/.Archive/Private $SYMPATH
+    fi
+    REPLY=""  
+  fi  
+  ##################################  
   ## Snapshot Share
   if [[ $REPLY =~ ^[Ss]$ ]]
   then
     echo " "
-    if [ -e "/mnt/backup/Snapshots" ]; then
-      echo "detaching snapshots share..."
-      rm /mnt/backup/Snapshots   
+    SYMPATH="/mnt/datastore/Ben/Documents/Regions/Snapshots"
+    if [ -e "$SYMPATH" ]; then
+      echo "detaching snapshots region..."
+      rm $SYMPATH
     else
-      echo "attaching snapshots share..."
-      echo "access at 'smb://files/Backup/Snapshots'"
-      ln -s /mnt/datastore/.zfs/snapshot /mnt/backup/Snapshots
+      echo "attaching snapshots region..."
+      ln -s /mnt/datastore/.zfs/snapshot $SYMPATH
     fi
     REPLY=""  
   fi

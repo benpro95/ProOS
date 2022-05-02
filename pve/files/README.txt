@@ -39,5 +39,6 @@ chmod 777 /mnt/scratch/downloads
 ## !!WILL FORCE ENTIRE NEW DISK BACKUP SNAPSHOT!!
 chown -Rv ben:shared /mnt/datastore/Ben
 chown -Rv ben:shared /mnt/datastore/Media
+chown -Rv ben:shared /mnt/datastore/.Archive
 chown -Rv ben:shared /mnt/scratch/downloads
 chown -Rv cameras:shared /mnt/scratch/cameras

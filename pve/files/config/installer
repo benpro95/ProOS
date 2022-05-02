@@ -42,6 +42,10 @@ touch /home/server/.hushlogin
 chmod 644 /home/server/.hushlogin
 chown server:server /home/server/.hushlogin
 
+## Regions Symlinks Folder
+mkdir -p /mnt/datastore/Ben/Documents/Regions
+chown server:server /mnt/datastore/Ben/Documents/Regions
+
 ## Server Login Script
 cp /tmp/config/profile.server /home/server/.profile
 chown server:server /home/server/.profile

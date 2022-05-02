@@ -63,16 +63,17 @@ do
         echo "//files/Ben not connected."
       else
         echo "syncing 'Ben' share to ${!USB256VAR} drive..."
-        rsync --progress $CHECKSUM -aP --exclude="Software/WindowsImageBackup" --exclude='Software/Playstation' \
+        rsync --progress $CHECKSUM -aP --exclude="Documents/Regions" \
+        --exclude="Software/WindowsImageBackup" --exclude='Software/Playstation' \
         --exclude='Software/**VM.zip' --exclude='Software/**HD.zip' --exclude='Software/**HD.7z' \
         /mnt/datastore/Ben/ /mnt/extbkps/${!USB256VAR}/Ben/ -delete --delete-excluded
       fi
       #### Archive Share ####
-      if [ ! -e /mnt/datastore/.Archive/Saved ]; then
+      if [ ! -e /mnt/datastore/.Archive/Private ]; then
         echo "//files/Archive not connected."
       else
         echo "syncing 'Archive' share to ${!USB256VAR} drive..."
-        rsync --progress -aP --exclude="Movies/" \
+        rsync --progress -aP --exclude="Public/Movies/" \
         /mnt/datastore/.Archive/ /mnt/extbkps/${!USB256VAR}/.Archive/ -delete --delete-excluded
       fi
       #### Media Share ####
@@ -105,10 +106,11 @@ do
         echo "//files/Ben not connected."
       else
         echo "syncing 'Ben' share to ${!HDDVAR} drive..."
-        rsync --progress $CHECKSUM -aP /mnt/datastore/Ben/ /mnt/extbkps/${!HDDVAR}/Ben/ -delete --delete-excluded
+        rsync --progress $CHECKSUM -aP --exclude="Documents/Region" \
+        /mnt/datastore/Ben/ /mnt/extbkps/${!HDDVAR}/Ben/ -delete --delete-excluded
       fi
       #### Archive Share ####
-      if [ ! -e /mnt/datastore/.Archive/Saved ]; then
+      if [ ! -e /mnt/datastore/.Archive/Private ]; then
         echo "//files/Archive not connected."
       else
         echo "syncing 'Archive' share to ${!HDDVAR} drive..."

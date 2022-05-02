@@ -73,7 +73,7 @@ do
         echo "//files/Archive not connected."
       else
         echo "syncing 'Archive' share to ${!USB256VAR} drive..."
-        rsync --progress -aP --exclude="Public/Movies/" \
+        rsync --progress  $CHECKSUM -aP --exclude="Public/Movies/" \
         /mnt/datastore/.Archive/ /mnt/extbkps/${!USB256VAR}/.Archive/ -delete --delete-excluded
       fi
       #### Media Share ####
@@ -114,7 +114,8 @@ do
         echo "//files/Archive not connected."
       else
         echo "syncing 'Archive' share to ${!HDDVAR} drive..."
-        rsync --progress -aP /mnt/datastore/.Archive/ /mnt/extbkps/${!HDDVAR}/.Archive/ -delete --delete-excluded
+        rsync --progress $CHECKSUM -aP \
+        /mnt/datastore/.Archive/ /mnt/extbkps/${!HDDVAR}/.Archive/ -delete --delete-excluded
       fi
       #### Media Share ####
       if [ ! -e /mnt/datastore/Media/Music ]; then

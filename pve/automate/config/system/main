@@ -57,7 +57,7 @@ exit
 ### Relax Sounds Volume Up
 relaxvup)
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
-  TARGET="hifimini.local"
+  TARGET="hifimini"
   CMDARG=""
   CMD="vup"	
   CALLAPI
@@ -70,7 +70,7 @@ exit
 ### Relax Sounds Volume Down
 relaxvdwn)
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
-  TARGET="hifimini.local"
+  TARGET="hifimini"
   CMDARG=""
   CMD="vdwn"		
   CALLAPI

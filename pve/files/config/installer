@@ -42,9 +42,19 @@ touch /home/server/.hushlogin
 chmod 644 /home/server/.hushlogin
 chown server:server /home/server/.hushlogin
 
-## Regions Symlinks Folder
-mkdir -p /mnt/datastore/Ben/Documents/Regions
-chown server:server /mnt/datastore/Ben/Documents/Regions
+## Regions Folder
+mkdir -p /mnt/ben/Documents/Regions
+chown server:server /mnt/ben/Documents/Regions
+
+## User Symlinks
+if [ ! -e "/home/server/ProOS" ]; then
+  echo "Linking ProOS to server home folder."	
+  ln -s /mnt/ben/ProOS /home/server/ProOS
+fi
+if [ ! -e "/home/server/Downloads" ]; then
+  echo "Linking downloads to server home folder."	
+  ln -s /mnt/scratch/downloads /home/server/Downloads
+fi
 
 ## Server Login Script
 cp /tmp/config/profile.server /home/server/.profile
@@ -99,14 +109,6 @@ cp /tmp/config/svrbackup.bin /usr/bin/
 chmod 755 /usr/bin/svrbackup.bin
 chown root:root /usr/bin/svrbackup.bin
 
-## Snapshot Mountpoint
-if [ ! -e /mnt/backup ]; then
-  echo "Creating Backup Directory..."
-  mkdir -p /mnt/backup
-  chmod 755 /mnt/backup
-  chmod server:server /mnt/backup
-fi
-
 ## Camera Cleanup Script
 cp /tmp/config/camcleanup /usr/bin/
 chmod 755 /usr/bin/camcleanup
@@ -119,9 +121,8 @@ chown root:root /etc/samba/smb.conf
 
 ## Clean-up
 systemctl daemon-reload
-rm -f /usr/bin/svrutil
 rm -r /tmp/config/
 apt-get autoremove -y
-sleep 1.25
+sleep 2.5
 apt-get autoclean -y
 exit

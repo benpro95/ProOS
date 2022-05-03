@@ -82,7 +82,7 @@ if [[ $REPLY =~ ^[pP]$ ]]
 then
   TIMESTMP=$(date '+%Y-%m-%d %H:%M')
   echo "uploading changes to GitHub..."
-  cd /mnt/datastore/Ben/ProOS
+  cd /mnt/ben/ProOS
   git add .
   git commit -m "$TIMESTMP"
   git push -u ProOS master
@@ -169,14 +169,14 @@ then
     REPLY=""
   fi
   ##################################
-  REGROOT="/mnt/datastore/Ben/Documents/Regions"
+  REGROOT="/mnt/ben/Documents/Regions"
   ## Detach Regions
   if [[ $REPLY =~ ^[Dd]$ ]]
   then
     echo "detaching all regions..."
-    rm $REGROOT/Snapshots
-    rm $REGROOT/Private
-    rm $REGROOT/Public
+    rm -f $REGROOT/Snapshots
+    rm -f $REGROOT/Private
+    rm -f $REGROOT/Public
     REPLY=""  
   fi
   ## Private Share
@@ -188,7 +188,7 @@ then
       rm $REGROOT/Private
     else
       echo "attaching private region..."
-      ln -s /mnt/datastore/.Archive/Private $REGROOT/Private
+      ln -s /mnt/.archive/Private $REGROOT/Private
     fi
     REPLY=""  
   fi
@@ -202,7 +202,7 @@ then
       rm $REGROOT/Public
     else
       echo "attaching public region..."
-      ln -s /mnt/datastore/.Archive/Public $REGROOT/Public
+      ln -s /mnt/.archive/Public $REGROOT/Public
     fi
     REPLY=""  
   fi

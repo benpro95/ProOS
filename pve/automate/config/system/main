@@ -6,8 +6,15 @@
 ###########################################################
 ## Do not use the screen command in this script ##
 
+## Transmit POST request to host
+CALLAPI(){
+/usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 15 \
+ --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive --data \
+ "var=$CMDARG&arg=$CMD&action=main" http://$TARGET.local/exec.php	
+}
+
 ## Read the 2nd Argument
-ARG2=$2
+CMDARG=$2
 
 ## Read the 1st Argument
 case "$1" in
@@ -17,41 +24,43 @@ case "$1" in
 relax)
 ### Relax Sounds Playback
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
-  RELAXHOST="hifimini"
+  TARGET="hifimini"
 else
-  RELAXHOST="hifi"
+  TARGET="hifi"
   ## Optical Decoder Input
   /opt/rpi/xmit coaxial
   ## Preamp DAC Input
   /opt/rpi/xmit dac
 fi
 ## Play Audio in Loop on System
-/usr/bin/curl -N -f -m 10 --silent --data \
- "var=$ARG2&arg=relax&action=main" http://$RELAXHOST.home/exec.php
+CMD="relax"
+CALLAPI
 exit
 ;;
 
 stoprelax)
 ## Stop Relax Sounds
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
-  RELAXHOST="hifimini"
+  TARGET="hifimini"
 else
-  RELAXHOST="hifi"
+  TARGET="hifi"
   ## USB Decoder Input
   /opt/rpi/xmit usb
   ## Preamp DAC Input
   /opt/rpi/xmit dac
-fi   
-/usr/bin/curl -N -f -m 10 --silent --data \
- "var=$ARG2&arg=stoprelax&action=main" http://$RELAXHOST.home/exec.php
+fi
+CMD="stoprelax"
+CALLAPI
 exit
 ;;
 
 ### Relax Sounds Volume Up
 relaxvup)
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
-  /usr/bin/curl -N -f -m 10 --silent --data \
-   "var=$ARG2&arg=vup&action=main" http://hifimini.home/exec.php
+  TARGET="hifimini.local"
+  CMDARG=""
+  CMD="vup"	
+  CALLAPI
 else
   /opt/rpi/xmit upc
 fi   
@@ -61,8 +70,10 @@ exit
 ### Relax Sounds Volume Down
 relaxvdwn)
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
-  /usr/bin/curl -N -f -m 10 --silent --data \
-   "var=$ARG2&arg=vdwn&action=main" http://hifimini.home/exec.php
+  TARGET="hifimini.local"
+  CMDARG=""
+  CMD="vdwn"		
+  CALLAPI
 else
   /opt/rpi/xmit dwnc
 fi
@@ -85,18 +96,18 @@ exit
 lights)
 ## Toggle Lamps
 if [ ! -e /var/lock/rpi/lights.save ]; then
-   touch /var/lock/rpi/lights.save
-   ## Main Lamp
-   /opt/rpi/xmit rfc1 on
-   ## Dresser Lamp
-   /opt/rpi/xmit rfa2 on
+  touch /var/lock/rpi/lights.save
+  ## Main Lamp
+  /opt/rpi/xmit rfc1 on
+  ## Dresser Lamp
+  /opt/rpi/xmit rfa2 on
 else
-   ## Turn all lights off
-   rm -f /var/lock/rpi/lights.save
-   ## Main Lamp
-   /opt/rpi/xmit rfc1 off
-   ## Dresser Lamp
-   /opt/rpi/xmit rfa2 off
+  ## Turn all lights off
+  rm -f /var/lock/rpi/lights.save
+  ## Main Lamp
+  /opt/rpi/xmit rfc1 off
+  ## Dresser Lamp
+  /opt/rpi/xmit rfa2 off
 fi
 exit
 ;;
@@ -152,7 +163,7 @@ exit
 
 ## Audio Power
 hifion)
-if ping -W 2 -c 1 hifi.home > /dev/null 2> /dev/null
+if ping -W 2 -c 1 hifi.local > /dev/null 2> /dev/null
 then
   echo "Host is up"
 else
@@ -162,7 +173,7 @@ exit
 ;;
 ##
 hifioff)
-if ping -W 2 -c 1 hifi.home > /dev/null 2> /dev/null
+if ping -W 2 -c 1 hifi.local > /dev/null 2> /dev/null
 then
   /opt/rpi/xmit pwrhifi
 else
@@ -308,7 +319,7 @@ else
   echo "Host is down"
 fi
 ## Audio System Power Off
-if ping -W 2 -c 1 hifi.home > /dev/null 2> /dev/null
+if ping -W 2 -c 1 hifi.local > /dev/null 2> /dev/null
 then
   /opt/rpi/xmit pwrhifi
 else

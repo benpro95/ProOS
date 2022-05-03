@@ -128,31 +128,16 @@ then
   MAINPGRM
 fi
 
-## Region Share
-if [[ $REPLY =~ ^[@]$ ]]
-then
-  echo " "
-  SYMPATH="/mnt/datastore/Ben/Documents/Regions/Public"
-  if [ -e "$SYMPATH" ]; then
-    echo "detaching public region..."   
-    rm $SYMPATH
-  else
-    echo "attaching public region..."
-    ln -s /mnt/datastore/.Archive/Public $SYMPATH
-  fi
-  ENDPGRM
-fi
-
 ## Server control
 if [[ $REPLY =~ ^[Ss]$ ]]
 then
   echo " "
-  echo "(u) update automate configuration"  
+  echo "(d) detach all regions"  
+  echo "(s) attach/detach snapshot region"  
+  echo "(u) update automate configuration" 
   echo "(x) start/stop xana - vnc://ben@xana:5091"
   echo "(d) start/stop dev - ssh://root@dev"
   echo "(c) start/stop unifi controller"
-  echo "(p) attach/detach private region"
-  echo "(s) attach/detach snapshot region"
   echo " "
   REPLY=""
   read -p "select option: " -n 1 -r
@@ -183,33 +168,55 @@ then
     ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "/opt/rpi/main unifi"
     REPLY=""
   fi
-  ##################################  
+  ##################################
+  REGROOT="/mnt/datastore/Ben/Documents/Regions"
+  ## Detach Regions
+  if [[ $REPLY =~ ^[Dd]$ ]]
+  then
+    echo "detaching all regions..."
+    rm $REGROOT/Snapshots
+    rm $REGROOT/Private
+    rm $REGROOT/Public
+    REPLY=""  
+  fi
   ## Private Share
   if [[ $REPLY =~ ^[Pp]$ ]]
   then
     echo " "
-    SYMPATH="/mnt/datastore/Ben/Documents/Regions/Private"
-    if [ -e "$SYMPATH" ]; then
+    if [ -e "$REGROOT/Private" ]; then
       echo "detaching private region..."
-      rm $SYMPATH
+      rm $REGROOT/Private
     else
       echo "attaching private region..."
-      ln -s /mnt/datastore/.Archive/Private $SYMPATH
+      ln -s /mnt/datastore/.Archive/Private $REGROOT/Private
     fi
     REPLY=""  
-  fi  
+  fi
+  ##################################  
+  ## Public Share
+  if [[ $REPLY =~ ^[@]$ ]]
+  then
+    echo " "
+    if [ -e "$REGROOT/Public" ]; then
+      echo "detaching public region..."   
+      rm $REGROOT/Public
+    else
+      echo "attaching public region..."
+      ln -s /mnt/datastore/.Archive/Public $REGROOT/Public
+    fi
+    REPLY=""  
+  fi
   ##################################  
   ## Snapshot Share
   if [[ $REPLY =~ ^[Ss]$ ]]
   then
     echo " "
-    SYMPATH="/mnt/datastore/Ben/Documents/Regions/Snapshots"
-    if [ -e "$SYMPATH" ]; then
+    if [ -e "$REGROOT/Snapshots" ]; then
       echo "detaching snapshots region..."
-      rm $SYMPATH
+      rm $REGROOT/Snapshots
     else
       echo "attaching snapshots region..."
-      ln -s /mnt/datastore/.zfs/snapshot $SYMPATH
+      ln -s /mnt/snapshots $REGROOT/Snapshots
     fi
     REPLY=""  
   fi

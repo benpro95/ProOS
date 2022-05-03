@@ -106,7 +106,7 @@ do
         echo "//files/Ben not connected."
       else
         echo "syncing 'Ben' share to ${!HDDVAR} drive..."
-        rsync --progress $CHECKSUM -aP --exclude="Documents/Region" \
+        rsync --progress $CHECKSUM -aP --exclude="Documents/Regions" \
         /mnt/ben/ /mnt/extbkps/${!HDDVAR}/Ben/ -delete --delete-excluded
       fi
       #### Archive Share ####

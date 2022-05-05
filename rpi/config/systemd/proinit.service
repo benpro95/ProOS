@@ -7,7 +7,6 @@ After=sysinit.target local-fs.target
 [Service]
 Type=oneshot
 ExecStartPre=-/etc/netmode.sh boot
-ExecStartPre=-/bin/systemctl start rpi-cleanup.timer
 ExecStartPre=-/bin/systemctl start lighttpd
 ExecStart=-/opt/rpi/main boot
 RemainAfterExit=yes

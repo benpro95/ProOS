@@ -2,6 +2,7 @@
 Description=Runs '/opt/rpi/cleanup' script every 12 hours
 
 [Timer]
+OnBootSec=2h
 OnActiveSec=12h
 
 [Install]

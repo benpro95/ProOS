@@ -781,7 +781,8 @@ cobc -x --free /opt/rpi/effects/colorscan.cbl -o /opt/rpi/effects/colorscan
 systemctl daemon-reload
 if [ ! -e /etc/rpi-conf.done ]; then
 ## Active on startup
-systemctl enable ssh proinit avahi-daemon systemd-timesyncd systemd-time-wait-sync
+systemctl enable ssh avahi-daemon systemd-timesyncd systemd-time-wait-sync
+systemctl enable proinit rpi-cleanup.timer
 systemctl unmask systemd-journald
 ## Disabled on startup
 systemctl unmask hostapd
@@ -789,7 +790,7 @@ systemctl disable hostapd dhcpcd networking wpa_supplicant keyboard-setup \
 plymouth sysstat lightdm apache2 lighttpd dnsmasq apt-daily.service wifiswitch plymouth-log \
 apt-daily.timer apt-daily-upgrade.service apt-daily-upgrade.timer sysstat-collect.timer motion \
 sysstat-summary.timer man-db.service man-db.timer hciuart bluetooth usbplug nmbd smbd autofs \
-shairport-sync triggerhappy.service triggerhappy.socket
+shairport-sync triggerhappy.service triggerhappy.socket e2scrub_all.service e2scrub_all.timer
 echo "Initial setup (phase II) complete."
 touch /etc/rpi-conf.done
 else

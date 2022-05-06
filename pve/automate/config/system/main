@@ -37,8 +37,10 @@ se.write(str.encode('$XMITCALL'))
 END
 ###
 fi
-##echo "$XMITCALL"
 XMITCALL=""
+XMITCMD=""
+XMITARG=""
+return
 }
 
 XMIT(){
@@ -310,17 +312,23 @@ return
 }
 
 ## Transmit POST request to host
-CALLAPI(){
+CALLHTTP(){
 /usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 15 \
  --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive --data \
- "var=$CMDARG&arg=$CMD&action=main" http://$TARGET.local/exec.php	
+ "var=$CMDARG&arg=$CMD&action=main" http://$TARGET.local/exec.php
+CMD=""
+CMDARG=""
+TARGET=""
+return
 }
 
-## Read the 2nd Argument
+#########################################################
+
+## Read the 2nd argument
 CMDARG=$2
-## Read the 1st Argument
+## Read the 1st argument
 CMD=$1
-####################################
+
 case "$1" in
 
 relax)
@@ -336,7 +344,7 @@ else
 fi
 ## Play Audio in Loop on System
 CMD="relax"
-CALLAPI
+CALLHTTP
 exit
 ;;
 
@@ -352,7 +360,7 @@ else
   XMITCMD="dac" ; XMIT
 fi
 CMD="stoprelax"
-CALLAPI
+CALLHTTP
 exit
 ;;
 
@@ -360,9 +368,8 @@ exit
 relaxvup)
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
   TARGET="hifimini"
-  CMDARG=""
   CMD="vup"	
-  CALLAPI
+  CALLHTTP
 else
   XMITCMD="upc" ; XMIT
 fi   
@@ -373,9 +380,8 @@ exit
 relaxvdwn)
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
   TARGET="hifimini"
-  CMDARG=""
   CMD="vdwn"		
-  CALLAPI
+  CALLHTTP
 else
   XMITCMD="dwnc" ; XMIT
 fi
@@ -467,7 +473,7 @@ exit
 hifion)
 if ping -W 2 -c 1 hifi.local > /dev/null 2> /dev/null
 then
-  echo "Host is up"
+  echo "hifi.local is online"
 else
   XMITCMD="pwrhifi" ; XMIT 
 fi
@@ -479,7 +485,7 @@ if ping -W 2 -c 1 hifi.local > /dev/null 2> /dev/null
 then
   XMITCMD="pwrhifi" ; XMIT 
 else
-  echo "Host is down"
+  echo "hifi.local is offline"
 fi
 exit
 ;;
@@ -488,7 +494,7 @@ exit
 pcon)
 if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
-  echo "Host is up"
+  echo "wkst.home is online"
 else
   XMITCMD="rfb3" ; XMIT 
 fi
@@ -500,7 +506,7 @@ if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
   XMITCMD="rfb3" ; XMIT 
 else
-  echo "Host is down"
+  echo "wkst.home is offline"
 fi
 exit
 ;;
@@ -588,18 +594,15 @@ XMITCMD="rfc1" ; XMITARG="on" ; XMIT
 XMITCMD="rfa2" ; XMITARG="on" ; XMIT 
 ## Desk Light
 XMITCMD="rfb1" ; XMITARG="on" ; XMIT 
-## Desktop Power
-XMITCMD="rfb2" ; XMITARG="on" ; XMIT 
 ## PC Power On
 if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
-  echo "Host is up"
+  echo "wkst.home is online"
 else
   XMITCMD="rfb3" ; XMIT 
 fi
 ## LEDwalls
 /opt/rpi/leds prism
-sleep 3.5
 /opt/rpi/leds fc norm
 exit
 ;;
@@ -611,21 +614,19 @@ XMITCMD="rfc1" ; XMITARG="off" ; XMIT
 XMITCMD="rfa2" ; XMITARG="off" ; XMIT 
 ## Desk Light
 XMITCMD="rfb1" ; XMITARG="off" ; XMIT 
-## Desktop Power
-XMITCMD="rfb2" ; XMITARG="off" ; XMIT 
 ## PC Power Off
 if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
   XMITCMD="rfb3" ; XMIT 
 else
-  echo "Host is down"
+  echo "wkst.home is offline"
 fi
 ## Audio System Power Off
 if ping -W 2 -c 1 hifi.local > /dev/null 2> /dev/null
 then
   XMITCMD="pwrhifi" ; XMIT 
 else
-  echo "Host is down"
+  echo "hifi.home is offline"
 fi
 ## Blank LEDwalls
 /opt/rpi/leds stop

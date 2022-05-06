@@ -154,8 +154,8 @@ chown root:root /root/.hushlogin
 
 ## Symbolic Links
 ln -sf /opt/rpi/init /usr/bin/rpi
-ln -sf /opt/rpi/xmit /usr/bin/xmit
 ln -sf /opt/rpi/leds /usr/bin/leds
+ln -sf /opt/rpi/main /usr/bin/xmit
 ln -sf /opt/rpi/main /usr/bin/main
 
 ## Clean-up

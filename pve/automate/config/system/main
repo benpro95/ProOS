@@ -6,6 +6,309 @@
 ###########################################################
 ## Do not use the screen command in this script ##
 
+CALLXMIT(){
+#### ESP32 Transmit Function (APT Call)
+## Set to "on" for HTML Xmit, or "off" for RS-232 Xmit
+HTML="on"
+## Xmit URL
+XMIT_IP="10.177.1.17"
+if [[ "$HTML" == "on" ]]; then
+### Transmit to ESP32 WiFi MCU
+/usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 30 \
+ --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive \
+ --url "http://$XMIT_IP:80/xmit/$XMITCALL"
+###  
+else
+### Transmit to RS-232 serial
+/usr/bin/python2 - <<END
+import serial
+import termios
+port = '/dev/ttyACM0'
+f = open(port)
+attrs = termios.tcgetattr(f)
+attrs[2] = attrs[2] & ~termios.HUPCL
+termios.tcsetattr(f, termios.TCSAFLUSH, attrs)
+f.close()
+se = serial.Serial()
+se.baudrate = 9600
+se.port = port
+se.open()
+se.write(str.encode('$XMITCALL'))
+END
+###
+fi
+##echo "$XMITCALL"
+XMITCALL=""
+}
+
+XMIT(){
+#### ESP32 Transmit Function (Command Translation)
+## run ./main CMD (no state file created)
+## run ./main CMD toggle (toggle on/off state & append on/off to end of serial command)
+## run ./main CMD on (create state file & append on to end of serial command then send)
+## run ./main CMD off (delete state file & append off to end of serial command then send)
+## Do not use the screen command in this script ##
+##### TOGGLE SECTION #####
+if [[ "$XMITARG" == "on" ]]; then
+  touch /var/lock/rpi/$XMITCMD.save
+  XMITCMD=$XMITCMD"on"
+fi
+if [[ "$XMITARG" == "off" ]]; then
+  rm -f /var/lock/rpi/$XMITCMD.save
+  XMITCMD=$XMITCMD"off"
+fi
+if [[ "$XMITARG" == "toggle" ]]; then
+  if [ ! -e /var/lock/rpi/$XMITCMD.save ]; then
+   touch /var/lock/rpi/$XMITCMD.save
+   XMITCMD=$XMITCMD"on"
+  else
+   rm -f /var/lock/rpi/$XMITCMD.save
+   XMITCMD=$XMITCMD"off"
+  fi
+fi
+##
+##### FUNCTIONS SECTION ######
+##
+### HiFi Preamp 'Sony RMT-B118A Remote' Sony 20-bit
+##
+## Power
+if [[ "$XMITCMD" == "pwrhifi" ]]; then
+   ## Reset sub volume token
+   rm -f /var/lock/rpi/subs.enabled 
+   XMITCALL="irtx.sony20.691015"
+   CALLXMIT
+   return
+fi
+## Key 1
+if [[ "$XMITCMD" == "dac" ]]; then
+   XMITCALL="irtx.sony20.2887"
+   CALLXMIT
+   return
+fi
+## Key 2
+if [[ "$XMITCMD" == "aux" ]]; then
+   XMITCALL="irtx.sony20.527175"
+   CALLXMIT
+   return
+fi
+## Key 3
+if [[ "$XMITCMD" == "phono" ]]; then
+   XMITCALL="irtx.sony20.265031"
+   CALLXMIT
+   return
+fi
+## Key Stop
+if [[ "$XMITCMD" == "mute" ]]; then
+   XMITCALL="irtx.sony20.101191"
+   CALLXMIT
+   return
+fi
+## Key Rewind
+if [[ "$XMITCMD" == "dwnf" ]]; then
+   XMITCALL="irtx.sony20.887623"
+   CALLXMIT
+   return
+fi
+## Key Forward
+if [[ "$XMITCMD" == "upf" ]]; then
+   XMITCALL="irtx.sony20.232263"
+   CALLXMIT
+   return
+fi
+## Key Down
+if [[ "$XMITCMD" == "dwnc" ]]; then
+   XMITCALL="irtx.sony20.379719"
+   CALLXMIT
+   return
+fi
+## Key Up
+if [[ "$XMITCMD" == "upc" ]]; then
+   XMITCALL="irtx.sony20.641863"
+   CALLXMIT
+   return
+fi
+## Key Left
+if [[ "$XMITCMD" == "preleft" ]]; then
+   XMITCALL="irtx.sony20.904007"
+   CALLXMIT
+   return
+fi
+## Key Right
+if [[ "$XMITCMD" == "preright" ]]; then
+   XMITCALL="irtx.sony20.248647"
+   CALLXMIT
+   return
+fi
+## Key Display
+if [[ "$XMITCMD" == "display" ]]; then
+   XMITCALL="irtx.sony20.535367"
+   CALLXMIT
+   return
+fi
+## Key Backlight
+if [[ "$XMITCMD" == "backlight" ]]; then
+   XMITCALL="irtx.sony20.813895"
+   CALLXMIT
+   return
+fi
+## Key Menu
+if [[ "$XMITCMD" == "menu" ]]; then
+   XMITCALL="irtx.sony20.609095"
+   CALLXMIT
+   return
+fi
+##
+### Class D Amp (Toshiba CT-90302 Remote) NEC 32-bit
+##
+## Mute Key
+if [[ "$XMITCMD" == "subpwr" ]]; then
+   XMITCALL="irtx.nec.50137335"
+   CALLXMIT
+   return
+fi
+##
+## (0) Key
+if [[ "$XMITCMD" == "subon" ]]; then
+   XMITCALL="irtx.nec.50135295"
+   CALLXMIT
+   return
+fi
+##
+## (1) Key
+if [[ "$XMITCMD" == "suboff" ]]; then
+   XMITCALL="irtx.nec.50167935"
+   CALLXMIT
+   return
+fi
+##
+## Vol (+) Key
+if [[ "$XMITCMD" == "subup" ]]; then
+   XMITCALL="irtx.nec.50157735"
+   CALLXMIT
+   return
+fi
+##
+## Vol (-) Key
+if [[ "$XMITCMD" == "subdwn" ]]; then
+   XMITCALL="irtx.nec.50165895"
+   CALLXMIT
+   return
+fi
+##
+### DAM1021 DAC (Onn Soundbar Remote) NEC 32-bit
+##
+## USB Input (Music Button)
+if [[ "$XMITCMD" == "usb" ]]; then
+   XMITCALL="irtx.nec.-300872971"
+   CALLXMIT
+   return
+fi
+## Coaxial Input (Aux Button)
+if [[ "$XMITCMD" == "coaxial" ]]; then
+   XMITCALL="irtx.nec.-300816361"
+   CALLXMIT
+   return
+fi
+## Optical Input (TV Button)
+if [[ "$XMITCMD" == "optical" ]]; then
+   XMITCALL="irtx.nec.-300813811"
+   CALLXMIT
+   return
+fi
+## Auto Input (Play Button)
+if [[ "$XMITCMD" == "inauto" ]]; then
+   XMITCALL="irtx.nec.-300833701"
+   CALLXMIT
+   return
+fi
+##
+## RF Power Controller (under dresser)
+##
+## Vintage Macs
+if [[ "$XMITCMD" == "rfa1on" ]]; then
+   XMITCALL="rftx.734733"
+   CALLXMIT
+   return
+fi
+if [[ "$XMITCMD" == "rfa1off" ]]; then
+   XMITCALL="rftx.734734"
+   CALLXMIT
+   return
+fi
+## Dresser Lamp
+if [[ "$XMITCMD" == "rfa2on" ]]; then
+   XMITCALL="rftx.734731"
+   CALLXMIT
+   return
+fi
+if [[ "$XMITCMD" == "rfa2off" ]]; then
+   XMITCALL="rftx.734732"
+   CALLXMIT
+   return
+fi
+## RetroPi
+if [[ "$XMITCMD" == "rfa3on" ]]; then
+   XMITCALL="rftx.734735"
+   CALLXMIT
+   return
+fi
+if [[ "$XMITCMD" == "rfa3off" ]]; then
+   XMITCALL="rftx.734736"
+   CALLXMIT
+   return
+fi
+## ESP32 Toggle PC Power
+if [[ "$XMITCMD" == "rfb3" ]]; then
+   XMITCALL="fet.tgl.32"
+   CALLXMIT
+   return
+fi
+## RF Relay Controller Board 
+if [[ "$XMITCMD" == "rfb1on" ]]; then
+   XMITCALL="rftx.864341"
+   CALLXMIT
+   return
+fi
+if [[ "$XMITCMD" == "rfb1off" ]]; then
+   XMITCALL="rftx.864342"
+   CALLXMIT
+   return
+fi
+if [[ "$XMITCMD" == "rfb2on" ]]; then
+   XMITCALL="rftx.864343"
+   CALLXMIT
+   return
+fi
+if [[ "$XMITCMD" == "rfb2off" ]]; then
+   XMITCALL="rftx.864344"
+   CALLXMIT
+   return
+fi
+if [[ "$XMITCMD" == "rfb3on" ]]; then
+   XMITCALL="rftx.864345"
+   CALLXMIT
+   return
+fi
+if [[ "$XMITCMD" == "rfb3off" ]]; then
+   XMITCALL="rftx.864346"
+   CALLXMIT
+   return
+fi
+## Main Lamp Controller
+if [[ "$XMITCMD" == "rfc1on" ]]; then
+   XMITCALL="rftx.834511"
+   CALLXMIT
+   return
+fi
+if [[ "$XMITCMD" == "rfc1off" ]]; then
+   XMITCALL="rftx.834512"
+   CALLXMIT
+   return
+fi
+echo "invalid command!"
+return
+}
+
 ## Transmit POST request to host
 CALLAPI(){
 /usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 15 \
@@ -15,11 +318,10 @@ CALLAPI(){
 
 ## Read the 2nd Argument
 CMDARG=$2
-
 ## Read the 1st Argument
-case "$1" in
-
+CMD=$1
 ####################################
+case "$1" in
 
 relax)
 ### Relax Sounds Playback
@@ -28,9 +330,9 @@ if [ ! -e /var/lock/rpi/relaxrec.save ]; then
 else
   TARGET="hifi"
   ## Optical Decoder Input
-  /opt/rpi/xmit coaxial
+  XMITCMD="coaxial" ; XMIT 
   ## Preamp DAC Input
-  /opt/rpi/xmit dac
+  XMITCMD="dac" ; XMIT 
 fi
 ## Play Audio in Loop on System
 CMD="relax"
@@ -45,9 +347,9 @@ if [ ! -e /var/lock/rpi/relaxrec.save ]; then
 else
   TARGET="hifi"
   ## USB Decoder Input
-  /opt/rpi/xmit usb
+  XMITCMD="usb" ; XMIT
   ## Preamp DAC Input
-  /opt/rpi/xmit dac
+  XMITCMD="dac" ; XMIT
 fi
 CMD="stoprelax"
 CALLAPI
@@ -62,7 +364,7 @@ if [ ! -e /var/lock/rpi/relaxrec.save ]; then
   CMD="vup"	
   CALLAPI
 else
-  /opt/rpi/xmit upc
+  XMITCMD="upc" ; XMIT
 fi   
 exit
 ;;
@@ -75,7 +377,7 @@ if [ ! -e /var/lock/rpi/relaxrec.save ]; then
   CMD="vdwn"		
   CALLAPI
 else
-  /opt/rpi/xmit dwnc
+  XMITCMD="dwnc" ; XMIT
 fi
 exit
 ;;
@@ -98,16 +400,16 @@ lights)
 if [ ! -e /var/lock/rpi/lights.save ]; then
   touch /var/lock/rpi/lights.save
   ## Main Lamp
-  /opt/rpi/xmit rfc1 on
+  XMITCMD="rfc1" ; XMITARG="on" ; XMIT
   ## Dresser Lamp
-  /opt/rpi/xmit rfa2 on
+  XMITCMD="rfa2" ; XMITARG="on" ; XMIT
 else
   ## Turn all lights off
   rm -f /var/lock/rpi/lights.save
   ## Main Lamp
-  /opt/rpi/xmit rfc1 off
+  XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
   ## Dresser Lamp
-  /opt/rpi/xmit rfa2 off
+  XMITCMD="rfa2" ; XMITARG="off" ; XMIT 
 fi
 exit
 ;;
@@ -116,9 +418,9 @@ lightson)
 ## Turn all lights on
 touch /var/lock/rpi/lights.save
 ## Main Lamp
-/opt/rpi/xmit rfc1 on
+XMITCMD="rfc1" ; XMITARG="on" ; XMIT 
 ## Dresser Lamp
-/opt/rpi/xmit rfa2 on
+XMITCMD="rfa2" ; XMITARG="on" ; XMIT 
 exit
 ;;
 
@@ -126,20 +428,20 @@ lightsoff)
 ## Turn all lights off
 rm -f /var/lock/rpi/lights.save
 ## Main Lamp
-/opt/rpi/xmit rfc1 off
+XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
 ## Dresser Lamp
-/opt/rpi/xmit rfa2 off
+XMITCMD="rfa2" ; XMITARG="off" ; XMIT 
 exit
 ;;
 
 allon)
 touch /var/lock/rpi/lights.save
 ## Main Lamp
-/opt/rpi/xmit rfc1 on
+XMITCMD="rfc1" ; XMITARG="on" ; XMIT 
 ## Dresser Lamp
-/opt/rpi/xmit rfa2 on
+XMITCMD="rfa2" ; XMITARG="on" ; XMIT 
 ## Desk Light
-/opt/rpi/xmit rfb1 on
+XMITCMD="rfb1" ; XMITARG="on" ; XMIT 
 ## LEDwalls
 /opt/rpi/leds candle
 sleep 2.5
@@ -151,11 +453,11 @@ alloff)
 ## Turn all lights off
 rm -f /var/lock/rpi/lights.save
 ## Main Lamp
-/opt/rpi/xmit rfc1 off
+XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
 ## Dresser Lamp
-/opt/rpi/xmit rfa2 off
+XMITCMD="rfa2" ; XMITARG="off" ; XMIT 
 ## Desk Light
-/opt/rpi/xmit rfb1 off
+XMITCMD="rfb1" ; XMITARG="off" ; XMIT 
 ## Blank LEDwalls
 /opt/rpi/leds stop
 exit
@@ -167,7 +469,7 @@ if ping -W 2 -c 1 hifi.local > /dev/null 2> /dev/null
 then
   echo "Host is up"
 else
-  /opt/rpi/xmit pwrhifi
+  XMITCMD="pwrhifi" ; XMIT 
 fi
 exit
 ;;
@@ -175,7 +477,7 @@ exit
 hifioff)
 if ping -W 2 -c 1 hifi.local > /dev/null 2> /dev/null
 then
-  /opt/rpi/xmit pwrhifi
+  XMITCMD="pwrhifi" ; XMIT 
 else
   echo "Host is down"
 fi
@@ -188,7 +490,7 @@ if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
   echo "Host is up"
 else
-  /opt/rpi/xmit rfb3
+  XMITCMD="rfb3" ; XMIT 
 fi
 exit
 ;;
@@ -196,7 +498,7 @@ exit
 pcoff)
 if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
-  /opt/rpi/xmit rfb3
+  XMITCMD="rfb3" ; XMIT 
 else
   echo "Host is down"
 fi
@@ -206,7 +508,7 @@ exit
 submute)
 if [ -e /var/lock/rpi/subs.enabled ]; then
   ### Subwoofer mute/disable
-  /opt/rpi/xmit subpwr
+  XMITCMD="subpwr" ; XMIT 
 fi
 exit
 ;;
@@ -214,7 +516,7 @@ exit
 subup)
 if [ -e /var/lock/rpi/subs.enabled ]; then
   ### Subwoofer volume up
-  /opt/rpi/xmit subup
+  XMITCMD="subup" ; XMIT 
 fi
 exit
 ;;
@@ -222,7 +524,7 @@ exit
 subdwn)
 if [ -e /var/lock/rpi/subs.enabled ]; then
   ### Subwoofer volume down
-  /opt/rpi/xmit subdwn
+  XMITCMD="subdwn" ; XMIT 
 fi
 exit
 ;;
@@ -241,9 +543,9 @@ autodac)
 ## Reset volume tokens
 rm -f /var/lock/rpi/subs.enabled
 ## Auto Decoder Input
-/opt/rpi/xmit inauto
+XMITCMD="inauto" ; XMIT 
 ## Preamp DAC Input
-/opt/rpi/xmit dac
+XMITCMD="dac" ; XMIT 
 exit
 ;;
 
@@ -251,9 +553,9 @@ usb)
 ## Reset volume tokens
 rm -f /var/lock/rpi/subs.enabled
 ## USB Decoder Input
-/opt/rpi/xmit usb
+XMITCMD="usb" ; XMIT 
 ## Preamp DAC Input
-/opt/rpi/xmit dac
+XMITCMD="dac" ; XMIT 
 exit
 ;;
 
@@ -262,9 +564,9 @@ coax)
 ## Reset volume tokens
 rm -f /var/lock/rpi/subs.enabled
 ## Coaxial Decoder Input
-/opt/rpi/xmit coaxial
+XMITCMD="coaxial" ; XMIT 
 ## Preamp DAC Input
-/opt/rpi/xmit dac
+XMITCMD="dac" ; XMIT 
 exit
 ;;
 
@@ -273,27 +575,27 @@ opt)
 ## Reset volume tokens
 rm -f /var/lock/rpi/subs.enabled
 ## Optical Decoder Input
-/opt/rpi/xmit optical
+XMITCMD="optical" ; XMIT
 ## Preamp DAC Input
-/opt/rpi/xmit dac
+XMITCMD="dac" ; XMIT
 exit
 ;;
 
 roomon)
 ## Main Lamp On
-/opt/rpi/xmit rfc1 on
+XMITCMD="rfc1" ; XMITARG="on" ; XMIT 
 ## Dresser Lamp
-/opt/rpi/xmit rfa2 on
+XMITCMD="rfa2" ; XMITARG="on" ; XMIT 
 ## Desk Light
-/opt/rpi/xmit rfb1 on
+XMITCMD="rfb1" ; XMITARG="on" ; XMIT 
 ## Desktop Power
-/opt/rpi/xmit rfb2 on
+XMITCMD="rfb2" ; XMITARG="on" ; XMIT 
 ## PC Power On
 if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
   echo "Host is up"
 else
-  /opt/rpi/xmit rfb3
+  XMITCMD="rfb3" ; XMIT 
 fi
 ## LEDwalls
 /opt/rpi/leds prism
@@ -304,24 +606,24 @@ exit
 
 roomoff)
 ## Main Lamp Off
-/opt/rpi/xmit rfc1 off
+XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
 ## Dresser Lamp
-/opt/rpi/xmit rfa2 off
+XMITCMD="rfa2" ; XMITARG="off" ; XMIT 
 ## Desk Light
-/opt/rpi/xmit rfb1 off
+XMITCMD="rfb1" ; XMITARG="off" ; XMIT 
 ## Desktop Power
-/opt/rpi/xmit rfb2 off
+XMITCMD="rfb2" ; XMITARG="off" ; XMIT 
 ## PC Power Off
 if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
-  /opt/rpi/xmit rfb3
+  XMITCMD="rfb3" ; XMIT 
 else
   echo "Host is down"
 fi
 ## Audio System Power Off
 if ping -W 2 -c 1 hifi.local > /dev/null 2> /dev/null
 then
-  /opt/rpi/xmit pwrhifi
+  XMITCMD="pwrhifi" ; XMIT 
 else
   echo "Host is down"
 fi
@@ -350,12 +652,9 @@ exit
 # http://automate:9300/exec.php?var=prism&arg=video&action=leds
 ###############################
 
-
-        *)
-          echo "Automate Server"
-	        echo "  by Ben Provenzano III "
-	        echo " "
-	        echo "Enter a valid command line argument."
-          exit 1
-          ;;
-    esac   
+*) ###############################################
+### If command not matched above, pass argument to Xmit function
+XMITCMD="$CMD" ; XMITARG="$2" ; XMIT
+exit 0 
+  ;; #############################################
+esac   

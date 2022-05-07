@@ -16,45 +16,47 @@ fi
 if ping -W 10 -c 1 8.8.8.8 > /dev/null 2> /dev/null
 then
   echo "Google Drive connected."
-  ## Move videos to archive when Google Drive is larger than 6GB
-  rm -f /tmp/camcleanup.vars
-  timeout 500 du -sh -t6000000000 /mnt/gsync/Current | awk -F" " '{print $2}' > /tmp/camcleanup.vars
+  ## Move videos to archive when Google Drive is 50% full
+  DISKCAP=""
+  DISKCAP=$(timeout 500 df -Pk /mnt/gsync | awk 'NR==2 {print $5}')
   TM_STATUS=$?
   if [[ ("$TM_STATUS" -gt 100 ) || ("$TM_STATUS" -eq 1) ]]
   then
-    echo "Folder usage list exceeded 500 seconds restarting rclone... $(date)" >> $LOGFILE
+    echo "Timeout exceeded restarting rclone $(date)" >> $LOGFILE
     service motion stop
     service rpi-rclone restart
     service motion start   
-  fi
-  if [[ -s /tmp/camcleanup.vars ]] ; then
-	  echo "Google Drive above 6GB limit moving videos to archive... $(date)" >> $LOGFILE
+  fi  
+  DISKCAP=${DISKCAP%\%}
+  if [[ "$DISKCAP" -gt "50" ]] ; then
+	  echo "Google Drive usage $DISKCAP% moving videos to archive... $(date)" >> $LOGFILE
 	  mkdir -p /mnt/gsync/Archive
       TIMESTAMP="$(date +%H-%m-%d)"
       mkdir -p /mnt/gsync/Archive/$TIMESTAMP
 	  mv /mnt/gsync/Current/* /mnt/gsync/Archive/$TIMESTAMP/
   else
-    echo "Google Drive current folder under 6GB."
+    echo "Google Drive usage less than 50% not moving to archive"
   fi
-  ##
-  ## Delete archived videos, when larger than 14GB
-  rm -f /tmp/camcleanup.vars
-  timeout 500 du -sh -t14000000000 /mnt/gsync | awk -F" " '{print $2}' > /tmp/camcleanup.vars
+  ###############################################################
+  ## Delete archived videos, when Google Drive is 95% full
+  DISKCAP=""
+  DISKCAP=$(timeout 500 df -Pk /mnt/gsync | awk 'NR==2 {print $5}')
   TM_STATUS=$?
   if [[ ("$TM_STATUS" -gt 100 ) || ("$TM_STATUS" -eq 1) ]]
   then
-    echo "Folder usage list exceeded 500 seconds restarting rclone... $(date)" >> $LOGFILE
+    echo "Timeout exceeded restarting rclone $(date)" >> $LOGFILE
     service motion stop
     service rpi-rclone restart
     service motion start   
-  fi  
-  if [[ -s /tmp/camcleanup.vars ]] ; then
-	  echo "Google Drive above 14GB limit deleting archived video files... $(date)" >> $LOGFILE
+  fi
+  DISKCAP=${DISKCAP%\%}
+  if [[ "$DISKCAP" -gt "95" ]] ; then
+	  echo "Google Drive usage $DISKCAP% deleting archived video files $(date)" >> $LOGFILE
 	  rm -rf /mnt/gsync/Archive
 	  mkdir -p /mnt/gsync/Archive
 	  chmod -R 777 /mnt/gsync/Archive
   else
-    echo "Google Drive under 14GB."
+    echo "Google Drive usage less than 95% not deleting archived"
   fi
 else
   echo "Google ping exceeded 10 seconds, cleanup not ran $(date)" >> $LOGFILE
@@ -68,17 +70,21 @@ else
   truncate -s '<5MB' /media/usb0/cameras/motioncopy.log
   truncate -s '<5MB' /media/usb0/cameras/camcleanup.log
   ## Delete videos, when flash drive has only 2GB free
-  USBDEV=$(findmnt $FLASH_PATH -o SOURCE -r | grep -v -e "SOURCE")
-  USBSIZE=$(lsblk -b --output SIZE -n -d $USBDEV)
-  USBSIZE="$(($USBSIZE-9000000000))"
-  rm -f /tmp/camcleanup.vars
-  du -sh -t$USBSIZE $FLASH_PATH/cameras | awk -F" " '{print $2}' > /tmp/camcleanup.vars
-  if [[ -s /tmp/camcleanup.vars ]] ; then
-	  echo "Flash drive above $(echo "scale=2; $USBSIZE/1000000000" | bc -l)GB limit deleting video files... $(date)" >> $LOGFILE
+  DISKCAP=""
+  DISKCAP=$(timeout 500 df -Pk /media/usb0 | awk 'NR==2 {print $5}')
+  TM_STATUS=$?
+  if [[ ("$TM_STATUS" -gt 100 ) || ("$TM_STATUS" -eq 1) ]]
+  then
+    echo "Timeout exceeded checking flash drive usage, exiting $(date)" >> $LOGFILE
+    exit
+  fi  
+  DISKCAP=${DISKCAP%\%}
+  if [[ "$DISKCAP" -gt "95" ]] ; then
+	  echo "Flash drive usage $DISKCAP% deleting video files... $(date)" >> $LOGFILE
 	  rm -rf $FLASH_PATH/cameras/*/*.mp4
 	  chmod -R 777 $FLASH_PATH/cameras
   else
-    echo "Flash drive under $(echo "scale=2; $USBSIZE/1000000000" | bc -l)GB."
+    echo "Flash drive under 95% usage"
   fi
 fi
 

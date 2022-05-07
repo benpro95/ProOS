@@ -68,27 +68,23 @@ else
 fi  
 
 ## Delete videos from RAM cache if size limit exceeded 
-if [ $FILE_NAME = "spacechk" ]; then
-  ## Turn on status LED for 10 seconds
-  screen -dm sudo /opt/rpi/main redpulse	
-  rm -f /tmp/camcleanup.vars
-  du -sh -t275000000 /mnt/ramdisk | awk -F" " '{print $2}' > /tmp/camcleanup.vars
-  if [[ -s /tmp/camcleanup.vars ]] ; then
-    echo "RAM cache over 275MB moving files! $(date)" >> $LOGFILE
-    if [ ! -e $FLASH_PATH ]; then
-      echo "Flash drive not connected, discarding videos $(date)" >> $LOGFILE
-    else
-      DEST_PATH="$FLASH_PATH/$CAM_NAME"
-	  if [ ! -e "$DEST_PATH" ]; then
-	    mkdir -p "$DEST_PATH"
-	  fi
-      cp -rvf /mnt/ramdisk/"$CAM_NAME"/* "$DEST_PATH"/
-    fi
-    rm -rf /mnt/ramdisk/*
+DISKCAP=""
+DISKCAP=$(df -Pk /mnt/ramdisk 'NR==2 {print $5}')
+DISKCAP=${DISKCAP%\%}
+if [[ "$DISKCAP" -gt "95" ]] ; then
+  echo "RAM cache over $DISKCAP% moving files! $(date)" >> $LOGFILE
+  if [ ! -e $FLASH_PATH ]; then
+    echo "Flash drive not connected, discarding videos $(date)" >> $LOGFILE
+  else
+    DEST_PATH="$FLASH_PATH/$CAM_NAME"
+  if [ ! -e "$DEST_PATH" ]; then
+    mkdir -p "$DEST_PATH"
   fi
-mkdir -p /mnt/ramdisk/"$CAM_NAME"
-exit
+    cp -rvf /mnt/ramdisk/"$CAM_NAME"/* "$DEST_PATH"/ >> $LOGFILE
+  fi
+  rm -rf /mnt/ramdisk/*
 fi
+mkdir -p /mnt/ramdisk/"$CAM_NAME"
 
 ## Server copy (I)
 if [ ! -e $SERVER_PATH ]; then

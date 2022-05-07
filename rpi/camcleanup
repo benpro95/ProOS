@@ -15,14 +15,14 @@ fi
 ## Check if Google Drive connected before cleanup
 if ping -W 10 -c 1 8.8.8.8 > /dev/null 2> /dev/null
 then
-  echo "Google Drive connected."
+  echo "Google Drive connected"
   ## Move videos to archive when Google Drive is larger than 7GB
   rm -f /tmp/camcleanup.vars
   timeout 500 du -sh -t7000000000 /mnt/gsync/Current | awk -F" " '{print $2}' > /tmp/camcleanup.vars
   TM_STATUS=$?
   if [[ ("$TM_STATUS" -gt 100 ) || ("$TM_STATUS" -eq 1) ]]
   then
-    echo "Timeout exceeded restarting rclone..."
+    echo "Timeout exceeded restarting rclone"
     service motion stop
     service rpi-rclone restart
     service motion start   
@@ -34,7 +34,7 @@ then
       mkdir -p /mnt/gsync/Archive/$TIMESTAMP
 	  mv /mnt/gsync/Current/* /mnt/gsync/Archive/$TIMESTAMP/
   else
-    echo "Google Drive current folder under 7GB."
+    echo "Google Drive current folder under 7GB"
   fi
   ###############################################################
   ## Delete archived videos, when Google Drive is 95% full
@@ -55,9 +55,9 @@ fi
 
 ## Check if flash drive is connected before cleanup
 if [ ! -e $FLASH_PATH/cameras ]; then
-  echo "Flash drive not connected."
+  echo "Flash drive not connected"
 else
-  echo "Flash drive connected."
+  echo "Flash drive connected"
   truncate -s '<5MB' /media/usb0/cameras/motioncopy.log
   truncate -s '<5MB' /media/usb0/cameras/camcleanup.log
   ## Delete videos, when flash drive has only 2GB free

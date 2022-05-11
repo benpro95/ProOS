@@ -175,16 +175,16 @@ exit
 cpusb)
 ## Copy Videos on USB Drive to Server
 mkdir -p /mnt/smb/Cameras/Current/PiCam-USB
-rsync -a --progress /media/usb0/cameras/ /mnt/smb/Cameras/Current/PiCam-USB/
-echo "videos can be found at '//files/Cameras/Current/PiCam-USB'"
+rsync -a --progress /media/usb0/cameras/Doorway/* /mnt/smb/Cameras/Doorway/
+echo "videos can be found at '//files/Cameras/Doorway'"
 read -p "delete videos from USB drive? (y/n) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[yY]$ ]]
 then
-  rm -rfv /media/usb0/cameras
-  mkdir -p /media/usb0/cameras
-  chown -R motion:motion /media/usb0/cameras
-  chmod -R 777 /media/usb0/cameras
+  rm -rfv /media/usb0/cameras/Doorway
+  mkdir -p /media/usb0/cameras/Doorway
+  chown -R motion:motion /media/usb0/cameras/Doorway
+  chmod -R 777 /media/usb0/cameras/Doorway
 fi
 exit
 ;;

@@ -56,7 +56,7 @@ CAM_NAME=$1
 FILE_NAME=$2
 
 ## Folder paths
-SERVER_PATH="/mnt/smb/Cameras/Current"
+SERVER_PATH="/mnt/smb/Cameras"
 GDRIVE_PATH="/mnt/gsync/Current"
 FLASH_PATH="/media/usb0/cameras"
 

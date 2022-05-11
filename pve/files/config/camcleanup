@@ -14,34 +14,8 @@ if [ -e $lockfile ]; then
 fi
 echo $$ > $lockfile
 
-## Delete archived videos, when larger than 300GB
-rm -f /mnt/cameras/.camclean.vars
-du -sh -t300000000000 /mnt/cameras | awk -F" " '{print $2}' > /mnt/cameras/.camclean.vars
-if [[ -s /mnt/cameras/.camclean.vars ]] ; then
-	echo "Cameras folder above 300GB limit deleting archived video files..."
-	rm -rf /mnt/cameras/Archive/Driveway
-	rm -rf /mnt/cameras/Archive/Porch
-	mkdir -p /mnt/cameras/Archive/Driveway
-	mkdir -p /mnt/cameras/Archive/Porch
-else
-    echo "Cameras folder under 300GB."
-fi
-rm -f /mnt/cameras/.camclean.vars
-
-## Move videos to archive when current folder is larger than 40GB
-rm -f /mnt/cameras/.camclean.vars
-du -sh -t40000000000 /mnt/cameras/Current | awk -F" " '{print $2}' > /mnt/cameras/.camclean.vars
-if [[ -s /mnt/cameras/.camclean.vars ]] ; then
-	echo "Cameras current folder above 40GB limit moving video files..."
-	mkdir -p /mnt/cameras/Archive
-	mkdir -p /mnt/cameras/Archive/Driveway
-	mkdir -p /mnt/cameras/Archive/Porch
-	mv /mnt/cameras/Current/Driveway/* /mnt/cameras/Archive/Driveway/
-	mv /mnt/cameras/Current/Porch/* /mnt/cameras/Archive/Porch/
-else
-    echo "Cameras current folder under 60GB."
-fi
-rm -f /mnt/cameras/.camclean.vars
+## Delete video files older than two years
+find /mnt/scratch/cameras/* -type f -name "*.mp4" -mtime +730 -delete
 
 rm $lockfile
 exit 0

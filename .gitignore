@@ -8,10 +8,8 @@ wkst/*.pdf
 wkst/*.zip
 wkst/ProductKeys.txt
 wkst/Scripts/exes
-pve/network
 pve/vmbkps
 pve/photos
 pve/xana/bookmarks.html
-pve/automate/unifi
 *authorized_keys*
 .ssh

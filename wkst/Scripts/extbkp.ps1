@@ -1,10 +1,9 @@
 ## Backup Server to External NTFS Drives
 
-$Bkp0_Label="Aux"
-$Bkp0_Letter = Get-Volume -FileSystemLabel "$Bkp0_Label" | % DriveLetter
 
 ## 128GB Flash Drive I
 $Bkp1_Label="Bkp128-I"
+$Bkp1_Letter = Get-Volume -FileSystemLabel "$Bkp1_Label" | % DriveLetter
 $Bkp1_Letter = Get-Volume -FileSystemLabel "$Bkp1_Label" | % DriveLetter
 if (Test-Path -Path "${Bkp1_Letter}:\Ben"){
   echo "Starting backup on $Bkp1_Label..."
@@ -19,6 +18,7 @@ echo ""
 ## 128GB Flash Drive II
 $Bkp2_Label="Bkp128-II"
 $Bkp2_Letter = Get-Volume -FileSystemLabel "$Bkp2_Label" | % DriveLetter
+$Bkp2_Letter = Get-Volume -FileSystemLabel "$Bkp2_Label" | % DriveLetter
 if (Test-Path -Path "${Bkp2_Letter}:\Ben"){
   echo "Starting backup on $Bkp2_Label..."
   robocopy \\files\Ben ${Bkp2_Letter}:\Ben /MIR /XJD /FFT /R:3 /W:10 /Z /XD `
@@ -31,6 +31,7 @@ echo ""
 
 ## 4TB Western Digital Red
 $Bkp3_Label="Bkp4TBRed"
+$Bkp3_Letter = Get-Volume -FileSystemLabel "$Bkp3_Label" | % DriveLetter
 $Bkp3_Letter = Get-Volume -FileSystemLabel "$Bkp3_Label" | % DriveLetter
 if (Test-Path -Path "${Bkp3_Letter}:\Ben"){
   echo "Starting backup on $Bkp3_Label..."

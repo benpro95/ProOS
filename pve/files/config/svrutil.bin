@@ -132,7 +132,6 @@ fi
 if [[ $REPLY =~ ^[Ss]$ ]]
 then
   echo " "
-  echo "(d) detach all regions"  
   echo "(s) attach/detach snapshot region"  
   echo "(u) update automate configuration" 
   echo "(x) start/stop xana - vnc://ben@xana:5091"
@@ -171,7 +170,7 @@ then
   ##################################
   REGROOT="/mnt/ben/Documents/Regions"
   ## Detach Regions
-  if [[ $REPLY =~ ^[Dd]$ ]]
+  if [[ $REPLY =~ ^[Qq]$ ]]
   then
     echo "detaching all regions..."
     rm -f $REGROOT/Snapshots

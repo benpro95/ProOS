@@ -66,12 +66,13 @@ echo " "
 echo "last login:"
 lastlog -u server
 echo " "
-echo "(d) Drive usage"
-echo "(n) Network scan"
-echo "(b) Backup utility"
-echo "(g) Generate a log file"
-echo "(p) Push ProOS to GitHub"
-echo "(s) System configuration"
+echo "(d) drive usage"
+echo "(n) network scan"
+echo "(b) backup utility"
+echo "(v) start/stop VM(s)"
+echo "(g) generate a log file"
+echo "(p) push ProOS to GitHub"
+echo "(s) attach/detach snapshots"  
 echo "(enter) Exit to shell"
 echo " "
 read -p "select option: " -n 1 -r
@@ -128,37 +129,70 @@ then
   MAINPGRM
 fi
 
-## Server control
+##################################
+REGROOT="/mnt/ben/Documents/Regions"
+## Detach/Remove All Regions
+if [[ $REPLY =~ ^[Rr]$ ]]
+then
+  echo "removing all regions..."
+  rm -f $REGROOT/Snapshots
+  rm -f $REGROOT/Private
+  rm -f $REGROOT/Public
+  REPLY=""  
+fi
+## Private Share
+if [[ $REPLY =~ ^[:]$ ]]
+then
+  echo " "
+  if [ -e "$REGROOT/Private" ]; then
+    echo "detaching private region..."
+    rm $REGROOT/Private
+  else
+    echo "attaching private region..."
+    ln -s /mnt/.archive/Private $REGROOT/Private
+  fi
+  REPLY=""  
+fi
+##################################  
+## Public Share
+if [[ $REPLY =~ ^[@]$ ]]
+then
+  echo " "
+  if [ -e "$REGROOT/Public" ]; then
+    echo "detaching public region..."   
+    rm $REGROOT/Public
+  else
+    echo "attaching public region..."
+    ln -s /mnt/.archive/Public $REGROOT/Public
+  fi
+  REPLY=""  
+fi
+##################################  
+## Snapshot Share
 if [[ $REPLY =~ ^[Ss]$ ]]
 then
   echo " "
-  echo "(s) attach/detach snapshot region"  
-  echo "(u) update automate configuration" 
-  echo "(x) start/stop xana - vnc://ben@xana:5091"
-  echo "(d) start/stop dev - ssh://root@dev"
-  echo "(c) start/stop unifi controller"
+  if [ -e "$REGROOT/Snapshots" ]; then
+    echo "detaching snapshots region..."
+    rm $REGROOT/Snapshots
+  else
+    echo "attaching snapshots region..."
+    ln -s /mnt/snapshots $REGROOT/Snapshots
+  fi
+  REPLY=""  
+fi
+
+## VM control
+if [[ $REPLY =~ ^[Vv]$ ]]
+then
+  echo " "
+  echo "(x) xana - vnc://ben@xana:5091"
+  echo "(d) dev - ssh://root@dev"
+  echo "(c) unifi controller"
   echo " "
   REPLY=""
   read -p "select option: " -n 1 -r
   echo
-  ## Update Automate Configuration
-  ##################################    
-  if [[ $REPLY =~ ^[Uu]$ ]]
-  then
-    curl -N -f -m 5 --silent "http://ledwall.home:9300/exec.php?var=&arg=whtledon&action=main"
-    echo " "
-    echo "updating automate system configuration..."
-    ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "rm -rfv /opt/rpi/remotes"
-    rsync -e "ssh -i ~/ProOS/.ssh/automate.rsa" --progress --checksum -rtv ~/ProOS/pve/automate/config/system/* root@automate.home:/opt/rpi/
-    echo " "
-    echo "restarting lighttpd web server..."
-    ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl restart lighttpd"
-    echo " "
-    echo "restarting unified remote server..."
-    ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "systemctl restart urserver"
-    curl -N -f -m 5 --silent "http://ledwall.home:9300/exec.php?var=&arg=whtledoff&action=main"
-    REPLY=""
-  fi
   ##################################  
   ## Start/Stop UniFi controller
   if [[ $REPLY =~ ^[Cc]$ ]]
@@ -167,60 +201,8 @@ then
     ssh -t -i ~/ProOS/.ssh/automate.rsa root@automate.home "/opt/rpi/main unifi"
     REPLY=""
   fi
-  ##################################
-  REGROOT="/mnt/ben/Documents/Regions"
-  ## Detach Regions
-  if [[ $REPLY =~ ^[Qq]$ ]]
-  then
-    echo "detaching all regions..."
-    rm -f $REGROOT/Snapshots
-    rm -f $REGROOT/Private
-    rm -f $REGROOT/Public
-    REPLY=""  
-  fi
-  ## Private Share
-  if [[ $REPLY =~ ^[Pp]$ ]]
-  then
-    echo " "
-    if [ -e "$REGROOT/Private" ]; then
-      echo "detaching private region..."
-      rm $REGROOT/Private
-    else
-      echo "attaching private region..."
-      ln -s /mnt/.archive/Private $REGROOT/Private
-    fi
-    REPLY=""  
-  fi
   ##################################  
-  ## Public Share
-  if [[ $REPLY =~ ^[@]$ ]]
-  then
-    echo " "
-    if [ -e "$REGROOT/Public" ]; then
-      echo "detaching public region..."   
-      rm $REGROOT/Public
-    else
-      echo "attaching public region..."
-      ln -s /mnt/.archive/Public $REGROOT/Public
-    fi
-    REPLY=""  
-  fi
-  ##################################  
-  ## Snapshot Share
-  if [[ $REPLY =~ ^[Ss]$ ]]
-  then
-    echo " "
-    if [ -e "$REGROOT/Snapshots" ]; then
-      echo "detaching snapshots region..."
-      rm $REGROOT/Snapshots
-    else
-      echo "attaching snapshots region..."
-      ln -s /mnt/snapshots $REGROOT/Snapshots
-    fi
-    REPLY=""  
-  fi
-  ##################################  
-  ## VM control (must be last in script)
+  ## (must be last in script)
   if [[ $REPLY =~ ^[Dd]$ ]]
   then
   VMHOST="dev"

@@ -41,10 +41,10 @@ cp /tmp/config/sysctl.conf /etc
 chmod 644 /etc/sysctl.conf
 chown root:root /etc/sysctl.conf
 
-## RPi Directory
-rm -rf /opt/rpi
+## Copy System Files
 mkdir -p /opt/rpi
-mv -f /tmp/config/system/* /opt/rpi/
+rm -rf /opt/rpi/remotes
+rsync --progress --checksum -rtv /tmp/config/system/* /opt/rpi/
 chmod -R 755 /opt/rpi
 chown -R root:root /opt/rpi
 
@@ -154,6 +154,10 @@ chown root:root /root/.hushlogin
 
 ## Compatibility Link
 ln -sf /opt/rpi/main /opt/rpi/xmit
+
+## Restart Services
+systemctl restart lighttpd
+systemctl restart urserver
 
 ## Clean-up
 systemctl daemon-reload

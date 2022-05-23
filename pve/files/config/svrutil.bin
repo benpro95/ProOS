@@ -138,10 +138,11 @@ then
   rm -f $REGROOT/Snapshots
   rm -f $REGROOT/Private
   rm -f $REGROOT/Public
-  REPLY=""  
+  REPLY=""
+  ENDPGRM
 fi
 ## Private Share
-if [[ $REPLY =~ ^[:]$ ]]
+if [[ $REPLY =~ ^[-]$ ]]
 then
   echo " "
   if [ -e "$REGROOT/Private" ]; then
@@ -151,9 +152,9 @@ then
     echo "attaching private region..."
     ln -s /mnt/.archive/Private $REGROOT/Private
   fi
-  REPLY=""  
+  REPLY=""
+  ENDPGRM
 fi
-##################################  
 ## Public Share
 if [[ $REPLY =~ ^[@]$ ]]
 then
@@ -165,9 +166,9 @@ then
     echo "attaching public region..."
     ln -s /mnt/.archive/Public $REGROOT/Public
   fi
-  REPLY=""  
+  REPLY=""
+  ENDPGRM
 fi
-##################################  
 ## Snapshot Share
 if [[ $REPLY =~ ^[Ss]$ ]]
 then
@@ -179,10 +180,12 @@ then
     echo "attaching snapshots region..."
     ln -s /mnt/snapshots $REGROOT/Snapshots
   fi
-  REPLY=""  
+  REPLY=""
+  ENDPGRM
 fi
+################################## 
 
-## VM control
+## VM control ####################
 if [[ $REPLY =~ ^[Vv]$ ]]
 then
   echo " "

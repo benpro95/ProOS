@@ -13,6 +13,11 @@ boot)
 ## Startup Sound
 /usr/bin/amixer set PCM 50%
 /usr/bin/aplay /opt/rpi/sounds/ps2.wav
+## Bluetooth Audio
+systemctl start hciuart
+systemctl start bluetooth
+systemctl start bt-agent@hci0
+systemctl start bluealsa-aplay
 ## Set Volume
 /usr/bin/amixer set PCM 95%
 ## AirPlay Support
@@ -26,10 +31,15 @@ then
 else
   echo "server not found."  
 fi
+## Reset Bluetooth Connections
+/opt/rpi/init resetbt
 ## Turn-off Power LED (boot complete)
 echo none | tee /sys/class/leds/led0/trigger &>/dev/null
 ## Auto Hotspot (on boot only)
-systemctl start rpi-netdetect
+# only run if bluetooth not connected
+if [ ! -e /tmp/bt.connected ]; then
+   systemctl start rpi-netdetect.service
+fi
 ## Disable HDMI (saves 30mA)
 tvservice -o
 exit

@@ -31,9 +31,6 @@ i2c_arm_baudrate=100000
 #-------SPI-------------
 dtparam=spi=off
 
-#------Disable Bluetooth-----
-dtoverlay=pi3-disable-bt
-
 #-------RPi Camera (disabled)-------
 start_x=0
 disable_camera_led=0

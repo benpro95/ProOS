@@ -73,7 +73,7 @@ echo "(v) start/stop VM(s)"
 echo "(g) generate a log file"
 echo "(p) push ProOS to GitHub"
 echo "(s) attach/detach snapshots"  
-echo "(enter) Exit to shell"
+echo "(enter) exit to shell"
 echo " "
 read -p "select option: " -n 1 -r
 echo

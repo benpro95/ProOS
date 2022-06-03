@@ -4,10 +4,6 @@ rpi/BaseOS*
 rpi/java
 rpi/pkgs
 rpi/sources
-wkst/*.pdf
-wkst/*.zip
-wkst/ProductKeys.txt
-wkst/Scripts/exes
 pve/vmbkps
 pve/photos
 pve/xana/bookmarks.html

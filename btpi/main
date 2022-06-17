@@ -5,6 +5,7 @@ case "$1" in
 
 boot)
 ## AirPlay Support
+systemctl start nqptp
 systemctl start rpi-airplay
 ## Bluetooth Audio
 systemctl start hciuart

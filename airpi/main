@@ -17,6 +17,7 @@ systemctl start bluetooth
 systemctl start bt-agent@hci0
 systemctl start bluealsa-aplay
 ## AirPlay Support
+systemctl start nqptp
 systemctl start rpi-airplay
 ## Startup Sound / Set Volume
 /usr/bin/amixer set PCM 60%

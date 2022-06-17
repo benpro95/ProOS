@@ -71,6 +71,11 @@ cp -f $BIN/modconf/rpi-ldr.service /etc/systemd/system/
 chmod -f 644 /etc/systemd/system/rpi-ldr.service
 chown -f root:root /etc/systemd/system/rpi-ldr.service
 
+## Custom Port Redirection
+cp -f $BIN/modconf/lighttpd.conf /etc/lighttpd/
+chmod 644 /etc/lighttpd/lighttpd.conf
+chown root:root /etc/lighttpd/lighttpd.conf
+
 ## AutoFS Configuration
 cp -f $BIN/modconf/auto.master /etc/
 chmod 644 /etc/auto.master

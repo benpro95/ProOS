@@ -106,7 +106,7 @@ apt-get install -y --no-upgrade --ignore-missing locales console-setup \
  uuid-runtime mpg321 mpv mplayer espeak tightvncserver iptables open-cobol \
  iw crda firmware-brcm80211 wpasupplicant dirmngr autofs triggerhappy apt-utils \
  build-essential git autoconf make libtool binutils i2c-tools cmake yasm \
- libmariadb3 texi2html socat nmap libtool autoconf automake pkg-config \
+ libmariadb3 texi2html socat nmap autoconf automake pkg-config \
  keyboard-configuration ncftp
  
 ## Developer Packages 
@@ -225,7 +225,10 @@ chown root:root /media/usb*
 apt-get install -y --no-upgrade --ignore-missing alsa-base alsa-utils mpg321 lame sox \
  libasound2 libupnp6 libexpat1 libconfig-dev djmount libexpat1 libsox-dev libsoup2.4-dev \
  libimage-exiftool-perl libcurl4 libsoup2.4-1 libao-dev libglib2.0-dev libreadline-dev \
- libjson-glib-1.0-0 libjson-glib-dev libao-common libasound2-dev
+ xmltoman libsoxr-dev libsndfile1-dev libpulse-dev libavahi-client-dev libssl-dev \
+ libdaemon-dev libpopt-dev libconfig-dev libdaemon-dev libpopt-dev \
+ libjson-glib-1.0-0 libjson-glib-dev libao-common libasound2-dev \
+ xxd libplist-dev libsodium-dev libavutil-dev uuid-dev libgcrypt-dev
 
 ## Bluetooth Support
 apt-get install -y --no-upgrade --ignore-missing bluetooth pi-bluetooth bluez bluez-tools
@@ -266,10 +269,35 @@ if [ ! -e /usr/bin/omxplayer ]; then
   dpkg -i /opt/rpi/pkgs/omxplayer_20190723_armhf.deb
 fi
 
-## AirPlay Support
-apt-get install -y --no-upgrade --ignore-missing xmltoman libsoxr-dev libsndfile1-dev \
- libdaemon-dev libpopt-dev libconfig-dev libdaemon-dev libpopt-dev \
- libpulse-dev libavahi-client-dev libssl-dev shairport-sync
+## AirPlay 1 Support
+#apt-get install -y --no-upgrade --ignore-missing shairport-sync
+
+## AirPlay 2 Support
+if [ "$REINSTALL" = "yes" ]; then
+  rm -f /usr/local/bin/shairport-sync
+fi
+if [ ! -e /usr/local/bin/shairport-sync ]; then
+  apt-get remove -y shairport-sync
+  rm -f /lib/systemd/system/nqptp.service
+  git clone https://github.com/mikebrady/nqptp.git
+  cd nqptp
+  autoreconf -fi
+  ./configure --with-systemd-startup
+  make
+  make install
+  cd -
+  #systemctl start nqptp
+  git clone https://github.com/mikebrady/shairport-sync.git
+  cd shairport-sync
+  git checkout development
+  autoreconf -fi
+  ./configure --sysconfdir=/etc --with-alsa \
+    --with-soxr --with-avahi --with-ssl=openssl --with-systemd --with-airplay-2
+  make -j
+  make install
+  cd -
+  ln -sf /usr/local/bin/shairport-sync /usr/bin/shairport-sync
+fi
 
 ## Camera Motion Server
 if [ "${OSVER}" = "buster" ]; then
@@ -460,7 +488,6 @@ chown root:root /etc/netmode.sh
 
 ## ShairPort AirPlay Support
 rm -f /etc/init.d/shairport-sync
-rm -f /lib/systemd/system/shairport-sync.service
 if [ ! -e /opt/rpi/modconf/brand.txt ]; then
   echo "Skipping module modification."
 else
@@ -790,7 +817,7 @@ systemctl disable hostapd dhcpcd networking wpa_supplicant keyboard-setup \
 plymouth sysstat lightdm apache2 lighttpd dnsmasq apt-daily.service wifiswitch plymouth-log \
 apt-daily.timer apt-daily-upgrade.service apt-daily-upgrade.timer sysstat-collect.timer motion \
 sysstat-summary.timer man-db.service man-db.timer hciuart bluetooth usbplug nmbd smbd autofs \
-shairport-sync triggerhappy.service triggerhappy.socket e2scrub_all.service e2scrub_all.timer
+shairport-sync nqptp triggerhappy.service triggerhappy.socket e2scrub_all.service e2scrub_all.timer
 echo "Initial setup (phase II) complete."
 touch /etc/rpi-conf.done
 else

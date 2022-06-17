@@ -21,6 +21,7 @@ systemctl start bluealsa-aplay
 ## Set Volume
 /usr/bin/amixer set PCM 95%
 ## AirPlay Support
+systemctl start nqptp
 systemctl start rpi-airplay
 ## Attach Server Shares / Relax Sound Loop
 if ping -c 1 10.177.1.4 > /dev/null 2> /dev/null

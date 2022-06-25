@@ -6,6 +6,6 @@ rpi/pkgs
 rpi/sources
 pve/vmbkps
 pve/photos
-pve/xana/bookmarks.html
+pve/xana
 *authorized_keys*
 .ssh

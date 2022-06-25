@@ -7,11 +7,35 @@ the setup scripts to automatically configure a stock Pi running Raspbian.
 It is similar to Ansible as running the script sets up the Pi over the 
 network and does not require attaching a keyboard/display. 
 
+* List of Pi projects and there main functions:
+(photos of the projects are in each modules folder)
+
+airpi - Portable AirPlay and Bluetooth Speaker
+
+aptcam - Motion Detecting IR Security Camera (uploads videos to Google Drive)
+
+btpi - Bluetooth Receiver (add bluetooth support to a vintage stereo system)
+
+hifi - AirPlay and Bluetooth Receiver (optical and coaxial audio outputs)
+
+hfifmini - AirPlay and Bluetooth Receiver (custom bedroom audio system 2x20watts)
+
+homepi - Motion Detecting IR Security Camera Hub (for family home, two exernal cameras)
+
+ledgrid - 8x8 Grid of RGB LED's (over 30 effects, each syncs up over Wi-Fi)
+
+ledwall - 93 Pixel Ring of RGB LED's (over 30 effects, each syncs up over Wi-Fi)
+
+nespi - RetroPi Emulator (runs old PS1, GBA, N64, NES games on a Sony Trinitron CRT TV)
+
+touchpi - Touch Screen Home Automation Interface (runs custom web UI and controls LED strips)
+
+
 The folder 'rpi' contains the programs/configs that are global to all the Pi 
 projects and gets installed first before the specific module gets installed.
 It sets up Raspbian to boot in read/only mode using an OverlayFS, meaning
-all SD card writes are written to RAM. Changes made are not saved unless
-the command 'rpi rw' is entered on the Pi. this reboots it in read/write mode.
+all SD card writes are written to RAM. Changes made are not saved unless the
+command 'rpi rw' is entered on the Pi. this reboots it in read/write mode.
 
 The 'login' script that configures the Pi automatically
 switches to read/write mode before installing. The read/only boot was done 
@@ -61,19 +85,6 @@ Command Reference List
 
 Clean-up Temporary Files
 ./login rmtmp
-
-
-* List of Pi projects and there main functions:
-(photos of the projects are in each modules folder)
-airpi - Portable AirPlay and Bluetooth Speaker
-aptcam - Motion Detecting IR Security Camera (uploads videos to Google Drive)
-btpi - Bluetooth Receiver (add bluetooth support to a vintage stereo system)
-hifi - AirPlay and Bluetooth Receiver (optical and coaxial audio outputs)
-hfifmini - AirPlay and Bluetooth Receiver (custom bedroom audio system 2x20watts)
-homepi - Motion Detecting IR Security Camera Hub (for family home, two exernal cameras)
-ledgrid - 8x8 Grid of RGB LED's (over 30 effects, each syncs up over Wi-Fi)
-ledwall - 93 Pixel Ring of RGB LED's (over 30 effects, each syncs up over Wi-Fi)
-nespi - RetroPi Emulator (runs old PS1, GBA, N64, NES games on a Sony Trinitron CRT TV)
 
 
 ** The SSH keys for the Pi's are not included in the repo, a new private key 

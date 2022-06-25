@@ -1,6 +1,7 @@
 # ~/.profile: executed by Bourne-compatible login shells.
 
 ## Command Aliases
+alias matrix='/usr/bin/cmatrix'
 alias svrutil='/usr/bin/svrutil.bin'
 alias svr='/usr/bin/svrutil.bin'
 

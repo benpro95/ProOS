@@ -8,4 +8,5 @@ pve/vmbkps
 pve/photos
 pve/xana
 *authorized_keys*
+*Thumbs.db*
 .ssh

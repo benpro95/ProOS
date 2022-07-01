@@ -23,4 +23,7 @@ rm -rf /var/www/sessions/*
 journalctl --flush --rotate
 journalctl -m --vacuum-time=1hr
 
+## Restart Random Number Generator (bug: high CPU usage after running for 12hrs+)
+systemctl restart rng-tools
+
 exit

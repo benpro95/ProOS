@@ -38,6 +38,12 @@ echo "press ctrl+a then ctrl+d to detach terminal"
 echo "run 'screen -r' to reattach to this terminal"
 echo "***************************************************"
 echo " "
+
+## Turn on LED
+/usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 5 \
+ --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive \
+ --url "http://ledwall.home:9300/exec.php?var=&arg=whtledon&action=main"
+
 if [[ "$chksum" == "yes" ]]
 then
   echo "checksum compare option selected, this backup will take awhile!"
@@ -60,7 +66,7 @@ do
       ##### BEGIN BACKUP #####
       #### Ben Share ####
       if [ ! -e /mnt/ben/ProOS ]; then
-        echo "//files/Ben not connected."
+        echo "Ben folder not found!"
       else
         echo "syncing 'Ben' share to ${!USB256VAR} drive..."
         rsync --progress $CHECKSUM -aP --exclude="Documents/Regions" \
@@ -70,7 +76,7 @@ do
       fi
       #### Archive Share ####
       if [ ! -e /mnt/.archive/Private ]; then
-        echo "//files/Archive not connected."
+        echo "Archive folder not found!"
       else
         echo "syncing 'Archive' share to ${!USB256VAR} drive..."
         rsync --progress  $CHECKSUM -aP --exclude="Public/Movies/" \
@@ -78,7 +84,7 @@ do
       fi
       #### Media Share ####
       if [ ! -e /mnt/media/Music ]; then
-        echo "//files/Media not connected."
+        echo "Media folder not found!"
       else
         echo "syncing 'Media' share to ${!USB256VAR} drive..."
         rsync --progress -aP --exclude="Movies/" --exclude="Music/" --exclude="TV Shows/" \
@@ -103,7 +109,7 @@ do
       ##### BEGIN BACKUP #####
       #### Ben Share ####
       if [ ! -e /mnt/ben/ProOS ]; then
-        echo "//files/Ben not connected."
+        echo "Ben folder not found!"
       else
         echo "syncing 'Ben' share to ${!HDDVAR} drive..."
         rsync --progress $CHECKSUM -aP --exclude="Documents/Regions" \
@@ -111,7 +117,7 @@ do
       fi
       #### Archive Share ####
       if [ ! -e /mnt/.archive/Private ]; then
-        echo "//files/Archive not connected."
+        echo "Archive folder not found!"
       else
         echo "syncing 'Archive' share to ${!HDDVAR} drive..."
         rsync --progress $CHECKSUM -aP \
@@ -119,7 +125,7 @@ do
       fi
       #### Media Share ####
       if [ ! -e /mnt/media/Music ]; then
-        echo "//files/Media not connected."
+        echo "Media folder not found!"
       else
         echo "syncing 'Media' share to ${!HDDVAR} drive..."
         rsync --progress -aP /mnt/media/ /mnt/extbkps/${!HDDVAR}/Media/ -delete --delete-excluded
@@ -138,9 +144,12 @@ do
   sleep 1
   ((temp_cnt--))
 done
+
+## Write drive detach trigger file
 touch /mnt/extbkps/keytmp/unmount.txt
 ## Unlock State File
 rm -f /tmp/backupsvr.lock
+
 ## Wait for drives to detach
 temp_cnt=${wait_time}
 while [[ ${temp_cnt} -gt 0 ]];
@@ -149,6 +158,12 @@ do
   sleep 1
   ((temp_cnt--))
 done
+
+## Turn off LED
+/usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 30 \
+ --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive \
+ --url "http://ledwall.home:9300/exec.php?var=&arg=whtledoff&action=main"
+
 ## Print drives status
 cat /mnt/extbkps/keytmp/status.txt
 REPLY=""
@@ -158,3 +173,5 @@ if [[ $REPLY =~ ^[Ss]$ ]]
 then
   cat /mnt/extbkps/keytmp/status.txt
 fi
+
+exit

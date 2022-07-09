@@ -348,13 +348,11 @@ exit
 
 BKPPGRM () {
 ##### BEGIN BACKUP FUNCTION #####
-curl -N -f -m 5 --silent "http://ledwall.home:9300/exec.php?var=&arg=whtledon&action=main"
 scr_num=$(echo $RANDOM) 
 /usr/bin/screen -dmS $scr_num /usr/bin/svrbackup.bin $wait_time $checksum
 sleep 0.25
 clear
 /usr/bin/screen -rS $scr_num
-curl -N -f -m 5 --silent "http://ledwall.home:9300/exec.php?var=&arg=whtledoff&action=main"
 ##### END BACKUP FUNCTION #####
 }
 

@@ -1,10 +1,10 @@
-Modular Linux Configurator by Ben Provenzano III
+## Modular Linux Configurator by Ben Provenzano III
 
 This repo contains all the custom scripts and programs that I run on my Raspberry Pi's and Proxmox server. Each folder is a module that has the setup scripts to automatically configure a stock Pi running Raspbian.
 
 It is similar to Ansible as running the script sets up the Pi over the network and does not require attaching a keyboard and/or display. 
 
-** Pi Projects: (photos of the projects are in each modules folder)
+## Pi Projects: (photos of the projects are in each modules folder)
 (airpi) - Portable AirPlay and Bluetooth Speaker
 (aptcam) - Motion Detecting IR Security Camera (uploads videos to Google Drive)
 (btpi) - Bluetooth Receiver (add bluetooth support to a vintage stereo system)
@@ -16,7 +16,8 @@ It is similar to Ansible as running the script sets up the Pi over the network a
 (nespi) - RetroPi Emulator (runs old PS1, GBA, N64, NES games on a Sony Trinitron CRT TV)
 (touchpi) - Touch Screen Home Automation Interface (runs custom web UI and controls LED strips)
 
-** Server VMs: (located in the pve folder)
+## Server VMs: 
+** located in the 'pve' folder
 (automate) - Home Automation Container (runs the custom web interface and backend services)
 (files) - SMB File Server Container (software ZFS RAID 3x4TB's mirrored configuration)
 (plex) - Plex Media Server (access local music and videos over the internet)
@@ -33,7 +34,7 @@ to hotspot mode if a local Wi-Fi network cannot be found on boot.
 This repo can run on any Linux server as all the tools used are standard to most installations. The 'login' script is used to manage and setup a stock Pi. The folder names for the modules are the hostnames of each Pi on my network, the setup script will automatically change the Pi's hostname to the module name and install the custom programs when using the 'init' argument. All arguments for
 the login script are listed below.
 
-* Pi / Server Configuration and Login Script
+## Pi / Server Configuration and Login Script
 
 Login to ProOS Pi / Server
 ./login "Hostname"

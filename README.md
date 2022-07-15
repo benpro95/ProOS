@@ -4,24 +4,41 @@ This repo contains all the custom scripts and programs that I run on my Raspberr
 
 It is similar to Ansible as running the script sets up the Pi over the network and does not require attaching a keyboard and/or display. 
 
+
 ## Pi Projects: (photos of the projects are in each modules folder)
+
 (airpi) - Portable AirPlay and Bluetooth Speaker
+
 (aptcam) - Motion Detecting IR Security Camera (uploads videos to Google Drive)
+
 (btpi) - Bluetooth Receiver (add bluetooth support to a vintage stereo system)
+
 (hifi) - AirPlay and Bluetooth Receiver (optical and coaxial audio outputs)
+
 (hfifmini) - AirPlay and Bluetooth Receiver (custom bedroom audio system 2x20watts)
+
 (homepi) - Motion Detecting IR Security Camera Hub (for family home, two exernal cameras)
+
 (ledgrid) - 8x8 Grid of RGB LED's (over 30 effects, each syncs up over Wi-Fi)
+
 (ledwall) - 93 Pixel Ring of RGB LED's (over 30 effects, each syncs up over Wi-Fi)
+
 (nespi) - RetroPi Emulator (runs old PS1, GBA, N64, NES games on a Sony Trinitron CRT TV)
+
 (touchpi) - Touch Screen Home Automation Interface (runs custom web UI and controls LED strips)
+
 
 ## Server VMs: 
 ** located in the 'pve' folder
+
 (automate) - Home Automation Container (runs the custom web interface and backend services)
+
 (files) - SMB File Server Container (software ZFS RAID 3x4TB's mirrored configuration)
+
 (plex) - Plex Media Server (access local music and videos over the internet)
+
 (config) - Proxmox Hypervisor (configuration for my home server)
+
 
 The folder 'rpi' contains the programs/configs that are global to all the Pi projects and gets installed first before the specific module gets installed. It sets up Raspbian to boot in read/only mode using an OverlayFS, meaning all SD card writes are written to RAM. Changes made are not saved unless the command 'rpi rw' is entered on the Pi. this reboots it in read/write mode.
 
@@ -33,6 +50,7 @@ to hotspot mode if a local Wi-Fi network cannot be found on boot.
 
 This repo can run on any Linux server as all the tools used are standard to most installations. The 'login' script is used to manage and setup a stock Pi. The folder names for the modules are the hostnames of each Pi on my network, the setup script will automatically change the Pi's hostname to the module name and install the custom programs when using the 'init' argument. All arguments for
 the login script are listed below.
+
 
 ## Pi / Server Configuration and Login Script
 

@@ -1,5 +1,5 @@
-### Modular Linux Configurator 
-## by Ben Provenzano III
+## Modular Linux Configurator 
+### by Ben Provenzano III
 
 This repo contains all the custom scripts and programs that I run on my Raspberry Pi's and Proxmox server. Each folder is a module that has the setup scripts to automatically configure a stock Pi running Raspbian.
 

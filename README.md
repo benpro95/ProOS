@@ -42,36 +42,28 @@ the login script are listed below.
 
 ## Pi / Server Configuration and Login Script
 
-- Login to ProOS Pi / Server
-
+Login to ProOS Pi / Server
 ./login "Hostname"
 
-- Sync ProOS (quick run config script) Pi / Server
-
+Sync ProOS (quick run config script) Pi / Server
 ./login "Hostname" sync
 
-- Reset ProOS (full config script) Pi Only
-
+Reset ProOS (full config script) Pi Only
 ./login "Hostname" reset
 
-- Reset ProOS & Reinstall Packages (full config script) Pi Only
-
+Reset ProOS & Reinstall Packages (full config script) Pi Only
 ./login "Hostname" reinstall
 
-- Clean/Restore ProOS (delete /opt/rpi and run full config script) Pi Only
-
+Clean/Restore ProOS (delete /opt/rpi and run full config script) Pi Only
 ./login "Hostname" clean
 
-- Initialize ProOS (configure a base Pi or reconfigure one) Pi Only
-
+Initialize ProOS (configure a base Pi or reconfigure one) Pi Only
 ./login "Module" init "Hostname"
 
-- Command Reference List
-
+Command Reference List
 ./login cmds
 
-- Clean-up Temporary Files
-
+* Clean-up Temporary Files
 ./login rmtmp
 
 

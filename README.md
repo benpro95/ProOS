@@ -42,7 +42,7 @@ the login script are listed below.
 
 ## Pi / Server Configuration and Login Script
 
-Login to ProOS Pi / Server
+Login to ProOS Pi / Server\
 ./login "Hostname"
 
 Sync ProOS (quick run config script) Pi / Server
@@ -63,7 +63,7 @@ Initialize ProOS (configure a base Pi or reconfigure one) Pi Only
 Command Reference List
 ./login cmds
 
-* Clean-up Temporary Files
+Clean-up Temporary Files
 ./login rmtmp
 
 

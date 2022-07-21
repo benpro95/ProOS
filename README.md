@@ -28,18 +28,6 @@ It is similar to Ansible as running the script sets up the Pi over the network a
 (touchpi) - Touch Screen Home Automation Interface (runs custom web UI and controls LED strips)
 
 
-## Server VMs: 
-** located in the 'pve' folder
-
-(automate) - Home Automation Container (runs the custom web interface and backend services)
-
-(files) - SMB File Server Container (software ZFS RAID 3x4TB's mirrored configuration)
-
-(plex) - Plex Media Server (access local music and videos over the internet)
-
-(config) - Proxmox Hypervisor (configuration for my home server)
-
-
 The folder 'rpi' contains the programs/configs that are global to all the Pi projects and gets installed first before the specific module gets installed. It sets up Raspbian to boot in read/only mode using an OverlayFS, meaning all SD card writes are written to RAM. Changes made are not saved unless the command 'rpi rw' is entered on the Pi. this reboots it in read/write mode.
 
 The 'login' script that configures the Pi automatically switches to read/write mode before installing. The read/only boot was done because of OS corruption issues I encountered on the Pi's after unplugging them. In the read/only mode the Pi can be unplugged without having to login to issue the shutdown command. Other features that the global configuration has is that it disables all unnecessary disk writes and logs are written to RAM, a cleanup
@@ -54,29 +42,41 @@ the login script are listed below.
 
 ## Pi / Server Configuration and Login Script
 
-Login to ProOS Pi / Server
+- Login to ProOS Pi / Server
 ./login "Hostname"
 
-Sync ProOS (quick run config script) Pi / Server
+- Sync ProOS (quick run config script) Pi / Server
 ./login "Hostname" sync
 
-Reset ProOS (full config script) Pi Only
+- Reset ProOS (full config script) Pi Only
 ./login "Hostname" reset
 
-Reset ProOS & Reinstall Packages (full config script) Pi Only
+- Reset ProOS & Reinstall Packages (full config script) Pi Only
 ./login "Hostname" reinstall
 
-Clean/Restore ProOS (delete /opt/rpi and run full config script) Pi Only
+- Clean/Restore ProOS (delete /opt/rpi and run full config script) Pi Only
 ./login "Hostname" clean
 
-Initialize ProOS (configure a base Pi or reconfigure one) Pi Only
+- Initialize ProOS (configure a base Pi or reconfigure one) Pi Only
 ./login "Module" init "Hostname"
 
-Command Reference List
+- Command Reference List
 ./login cmds
 
-Clean-up Temporary Files
+- Clean-up Temporary Files
 ./login rmtmp
+
+
+## Server VMs: 
+** located in the 'pve' folder
+
+(automate) - Home Automation Container (runs the custom web interface and backend services)
+
+(files) - SMB File Server Container (software ZFS RAID 3x4TB's mirrored configuration)
+
+(plex) - Plex Media Server (access local music and videos over the internet)
+
+(config) - Proxmox Hypervisor (configuration for my home server)
 
 
 ** The SSH keys for the Pi's are not included in the repo, a new private key must be generated and setup on the server at the location '.ssh/rpi.rsa' and the public key included at the location '/rpi/config/authorized_keys' this will be uploaded to the Pi the first time the login script is ran. The Pi must have root login over SSH enabled with password auth turned on at first. This will allow the login script to connect over the network to the Pi. Once the setup script is complete it will disable password auth root login and only allow the RSA key based login this is done to enhance security and allow for password-less configuration of each Pi project.

@@ -2,8 +2,8 @@
 
 This repo contains all the custom scripts and programs that I run on my Raspberry Pi's and Proxmox server. Each folder is a module that has the setup scripts to automatically configure a stock Pi running Raspbian. The script sets up the Pi over the network and does not require attaching a keyboard and/or display. 
 
-## Pi Projects:\
-* (photos of the projects are in each modules folder)
+## Pi Projects:
+Photos of the projects are in each modules folder
 
 (airpi) - Portable AirPlay and Bluetooth Speaker
 
@@ -38,6 +38,7 @@ to hotspot mode if a local Wi-Fi network cannot be found on boot.
 This repo can run on any Linux server as all the tools used are standard to most installations. The 'login' script is used to manage and setup a stock Pi. The folder names for the modules are the hostnames of each Pi on my network, the setup script will automatically change the Pi's hostname to the module name and install the custom programs when using the 'init' argument. All arguments for
 the login script are listed below.
 
+** The SSH keys for the Pi's are not included in the repo, a new private key must be generated and setup on the server at the location '.ssh/rpi.rsa' and the public key included at the location '/rpi/config/authorized_keys' this will be uploaded to the Pi the first time the login script is ran. The Pi must have root login over SSH enabled with password auth turned on at first. This will allow the login script to connect over the network to the Pi. Once the setup script is complete it will disable password auth root login and only allow the RSA key based login this is done to enhance security and allow for password-less configuration of each Pi project.
 
 ## Pi / Server Configuration and Login Script
 
@@ -76,8 +77,5 @@ Clean-up Temporary Files\
 (plex) - Plex Media Server (access local music and videos over the internet)
 
 (config) - Proxmox Hypervisor (configuration for my home server)
-
-
-** The SSH keys for the Pi's are not included in the repo, a new private key must be generated and setup on the server at the location '.ssh/rpi.rsa' and the public key included at the location '/rpi/config/authorized_keys' this will be uploaded to the Pi the first time the login script is ran. The Pi must have root login over SSH enabled with password auth turned on at first. This will allow the login script to connect over the network to the Pi. Once the setup script is complete it will disable password auth root login and only allow the RSA key based login this is done to enhance security and allow for password-less configuration of each Pi project.
 
 ### by Ben Provenzano III

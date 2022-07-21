@@ -2,7 +2,8 @@
 
 This repo contains all the custom scripts and programs that I run on my Raspberry Pi's and Proxmox server. Each folder is a module that has the setup scripts to automatically configure a stock Pi running Raspbian. The script sets up the Pi over the network and does not require attaching a keyboard and/or display. 
 
-## Pi Projects: (photos of the projects are in each modules folder)
+## Pi Projects:\
+* (photos of the projects are in each modules folder)
 
 (airpi) - Portable AirPlay and Bluetooth Speaker
 
@@ -24,6 +25,7 @@ This repo contains all the custom scripts and programs that I run on my Raspberr
 
 (touchpi) - Touch Screen Home Automation Interface (runs custom web UI and controls LED strips)
 
+## Overview:
 
 The folder 'rpi' contains the programs/configs that are global to all the Pi projects and gets installed first before the specific module gets installed. It sets up Raspbian to boot in read/only mode using an OverlayFS, meaning all SD card writes are written to RAM. Changes made are not saved unless the command 'rpi rw' is entered on the Pi. this reboots it in read/write mode.
 

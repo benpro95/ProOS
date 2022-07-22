@@ -25,4 +25,4 @@ cd ~/ProOS
 echo "${greentty}Server modules:${resettty}"
 ls ~/ProOS/pve --hide=network --hide=config --hide=vmbkps --hide=photos --hide=*.conf --hide=*.txt
 echo "${greentty}Pi modules:${resettty}"
-ls --hide=pve --hide=login --hide=rpi --hide=sources --hide=wkst --hide=*.md
+ls --hide=pve --hide=login --hide=rpi --hide=sources --hide=*.md --hide=*.txt

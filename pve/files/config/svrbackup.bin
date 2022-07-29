@@ -79,7 +79,7 @@ do
         echo "Archive folder not found!"
       else
         echo "syncing 'Archive' share to ${!USB256VAR} drive..."
-        rsync --progress  $CHECKSUM -aP --exclude="Public/Movies/" \
+        rsync --progress $CHECKSUM -aP --exclude="Public/Movies/" --exclude="ScratchCopy" \
         /mnt/.archive/ /mnt/extbkps/${!USB256VAR}/.Archive/ -delete --delete-excluded
       fi
       #### Media Share ####
@@ -120,7 +120,7 @@ do
         echo "Archive folder not found!"
       else
         echo "syncing 'Archive' share to ${!HDDVAR} drive..."
-        rsync --progress $CHECKSUM -aP \
+        rsync --progress $CHECKSUM -aP  --exclude="ScratchCopy" \
         /mnt/.archive/ /mnt/extbkps/${!HDDVAR}/.Archive/ -delete --delete-excluded
       fi
       #### Media Share ####

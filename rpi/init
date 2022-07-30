@@ -110,6 +110,17 @@ echo temp = $tf\'F \($tc\'C\)
 exit
 ;;
 
+## Restart System
+restart)
+/usr/bin/systemctl reboot
+exit
+;;
+##
+reboot)
+/usr/bin/systemctl reboot
+exit
+;;
+
 overtemp)
 ## Over temperature action #######################
 ##################################################

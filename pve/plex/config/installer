@@ -16,7 +16,7 @@ apt-get --yes update
 ## Install Packages
 apt-get install -y --no-upgrade --ignore-missing unzip wget rsync curl screen \
  parallel ethtool aptitude sudo gnupg iptables libdbus-1-dev libdbus-glib-1-dev \
- locales apt-transport-https plexmediaserver bpytop htop
+ locales apt-transport-https plexmediaserver bpytop htop binutils
 
 ## Remove Packages
 apt-get remove -y --purge shellinabox nginx-full nginx nginx-common

@@ -12,7 +12,7 @@ apt-get --yes update
 ## Install Packages
 apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates bpytop htop \
  apt-transport-https wget unzip gnupg rsync curl screen parallel ethtool avahi-daemon \
- libdbus-1-dev libdbus-glib-1-dev locales aptitude sudo gnupg scrub 
+ libdbus-1-dev libdbus-glib-1-dev locales aptitude sudo gnupg scrub binutils
 
 ## Process Monitor Symlink
 ln -sf /usr/bin/bpytop /usr/bin/htop

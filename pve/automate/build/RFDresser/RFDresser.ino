@@ -27,7 +27,8 @@ ezButton button2(button_pin2);  // ezButton object II
 
 // Constants
 int debounce_time = 50; // Inputs debounce time (ms) 
-int confirmTime = 80;   // Min inputs steady state time (ms)
+//int confirmTime = 75;   // Min inputs steady state time (ms) (change to long not tested!)
+long unsigned confirmTime = 75;   // Min inputs steady state time (ms)
 
 // Variables
 int relaysState0 = LOW;

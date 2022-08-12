@@ -22,9 +22,9 @@ ezButton button1(button_pin1);  // ezButton object I
 ezButton button2(button_pin2);  // ezButton object II
   
 // Define Outputs
-#define relay0 13//9  // (Ceiling Lamp +12v) // [Pin #15]
-#define relay1 10 // (Mac Classic) // [Pin #16]
-#define relay2 11 // (Dresser Lamp) // [Pin #17]
+#define relay0 9  // (Ceiling Lamp +12v) [Pin #15]
+#define relay1 10 // (Mac Classic) [Pin #16]
+#define relay2 11 // (Dresser Lamp) [Pin #17]
 
 // Constants
 int debounce_time = 50; // Inputs debounce time (ms) 
@@ -39,11 +39,6 @@ static int lastConfirmedVector = 0;
 
 void setup() {
   Serial.begin(9600);
-// Buttons Setup  
-  pinMode(button_pin1, INPUT_PULLUP);
-  pinMode(button_pin2, INPUT_PULLUP);
-  button1.setDebounceTime(debounce_time);
-  button2.setDebounceTime(debounce_time); 
 // Output Setup
   pinMode(relay0, OUTPUT);
   digitalWrite(relay0, LOW);
@@ -51,6 +46,12 @@ void setup() {
   digitalWrite(relay1, LOW);
   pinMode(relay2, OUTPUT);  
   digitalWrite(relay2, LOW);
+// Buttons Setup  
+  delay(500); 
+  pinMode(button_pin1, INPUT_PULLUP);
+  pinMode(button_pin2, INPUT_PULLUP);
+  button1.setDebounceTime(debounce_time);
+  button2.setDebounceTime(debounce_time);   
 // RF Receive  
   delay(500); 
   mySwitch.enableReceive(0);  // Receiver on interrupt 0 => that is [pin #2]
@@ -74,8 +75,8 @@ void checkButtons() {
   button2.loop();
 // Read button states   
   int rawVector =
-    !button1.getState() << 1 |
-    !button2.getState() << 0;
+    button1.getState() << 1 |
+    button2.getState() << 0;
 // Count time that state is steady    
   if (rawVector != lastVector)
   {
@@ -91,14 +92,14 @@ void checkButtons() {
 // Set state if confirmed value is unique
   if(lastConfirmedVector != confirmedVector){
      if(confirmedVector == 1){
-       // toggle state of relay 1
-       stateChanged = HIGH;
-       relaysState1 = !relaysState1;
-     }
-     if(confirmedVector == 2){
        // toggle state of relay 0
        stateChanged = HIGH;
        relaysState0 = !relaysState0;
+     }
+     if(confirmedVector == 2){
+       // toggle state of relay 1
+       stateChanged = HIGH;
+       relaysState1 = !relaysState1;
      }
      if(confirmedVector == 3){
        // toggle state of relay 2
@@ -125,22 +126,22 @@ void receiveRF() {
     if (rfvalue == 734733) // Relay 2 on 
     {
       stateChanged = HIGH;
-      relaysState2 = HIGH;  
+      relaysState1 = HIGH;  
     }
     if (rfvalue == 734734) // Relay 2 off 
     {
       stateChanged = HIGH;
-      relaysState2 = LOW;
+      relaysState1 = LOW;
     } 
     if (rfvalue == 734735) // Relay 3 on
     {
       stateChanged = HIGH;
-      relaysState1 = HIGH;
+      relaysState2 = HIGH;
     }
     if (rfvalue == 734736) // Relay 3 off
     {
       stateChanged = HIGH;
-      relaysState1 = LOW;
+      relaysState2 = LOW;
     }
     mySwitch.resetAvailable();
   }

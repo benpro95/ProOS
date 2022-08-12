@@ -5,7 +5,6 @@
  * v2 03/20/2021
  * v3 08/11/2022
  433MHz Wireless Receiver Pair RFA
- ** Patent Pending **
  * Wireless 433Mhz Dresser Automation Controller/Receiver
  *
  */
@@ -149,15 +148,15 @@ void receiveRF() {
 
 void writeOutputs() {
   if (stateChanged == HIGH) {
-  // Turn Relay 0 On/Off
-  digitalWrite(relay0, relaysState0);
-  delay(75); 
-  // Turn Relay 1 On/Off
-  digitalWrite(relay1, relaysState1);
-  delay(75);   
-  // Turn Relay 2 On/Off
-  digitalWrite(relay2, relaysState2);    
-  delay(75);  
-  stateChanged = LOW;  
+    // Turn Relay 0 On/Off
+    digitalWrite(relay0, relaysState0);
+    delay(75); 
+    // Turn Relay 1 On/Off
+    digitalWrite(relay1, relaysState1);
+    delay(75);   
+    // Turn Relay 2 On/Off
+    digitalWrite(relay2, relaysState2);    
+    delay(75);  
+    stateChanged = LOW;  
   }  
 }

@@ -1,38 +1,42 @@
 /*
  * Ben Provenzano III
  * -----------------
- * v1 6/3/2020
- * v2 3/20/2021
+ * v1 06/03/2020
+ * v2 03/20/2021
+ * v3 08/11/2022
  433MHz Wireless Receiver Pair RFA
  ** Patent Pending **
  * Wireless 433Mhz Dresser Automation Controller/Receiver
- * v2
  *
  */
  
-
+// Libraries
 #include <RCSwitch.h>
 #include <ezButton.h>
 RCSwitch mySwitch = RCSwitch();
 
-// Setup buttons
-const int button_pin1 = 6; // Power Button
+// Define Buttons
+const int button_pin1 = 6;      // Power Button
 ezButton button1(button_pin1);  // ezButton object I
 
-// Relays state variables
-int relaysState0 = LOW;
+// Define Outputs
+#define relay0 4 // MOSFET Output
+#define led 13   // Status LED
 
-// Setup outputs
-#define relay1 4 // MOSFET Output
-#define led 13
+// Variables
+int relaysState0 = LOW;
+int stateChanged = LOW;
 
 void setup() {
-  pinMode(relay1, OUTPUT); 
-  pinMode(led, OUTPUT);
+// Buttons Setup
   pinMode(button_pin1, INPUT_PULLUP);
-  button1.setDebounceTime(75);
-  digitalWrite(relay1, LOW);
+  button1.setDebounceTime(50);
+// Output Setup
+  pinMode(relay0, OUTPUT); 
+  pinMode(led, OUTPUT);
+  digitalWrite(relay0, LOW);
   digitalWrite(led, HIGH);
+// RF Receive
   delay(500); 
   mySwitch.enableReceive(0);  // Receiver on interrupt 0 => that is [pin #2 on uno] [pin #3 on micro]
   mySwitch.setProtocol(1);
@@ -40,42 +44,44 @@ void setup() {
   digitalWrite(led, LOW);
 }
 
-void loop () {
+void loop() {
+  checkButtons();
+  receiveRF();
+  writeOutputs();
+}
 
-// RF Controller
+void receiveRF() {
   if (mySwitch.available()) {
-    
-    unsigned long value = mySwitch.getReceivedValue();
-    
-    if (value == 834511)
+    unsigned long rfvalue = mySwitch.getReceivedValue();
+    if (rfvalue == 834511)
     {
-      digitalWrite(relay1, HIGH);
-      digitalWrite(led, HIGH);
+      stateChanged = HIGH;
       relaysState0 = HIGH;  
-      delay(100);
     }
-    
-    if (value == 834512)
+    if (rfvalue == 834512)
     {
-      digitalWrite(relay1, LOW);
-      digitalWrite(led, LOW);
+      stateChanged = HIGH;
       relaysState0 = LOW;
-      delay(100);  
     } 
-  
-    {
-       mySwitch.resetAvailable();
+    mySwitch.resetAvailable();
   }
 }
-// Button loops must be last
-    button1.loop();
-    {
-     if(button1.isPressed()){
-     // toggle state of relays
-     relaysState0 = !relaysState0;
-     // control relays according to state
-     digitalWrite(relay1, relaysState0);
-     digitalWrite(led, relaysState0);
-    } 
-  }
+
+void checkButtons() {
+  button1.loop();
+  if(button1.isPressed()){
+    // toggle state of relay 1
+    relaysState0 = !relaysState0;
+    stateChanged = HIGH;
+  } 
+}
+
+void writeOutputs() {
+  if (stateChanged == HIGH) {
+  // Turn Relay 1 On/Off
+  digitalWrite(relay0, relaysState0);
+  digitalWrite(led, relaysState0);  
+  delay(100);  
+  stateChanged = LOW;  
+  }  
 }

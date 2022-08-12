@@ -1,130 +1,162 @@
 /*
  * Ben Provenzano III
  * -----------------
- * v1 6/3/2020
- * v2 3/20/2021
+ * v1 06/03/2020
+ * v2 03/20/2021
+ * v3 08/11/2022
  433MHz Wireless Receiver Pair RFA
  ** Patent Pending **
  * Wireless 433Mhz Dresser Automation Controller/Receiver
- * v2
  *
  */
  
-
+// Libraries
 #include <RCSwitch.h>
 #include <ezButton.h>
 RCSwitch mySwitch = RCSwitch();
 
-// Setup buttons
+// Define Buttons
 const int button_pin1 = 5; // [Pin #11] (Light #1 Button)
-ezButton button1(button_pin1);  // ezButton object I
 const int button_pin2 = 6; // [Pin #12] (Light #2 Button)
+ezButton button1(button_pin1);  // ezButton object I
 ezButton button2(button_pin2);  // ezButton object II
+  
+// Define Outputs
+#define relay0 13//9  // (Ceiling Lamp +12v) // [Pin #15]
+#define relay1 10 // (Mac Classic) // [Pin #16]
+#define relay2 11 // (Dresser Lamp) // [Pin #17]
 
-// Relays state variables
+// Constants
+int debounce_time = 50; // Inputs debounce time (ms) 
+int confirmTime = 80;   // Min inputs steady state time (ms)
+
+// Variables
 int relaysState0 = LOW;
 int relaysState1 = LOW;
 int relaysState2 = LOW;   
-
-// Setup relays
-#define relay1 9 // (Ceiling Lamp +12v) // [Pin #15]
-#define relay2 10 // (Mac Classic) // [Pin #16]
-#define relay3 11 // (Dresser Lamp) // [Pin #17]
+int stateChanged = LOW;
+static int lastConfirmedVector = 0;
 
 void setup() {
   Serial.begin(9600);
-  mySwitch.enableReceive(0);  // Receiver on inerrupt 0 => that is [pin #2]
-  mySwitch.setProtocol(1);
-  mySwitch.setPulseLength(183);
-  pinMode(relay1, OUTPUT);
-  pinMode(relay2, OUTPUT);
-  pinMode(relay3, OUTPUT);  
+// Buttons Setup  
   pinMode(button_pin1, INPUT_PULLUP);
   pinMode(button_pin2, INPUT_PULLUP);
+  button1.setDebounceTime(debounce_time);
+  button2.setDebounceTime(debounce_time); 
+// Output Setup
+  pinMode(relay0, OUTPUT);
+  digitalWrite(relay0, LOW);
+  pinMode(relay1, OUTPUT);
   digitalWrite(relay1, LOW);
+  pinMode(relay2, OUTPUT);  
   digitalWrite(relay2, LOW);
-  digitalWrite(relay3, LOW);
-  button1.setDebounceTime(75);
-  button2.setDebounceTime(75);
+// RF Receive  
+  delay(500); 
+  mySwitch.enableReceive(0);  // Receiver on interrupt 0 => that is [pin #2]
+  mySwitch.setProtocol(1);
+  mySwitch.setPulseLength(183);
 }
 
-void loop () {
+void loop() {
+  checkButtons();
+  receiveRF();
+  writeOutputs();
+}
 
-// RF Controller
+void checkButtons() {
+// Reset state
+  static int confirmedVector = 0;
+  static int lastVector = -1;
+  static long unsigned int heldVector = 0L;
+// ezButton calls
+  button1.loop();
+  button2.loop();
+// Read button states   
+  int rawVector =
+    !button1.getState() << 1 |
+    !button2.getState() << 0;
+// Count time that state is steady    
+  if (rawVector != lastVector)
+  {
+    heldVector = millis();
+    lastVector = rawVector;
+  }
+// Return state after settling
+  long unsigned heldTime = (millis() - heldVector);
+  if (heldTime >= confirmTime)
+  {
+    confirmedVector = rawVector;
+  }
+// Set state if confirmed value is unique
+  if(lastConfirmedVector != confirmedVector){
+     if(confirmedVector == 1){
+       // toggle state of relay 1
+       stateChanged = HIGH;
+       relaysState1 = !relaysState1;
+     }
+     if(confirmedVector == 2){
+       // toggle state of relay 0
+       stateChanged = HIGH;
+       relaysState0 = !relaysState0;
+     }
+     if(confirmedVector == 3){
+       // toggle state of relay 2
+       stateChanged = HIGH;
+       relaysState2 = !relaysState2;
+     }   
+  }
+ lastConfirmedVector = confirmedVector;   
+}
+
+void receiveRF() {
   if (mySwitch.available()) {
-    
-    unsigned long value = mySwitch.getReceivedValue();
-    
-    if (value == 734731) //12v aux on
+    unsigned long rfvalue = mySwitch.getReceivedValue();
+    if (rfvalue == 734731) // 12v aux on
     {
-      digitalWrite(relay1, HIGH);
+      stateChanged = HIGH;
       relaysState0 = HIGH;  
-      delay(100);
-    }
-    
-    if (value == 734732) //12v aux off
+    }  
+    if (rfvalue == 734732) // 12v aux off
     {
-      digitalWrite(relay1, LOW);
+      stateChanged = HIGH;
       relaysState0 = LOW;
-      delay(100);  
     } 
-    
-    if (value == 734733) //relay 2 on 
+    if (rfvalue == 734733) // Relay 2 on 
     {
-      digitalWrite(relay2, HIGH);
+      stateChanged = HIGH;
       relaysState2 = HIGH;  
-      delay(100);
     }
-    
-    if (value == 734734) //relay 2 off 
+    if (rfvalue == 734734) // Relay 2 off 
     {
-      digitalWrite(relay2, LOW);
+      stateChanged = HIGH;
       relaysState2 = LOW;
-      delay(100);  
     } 
-    
-    if (value == 734735) //relay 3 on
+    if (rfvalue == 734735) // Relay 3 on
     {
-      digitalWrite(relay3, HIGH);
+      stateChanged = HIGH;
       relaysState1 = HIGH;
-      delay(100);
     }
-    
-    if (value == 734736) //relay 3 off
+    if (rfvalue == 734736) // Relay 3 off
     {
-      digitalWrite(relay3, LOW);
+      stateChanged = HIGH;
       relaysState1 = LOW;
-      delay(100);
-    } 
-    {
-       mySwitch.resetAvailable();
+    }
+    mySwitch.resetAvailable();
   }
 }
-// Button loops must be last
-    button1.loop();
-    button2.loop();
-    {
-     if(button1.isPressed() & button2.isPressed()){
-     // toggle state of relays
-     relaysState2 = !relaysState2;
-     // control relays according to state
-     digitalWrite(relay2, relaysState2);
-    }
-    else
-    {
-     delay(25); 
-     if(button1.isPressed()){
-     // toggle state of relays
-     relaysState1 = !relaysState1;
-     // control relays according to state
-     digitalWrite(relay3, relaysState1);
-     }
-     if(button2.isPressed()){
-     // toggle state of relays
-     relaysState0 = !relaysState0;
-     // control relays according to state
-     digitalWrite(relay1, relaysState0);
-     }
-    } 
-  }
+
+void writeOutputs() {
+  if (stateChanged == HIGH) {
+  // Turn Relay 0 On/Off
+  digitalWrite(relay0, relaysState0);
+  delay(75); 
+  // Turn Relay 1 On/Off
+  digitalWrite(relay1, relaysState1);
+  delay(75);   
+  // Turn Relay 2 On/Off
+  digitalWrite(relay2, relaysState2);    
+  delay(75);  
+  stateChanged = LOW;  
+  }  
 }

@@ -43,27 +43,16 @@ chmod 644 /home/server/.hushlogin
 chown server:server /home/server/.hushlogin
 
 ## Regions Folder
-if [ -e /mnt/ben/Documents ]; then
+if [ ! -e /mnt/ben/Documents/Regions ]; then
   mkdir -p /mnt/ben/Documents/Regions
   chown server:server /mnt/ben/Documents/Regions
 fi
 
-## Scratch Drive Copy Folder
-if [ -e /mnt/.archive ]; then
-  if [ ! -e /mnt/.archive/ScratchCopy ]; then
-    mkdir -p /mnt/.archive/ScratchCopy
-    chown ben:shared /mnt/.archive/ScratchCopy
-    chmod -R 777 /mnt/.archive/ScratchCopy
-  fi
-fi
-
 ## User Symlinks
 if [ ! -e "/home/server/ProOS" ]; then
-  echo "Linking ProOS to server home folder."	
   ln -s /mnt/ben/ProOS /home/server/ProOS
 fi
 if [ ! -e "/home/server/Downloads" ]; then
-  echo "Linking downloads to server home folder."	
   ln -s /mnt/scratch/downloads /home/server/Downloads
 fi
 

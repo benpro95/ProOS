@@ -136,7 +136,6 @@ REGROOT="/mnt/ben/Documents/Regions"
 if [[ $REPLY =~ ^[Rr]$ ]]
 then
   echo "removing all regions..."
-  rm -f $REGROOT/Downloads
   rm -f $REGROOT/Snapshots
   rm -f $REGROOT/Private
   rm -f $REGROOT/Public
@@ -198,8 +197,8 @@ then
   echo "(to)"
   echo "ZFS datastore downloads"
   echo " "
-  echo "(c) copy all files"
-  echo "(d) detach downloads region"
+  echo "(c) copy files to datastore"
+  echo "(d) delete downloads region"
   echo "(enter) exit utility"
   echo " "
   REPLY=""
@@ -211,14 +210,15 @@ then
   then
     echo " "
     echo "copying files..."
+    if [ ! -e "$REGROOT/Downloads" ]; then
+      mkdir -p $REGROOT/Downloads
+      chmod 777 $REGROOT/Downloads
+    fi
     rsync --progress -aPO \
      --exclude='Thumbs.db' --exclude='.ptmp' \
      --exclude='.Trash*' --exclude='$RECYCLE.BIN' \
-     /mnt/scratch/downloads/ /mnt/.archive/ScratchCopy/
-    if [ ! -e "$REGROOT/Downloads" ]; then
-      echo "attaching downloads region..."
-      ln -s /mnt/.archive/ScratchCopy $REGROOT/Downloads
-    fi
+     /mnt/scratch/downloads/ $REGROOT/Downloads/
+    echo "copy completed."
     REPLY=""
   fi
   ##################################  
@@ -227,10 +227,10 @@ then
   then
     echo " "
     if [ -e "$REGROOT/Downloads" ]; then
-      echo "detaching downloads region..."
-      rm $REGROOT/Downloads
+      rm -rfv $REGROOT/Downloads
+      echo "deleted downloads region."
     else
-      echo "region already detached."      
+      echo "region does not exist, not deleting."      
     fi    
     REPLY=""
   fi

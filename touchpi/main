@@ -8,7 +8,7 @@ case "$1" in
 
 boot)
 ## LCD Brightness
-sh -c 'echo "120" > /sys/class/backlight/rpi_backlight/brightness'
+sh -c 'echo "110" > /sys/class/backlight/rpi_backlight/brightness'
 ## Start X Interface
 systemctl start rpi-x11
 systemctl start rpi-restartx.timer
@@ -17,7 +17,7 @@ systemctl start rpi-restartx.timer
 ## Auto Hotspot (on boot only)
 systemctl restart rpi-netdetect
 ## Disable HDMI (saves 30mA)
-tvservice -o
+/usr/bin/tvservice -o
 exit
 ;;
 
@@ -30,6 +30,12 @@ exit
 lcdoff)
 ## LCD off
 sudo sh -c 'echo 1 > /sys/class/backlight/rpi_backlight/bl_power'
+exit
+;;
+
+lcdstd)
+## Standard LCD Brightness
+sudo sh -c 'echo "110" > /sys/class/backlight/rpi_backlight/brightness'
 exit
 ;;
 

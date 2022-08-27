@@ -143,22 +143,9 @@ apt-get install -y --no-upgrade --ignore-missing xserver-xorg xorg \
  libxext6 libxtst6 lxde-core libatlas-base-dev x11-common \
  synaptic lxterminal xprintidle xdotool wmctrl
 
-## Install Chromium (manual, lastest version GPU support broken)
-if [ "$REINSTALL" = "yes" ]; then
-  rm -f /usr/bin/chromium-browser
-fi
-if [ ! -e /usr/bin/chromium-browser ]; then
-  apt-get remove --allow-change-held-packages --purge -y chromium-browser chromium-codecs-ffmpeg chromium-codecs-ffmpeg-extra
-  wget "http://archive.raspberrypi.org/debian/pool/main/c/chromium-browser/chromium-browser_88.0.4324.187-rpt1_armhf.deb"
-  wget "http://archive.raspberrypi.org/debian/pool/main/c/chromium-browser/chromium-codecs-ffmpeg_88.0.4324.187-rpt1_armhf.deb"
-  wget "http://archive.raspberrypi.org/debian/pool/main/c/chromium-browser/chromium-codecs-ffmpeg-extra_88.0.4324.187-rpt1_armhf.deb"
-  dpkg -i chromium-codecs-ffmpeg_88.0.4324.187-rpt1_armhf.deb
-  dpkg -i chromium-codecs-ffmpeg-extra_88.0.4324.187-rpt1_armhf.deb
-  dpkg -i chromium-browser_88.0.4324.187-rpt1_armhf.deb
-  apt-mark hold chromium-browser
-  apt-mark hold chromium-codecs-ffmpeg
-  apt-mark hold chromium-codecs-ffmpeg-extra
-fi
+## Install Chromium
+apt-mark unhold chromium-browser chromium-codecs-ffmpeg chromium-codecs-ffmpeg-extra
+apt-get install -y --no-upgrade --ignore-missing chromium-browser chromium-codecs-ffmpeg chromium-codecs-ffmpeg-extra
 
 ## Disable Swap
 dphys-swapfile swapoff
@@ -262,11 +249,22 @@ if [ "${OSVER}" = "bullseye" ]; then
 fi
 
 ## OMX-Player
+if [ "$REINSTALL" = "yes" ]; then
+  rm -f /usr/bin/omxplayer
+fi
 if [ ! -e /usr/bin/omxplayer ]; then
-  if [ "$REINSTALL" = "yes" ]; then
-    rm -f /usr/bin/omxplayer
-  fi
   dpkg -i /opt/rpi/pkgs/omxplayer_20190723_armhf.deb
+fi
+
+## Pi 3 Ethernet LED Control 
+if [ "$REINSTALL" = "yes" ]; then
+  rm -f /usr/bin/lan951x-led-ctl
+fi
+if [ ! -e /usr/bin/lan951x-led-ctl ]; then
+  cd /opt/rpi/pkgs/lan951x-led-ctl-master
+  make
+  cp -v lan951x-led-ctl /usr/bin/
+  cd $BIN
 fi
 
 ## AirPlay 1 Support
@@ -481,10 +479,13 @@ chown -fR root:root /etc/systemd/system/*.timer
 chmod -fR 644 /etc/systemd/system/*.service
 chown -fR root:root /etc/systemd/system/*.service
 
-## Network Startup
+## Startup Scripts (critical)
 cp -f $BIN/netmode.sh /etc
 chmod 755 /etc/netmode.sh
 chown root:root /etc/netmode.sh
+cp -f $BIN/preinit.sh /etc
+chmod 755 /etc/preinit.sh
+chown root:root /etc/preinit.sh
 
 ## ShairPort AirPlay Support
 rm -f /etc/init.d/shairport-sync

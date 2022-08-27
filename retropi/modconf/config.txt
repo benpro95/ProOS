@@ -45,3 +45,6 @@ dtoverlay=disable-bt
 #------Reboot when exceeds-----
 temp_limit=75
 
+#------Disable the activity LED-----
+dtparam=act_led_trigger=none
+dtparam=act_led_activelow=off

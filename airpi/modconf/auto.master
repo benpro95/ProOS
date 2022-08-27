@@ -1,1 +1,0 @@
-/mnt/smb                 /etc/auto.map --timeout=300 --ghost

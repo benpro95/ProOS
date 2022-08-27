@@ -3,8 +3,9 @@
 #-------GPU memory-------
 gpu_mem=64
 
-#-------Max USB Current-------
-max_usb_current=1
+#-------Max CPU Speed-------
+arm_freq=1200
+arm_freq_max=1200
 
 #-------Disable Ram temp refresh every 500ms---------
 disable_pvt=1
@@ -31,5 +32,5 @@ dtoverlay=pi3-disable-bt
 start_x=0
 
 #------Reboot when exceeds-----
-temp_limit=78
+temp_limit=75
 

@@ -3,6 +3,10 @@
 #-------GPU memory-------
 gpu_mem=192
 
+#-------Max CPU Speed-------
+arm_freq=1000
+arm_freq_max=1000
+
 #-------Max USB Current-------
 max_usb_current=1
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-## NES Pi Configuration Script v7.0
+## RetroPi Configuration Script v7.0
 
 # Import Host name
 HOSTNAME=`cat /opt/rpi/config/hostname`

@@ -3,8 +3,12 @@
 #-------GPU memory-------
 gpu_mem=16
 
+#-------CPU clock speed-------
+arm_freq=900
+arm_freq_max=900
+
 #-------Max USB Current-------
-max_usb_current=1
+#max_usb_current=1
 
 #-------Disable Ram temp refresh every 500ms---------
 disable_pvt=1

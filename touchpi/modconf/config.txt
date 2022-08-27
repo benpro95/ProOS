@@ -45,6 +45,10 @@ disable_camera_led=0
 #-------GPU memory-------
 gpu_mem=128
 
+#-------Max CPU Speed-------
+arm_freq=1200
+arm_freq_max=1200
+
 #-------Max USB Current -------
 #max_usb_current=1
 

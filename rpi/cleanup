@@ -15,8 +15,10 @@ truncate -s 0 /home/pi/.xsession-errors
 truncate -s 0 /home/pi/.bash_history
 truncate -s 128k /tmp/netstat.txt
 
-## Clean cache
-rm -rf /home/pi/.config/chromium/hyphen-data/*
+## Clean cache folders
+#rm -rf /home/pi/.config/chromium/hyphen-data/*
+#rm -rf /home/pi/.config/chromium/OnDeviceHeadSuggestModel/*
+rm -rf /home/pi/.config/chromium/*
 rm -rf /var/www/sessions/*
 
 ## Clean systemd logs

@@ -7,7 +7,10 @@
 case "$1" in
 
 boot)
-## RetroPie will autostart on boot
+## CPU speed scaling 
+echo "performance" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+## Disable ethernet LEDs
+/usr/bin/lan951x-led-ctl --fdx=0 --lnk=0 --spd=0
 exit
 ;;
 

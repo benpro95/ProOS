@@ -111,7 +111,7 @@ apt-get install -y --no-upgrade --ignore-missing locales console-setup \
  
 ## Developer Packages 
 apt-get install -y --no-upgrade --ignore-missing libgtk2.0-dev libbluetooth3 libbluetooth-dev \
- libavfilter-dev libavdevice-dev libavcodec-dev libavc1394-dev libatlas-base-dev \
+ libavfilter-dev libavdevice-dev libavcodec-dev libavc1394-dev libatlas-base-dev libusb-1.0-0-dev \
  libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev libdbus-glib-1-dev \
  libass-dev libfreetype6-dev libgpac-dev libsdl1.2-dev libtheora-dev libssl-dev \
  libva-dev libvdpau-dev libvorbis-dev libx11-dev libxext-dev libxfixes-dev \

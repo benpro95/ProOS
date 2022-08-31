@@ -602,7 +602,7 @@ else
   XMITCMD="rfb3" ; XMIT 
 fi
 ## LEDwalls
-/opt/rpi/leds prism
+/opt/rpi/leds abstract
 /opt/rpi/leds fc norm
 exit
 ;;

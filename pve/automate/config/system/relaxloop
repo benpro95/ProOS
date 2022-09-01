@@ -5,11 +5,17 @@
 ###########################################################
 ###########################################################
 
-## Loop on Startup
+## Load settings file into array
+mapfile -t SETTINGS < <(wget -O- -q http://files.home/Relaxation/Settings.txt)
+
+## Loop on startup / time trigger
 if [ "$rpi_relaxmode" = "boot" ]; then
-  rpi_relaxmode=`wget -O- -q http://files.home/Default.txt`
+  ## Set default mode from settings
+  rpi_relaxmode="${SETTINGS[2]%$'\n'}"
+  ## Read system time  
   DOW=$(date +%u)
   HOUR=$(date +%H)
+  ## Start loop based on current time
   if [ "$DOW" = "5" ] || [ "$DOW" = "6" ]; then
     echo "is Fri or Sat, hour is $HOUR"
     if (( 9 <= 10#$HOUR && 10#$HOUR < 23 )); then
@@ -27,12 +33,12 @@ if [ "$rpi_relaxmode" = "boot" ]; then
 fi
 
 ## Capitialize first letter of argument
-relaxmode="${rpi_relaxmode^}"
+FILE="${rpi_relaxmode^}"
 
 ## Play audio in loop on Apple TV
-echo "starting $relaxmode sound..."
-/usr/bin/ffmpeg -stream_loop -1 -i http://files.home/$relaxmode.mp3 -f mp3 - | /usr/local/bin/atvremote \
- --id C869CD3A8484 --raop-credentials :78390ea322d9d7ac11b2d87079116b36b2916dd5ca8809d907fe21b31c8872bf::f9f111dfaa53f183 \
- stream_file=-
+echo "starting $FILE sound..."
+/usr/bin/ffmpeg -stream_loop -1 -i http://files.home/Relaxation/$FILE.mp3 -f mp3 - \
+ | /usr/local/bin/atvremote --id "${SETTINGS[0]%$'\n'}" \
+ --raop-credentials "${SETTINGS[1]%$'\n'}" stream_file=-
 
 exit

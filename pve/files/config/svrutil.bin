@@ -73,7 +73,8 @@ echo "(v) start/stop VM(s)"
 echo "(g) generate a log file"
 echo "(p) push ProOS to GitHub"
 echo "(s) attach/detach snapshots"  
-echo "(c) copy downloads to datastore" 
+echo "(c) copy downloads to datastore"
+echo "(w) attach/detach WWW root" 
 echo "(enter) exit to shell"
 echo " "
 read -p "select option: " -n 1 -r
@@ -139,6 +140,21 @@ then
   rm -f $REGROOT/Snapshots
   rm -f $REGROOT/Private
   rm -f $REGROOT/Public
+  rm -f $REGROOT/WWW
+  REPLY=""
+  ENDPGRM
+fi
+## WWW Share
+if [[ $REPLY =~ ^[Ww]$ ]]
+then
+  echo " "
+  if [ -e "$REGROOT/WWW" ]; then
+    echo "detaching WWW root region..."
+    rm $REGROOT/WWW
+  else
+    echo "attaching WWW root region..."
+    ln -s /mnt/.archive/WWW $REGROOT/WWW
+  fi
   REPLY=""
   ENDPGRM
 fi

@@ -4,15 +4,11 @@ This repo contains all the custom scripts and programs that I run on my Raspberr
 
 ## Pi Projects
 
-(airpi) - Portable AirPlay and Bluetooth Speaker
-
 (aptcam) - Motion Detecting IR Security Camera (uploads videos to Google Drive)
 
 (btpi) - Bluetooth Receiver (add bluetooth support to a vintage stereo system)
 
 (hifi) - AirPlay and Bluetooth Receiver (optical and coaxial audio outputs)
-
-(hfifmini) - AirPlay and Bluetooth Receiver (custom bedroom audio system 2x20watts)
 
 (homepi) - Motion Detecting IR Security Camera Hub (for family home, two exernal cameras)
 

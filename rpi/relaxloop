@@ -7,7 +7,7 @@
 
 ## Loop on Startup
 if [ "$rpi_relaxmode" = "boot" ]; then
-  rpi_relaxmode=`cat /mnt/smb/Media/Sounds/Relaxation/MiniBoot.txt`
+  rpi_relaxmode=`wget -O- -q http://files.home/Default.txt`
   DOW=$(date +%u)
   HOUR=$(date +%H)
   if [ "$DOW" = "5" ] || [ "$DOW" = "6" ]; then
@@ -31,6 +31,6 @@ relaxmode="${rpi_relaxmode^}"
 
 ## Play Audio in Loop
 echo "starting $relaxmode sound..."
-/usr/bin/omxplayer -o alsa --loop "/mnt/smb/Media/Sounds/Relaxation/$relaxmode.mp3"
+/usr/bin/omxplayer -o alsa --loop "http://files.home/$relaxmode.mp3"
 
 exit

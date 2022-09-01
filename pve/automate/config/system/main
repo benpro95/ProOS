@@ -315,7 +315,7 @@ return
 CALLHTTP(){
 /usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 15 \
  --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive --data \
- "var=$CMDARG&arg=$CMD&action=main" http://$TARGET.local/exec.php
+ "var=$CMDARG&arg=$CMD&action=main" http://$TARGET/exec.php
 CMD=""
 CMDARG=""
 TARGET=""
@@ -334,42 +334,43 @@ case "$1" in
 relax)
 ### Relax Sounds Playback
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
-  TARGET="hifimini"
+  systemctl stop relaxloop
+  systemctl set-environment rpi_relaxmode=$CMDARG
+  systemctl start relaxloop
 else
-  TARGET="hifi"
+  TARGET="hifi.home"
   ## Optical Decoder Input
-  XMITCMD="coaxial" ; XMIT 
+  XMITCMD="coaxial" ; XMIT
   ## Preamp DAC Input
   XMITCMD="dac" ; XMIT 
+  ## Play Audio in Loop on System
+  CMD="relax"
+  CALLHTTP
 fi
-## Play Audio in Loop on System
-CMD="relax"
-CALLHTTP
 exit
 ;;
 
 stoprelax)
 ## Stop Relax Sounds
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
-  TARGET="hifimini"
+  systemctl stop relaxloop
 else
-  TARGET="hifi"
+  TARGET="hifi.home"
   ## USB Decoder Input
   XMITCMD="usb" ; XMIT
   ## Preamp DAC Input
-  XMITCMD="dac" ; XMIT
+  XMITCMD="inauto" ; XMIT
+  ## Stop Audio on System
+  CMD="stoprelax"
+  CALLHTTP  
 fi
-CMD="stoprelax"
-CALLHTTP
 exit
 ;;
 
 ### Relax Sounds Volume Up
 relaxvup)
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
-  TARGET="hifimini"
-  CMD="vup"	
-  CALLHTTP
+  echo "Not implemented"
 else
   XMITCMD="upc" ; XMIT
 fi   
@@ -379,9 +380,7 @@ exit
 ### Relax Sounds Volume Down
 relaxvdwn)
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
-  TARGET="hifimini"
-  CMD="vdwn"		
-  CALLHTTP
+  echo "Not implemented"
 else
   XMITCMD="dwnc" ; XMIT
 fi

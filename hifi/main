@@ -8,6 +8,10 @@ ARG2=$2
 case "$1" in
 
 boot)
+## Startup Sound
+/usr/bin/amixer set PCM 10%
+/usr/bin/aplay /opt/rpi/sounds/ps2.wav
+/usr/bin/amixer set PCM 100%
 ## CPU Activity LED Mode
 echo cpu | tee /sys/class/leds/led0/trigger &>/dev/null
 ## AirPlay Support
@@ -18,17 +22,10 @@ systemctl start hciuart
 systemctl start bluetooth
 systemctl start bt-agent@hci0
 systemctl start bluealsa-aplay
-## Attach Server SMB Share
-if ping -c 1 10.177.1.4 > /dev/null 2> /dev/null
-then
-  systemctl start autofs
-else
-  echo "server not found."  
-fi
 ## Auto Hotspot (on boot only)
 # only run if bluetooth not connected
 if [ ! -e /tmp/bt.connected ]; then
-   systemctl start rpi-netdetect.service
+  systemctl start rpi-netdetect.service
 fi
 ## Disable HDMI (saves 30mA)
 tvservice -o

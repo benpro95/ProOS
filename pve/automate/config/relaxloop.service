@@ -1,0 +1,11 @@
+[Unit]
+Description=Relax Sound Loop
+Conflicts=shutdown.target
+After=time-sync.target
+Wants=time-sync.target
+
+[Service]
+User=root
+ExecStart=/opt/system/relaxloop
+Restart=on-failure
+RestartSec=5

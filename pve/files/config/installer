@@ -11,7 +11,7 @@ apt-get --yes update
 apt-get install -y --no-upgrade --ignore-missing unzip wget \
  rsync curl screen scrub ethtool aptitude sudo samba sshpass \
  libdbus-1-dev libdbus-glib-1-dev bc git locales mailutils \
- neofetch apt-transport-https nmap bpytop htop binutils
+ neofetch apt-transport-https nmap bpytop htop binutils lighttpd
 
 ## Process Monitor Symlink
 ln -sf /usr/bin/bpytop /usr/bin/pytop
@@ -118,6 +118,13 @@ chown root:root /usr/bin/camcleanup
 cp /tmp/config/smb.conf /etc/samba
 chmod 644 /etc/samba/smb.conf
 chown root:root /etc/samba/smb.conf
+
+## Light HTTP Server
+cp -f /tmp/config/lighttpd.conf /etc/lighttpd/
+chmod 644 /etc/lighttpd/lighttpd.conf
+chown root:root /etc/lighttpd/lighttpd.conf
+systemctl enable lighttpd
+systemctl restart lighttpd
 
 ## Clean-up
 systemctl daemon-reload

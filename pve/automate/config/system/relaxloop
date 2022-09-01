@@ -1,0 +1,38 @@
+#!/bin/bash
+###########################################################
+###########################################################
+## Start Relax Loop (triggered by systemd) ################
+###########################################################
+###########################################################
+
+## Loop on Startup
+if [ "$rpi_relaxmode" = "boot" ]; then
+  rpi_relaxmode=`wget -O- -q http://files.home/Default.txt`
+  DOW=$(date +%u)
+  HOUR=$(date +%H)
+  if [ "$DOW" = "5" ] || [ "$DOW" = "6" ]; then
+    echo "is Fri or Sat, hour is $HOUR"
+    if (( 9 <= 10#$HOUR && 10#$HOUR < 23 )); then
+      echo "not starting, time is between 9am-11pm"
+      exit
+    fi
+  else
+    echo "is Sun or weekday, hour is $HOUR"
+    if (( 9 <= 10#$HOUR && 10#$HOUR < 21 )); then
+      echo "not starting, time is between 9am-9pm"
+      exit
+    fi
+  fi
+  echo "time is between 9pm-9am"
+fi
+
+## Capitialize first letter of argument
+relaxmode="${rpi_relaxmode^}"
+
+## Play audio in loop on Apple TV
+echo "starting $relaxmode sound..."
+/usr/bin/ffmpeg -stream_loop -1 -i http://files.home/$relaxmode.mp3 -f mp3 - | /usr/local/bin/atvremote \
+ --id C869CD3A8484 --raop-credentials :78390ea322d9d7ac11b2d87079116b36b2916dd5ca8809d907fe21b31c8872bf::f9f111dfaa53f183 \
+ stream_file=-
+
+exit

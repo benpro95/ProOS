@@ -12,7 +12,7 @@ apt-get --yes update
 ## Install Packages
 apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates bpytop htop \
  apt-transport-https wget unzip gnupg rsync curl screen parallel ethtool avahi-daemon \
- libdbus-1-dev libdbus-glib-1-dev locales aptitude sudo gnupg scrub binutils
+ libdbus-1-dev libdbus-glib-1-dev locales aptitude sudo gnupg scrub binutils ffmpeg pip
 
 ## Process Monitor Symlink
 ln -sf /usr/bin/bpytop /usr/bin/htop
@@ -29,6 +29,9 @@ if [ ! -e /lib/systemd/system/unifi.service ] || [ "$REINIT_UNIFI" = "yes" ]; th
   systemctl disable unifi
 fi
 
+## Apple TV Control
+pip install pyatv
+
 ## Install Replacement Logger
 apt-get remove --purge -y rsyslog
 apt-get install -y --no-upgrade busybox-syslogd
@@ -43,11 +46,12 @@ chmod 644 /etc/sysctl.conf
 chown root:root /etc/sysctl.conf
 
 ## Copy System Files
-mkdir -p /opt/rpi
-rm -rf /opt/rpi/remotes
-rsync --progress --checksum -rtv /tmp/config/system/* /opt/rpi/
-chmod -R 755 /opt/rpi
-chown -R root:root /opt/rpi
+mkdir -p /opt/system
+rm -rf /opt/system/remotes
+rsync --progress --checksum -rtv /tmp/config/system/* /opt/system/
+chmod -R 755 /opt/system
+chown -R root:root /opt/system
+ln -sf /opt/system /opt/rpi
 
 ## Light Web Server
 apt-get install -y --no-upgrade lighttpd
@@ -116,13 +120,19 @@ chown root:root /etc/sudoers.d/nobody-perms
 chmod u=rwx,g=rx,o=rx /etc/sudoers.d/nobody-perms
 chmod u=r,g=r,o= /etc/sudoers.d/nobody-perms
 
-## UR Server Service
+## Unifed Remote Server
 cp -f /tmp/config/urserver.service /etc/systemd/system/
 chmod 644 /etc/systemd/system/urserver.service
 chown root:root /etc/systemd/system/urserver.service
 systemctl disable urserver
 ## Set UR theme
 /opt/rpi/init dblue
+
+## Relax Loop Service
+cp -f /tmp/config/relaxloop.service /etc/systemd/system/
+chmod 644 /etc/systemd/system/relaxloop.service
+chown root:root /etc/systemd/system/relaxloop.service
+systemctl disable relaxloop
 
 ## Boot Service
 cp -f /tmp/config/rc.local /etc/

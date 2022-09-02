@@ -164,7 +164,7 @@ chmod 644 /root/.hushlogin
 chown root:root /root/.hushlogin
 
 ## Compatibility Link
-ln -sf /opt/rpi/main /opt/rpi/xmit
+ln -sf /opt/system/main /opt/system/xmit
 
 ## Restart Services
 systemctl restart lighttpd
@@ -173,10 +173,6 @@ systemctl restart urserver
 ## Clean-up
 systemctl daemon-reload
 rm -rf /tmp/config/
-rm -f /usr/bin/xmit
-rm -f /usr/bin/main
-rm -f /usr/bin/leds
-rm -f /usr/bin/rpi
 apt-get autoremove -y
 apt-get clean -y
 apt-get autoclean -y

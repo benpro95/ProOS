@@ -37,8 +37,7 @@ FILE="${rpi_relaxmode^}"
 
 ## Play audio in loop on Apple TV
 echo "starting $FILE sound..."
-/usr/bin/ffmpeg -stream_loop -1 -i http://files.home/Relaxation/$FILE.mp3 -f mp3 - \
- | /usr/local/bin/atvremote --id "${SETTINGS[0]%$'\n'}" \
- --raop-credentials "${SETTINGS[1]%$'\n'}" stream_file=-
+/usr/bin/ffmpeg -re -stream_loop -1 -i http://files.home/Relaxation/$FILE.mp3 -f mp3 - \
+ | /usr/local/bin/atvremote --id "${SETTINGS[0]%$'\n'}" --raop-credentials "${SETTINGS[1]%$'\n'}" stream_file=-
 
 exit

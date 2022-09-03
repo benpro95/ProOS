@@ -74,13 +74,17 @@ do
         --exclude='Software/**VM.zip' --exclude='Software/**HD.zip' --exclude='Software/**HD.7z' \
         /mnt/ben/ /mnt/extbkps/${!USB256VAR}/Ben/ -delete --delete-excluded
       fi
-      #### Archive Share ####
-      if [ ! -e /mnt/.archive/Private ]; then
-        echo "Archive folder not found!"
+      #### Regions Share ####
+      if [ ! -e /mnt/.regions/Private ]; then
+        echo "Regions folder not found!"
       else
-        echo "syncing 'Archive' share to ${!USB256VAR} drive..."
-        rsync --progress $CHECKSUM -aP --exclude="Public/Movies/" --exclude="ScratchCopy" \
-        /mnt/.archive/ /mnt/extbkps/${!USB256VAR}/.Archive/ -delete --delete-excluded
+      	## Rename old folder
+        if [ -e /mnt/extbkps/${!USB256VAR}/.Archive ]; then
+          mv /mnt/extbkps/${!USB256VAR}/.Archive /mnt/extbkps/${!USB256VAR}/.Regions
+        fi
+        echo "syncing 'Regions' share to ${!USB256VAR} drive..."
+        rsync --progress $CHECKSUM -aP --exclude="Public/Movies/" \
+        /mnt/.regions/ /mnt/extbkps/${!USB256VAR}/.Regions/ -delete --delete-excluded
       fi
       #### Media Share ####
       if [ ! -e /mnt/media/Music ]; then
@@ -115,13 +119,17 @@ do
         rsync --progress $CHECKSUM -aP --exclude="Documents/Regions" \
         /mnt/ben/ /mnt/extbkps/${!HDDVAR}/Ben/ -delete --delete-excluded
       fi
-      #### Archive Share ####
-      if [ ! -e /mnt/.archive/Private ]; then
-        echo "Archive folder not found!"
+      #### Regions Share ####
+      if [ ! -e /mnt/.regions/Private ]; then
+        echo "Regions folder not found!"
       else
-        echo "syncing 'Archive' share to ${!HDDVAR} drive..."
-        rsync --progress $CHECKSUM -aP  --exclude="ScratchCopy" \
-        /mnt/.archive/ /mnt/extbkps/${!HDDVAR}/.Archive/ -delete --delete-excluded
+      	## Rename old folder
+        if [ -e /mnt/extbkps/${!HDDVAR}/.Archive ]; then
+          mv /mnt/extbkps/${!HDDVAR}/.Archive /mnt/extbkps/${!HDDVAR}/.Regions
+        fi
+        echo "syncing 'Regions' share to ${!HDDVAR} drive..."
+        rsync --progress $CHECKSUM -aP \
+        /mnt/.regions/ /mnt/extbkps/${!HDDVAR}/.Regions/ -delete --delete-excluded
       fi
       #### Media Share ####
       if [ ! -e /mnt/media/Music ]; then

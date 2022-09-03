@@ -123,7 +123,7 @@ chown root:root /etc/samba/smb.conf
 cp -f /tmp/config/lighttpd.conf /etc/lighttpd/
 chmod 644 /etc/lighttpd/lighttpd.conf
 chown root:root /etc/lighttpd/lighttpd.conf
-systemctl enable lighttpd
+systemctl disable lighttpd
 systemctl restart lighttpd
 
 ## Clean-up

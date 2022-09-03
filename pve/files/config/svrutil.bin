@@ -153,7 +153,7 @@ then
     rm $REGROOT/WWW
   else
     echo "attaching WWW root region..."
-    ln -s /mnt/.archive/WWW $REGROOT/WWW
+    ln -s /mnt/.regions/WWW $REGROOT/WWW
   fi
   REPLY=""
   ENDPGRM
@@ -167,7 +167,7 @@ then
     rm $REGROOT/Private
   else
     echo "attaching private region..."
-    ln -s /mnt/.archive/Private $REGROOT/Private
+    ln -s /mnt/.regions/Private $REGROOT/Private
   fi
   REPLY=""
   ENDPGRM
@@ -181,7 +181,7 @@ then
     rm $REGROOT/Public
   else
     echo "attaching public region..."
-    ln -s /mnt/.archive/Public $REGROOT/Public
+    ln -s /mnt/.regions/Public $REGROOT/Public
   fi
   REPLY=""
   ENDPGRM

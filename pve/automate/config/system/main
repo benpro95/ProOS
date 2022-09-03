@@ -338,14 +338,12 @@ if [ ! -e /var/lock/rpi/relaxrec.save ]; then
   systemctl set-environment rpi_relaxmode=$CMDARG
   systemctl start relaxloop
 else
-  TARGET="hifi.home"
   ## Optical Decoder Input
   XMITCMD="coaxial" ; XMIT
   ## Preamp DAC Input
   XMITCMD="dac" ; XMIT 
   ## Play Audio in Loop on System
-  CMD="relax"
-  CALLHTTP
+  TARGET="hifi.home"; CMD="relax"; CALLHTTP
 fi
 exit
 ;;
@@ -354,15 +352,15 @@ stoprelax)
 ## Stop Relax Sounds
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
   systemctl stop relaxloop
+  systemctl set-environment rpi_relaxmode=off
+  systemctl start relaxloop
 else
-  TARGET="hifi.home"
-  ## USB Decoder Input
-  XMITCMD="usb" ; XMIT
-  ## Preamp DAC Input
-  XMITCMD="inauto" ; XMIT
   ## Stop Audio on System
-  CMD="stoprelax"
-  CALLHTTP  
+  TARGET="hifi.home"; CMD="stoprelax"; CALLHTTP  
+  ## Auto Decoder Input
+  XMITCMD="inauto" ; XMIT
+  ## Preamp DAC Input
+  XMITCMD="dac" ; XMIT
 fi
 exit
 ;;

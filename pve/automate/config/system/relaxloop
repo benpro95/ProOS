@@ -8,10 +8,19 @@
 ## Load settings file into array
 mapfile -t SETTINGS < <(wget -O- -q http://files.home/Relaxation/Settings.txt)
 
+## Turn off Apple TV
+if [ "$rpi_relaxmode" = "off" ]; then
+  echo "turning off Apple TV..."		
+  for i in {1..2}
+  do /usr/local/bin/atvremote --id "${SETTINGS[0]%$'\n'}" --airplay-credentials "${SETTINGS[2]%$'\n'}" turn_off
+  done
+  exit
+fi
+
 ## Loop on startup / time trigger
 if [ "$rpi_relaxmode" = "boot" ]; then
   ## Set default mode from settings
-  rpi_relaxmode="${SETTINGS[2]%$'\n'}"
+  rpi_relaxmode="${SETTINGS[3]%$'\n'}"
   ## Read system time  
   DOW=$(date +%u)
   HOUR=$(date +%H)
@@ -31,6 +40,16 @@ if [ "$rpi_relaxmode" = "boot" ]; then
   fi
   echo "time is between 9pm-9am"
 fi
+
+## Turn on Apple TV
+ATVSTATE=$(/usr/local/bin/atvremote --id "${SETTINGS[0]%$'\n'}" --airplay-credentials "${SETTINGS[2]%$'\n'}" power_state)
+if [ "$ATVSTATE" = "PowerState.Off" ]; then
+  echo "turning on Apple TV..."	
+  for i in {1..2}
+  do /usr/local/bin/atvremote --id "${SETTINGS[0]%$'\n'}" --airplay-credentials "${SETTINGS[2]%$'\n'}" turn_on
+  done
+  sleep 1.25
+fi  
 
 ## Capitialize first letter of argument
 FILE="${rpi_relaxmode^}"

@@ -78,10 +78,6 @@ do
       if [ ! -e /mnt/.regions/Private ]; then
         echo "Regions folder not found!"
       else
-      	## Rename old folder
-        if [ -e /mnt/extbkps/${!USB256VAR}/.Archive ]; then
-          mv /mnt/extbkps/${!USB256VAR}/.Archive /mnt/extbkps/${!USB256VAR}/.Regions
-        fi
         echo "syncing 'Regions' share to ${!USB256VAR} drive..."
         rsync --progress $CHECKSUM -aP --exclude="Public/Movies/" \
         /mnt/.regions/ /mnt/extbkps/${!USB256VAR}/.Regions/ -delete --delete-excluded
@@ -123,10 +119,6 @@ do
       if [ ! -e /mnt/.regions/Private ]; then
         echo "Regions folder not found!"
       else
-      	## Rename old folder
-        if [ -e /mnt/extbkps/${!HDDVAR}/.Archive ]; then
-          mv /mnt/extbkps/${!HDDVAR}/.Archive /mnt/extbkps/${!HDDVAR}/.Regions
-        fi
         echo "syncing 'Regions' share to ${!HDDVAR} drive..."
         rsync --progress $CHECKSUM -aP \
         /mnt/.regions/ /mnt/extbkps/${!HDDVAR}/.Regions/ -delete --delete-excluded

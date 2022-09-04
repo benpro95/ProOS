@@ -59,7 +59,7 @@ void loop() {
   }
 }
 
-// write the 6-bit volume to the i2c bus
+// write the 6-bit volume to the I2C bus
 boolean setvolume(int8_t vol) {
   // cant be higher than 63 or lower than 0
   if (vol > 63) vol = 63;

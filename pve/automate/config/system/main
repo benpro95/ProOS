@@ -259,13 +259,17 @@ if [[ "$XMITCMD" == "rfa3off" ]]; then
    CALLXMIT
    return
 fi
+##
 ## ESP32 Toggle PC Power
+##
 if [[ "$XMITCMD" == "rfb3" ]]; then
    XMITCALL="fet.tgl.32"
    CALLXMIT
    return
 fi
+##
 ## RF Relay Controller Board 
+##
 if [[ "$XMITCMD" == "rfb1on" ]]; then
    XMITCALL="rftx.864341"
    CALLXMIT
@@ -307,6 +311,40 @@ if [[ "$XMITCMD" == "rfc1off" ]]; then
    CALLXMIT
    return
 fi
+##
+## HiFi mini
+##
+if [[ "$XMITCMD" == "miniupf" ]]; then
+   XMITCALL="rftx.696912"
+   CALLXMIT
+   return
+fi
+if [[ "$XMITCMD" == "minidwnf" ]]; then
+   XMITCALL="rftx.696913"
+   CALLXMIT
+   return
+fi
+if [[ "$XMITCMD" == "miniupc" ]]; then
+   XMITCALL="rftx.696922"
+   CALLXMIT
+   return
+fi
+if [[ "$XMITCMD" == "minidwnc" ]]; then
+   XMITCALL="rftx.696923"
+   CALLXMIT
+   return
+fi
+if [[ "$XMITCMD" == "minimute" ]]; then
+   XMITCALL="rftx.696944"
+   CALLXMIT
+   return
+fi
+if [[ "$XMITCMD" == "minidefv" ]]; then
+   XMITCALL="rftx.696930"
+   CALLXMIT
+   return
+fi
+##
 echo "invalid command!"
 return
 }
@@ -368,7 +406,7 @@ exit
 ### Relax Sounds Volume Up
 relaxvup)
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
-  echo "Not implemented"
+  XMITCMD="miniupc" ; XMIT
 else
   XMITCMD="upc" ; XMIT
 fi   
@@ -378,7 +416,7 @@ exit
 ### Relax Sounds Volume Down
 relaxvdwn)
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
-  echo "Not implemented"
+  XMITCMD="minidwnc" ; XMIT
 else
   XMITCMD="dwnc" ; XMIT
 fi
@@ -627,6 +665,10 @@ else
 fi
 ## Blank LEDwalls
 /opt/rpi/leds stop
+## Turn Off Apple TV
+systemctl stop relaxloop
+systemctl set-environment rpi_relaxmode=off
+systemctl start relaxloop
 exit
 ;;
 

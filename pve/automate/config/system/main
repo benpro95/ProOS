@@ -6,19 +6,31 @@
 ###########################################################
 ## Do not use the screen command in this script ##
 
-CALLXMIT(){
-#### ESP32 Transmit Function (APT Call)
-## Set to "on" for HTML Xmit, or "off" for RS-232 Xmit
-HTML="on"
-## Xmit URL
-XMIT_IP="10.177.1.17"
-if [[ "$HTML" == "on" ]]; then
-### Transmit to ESP32 WiFi MCU
-/usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 30 \
- --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive \
- --url "http://$XMIT_IP:80/xmit/$XMITCALL"
-###  
+RAWXMIT(){
+#### API Call
+## Select API Type
+if [[ "$ESP32" == "no" ]]; then
+  APIDATA="--data var=$CMDARG&arg=$XMITCMD&action=main http://$TARGET/exec.php"
+  CMDARG=""
 else
+  ## ESP32 Xmit URL
+  TARGET="10.177.1.17"
+  APIDATA="--url http://$TARGET:80/xmit/$XMITCALL"
+fi
+## Transmit to API
+/usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 30 \
+ --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive $APIDATA
+## Clear Data 
+TARGET=""
+XMITCMD=""
+XMITCALL=""
+XMITARG=""
+APIDATA=""
+ESP32=""
+return
+}
+
+CALL232(){
 ### Transmit to RS-232 serial
 /usr/bin/python2 - <<END
 import serial
@@ -35,10 +47,8 @@ se.port = port
 se.open()
 se.write(str.encode('$XMITCALL'))
 END
-###
-fi
-XMITCALL=""
 XMITCMD=""
+XMITCALL=""
 XMITARG=""
 return
 }
@@ -78,85 +88,85 @@ if [[ "$XMITCMD" == "pwrhifi" ]]; then
    ## Reset sub volume token
    rm -f /var/lock/rpi/subs.enabled 
    XMITCALL="irtx.sony20.691015"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## Key 1
 if [[ "$XMITCMD" == "dac" ]]; then
    XMITCALL="irtx.sony20.2887"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## Key 2
 if [[ "$XMITCMD" == "aux" ]]; then
    XMITCALL="irtx.sony20.527175"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## Key 3
 if [[ "$XMITCMD" == "phono" ]]; then
    XMITCALL="irtx.sony20.265031"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## Key Stop
 if [[ "$XMITCMD" == "mute" ]]; then
    XMITCALL="irtx.sony20.101191"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## Key Rewind
 if [[ "$XMITCMD" == "dwnf" ]]; then
    XMITCALL="irtx.sony20.887623"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## Key Forward
 if [[ "$XMITCMD" == "upf" ]]; then
    XMITCALL="irtx.sony20.232263"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## Key Down
 if [[ "$XMITCMD" == "dwnc" ]]; then
    XMITCALL="irtx.sony20.379719"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## Key Up
 if [[ "$XMITCMD" == "upc" ]]; then
    XMITCALL="irtx.sony20.641863"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## Key Left
 if [[ "$XMITCMD" == "preleft" ]]; then
    XMITCALL="irtx.sony20.904007"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## Key Right
 if [[ "$XMITCMD" == "preright" ]]; then
    XMITCALL="irtx.sony20.248647"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## Key Display
 if [[ "$XMITCMD" == "display" ]]; then
    XMITCALL="irtx.sony20.535367"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## Key Backlight
 if [[ "$XMITCMD" == "backlight" ]]; then
    XMITCALL="irtx.sony20.813895"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## Key Menu
 if [[ "$XMITCMD" == "menu" ]]; then
    XMITCALL="irtx.sony20.609095"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ##
@@ -165,35 +175,35 @@ fi
 ## Mute Key
 if [[ "$XMITCMD" == "subpwr" ]]; then
    XMITCALL="irtx.nec.50137335"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ##
 ## (0) Key
 if [[ "$XMITCMD" == "subon" ]]; then
    XMITCALL="irtx.nec.50135295"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ##
 ## (1) Key
 if [[ "$XMITCMD" == "suboff" ]]; then
    XMITCALL="irtx.nec.50167935"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ##
 ## Vol (+) Key
 if [[ "$XMITCMD" == "subup" ]]; then
    XMITCALL="irtx.nec.50157735"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ##
 ## Vol (-) Key
 if [[ "$XMITCMD" == "subdwn" ]]; then
    XMITCALL="irtx.nec.50165895"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ##
@@ -202,25 +212,25 @@ fi
 ## USB Input (Music Button)
 if [[ "$XMITCMD" == "usb" ]]; then
    XMITCALL="irtx.nec.-300872971"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## Coaxial Input (Aux Button)
 if [[ "$XMITCMD" == "coaxial" ]]; then
    XMITCALL="irtx.nec.-300816361"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## Optical Input (TV Button)
 if [[ "$XMITCMD" == "optical" ]]; then
    XMITCALL="irtx.nec.-300813811"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## Auto Input (Play Button)
 if [[ "$XMITCMD" == "inauto" ]]; then
    XMITCALL="irtx.nec.-300833701"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ##
@@ -229,34 +239,34 @@ fi
 ## Vintage Macs
 if [[ "$XMITCMD" == "rfa1on" ]]; then
    XMITCALL="rftx.734733"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 if [[ "$XMITCMD" == "rfa1off" ]]; then
    XMITCALL="rftx.734734"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## Dresser Lamp
 if [[ "$XMITCMD" == "rfa2on" ]]; then
    XMITCALL="rftx.734731"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 if [[ "$XMITCMD" == "rfa2off" ]]; then
    XMITCALL="rftx.734732"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## RetroPi
 if [[ "$XMITCMD" == "rfa3on" ]]; then
    XMITCALL="rftx.734735"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 if [[ "$XMITCMD" == "rfa3off" ]]; then
    XMITCALL="rftx.734736"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ##
@@ -264,7 +274,7 @@ fi
 ##
 if [[ "$XMITCMD" == "rfb3" ]]; then
    XMITCALL="fet.tgl.32"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ##
@@ -272,43 +282,43 @@ fi
 ##
 if [[ "$XMITCMD" == "rfb1on" ]]; then
    XMITCALL="rftx.864341"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 if [[ "$XMITCMD" == "rfb1off" ]]; then
    XMITCALL="rftx.864342"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 if [[ "$XMITCMD" == "rfb2on" ]]; then
    XMITCALL="rftx.864343"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 if [[ "$XMITCMD" == "rfb2off" ]]; then
    XMITCALL="rftx.864344"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 if [[ "$XMITCMD" == "rfb3on" ]]; then
    XMITCALL="rftx.864345"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 if [[ "$XMITCMD" == "rfb3off" ]]; then
    XMITCALL="rftx.864346"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ## Main Lamp Controller
 if [[ "$XMITCMD" == "rfc1on" ]]; then
    XMITCALL="rftx.834511"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 if [[ "$XMITCMD" == "rfc1off" ]]; then
    XMITCALL="rftx.834512"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ##
@@ -316,47 +326,36 @@ fi
 ##
 if [[ "$XMITCMD" == "miniupf" ]]; then
    XMITCALL="rftx.696912"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 if [[ "$XMITCMD" == "minidwnf" ]]; then
    XMITCALL="rftx.696913"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 if [[ "$XMITCMD" == "miniupc" ]]; then
    XMITCALL="rftx.696922"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 if [[ "$XMITCMD" == "minidwnc" ]]; then
    XMITCALL="rftx.696923"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 if [[ "$XMITCMD" == "minimute" ]]; then
    XMITCALL="rftx.696944"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 if [[ "$XMITCMD" == "minidefv" ]]; then
    XMITCALL="rftx.696930"
-   CALLXMIT
+   RAWXMIT
    return
 fi
 ##
 echo "invalid command!"
-return
-}
-
-## Transmit POST request to host
-CALLHTTP(){
-/usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 15 \
- --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive --data \
- "var=$CMDARG&arg=$CMD&action=main" http://$TARGET/exec.php
-CMD=""
-CMDARG=""
-TARGET=""
 return
 }
 
@@ -381,7 +380,7 @@ else
   ## Preamp DAC Input
   XMITCMD="dac" ; XMIT 
   ## Play Audio in Loop on System
-  TARGET="hifi.home"; CMD="relax"; CALLHTTP
+  ESP32="no"; TARGET="hifi.home"; XMITCMD="relax"; RAWXMIT
 fi
 exit
 ;;
@@ -394,7 +393,7 @@ if [ ! -e /var/lock/rpi/relaxrec.save ]; then
   systemctl start relaxloop
 else
   ## Stop Audio on System
-  TARGET="hifi.home"; CMD="stoprelax"; CALLHTTP  
+  ESP32="no"; TARGET="hifi.home"; XMITCMD="stoprelax"; RAWXMIT  
   ## Auto Decoder Input
   XMITCMD="inauto" ; XMIT
   ## Preamp DAC Input
@@ -406,7 +405,7 @@ exit
 ### Relax Sounds Volume Up
 relaxvup)
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
-  XMITCMD="miniupc" ; XMIT
+  XMITCMD="miniupf" ; XMIT
 else
   XMITCMD="upc" ; XMIT
 fi   
@@ -416,7 +415,7 @@ exit
 ### Relax Sounds Volume Down
 relaxvdwn)
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
-  XMITCMD="minidwnc" ; XMIT
+  XMITCMD="minidwnf" ; XMIT
 else
   XMITCMD="dwnc" ; XMIT
 fi

@@ -14,11 +14,14 @@ echo "IP Address: $ATVIP"
 
 ## Turn off Apple TV
 if [ "$rpi_relaxmode" = "off" ]; then
-  echo "turning off Apple TV..."		
-  for i in {1..2}
-  do /usr/local/bin/atvremote --address "$ATVIP" --id "${SETTINGS[0]%$'\n'}" \
+  ATVSTATE=$(/usr/local/bin/atvremote --address "$ATVIP" --id "${SETTINGS[0]%$'\n'}" \
+    --airplay-credentials "${SETTINGS[2]%$'\n'}" power_state)
+  ## Only turn-off if Apple TV is on  
+  if [ "$ATVSTATE" = "PowerState.On" ]; then
+    echo "turning off Apple TV..."  
+    /usr/local/bin/atvremote --address "$ATVIP" --id "${SETTINGS[0]%$'\n'}" \
      --airplay-credentials "${SETTINGS[2]%$'\n'}" turn_off
-  done
+  fi
   exit
 fi
 

@@ -6,7 +6,7 @@
 ###########################################################
 ## Do not use the screen command in this script ##
 
-RAWXMIT(){
+CALLAPI(){
 #### API Call
 ## Select API Type
 if [[ "$ESP32" == "no" ]]; then
@@ -55,10 +55,10 @@ return
 
 XMIT(){
 #### ESP32 Transmit Function (Command Translation)
-## run ./main CMD (no state file created)
-## run ./main CMD toggle (toggle on/off state & append on/off to end of serial command)
-## run ./main CMD on (create state file & append on to end of serial command then send)
-## run ./main CMD off (delete state file & append off to end of serial command then send)
+## CMD (no state file created)
+## CMD toggle (toggle on/off state & append on/off to end of serial command)
+## CMD on (create state file & append on to end of serial command then send)
+## CMD off (delete state file & append off to end of serial command then send)
 ## Do not use the screen command in this script ##
 ##### TOGGLE SECTION #####
 if [[ "$XMITARG" == "on" ]]; then
@@ -88,85 +88,85 @@ if [[ "$XMITCMD" == "pwrhifi" ]]; then
    ## Reset sub volume token
    rm -f /var/lock/rpi/subs.enabled 
    XMITCALL="irtx.sony20.691015"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## Key 1
 if [[ "$XMITCMD" == "dac" ]]; then
    XMITCALL="irtx.sony20.2887"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## Key 2
 if [[ "$XMITCMD" == "aux" ]]; then
    XMITCALL="irtx.sony20.527175"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## Key 3
 if [[ "$XMITCMD" == "phono" ]]; then
    XMITCALL="irtx.sony20.265031"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## Key Stop
 if [[ "$XMITCMD" == "mute" ]]; then
    XMITCALL="irtx.sony20.101191"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## Key Rewind
 if [[ "$XMITCMD" == "dwnf" ]]; then
    XMITCALL="irtx.sony20.887623"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## Key Forward
 if [[ "$XMITCMD" == "upf" ]]; then
    XMITCALL="irtx.sony20.232263"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## Key Down
 if [[ "$XMITCMD" == "dwnc" ]]; then
    XMITCALL="irtx.sony20.379719"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## Key Up
 if [[ "$XMITCMD" == "upc" ]]; then
    XMITCALL="irtx.sony20.641863"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## Key Left
 if [[ "$XMITCMD" == "preleft" ]]; then
    XMITCALL="irtx.sony20.904007"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## Key Right
 if [[ "$XMITCMD" == "preright" ]]; then
    XMITCALL="irtx.sony20.248647"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## Key Display
 if [[ "$XMITCMD" == "display" ]]; then
    XMITCALL="irtx.sony20.535367"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## Key Backlight
 if [[ "$XMITCMD" == "backlight" ]]; then
    XMITCALL="irtx.sony20.813895"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## Key Menu
 if [[ "$XMITCMD" == "menu" ]]; then
    XMITCALL="irtx.sony20.609095"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ##
@@ -175,35 +175,35 @@ fi
 ## Mute Key
 if [[ "$XMITCMD" == "subpwr" ]]; then
    XMITCALL="irtx.nec.50137335"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ##
 ## (0) Key
 if [[ "$XMITCMD" == "subon" ]]; then
    XMITCALL="irtx.nec.50135295"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ##
 ## (1) Key
 if [[ "$XMITCMD" == "suboff" ]]; then
    XMITCALL="irtx.nec.50167935"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ##
 ## Vol (+) Key
 if [[ "$XMITCMD" == "subup" ]]; then
    XMITCALL="irtx.nec.50157735"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ##
 ## Vol (-) Key
 if [[ "$XMITCMD" == "subdwn" ]]; then
    XMITCALL="irtx.nec.50165895"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ##
@@ -212,25 +212,25 @@ fi
 ## USB Input (Music Button)
 if [[ "$XMITCMD" == "usb" ]]; then
    XMITCALL="irtx.nec.-300872971"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## Coaxial Input (Aux Button)
 if [[ "$XMITCMD" == "coaxial" ]]; then
    XMITCALL="irtx.nec.-300816361"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## Optical Input (TV Button)
 if [[ "$XMITCMD" == "optical" ]]; then
    XMITCALL="irtx.nec.-300813811"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## Auto Input (Play Button)
 if [[ "$XMITCMD" == "inauto" ]]; then
    XMITCALL="irtx.nec.-300833701"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ##
@@ -239,34 +239,34 @@ fi
 ## Vintage Macs
 if [[ "$XMITCMD" == "rfa1on" ]]; then
    XMITCALL="rftx.734733"
-   RAWXMIT
+   CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "rfa1off" ]]; then
    XMITCALL="rftx.734734"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## Dresser Lamp
 if [[ "$XMITCMD" == "rfa2on" ]]; then
    XMITCALL="rftx.734731"
-   RAWXMIT
+   CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "rfa2off" ]]; then
    XMITCALL="rftx.734732"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## RetroPi
 if [[ "$XMITCMD" == "rfa3on" ]]; then
    XMITCALL="rftx.734735"
-   RAWXMIT
+   CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "rfa3off" ]]; then
    XMITCALL="rftx.734736"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ##
@@ -274,7 +274,7 @@ fi
 ##
 if [[ "$XMITCMD" == "rfb3" ]]; then
    XMITCALL="fet.tgl.32"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ##
@@ -282,43 +282,43 @@ fi
 ##
 if [[ "$XMITCMD" == "rfb1on" ]]; then
    XMITCALL="rftx.864341"
-   RAWXMIT
+   CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "rfb1off" ]]; then
    XMITCALL="rftx.864342"
-   RAWXMIT
+   CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "rfb2on" ]]; then
    XMITCALL="rftx.864343"
-   RAWXMIT
+   CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "rfb2off" ]]; then
    XMITCALL="rftx.864344"
-   RAWXMIT
+   CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "rfb3on" ]]; then
    XMITCALL="rftx.864345"
-   RAWXMIT
+   CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "rfb3off" ]]; then
    XMITCALL="rftx.864346"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ## Main Lamp Controller
 if [[ "$XMITCMD" == "rfc1on" ]]; then
    XMITCALL="rftx.834511"
-   RAWXMIT
+   CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "rfc1off" ]]; then
    XMITCALL="rftx.834512"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ##
@@ -326,32 +326,32 @@ fi
 ##
 if [[ "$XMITCMD" == "miniupf" ]]; then
    XMITCALL="rftx.696912"
-   RAWXMIT
+   CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "minidwnf" ]]; then
    XMITCALL="rftx.696913"
-   RAWXMIT
+   CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "miniupc" ]]; then
    XMITCALL="rftx.696922"
-   RAWXMIT
+   CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "minidwnc" ]]; then
    XMITCALL="rftx.696923"
-   RAWXMIT
+   CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "minimute" ]]; then
    XMITCALL="rftx.696944"
-   RAWXMIT
+   CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "minidefv" ]]; then
    XMITCALL="rftx.696930"
-   RAWXMIT
+   CALLAPI
    return
 fi
 ##
@@ -371,6 +371,7 @@ case "$1" in
 relax)
 ### Relax Sounds Playback
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
+  ## Play Audio on Apple TV
   systemctl stop relaxloop
   systemctl set-environment rpi_relaxmode=$CMDARG
   systemctl start relaxloop
@@ -379,8 +380,8 @@ else
   XMITCMD="coaxial" ; XMIT
   ## Preamp DAC Input
   XMITCMD="dac" ; XMIT 
-  ## Play Audio in Loop on System
-  ESP32="no"; TARGET="hifi.home"; XMITCMD="relax"; RAWXMIT
+  ## Play Audio on System
+  ESP32="no"; TARGET="hifi.home"; XMITCMD="relax"; CALLAPI
 fi
 exit
 ;;
@@ -388,12 +389,13 @@ exit
 stoprelax)
 ## Stop Relax Sounds
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then
+  ## Turn Off Apple TV
   systemctl stop relaxloop
   systemctl set-environment rpi_relaxmode=off
   systemctl start relaxloop
 else
   ## Stop Audio on System
-  ESP32="no"; TARGET="hifi.home"; XMITCMD="stoprelax"; RAWXMIT  
+  ESP32="no"; TARGET="hifi.home"; XMITCMD="stoprelax"; CALLAPI  
   ## Auto Decoder Input
   XMITCMD="inauto" ; XMIT
   ## Preamp DAC Input

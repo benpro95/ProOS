@@ -5,13 +5,12 @@
 ###########################################################
 ###########################################################
 
-## Load settings file into array
-mapfile -t SETTINGS < <(wget -O- -q http://files.home/Relaxation/Settings.txt)
-
 ## Loop on startup / time trigger
 if [ "$rpi_relaxmode" = "boot" ]; then
+  ## Load settings file into array
+  mapfile -t SETTINGS < <(wget -O- -q http://files.home/Relaxation/Settings.txt)  
   ## Set default mode from settings
-  rpi_relaxmode="${SETTINGS[3]%$'\n'}"
+  rpi_relaxmode="${SETTINGS[4]%$'\n'}"
   ## Read system time  
   DOW=$(date +%u)
   HOUR=$(date +%H)

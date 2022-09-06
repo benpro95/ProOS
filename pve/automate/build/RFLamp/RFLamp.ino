@@ -27,6 +27,9 @@ int relaysState0 = LOW;
 int stateChanged = LOW;
 
 void setup() {
+// Reduce Clock Speed 
+  CLKPR = 0x80; // (1000 0000) enable change in clock frequency
+  CLKPR = 0x01; // (0000 0001) use clock division factor 2 to reduce the frequency from 16 MHz to 8 MHz
 // Buttons Setup
   pinMode(button_pin1, INPUT_PULLUP);
   button1.setDebounceTime(50);
@@ -68,7 +71,7 @@ void receiveRF() {
 
 void checkButtons() {
   button1.loop();
-  if(button1.isPressed()){
+  if(button1.isReleased()){
     // toggle state of relay 1
     relaysState0 = !relaysState0;
     stateChanged = HIGH;

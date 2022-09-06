@@ -73,7 +73,6 @@ echo "(v) start/stop VM(s)"
 echo "(g) generate a log file"
 echo "(p) push ProOS to GitHub"
 echo "(s) attach/detach snapshots"  
-echo "(c) copy downloads to datastore"
 echo "(w) attach/detach WWW root" 
 echo "(enter) exit to shell"
 echo " "
@@ -132,7 +131,7 @@ then
 fi
 
 ##################################
-REGROOT="/mnt/ben/Documents/Regions"
+REGROOT="/home/server/.regions"
 ## Detach/Remove All Regions
 if [[ $REPLY =~ ^[Rr]$ ]]
 then
@@ -200,59 +199,7 @@ then
   REPLY=""
   ENDPGRM
 fi
-################################## 
-
-## Scratch Drive Copy Downloads ####
-if [[ $REPLY =~ ^[Cc]$ ]]
-then
-  echo " "
-  echo "##################################"
-  echo "##### ProServer Copy Utility #####"
-  echo "##################################"
-  echo "Ext4 scratch drive downloads"
-  echo "(to)"
-  echo "ZFS datastore downloads"
-  echo " "
-  echo "(c) copy files to datastore"
-  echo "(d) delete downloads region"
-  echo "(enter) exit utility"
-  echo " "
-  REPLY=""
-  read -p "select option: " -n 1 -r
-  echo
-  ##################################  
-  ## Start/Stop UniFi controller
-  if [[ $REPLY =~ ^[Cc]$ ]]
-  then
-    echo " "
-    echo "copying files..."
-    if [ ! -e "$REGROOT/Downloads" ]; then
-      mkdir -p $REGROOT/Downloads
-      chmod 777 $REGROOT/Downloads
-    fi
-    rsync --progress -aPO \
-     --exclude='Thumbs.db' --exclude='.ptmp' \
-     --exclude='.Trash*' --exclude='$RECYCLE.BIN' \
-     /mnt/scratch/downloads/ $REGROOT/Downloads/
-    echo "copy completed."
-    REPLY=""
-  fi
-  ##################################  
-  ## 
-  if [[ $REPLY =~ ^[Dd]$ ]]
-  then
-    echo " "
-    if [ -e "$REGROOT/Downloads" ]; then
-      rm -rfv $REGROOT/Downloads
-      echo "deleted downloads region."
-    else
-      echo "region does not exist, not deleting."      
-    fi    
-    REPLY=""
-  fi
-  ##################################   
-  ENDPGRM  
-fi
+##################################
 
 ## VM control ####################
 if [[ $REPLY =~ ^[Vv]$ ]]

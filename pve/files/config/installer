@@ -42,10 +42,11 @@ touch /home/server/.hushlogin
 chmod 644 /home/server/.hushlogin
 chown server:server /home/server/.hushlogin
 
-## Regions Folder
-if [ ! -e /mnt/ben/Documents/Regions ]; then
-  mkdir -p /mnt/ben/Documents/Regions
-  chown server:server /mnt/ben/Documents/Regions
+## Regions Shared Folder
+if [ ! -e /home/server/.regions ]; then
+  mkdir -p /home/server/.regions
+  chown server:server /home/server/.regions
+  chmod 755 /home/server/.regions
 fi
 
 ## User Symlinks

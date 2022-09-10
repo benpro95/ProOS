@@ -386,6 +386,21 @@ fi
 exit
 ;;
 
+togglerelax)
+## Toggle Sounds On/Off 
+if (systemctl is-active --quiet relaxloop.service); then
+  echo "Turning off Apple TV..."
+  systemctl stop relaxloop
+  systemctl set-environment rpi_relaxmode=off
+  systemctl start relaxloop
+else
+  echo "Starting Relax Loop..."
+  systemctl set-environment rpi_relaxmode=boot
+  systemctl start relaxloop
+fi
+exit
+;;
+
 stoprelax)
 ## Stop Relax Sounds
 if [ ! -e /var/lock/rpi/relaxrec.save ]; then

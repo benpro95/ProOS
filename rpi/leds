@@ -3,14 +3,7 @@
 ###### LED Effects Script by Ben Provenzano III v15 #######
 ###########################################################
 
-## Read Input Arguments
-VARA=$1
-VARB=$2
-
-## Main Path
-BIN_PATH=/opt/rpi
-
-## Stop effects
+## Stop effects function
 LEDSTOP(){
 echo "Stopping LEDs daemon"
 /usr/bin/curl --fail --no-buffer --max-time 5 --silent \
@@ -18,6 +11,18 @@ echo "Stopping LEDs daemon"
  -X POST 127.0.0.1:9387/api/anim/stop
 systemctl stop rpi-fcleds
 }
+
+## Read Input Arguments
+VARA=$1
+VARB=$2
+
+## Main Path
+BIN_PATH=/opt/rpi
+
+if [ "$VARA" = "" ]; then
+  echo "no argument, exiting."
+  exit
+fi
 
 ## Read LED Type
 if [ ! -e $BIN_PATH/ledtype.txt ]; then

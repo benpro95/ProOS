@@ -71,9 +71,8 @@ echo "(n) network scan"
 echo "(b) backup utility"
 echo "(v) start/stop VM(s)"
 echo "(g) generate a log file"
+echo "(r) attach/detach region(s)"  
 echo "(p) push ProOS to GitHub"
-echo "(s) attach/detach snapshots"  
-echo "(w) attach/detach WWW root" 
 echo "(enter) exit to shell"
 echo " "
 read -p "select option: " -n 1 -r
@@ -130,76 +129,84 @@ then
   MAINPGRM
 fi
 
-##################################
-REGROOT="/home/server/.regions"
-## Detach/Remove All Regions
+## Regions control ####################
 if [[ $REPLY =~ ^[Rr]$ ]]
 then
-  echo "removing all regions..."
-  rm -f $REGROOT/Snapshots
-  rm -f $REGROOT/Private
-  rm -f $REGROOT/Public
-  rm -f $REGROOT/WWW
-  REPLY=""
-  ENDPGRM
+    echo " "
+	echo "(w) WWW root"     
+	echo "(s) ZFS snapshots"
+	echo "(d) detach all"
+    echo " "
+    REPLY=""
+    read -p "select region: " -n 1 -r
+    echo
+	##################################
+	REGROOT="/home/server/.regions"
+	## Detach All Regions
+	if [[ $REPLY =~ ^[Dd]$ ]]
+	then
+	  echo "detaching all regions..."
+	  rm -f $REGROOT/Snapshots
+	  rm -f $REGROOT/Private
+	  rm -f $REGROOT/Public
+	  rm -f $REGROOT/WWW
+	  REPLY=""
+	fi
+	## WWW Share
+	if [[ $REPLY =~ ^[Ww]$ ]]
+	then
+	  echo " "
+	  if [ -e "$REGROOT/WWW" ]; then
+	    echo "detaching WWW root region..."
+	    rm $REGROOT/WWW
+	  else
+	    echo "attaching WWW root region..."
+	    ln -s /mnt/.regions/WWW $REGROOT/WWW
+	  fi
+	  REPLY=""
+	fi
+	## Private Share
+	if [[ $REPLY =~ ^[-]$ ]]
+	then
+	  echo " "
+	  if [ -e "$REGROOT/Private" ]; then
+	    echo "detaching private region..."
+	    rm $REGROOT/Private
+	  else
+	    echo "attaching private region..."
+	    ln -s /mnt/.regions/Private $REGROOT/Private
+	  fi
+	  REPLY=""
+	fi
+	## Public Share
+	if [[ $REPLY =~ ^[@]$ ]]
+	then
+	  echo " "
+	  if [ -e "$REGROOT/Public" ]; then
+	    echo "detaching public region..."   
+	    rm $REGROOT/Public
+	  else
+	    echo "attaching public region..."
+	    ln -s /mnt/.regions/Public $REGROOT/Public
+	  fi
+	  REPLY=""
+	fi
+	## Snapshot Share
+	if [[ $REPLY =~ ^[Ss]$ ]]
+	then
+	  echo " "
+	  if [ -e "$REGROOT/Snapshots" ]; then
+	    echo "detaching snapshots region..."
+	    rm $REGROOT/Snapshots
+	  else
+	    echo "attaching snapshots region..."
+	    ln -s /mnt/snapshots $REGROOT/Snapshots
+	  fi
+	  REPLY=""
+    fi
+  ##################################   
+  ENDPGRM  
 fi
-## WWW Share
-if [[ $REPLY =~ ^[Ww]$ ]]
-then
-  echo " "
-  if [ -e "$REGROOT/WWW" ]; then
-    echo "detaching WWW root region..."
-    rm $REGROOT/WWW
-  else
-    echo "attaching WWW root region..."
-    ln -s /mnt/.regions/WWW $REGROOT/WWW
-  fi
-  REPLY=""
-  ENDPGRM
-fi
-## Private Share
-if [[ $REPLY =~ ^[-]$ ]]
-then
-  echo " "
-  if [ -e "$REGROOT/Private" ]; then
-    echo "detaching private region..."
-    rm $REGROOT/Private
-  else
-    echo "attaching private region..."
-    ln -s /mnt/.regions/Private $REGROOT/Private
-  fi
-  REPLY=""
-  ENDPGRM
-fi
-## Public Share
-if [[ $REPLY =~ ^[@]$ ]]
-then
-  echo " "
-  if [ -e "$REGROOT/Public" ]; then
-    echo "detaching public region..."   
-    rm $REGROOT/Public
-  else
-    echo "attaching public region..."
-    ln -s /mnt/.regions/Public $REGROOT/Public
-  fi
-  REPLY=""
-  ENDPGRM
-fi
-## Snapshot Share
-if [[ $REPLY =~ ^[Ss]$ ]]
-then
-  echo " "
-  if [ -e "$REGROOT/Snapshots" ]; then
-    echo "detaching snapshots region..."
-    rm $REGROOT/Snapshots
-  else
-    echo "attaching snapshots region..."
-    ln -s /mnt/snapshots $REGROOT/Snapshots
-  fi
-  REPLY=""
-  ENDPGRM
-fi
-##################################
 
 ## VM control ####################
 if [[ $REPLY =~ ^[Vv]$ ]]

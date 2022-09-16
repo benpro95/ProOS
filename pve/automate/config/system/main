@@ -522,7 +522,7 @@ exit
 
 ## Audio Power
 hifion)
-if ping -W 2 -c 1 hifi.local > /dev/null 2> /dev/null
+if ping -W 2 -c 1 hifi.home > /dev/null 2> /dev/null
 then
   echo "hifi.local is online"
 else
@@ -532,7 +532,7 @@ exit
 ;;
 ##
 hifioff)
-if ping -W 2 -c 1 hifi.local > /dev/null 2> /dev/null
+if ping -W 2 -c 1 hifi.home > /dev/null 2> /dev/null
 then
   XMITCMD="pwrhifi" ; XMIT 
 else
@@ -673,7 +673,7 @@ else
   echo "wkst.home is offline"
 fi
 ## Audio System Power Off
-if ping -W 2 -c 1 hifi.local > /dev/null 2> /dev/null
+if ping -W 2 -c 1 hifi.home > /dev/null 2> /dev/null
 then
   XMITCMD="pwrhifi" ; XMIT 
 else

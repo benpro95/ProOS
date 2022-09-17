@@ -52,6 +52,9 @@ else
   echo "RetroPie already installed."
 fi
 
+## Disable RetroPi Boot Screen
+systemctl disable asplashscreen.service
+
 ## USB Drive Setup
 cp -f $BIN/modconf/usbmount.conf /etc/usbmount/
 chmod 644 /etc/usbmount/usbmount.conf

@@ -1,0 +1,12 @@
+I2C device found at address 0x27  ! (LCD, power button)
+I2C device found at address 0x3E  ! (Volume control SET)
+I2C device found at address 0x3F  ! (Volume control RESET)
+
+I2C device found at address 0x3E  ! (Input selector SET)
+I2C device found at address 0x3F  ! (Input selector RESET)
+
+
+
+SET-0 RST=0 = 
+
+In a binary number, the bit furthest to the left is called the most significant bit (msb) and the bit furthest to the right is called the least significant bit (lsb). The MSB gives the sign of the number (sign bit) ,

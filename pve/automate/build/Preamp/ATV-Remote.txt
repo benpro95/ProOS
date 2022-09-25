@@ -1,0 +1,16 @@
+Apple TV Remote 
+
+Protocol=NEC Address=0x0 Command=0x0 Raw-Data=0x77E13073 (32 bits) DOWN
+
+Protocol=NEC Address=0x0 Command=0x0 Raw-Data=0x77E15073 (32 bits) UP
+
+Protocol=NEC Address=0x0 Command=0x0 Raw-Data=0x77E13A73 (32 bits) CENTER
+
+Protocol=NEC Address=0x0 Command=0x0 Raw-Data=0x77E16073 (32 bits) RIGHT
+
+Protocol=NEC Address=0x0 Command=0x0 Raw-Data=0x77E19073 (32 bits) LEFT
+
+Protocol=NEC Address=0x0 Command=0x0 Raw-Data=0x77E1C073 (32 bits) MENU
+
+Protocol=NEC Address=0x0 Command=0x0 Raw-Data=0x77E1FA73 (32 bits) PLAY/PAUSE
+

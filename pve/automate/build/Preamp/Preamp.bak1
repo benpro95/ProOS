@@ -1,0 +1,127 @@
+
+
+#include <Wire.h> 
+// modified to support MCP23008 expander chip
+#include "LiquidCrystal_I2C.h"
+
+LiquidCrystal_I2C lcd(0x27);
+
+char voladr_high = 0x3E;
+char voladr_low = 0x3F;
+
+long volRelayswitchtime = 50; //ms
+uint8_t volInvert;
+uint8_t binaryVol;
+
+byte invertBits(byte num)
+{
+    // calculating number of bits
+    // in the number
+    int x = 8;
+    
+    // Inverting the bits one by one
+    for (int i = 0; i < x; i++)
+       num = (num ^ (1 << i));
+    return num;
+}
+ 
+
+
+void setup()
+{
+
+      Serial.begin(9600);
+      
+      Wire.begin();
+      
+      Wire.beginTransmission(voladr_high);              
+      Wire.write(0);           
+      Wire.endTransmission();
+      Wire.beginTransmission(voladr_low);              
+      Wire.write(0);           
+      Wire.endTransmission();
+      
+      delay(500);
+
+      Serial.begin(9600);
+
+
+  lcd.begin(16,2);
+  lcd.backlight();
+  lcd.clear();
+  lcd.setCursor(4,0);
+  lcd.print("Startup!");
+
+      delay(500);  
+  
+}
+
+void loop()
+{
+
+binaryVol = 00001111;
+
+
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Ben");
+  
+    // Reset relays   
+      Wire.beginTransmission(voladr_high);                
+      Wire.write(binaryVol);        
+      Wire.endTransmission();
+
+      Wire.beginTransmission(voladr_low);                
+      Wire.write(!binaryVol);            
+      Wire.endTransmission();   
+      
+      
+      delay(volRelayswitchtime);
+      // deactivate relay coils 
+      Wire.beginTransmission(voladr_high);     
+      Wire.write(00000000);                
+      Wire.endTransmission();
+      Wire.beginTransmission(voladr_low);                
+      Wire.write(00000000);      
+      Wire.endTransmission();
+ 
+ delay(1000);
+
+
+   lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Provenzano");
+
+
+    // Set all   
+      Wire.beginTransmission(voladr_high);                
+      Wire.write(binaryVol);        
+      Wire.endTransmission();
+
+      Wire.beginTransmission(voladr_low);                
+      Wire.write(00000000);            
+      Wire.endTransmission();     
+
+
+      Wire.beginTransmission(voladr_high);                
+      Wire.write(00000000);        
+      Wire.endTransmission();
+
+      Wire.beginTransmission(voladr_low);                
+      Wire.write(~binaryVol);            
+      Wire.endTransmission();    
+      
+      delay(volRelayswitchtime);
+      // deactivate relay coils 
+      Wire.beginTransmission(voladr_high);     
+      Wire.write(00000000);                
+      Wire.endTransmission();
+      Wire.beginTransmission(voladr_low);                
+      Wire.write(00000000);      
+      Wire.endTransmission();
+ 
+ delay(1000);
+
+  
+
+}

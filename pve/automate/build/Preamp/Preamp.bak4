@@ -1,0 +1,225 @@
+
+// modified to support MCP23008 expander chip
+#include "LiquidCrystal_I2C.h"
+#include <Wire.h> 
+#include <PCF8574.h>
+#include <Arduino.h>
+
+// 0x3F Volume Control (Set)
+// 0x3E Volume Control (Reset)
+PCF8574 pcf8574_1(0x3E);
+PCF8574 pcf8574_2(0x3F);
+
+LiquidCrystal_I2C lcd(0x27);
+
+ bool val0 = 0;
+ bool val1 = 0;
+ bool val2 = 0;
+ bool val3 = 0;
+ bool val4 = 0;
+ bool val5 = 0;
+ bool val6 = 0;
+ bool val7 = 0;
+
+void lcdSetup()
+{
+  // 16x2 display module
+  lcd.begin(16,2);
+  lcd.backlight();
+  lcd.clear();
+}
+
+
+void volSet()
+{
+  pcf8574_1.pinMode(P0, OUTPUT); 
+  pcf8574_1.pinMode(P1, OUTPUT); 
+  pcf8574_1.pinMode(P2, OUTPUT); 
+  pcf8574_1.pinMode(P3, OUTPUT); 
+  pcf8574_1.pinMode(P4, OUTPUT); 
+  pcf8574_1.pinMode(P5, OUTPUT); 
+  pcf8574_1.pinMode(P6, OUTPUT); 
+  pcf8574_1.pinMode(P7, OUTPUT); 
+  //
+  pcf8574_2.pinMode(P0, OUTPUT); 
+  pcf8574_2.pinMode(P1, OUTPUT); 
+  pcf8574_2.pinMode(P2, OUTPUT); 
+  pcf8574_2.pinMode(P3, OUTPUT); 
+  pcf8574_2.pinMode(P4, OUTPUT); 
+  pcf8574_2.pinMode(P5, OUTPUT); 
+  pcf8574_2.pinMode(P6, OUTPUT); 
+  pcf8574_2.pinMode(P7, OUTPUT); 
+  //
+  pcf8574_1.begin();
+  pcf8574_2.begin();
+  //
+  pcf8574_1.digitalWrite(P0, LOW); 
+  pcf8574_1.digitalWrite(P1, LOW); 
+  pcf8574_1.digitalWrite(P2, LOW); 
+  pcf8574_1.digitalWrite(P3, LOW); 
+  pcf8574_1.digitalWrite(P4, LOW); 
+  pcf8574_1.digitalWrite(P5, LOW); 
+  pcf8574_1.digitalWrite(P6, LOW); 
+  pcf8574_1.digitalWrite(P7, LOW);
+  pcf8574_2.digitalWrite(P0, LOW); 
+  pcf8574_2.digitalWrite(P1, LOW); 
+  pcf8574_2.digitalWrite(P2, LOW); 
+  pcf8574_2.digitalWrite(P3, LOW); 
+  pcf8574_2.digitalWrite(P4, LOW); 
+  pcf8574_2.digitalWrite(P5, LOW);  
+  pcf8574_2.digitalWrite(P6, LOW); 
+  pcf8574_2.digitalWrite(P7, LOW); 
+  
+  pcf8574_1.digitalWrite(P2, !val0); 
+  pcf8574_1.digitalWrite(P3, !val1); 
+  pcf8574_1.digitalWrite(P4, !val2); 
+  pcf8574_1.digitalWrite(P5, !val3); 
+  pcf8574_1.digitalWrite(P6, !val4); 
+  pcf8574_1.digitalWrite(P7, !val5); 
+ // pcf8574_1.digitalWrite(P6, !val6); 
+ // pcf8574_1.digitalWrite(P7, !val7); 
+  pcf8574_2.digitalWrite(P2, val0); 
+  pcf8574_2.digitalWrite(P3, val1); 
+  pcf8574_2.digitalWrite(P4, val2); 
+  pcf8574_2.digitalWrite(P5, val3); 
+  pcf8574_2.digitalWrite(P6, val4); 
+  pcf8574_2.digitalWrite(P7, val5); 
+//  pcf8574_2.digitalWrite(P6, val6); 
+//  pcf8574_2.digitalWrite(P7, val7);  
+
+ 
+  pcf8574_1.digitalWrite(P0, LOW); 
+  pcf8574_1.digitalWrite(P1, LOW); 
+  pcf8574_1.digitalWrite(P2, LOW); 
+  pcf8574_1.digitalWrite(P3, LOW); 
+  pcf8574_1.digitalWrite(P4, LOW); 
+  pcf8574_1.digitalWrite(P5, LOW); 
+  pcf8574_1.digitalWrite(P6, LOW); 
+  pcf8574_1.digitalWrite(P7, LOW);
+  pcf8574_2.digitalWrite(P0, LOW); 
+  pcf8574_2.digitalWrite(P1, LOW); 
+  pcf8574_2.digitalWrite(P2, LOW); 
+  pcf8574_2.digitalWrite(P3, LOW); 
+  pcf8574_2.digitalWrite(P4, LOW); 
+  pcf8574_2.digitalWrite(P5, LOW);  
+  pcf8574_2.digitalWrite(P6, LOW); 
+  pcf8574_2.digitalWrite(P7, LOW); 
+  
+}
+ 
+
+void setup()
+{
+ Serial.begin(9600);
+ delay(500);  
+  
+ lcdSetup();
+ lcd.setCursor(4,0);
+ lcd.print("Startup!");
+
+// Mute volume
+ val0 = 0;
+ val1 = 0;
+ val2 = 0;
+ val3 = 0;
+ val4 = 0;
+ val5 = 0;
+ volSet(); 
+}
+
+void loop()
+{
+  delay(500); 
+  
+  lcdSetup();
+  lcd.setCursor(0,0);
+  lcd.print("VOL: MAX");
+
+ val0 = 1;
+ val1 = 1;
+ val2 = 1;
+ val3 = 1;
+ val4 = 1;
+ val5 = 1; 
+ volSet(); 
+
+
+   delay(500); 
+
+  lcdSetup();
+  lcd.setCursor(0,0);
+  lcd.print("VOL: 6");
+ 
+ val0 = 1; //
+ val1 = 0;
+ val2 = 0;
+ val3 = 1;
+ val4 = 0;
+ val5 = 0; 
+ volSet(); 
+
+   delay(500); 
+
+  lcdSetup();
+  lcd.setCursor(0,0);
+  lcd.print("VOL: 4");
+ 
+ val0 = 0; // 011110 (30)
+ val1 = 1;
+ val2 = 1;
+ val3 = 1;
+ val4 = 1;
+ val5 = 0; 
+ volSet(); 
+
+delay(500); 
+
+ lcdSetup();
+ lcd.setCursor(0,0);
+ lcd.print("VOL: 2");
+
+ val0 = 0; //LSB 001110 (14)
+ val1 = 1;
+ val2 = 1;
+ val3 = 1;
+ val4 = 0;
+ val5 = 0; //MSB
+ volSet(); 
+
+  delay(500); 
+
+ lcdSetup();
+  lcd.setCursor(0,0);
+  lcd.print("VOL: 1"); 
+
+ val0 = 0; //LSB 001010 (10)
+ val1 = 1;
+ val2 = 0;
+ val3 = 1;
+ val4 = 0;
+ val5 = 0; //MSB (first number)
+ volSet();    
+
+
+   delay(500); 
+
+  lcdSetup();
+  lcd.setCursor(0,0);
+  lcd.print("VOL: MUTE");  
+
+ val0 = 0;
+ val1 = 0;
+ val2 = 0;
+ val3 = 0;
+ val4 = 0;
+ val5 = 0; 
+ volSet(); 
+
+
+  lcdSetup();
+  lcd.setCursor(0,0);
+  lcd.print("Provenzano");
+
+  delay(500); 
+  
+}

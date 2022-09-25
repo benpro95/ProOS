@@ -1,0 +1,213 @@
+
+
+#include <Wire.h> 
+#include <Adafruit_PCF8574.h>
+// modified to support MCP23008 expander chip
+#include "LiquidCrystal_I2C.h"
+
+LiquidCrystal_I2C lcd(0x27);
+Adafruit_PCF8574 pcf;
+
+uint8_t relayCount = 6;
+uint8_t relayAdrcur;
+ bool val0 = 0;
+ bool val1 = 0;
+ bool val2 = 0;
+ bool val3 = 0;
+ bool val4 = 0;
+ bool val5 = 0;
+ 
+void selectRelayAddress()
+{
+  if (!pcf.begin(relayAdrcur, &Wire)) {
+    Serial.println("Couldn't find PCF8574");
+    while (1);
+  }
+  for (uint8_t p=0; p < relayCount; p++) {
+    pcf.pinMode(p, OUTPUT);
+  }   
+}
+
+void setup()
+{
+
+      Serial.begin(9600);
+
+ val0 = 0;
+ val1 = 0;
+ val2 = 0;
+ val3 = 0;
+ val4 = 0;
+ val5 = 0;
+//Set
+  relayAdrcur = 0x3E;
+  selectRelayAddress();
+  pcf.digitalWrite(0, !val0); 
+  pcf.digitalWrite(1, !val1); 
+  pcf.digitalWrite(2, !val2); 
+  pcf.digitalWrite(3, !val3); 
+  pcf.digitalWrite(4, !val4); 
+  pcf.digitalWrite(5, !val5); 
+  relayAdrcur = 0x3F;
+  selectRelayAddress();  
+  pcf.digitalWrite(0, val0); 
+  pcf.digitalWrite(1, val1); 
+  pcf.digitalWrite(2, val2); 
+  pcf.digitalWrite(3, val3); 
+  pcf.digitalWrite(4, val4); 
+  pcf.digitalWrite(5, val5); 
+   delay(35);  
+
+  relayAdrcur = 0x3E;
+  selectRelayAddress();
+   for (uint8_t p=0; p < relayCount; p++) {
+    pcf.digitalWrite(p, LOW);  
+  }
+  relayAdrcur = 0x3F;
+  selectRelayAddress();
+  for (uint8_t p=0; p < relayCount; p++) {
+    pcf.digitalWrite(p, LOW); 
+  }     
+
+  lcd.begin(16,2);
+  lcd.backlight();
+  lcd.clear();
+  lcd.setCursor(4,0);
+  lcd.print("Startup!");
+
+      delay(1000);  
+}
+
+void loop()
+{
+
+
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Ben");
+  
+val0 = 1;
+ val1 = 1;
+ val2 = 1;
+ val3 = 1;
+ val4 = 1;
+ val5 = 1;
+//Set
+  relayAdrcur = 0x3E;
+  selectRelayAddress();
+  pcf.digitalWrite(0, !val0); 
+  pcf.digitalWrite(1, !val1); 
+  pcf.digitalWrite(2, !val2); 
+  pcf.digitalWrite(3, !val3); 
+  pcf.digitalWrite(4, !val4); 
+  pcf.digitalWrite(5, !val5); 
+  relayAdrcur = 0x3F;
+  selectRelayAddress();  
+  pcf.digitalWrite(0, val0); 
+  pcf.digitalWrite(1, val1); 
+  pcf.digitalWrite(2, val2); 
+  pcf.digitalWrite(3, val3); 
+  pcf.digitalWrite(4, val4); 
+  pcf.digitalWrite(5, val5); 
+   delay(35);  
+
+  relayAdrcur = 0x3E;
+  selectRelayAddress();
+   for (uint8_t p=0; p < relayCount; p++) {
+    pcf.digitalWrite(p, LOW);  
+  }
+  relayAdrcur = 0x3F;
+  selectRelayAddress();
+  for (uint8_t p=0; p < relayCount; p++) {
+    pcf.digitalWrite(p, LOW); 
+  }      
+   
+   delay(2000); 
+
+ val0 = 0;
+ val1 = 0;
+ val2 = 0;
+ val3 = 0;
+ val4 = 0;
+ val5 = 0;
+//Set
+  relayAdrcur = 0x3E;
+  selectRelayAddress();
+  pcf.digitalWrite(0, !val0); 
+  pcf.digitalWrite(1, !val1); 
+  pcf.digitalWrite(2, !val2); 
+  pcf.digitalWrite(3, !val3); 
+  pcf.digitalWrite(4, !val4); 
+  pcf.digitalWrite(5, !val5); 
+  relayAdrcur = 0x3F;
+  selectRelayAddress();  
+  pcf.digitalWrite(0, val0); 
+  pcf.digitalWrite(1, val1); 
+  pcf.digitalWrite(2, val2); 
+  pcf.digitalWrite(3, val3); 
+  pcf.digitalWrite(4, val4); 
+  pcf.digitalWrite(5, val5); 
+   delay(35);  
+
+  relayAdrcur = 0x3E;
+  selectRelayAddress();
+   for (uint8_t p=0; p < relayCount; p++) {
+    pcf.digitalWrite(p, LOW);  
+  }
+  relayAdrcur = 0x3F;
+  selectRelayAddress();
+  for (uint8_t p=0; p < relayCount; p++) {
+    pcf.digitalWrite(p, LOW); 
+  }      
+
+   delay(2000); 
+   
+ val0 = 0;
+ val1 = 0;
+ val2 = 1;
+ val3 = 1;
+ val4 = 1;
+ val5 = 1;
+//Set
+  relayAdrcur = 0x3E;
+  selectRelayAddress();
+  pcf.digitalWrite(0, !val0); 
+  pcf.digitalWrite(1, !val1); 
+  pcf.digitalWrite(2, !val2); 
+  pcf.digitalWrite(3, !val3); 
+  pcf.digitalWrite(4, !val4); 
+  pcf.digitalWrite(5, !val5); 
+  relayAdrcur = 0x3F;
+  selectRelayAddress();  
+  pcf.digitalWrite(0, val0); 
+  pcf.digitalWrite(1, val1); 
+  pcf.digitalWrite(2, val2); 
+  pcf.digitalWrite(3, val3); 
+  pcf.digitalWrite(4, val4); 
+  pcf.digitalWrite(5, val5); 
+   delay(35);  
+
+  relayAdrcur = 0x3E;
+  selectRelayAddress();
+   for (uint8_t p=0; p < relayCount; p++) {
+    pcf.digitalWrite(p, LOW);  
+  }
+  relayAdrcur = 0x3F;
+  selectRelayAddress();
+  for (uint8_t p=0; p < relayCount; p++) {
+    pcf.digitalWrite(p, LOW); 
+  } 
+
+ 
+ delay(1000);
+
+
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Provenzano");
+
+
+ delay(1000); 
+
+  
+}

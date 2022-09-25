@@ -1,0 +1,96 @@
+
+
+#include <Wire.h> 
+#include <Adafruit_PCF8574.h>
+// modified to support MCP23008 expander chip
+#include "LiquidCrystal_I2C.h"
+
+LiquidCrystal_I2C lcd(0x27);
+Adafruit_PCF8574 pcf1,pcf2;
+
+char voladr_high = 0x3E;
+char voladr_low = 0x3F;
+
+long volRelayswitchtime = 50; //ms
+byte binaryVol;
+
+void setup()
+{
+
+      Serial.begin(9600);
+
+
+  if (!pcf1.begin(0x3E, &Wire)) {
+    Serial.println("Couldn't find PCF8574");
+    while (1);
+  }
+  for (uint8_t p=0; p<8; p++) {
+    pcf1.pinMode(p, OUTPUT);
+  }   
+
+  if (!pcf2.begin(0x3F, &Wire)) {
+    Serial.println("Couldn't find PCF8574");
+    while (1);
+  }
+  for (uint8_t p=0; p<8; p++) {
+    pcf2.pinMode(p, OUTPUT);
+  }   
+
+  for (uint8_t p=0; p<8; p++) {
+    pcf1.digitalWrite(p, LOW);
+    pcf2.digitalWrite(p, LOW);  
+  }
+
+  lcd.begin(16,2);
+  lcd.backlight();
+  lcd.clear();
+  lcd.setCursor(4,0);
+  lcd.print("Startup!");
+
+      delay(500);  
+  
+}
+
+void loop()
+{
+
+
+
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Ben");
+  
+//Set
+  for (uint8_t p=0; p<6; p++) {
+    pcf1.digitalWrite(p, HIGH);  // turn LED on by sinking current to ground
+    pcf2.digitalWrite(p, LOW);  // turn LED on by sinking current to ground
+  }  
+  delay(25);
+  for (uint8_t p=0; p<6; p++) {
+    pcf1.digitalWrite(p, LOW);  // turn LED on by sinking current to ground
+    pcf2.digitalWrite(p, LOW);  // turn LED on by sinking current to ground
+  
+
+ 
+ delay(1000);
+
+
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Provenzano");
+
+//Reset
+  for (uint8_t p=0; p<6; p++) {
+    pcf1.digitalWrite(p, LOW);  // turn LED on by sinking current to ground
+    pcf2.digitalWrite(p, HIGH);  // turn LED on by sinking current to ground
+  }
+  delay(25);
+  for (uint8_t p=0; p<6; p++) {
+    pcf1.digitalWrite(p, LOW);  // turn LED on by sinking current to ground
+    pcf2.digitalWrite(p, LOW);  // turn LED on by sinking current to ground
+  }
+ 
+ delay(1000);
+}
+  
+}

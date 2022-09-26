@@ -1,42 +1,40 @@
 /// Libraries ///
-#include <Arduino.h>
 #include "LiquidCrystal_I2C.h" // custom for MCP23008-E/P, power button support
 #include <IRremote.hpp>
-#include "I2CIO.h"
-
+#include <Arduino.h>
 #include <Wire.h> 
 
 // I2C (0x3E) Volume Reset
 // I2C (0x3F) Volume Set
+// I2C (0x27) Display / Power Button
 #define volResetAddr 0x3E
 #define volSetAddr 0x3F
 #define lcdAddr 0x27
-// I2C Display
+
+// 16x2 Display
 LiquidCrystal_I2C lcd(lcdAddr);
+
 // IR (pin 8)
 int receive_pin = 8;
 bool irCodeScan = 0;
 
-// Input selector stuff
+// Input selector
 int selectedInput = 0;
 long muteDelay = 1000;
 
-// Relay attenuator stuff
+// Relay attenuator
 bool muteEnabled = false;
 byte lastAttenuatorLevel;
 byte volLevel = 0;
 
-// System stuff
+// Power
 #define powerPin 5
-unsigned long timeOfLastOperation;
-
+bool powerState = 0;
+bool powerCycled = 0;
 byte powerButton = 0;
-bool powerState = 0; // initial power state
-bool powerCycled = 0; 
-byte lastPowerState = 0;    // the previous reading from the power button
-unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
-unsigned long debounceDelay = 50;    // the debounce time; increase if the output flickers
-
+byte lastPowerButton = 0;
+unsigned long lastDebounceTime = 0;
+unsigned long debounceDelay = 50; 
 
 byte PCFexpanderRead(int address) 
 {
@@ -111,7 +109,7 @@ void setPowerState() {
   // read pin state from MCP23008
   int reading = lcd.readPin(powerPin);
   // If switch changed
-  if (reading != lastPowerState) {
+  if (reading != lastPowerButton) {
     // reset the debouncing timer
     lastDebounceTime = millis();
   }
@@ -128,7 +126,7 @@ void setPowerState() {
       }
     }
   }
-  lastPowerState = reading; 
+  lastPowerButton = reading; 
 }
 
 void setup()
@@ -151,7 +149,7 @@ delay(100);
 void loop()
 {
   setPowerState();
-  irCodeScan = 1;
+//irCodeScan = 1;
   irReceive(); 
   
   if (powerCycled == 0){

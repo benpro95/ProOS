@@ -2,34 +2,30 @@
 #include <Arduino.h>
 #include "LiquidCrystal_I2C.h" // modified to support MCP23008 expander chip
 #include <IRremote.hpp>
-#include <PCF8574.h>
+
 #include <Wire.h> 
 
-/// Constants ///
 // I2C (0x3E) Volume Reset
 // I2C (0x3F) Volume Set
-PCF8574 pcf8574_1(0x3E);
-PCF8574 pcf8574_2(0x3F);
+#define volResetAddr 0x3E
+#define volSetAddr 0x3F
 // I2C (0x27) Display
 LiquidCrystal_I2C lcd(0x27);
-
 // IR (pin 8)
 int receive_pin = 8;
 bool irCodeScan = 0;
 
-/// Global Variables ///
- bool vBit0;
- bool vBit1;
- bool vBit2;
- bool vBit3;
- bool vBit4;
- bool vBit5;
- bool vBit6;
- bool vBit7;
- bool bitState;
- byte volLevel = 0;
+// Input selector stuff
+int selectedInput = 0;
+long muteDelay = 1000;
 
-/// Functions ///
+// Relay attenuator stuff
+bool muteEnabled = false;
+byte lastAttenuatorLevel;
+byte volLevel = 0;
+
+// System stuff
+unsigned long timeOfLastOperation;
 
 
 void volDemo()
@@ -61,108 +57,38 @@ void lcdSetup()
   lcd.clear();
 }
 
+void IOexpanderWrite(byte address, byte _data ) 
+{
+ Wire.beginTransmission(address);
+ Wire.write(_data);
+ Wire.endTransmission(); 
+}
+
+byte IOexpanderRead(int address) 
+{
+ byte _data;
+ Wire.requestFrom(address, 1);
+ if(Wire.available()) {
+   _data = Wire.read();
+ }
+ return _data;
+}
+
+// Function to set a specific attenuator level
+int setAttenuatorLevel (byte level) {
+  muteEnabled = false;
+  IOexpanderWrite(volResetAddr, ~level);
+  IOexpanderWrite(volSetAddr, level);
+  delay(5);
+  IOexpanderWrite(volSetAddr, B00000000);
+  IOexpanderWrite(volResetAddr, B00000000);
+}
+
 void volSet()
 {
-  // Communication setup 
-  pcf8574_1.pinMode(P0, OUTPUT); 
-  pcf8574_1.pinMode(P1, OUTPUT); 
-  pcf8574_1.pinMode(P2, OUTPUT); 
-  pcf8574_1.pinMode(P3, OUTPUT); 
-  pcf8574_1.pinMode(P4, OUTPUT); 
-  pcf8574_1.pinMode(P5, OUTPUT); 
-  pcf8574_1.pinMode(P6, OUTPUT); 
-  pcf8574_1.pinMode(P7, OUTPUT); 
-  pcf8574_2.pinMode(P0, OUTPUT); 
-  pcf8574_2.pinMode(P1, OUTPUT); 
-  pcf8574_2.pinMode(P2, OUTPUT); 
-  pcf8574_2.pinMode(P3, OUTPUT); 
-  pcf8574_2.pinMode(P4, OUTPUT); 
-  pcf8574_2.pinMode(P5, OUTPUT); 
-  pcf8574_2.pinMode(P6, OUTPUT); 
-  pcf8574_2.pinMode(P7, OUTPUT); 
-  pcf8574_1.begin();
-  pcf8574_2.begin();
-
-  // Set-reset relays
-  for(int bitSel = 0, mask = 1; bitSel < 8; bitSel++, mask = mask << 1)
-  {
-    // Read state of current bit
-    if (volLevel & mask){
-      bitState = 1;
-    }
-    else{
-      bitState = 0;
-    }
-    // Map byte to bits
-    if ( bitSel == 0 ){
-      vBit0 = bitState;
-    }
-    if ( bitSel == 1 ){
-      vBit1 = bitState;
-    }
-    if ( bitSel == 2 ){
-      vBit2 = bitState;
-    }
-    if ( bitSel == 3 ){
-      vBit3 = bitState;
-    }
-    if ( bitSel == 4 ){
-      vBit4 = bitState;
-    }
-    if ( bitSel == 5 ){
-      vBit5 = bitState;
-    }
-    if ( bitSel == 6 ){
-      vBit6 = bitState;
-    }
-    if ( bitSel == 7 ){
-      vBit7 = bitState;
-    }
-  } 
-
-  // Reset then set
-  volResetBus();
-  pcf8574_1.digitalWrite(P0, !vBit0); 
-  pcf8574_2.digitalWrite(P0, vBit0); 
-  pcf8574_1.digitalWrite(P1, !vBit1); 
-  pcf8574_2.digitalWrite(P1, vBit1); 
-  pcf8574_1.digitalWrite(P2, !vBit2); 
-  pcf8574_2.digitalWrite(P2, vBit2); 
-  pcf8574_1.digitalWrite(P3, !vBit3); 
-  pcf8574_2.digitalWrite(P3, vBit3); 
-  pcf8574_1.digitalWrite(P4, !vBit4); 
-  pcf8574_2.digitalWrite(P4, vBit4); 
-  pcf8574_1.digitalWrite(P5, !vBit5); 
-  pcf8574_2.digitalWrite(P5, vBit5); 
-  pcf8574_1.digitalWrite(P6, !vBit6); 
-  pcf8574_2.digitalWrite(P6, vBit6); 
-  pcf8574_1.digitalWrite(P7, !vBit7); 
-  pcf8574_2.digitalWrite(P7, vBit7); 
-  volResetBus();
+  setAttenuatorLevel(volLevel);
 }
 
-
-void volResetBus()
-{
-  pcf8574_1.digitalWrite(P0, LOW); 
-  pcf8574_1.digitalWrite(P1, LOW); 
-  pcf8574_1.digitalWrite(P2, LOW); 
-  pcf8574_1.digitalWrite(P3, LOW); 
-  pcf8574_1.digitalWrite(P4, LOW); 
-  pcf8574_1.digitalWrite(P5, LOW); 
-  pcf8574_1.digitalWrite(P6, LOW); 
-  pcf8574_1.digitalWrite(P7, LOW);
-  pcf8574_2.digitalWrite(P0, LOW); 
-  pcf8574_2.digitalWrite(P1, LOW); 
-  pcf8574_2.digitalWrite(P2, LOW); 
-  pcf8574_2.digitalWrite(P3, LOW); 
-  pcf8574_2.digitalWrite(P4, LOW); 
-  pcf8574_2.digitalWrite(P5, LOW);  
-  pcf8574_2.digitalWrite(P6, LOW); 
-  pcf8574_2.digitalWrite(P7, LOW); 
-}
-
- 
 
 void irReceive() 
 {
@@ -189,7 +115,6 @@ void irReceive()
         lcd.setCursor(0,0);
         lcd.print(volLevel); 
       }
-     delay(50); 
      IrReceiver.resume();  
     }
   }
@@ -198,23 +123,27 @@ void irReceive()
 
 void setup()
 {
- Serial.begin(9600);
- delay(100);  
+Serial.begin(9600);
+delay(100);  
 
 // IR
- IrReceiver.begin(receive_pin);
+IrReceiver.begin(receive_pin);
  
 // Display  
- lcdSetup();
- lcd.setCursor(4,0);
- lcd.print("Startup!");
+lcdSetup();
+lcd.setCursor(4,0);
+lcd.print("Startup!");
+
+// I2C
+Wire.begin(); 
+IOexpanderWrite(volResetAddr, B00000000);
+IOexpanderWrite(volSetAddr, B00000000);
 
 // Mute volume
- volLevel = 0;
- volSet(); 
+volLevel = 0;
+volSet(); 
 
 delay(500);
- 
 }
 
 void loop()

@@ -2,6 +2,7 @@
 // Created by Francisco Malpartida on 20/08/11.
 // Copyright 2011 - Under creative commons license 3.0:
 //        Attribution-ShareAlike CC BY-SA
+// modified by Ben Provenzano III 09/26/2022
 //
 // This software is furnished "as is", without technical support, and with no 
 // warranty, express or implied, as to its usefulness for any purpose.
@@ -59,7 +60,10 @@ int I2CIO::begin (  uint8_t i2cAddr )
    _i2cAddr = i2cAddr;
    
    Wire.begin ( );
-      
+
+   Wire.beginTransmission(_i2cAddr); 
+   Wire.write(0x09);  // GPIO access register
+   Wire.endTransmission(); 
    _initialised = Wire.requestFrom ( _i2cAddr, (uint8_t)1 );
 
 #if (ARDUINO <  100)
@@ -67,8 +71,18 @@ int I2CIO::begin (  uint8_t i2cAddr )
 #else
    _shadow = Wire.read (); // Remove the byte read don't need it.
 #endif
-   
-   return ( _initialised );
+
+    Wire.beginTransmission (_i2cAddr);
+    Wire.write(0x00); // IODIRA register
+    Wire.write(B00100000); // set pin 5 to input and rest as outputs
+    Wire.endTransmission();
+
+    Wire.beginTransmission (_i2cAddr);
+    Wire.write(0x06); // GPIO pull-up register
+    Wire.write(B00100000); // set pin 5 pull-up resistor
+    Wire.endTransmission();
+
+ return ( _initialised );   
 }
 
 //
@@ -114,6 +128,9 @@ uint8_t I2CIO::read ( void )
    
    if ( _initialised )
    {
+      Wire.beginTransmission(_i2cAddr); 
+      Wire.write(0x09);  // GPIO access register
+      Wire.endTransmission();     
       Wire.requestFrom ( _i2cAddr, (uint8_t)1 );
 #if (ARDUINO <  100)
       retVal = ( _dirMask & Wire.receive ( ) );
@@ -137,23 +154,13 @@ int I2CIO::write ( uint8_t value )
       // outputs updating the output shadow of the device
       _shadow = ( value & ~(_dirMask) );
    
-      // added by Ben P (support for MCP23008)
-      Wire.beginTransmission ( _i2cAddr );
-      Wire.write(0x00); //selects the IODIRA register
-      Wire.write(0x00); //this sets all port A pins to outputs
-      Wire.endTransmission(); //stops talking to device
-      // end
-      Wire.beginTransmission ( _i2cAddr );
+ Wire.beginTransmission( _i2cAddr );   //MCP23008 i2c address             
 
 #if (ARDUINO <  100)
-      // added by Ben P (support for MCP23008)
-      Wire.send(0x09); 
-      // end
+      Wire.send(0x09);        //MCP23008 internal register to enable GPIO access
       Wire.send ( _shadow );
 #else
-      // added by Ben P (support for MCP23008)
-      Wire.write(0x09); 
-      // end
+      Wire.write(0x09);       //MCP23008 internal register to enable GPIO access
       Wire.write ( _shadow );
 #endif  
       status = Wire.endTransmission ();

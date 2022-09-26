@@ -2,6 +2,7 @@
 // Created by Francisco Malpartida on 20/08/11.
 // Copyright 2011 - Under creative commons license 3.0:
 //        Attribution-ShareAlike CC BY-SA
+// modified by Ben Provenzano III 09/26/2022
 //
 // This software is furnished "as is", without technical support, and with no 
 // warranty, express or implied, as to its usefulness for any purpose.
@@ -14,7 +15,7 @@
 // chip.
 // 
 // @brief 
-// Implement a basic IO library to drive the PCF8574* I2C IO Expander ASIC.
+// Implement a basic IO library to drive the MCP23008 I2C IO Expander ASIC.
 // The library implements basic IO general methods to configure IO pin direction
 // read and write uint8_t operations and basic pin level routines to set or read
 // a particular IO port.

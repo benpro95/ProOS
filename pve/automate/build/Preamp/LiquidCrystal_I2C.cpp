@@ -2,6 +2,7 @@
 // Created by Francisco Malpartida on 20/08/11.
 // Copyright 2011 - Under creative commons license 3.0:
 //        Attribution-ShareAlike CC BY-SA
+// modified by Ben Provenzano III 09/26/2022
 //
 // This software is furnished "as is", without technical support, and with no 
 // warranty, express or implied, as to its usefulness for any purpose.
@@ -186,6 +187,16 @@ void LiquidCrystal_I2C::setBacklight( uint8_t value )
 }
 
 
+uint8_t LiquidCrystal_I2C::readPin( uint8_t pin ) 
+{
+  // Read a input pin 
+  byte value;
+  _i2cio.portMode ( INPUT ); 
+  value = _i2cio.digitalRead(pin);
+  _i2cio.portMode ( OUTPUT ); 
+  return !value;
+}
+
 // PRIVATE METHODS
 // ---------------------------------------------------------------------------
 
@@ -203,7 +214,7 @@ int LiquidCrystal_I2C::init()
       _i2cio.portMode ( OUTPUT );  // Set the entire IO extender to OUTPUT
       _displayfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;
       status = 1;
-      _i2cio.write(0);  // Set the entire port to LOW
+//      _i2cio.write(0);  // (disabled, done in setup) *Ben P
    }
    return ( status );
 }

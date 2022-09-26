@@ -2,6 +2,7 @@
 // Created by Francisco Malpartida on 20/08/11.
 // Copyright 2011 - Under creative commons license 3.0:
 //        Attribution-ShareAlike CC BY-SA
+// modified by Ben Provenzano III 09/26/2022
 //
 // This software is furnished "as is", without technical support, and with no 
 // warranty, express or implied, as to its usefulness for any purpose.
@@ -143,6 +144,12 @@ public:
     @param      value: backlight mode (HIGH|LOW)
     */
    void setBacklight ( uint8_t value );
+
+   /*!
+    This is used to read the power button state
+    */
+   uint8_t readPin( uint8_t pin );
+
    
 private:
    
@@ -193,7 +200,7 @@ private:
    uint8_t _Addr;             // I2C Address of the IO expander
    uint8_t _backlightPinMask; // Backlight IO pin mask
    uint8_t _backlightStsMask; // Backlight status mask
-   I2CIO   _i2cio;            // I2CIO PCF8574* expansion module driver I2CLCDextraIO
+   I2CIO   _i2cio;            // I2CIO MCP* expansion module driver I2CLCDextraIO
    uint8_t _En;               // LCD expander word for enable pin
    uint8_t _Rw;               // LCD expander word for R/W pin
    uint8_t _Rs;               // LCD expander word for Register Select pin

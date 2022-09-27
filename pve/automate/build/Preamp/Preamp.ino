@@ -28,37 +28,34 @@ int selectedInput = 0;
 long muteDelay = 1000;
 
 // Relay attenuator
-byte volMax = 63;
-byte volRelayCount = 6;
-byte volCoarseSteps = 4;
 #define volControlDown 1
 #define volControlUp 2
 #define volControlSlow 1 
 #define volControlFast 2
-byte volLastLevel = 0;
-byte volLevel = 0;
-byte volMin = 0;
 bool volMute;
+byte volLevel = 0;
+byte volLastLevel = 0;
+byte volCoarseSteps = 4;
+byte volRelayCount = 6;
+byte volMax = 63;
+byte volMin = 0;
+
 
 // Motor Pot
-#define MOTOR_INIT    1
-#define MOTOR_SETTLED   2 // motor pot is at resting state
-#define MOTOR_IN_MOTION   3 // motor pot is moving right now
-#define MOTOR_COASTING    4 // motor pot just passed its
-#define SENSED_ANALOG_POT_INPUT_PIN 1
-#define NATIVE_VOL_RATE    1 
-#define POT_CHANGE_THRESH 3
-#define POT_REREADS   10 
-#define MOTOR_POT_ROTATE_CW             16      // motor pot control
-#define MOTOR_POT_ROTATE_CCW            17  // motor pot control
-#define ANALOG_POT_MIN_RANGE 0
-#define ANALOG_POT_MAX_RANGE 63
-#define ANALOG_POT_MAX_RANGE 1023
-byte volSpan = 1;
-int    potValueLast;  // range from 0..1023
-byte   volPotLast;
-byte   last_volume; 
-byte   potState;
+#define motorInit 1
+#define motorSettled 2  // motor pot is at resting state
+#define motorInMotion 3 // motor pot is moving right now
+#define motorCoasting 4 // motor pot just passed its
+#define potThreshold 3
+#define potRereads 10 
+#define potAnalogPin 1
+#define motorPinCW 16 
+#define motorPinCCW 17 
+#define potMinRange 0
+#define potMaxRange 1023
+int potValueLast;    // range from 0..1023
+byte volPotLast;
+byte potState;
 
 // Power
 #define powerPin 5
@@ -70,213 +67,150 @@ unsigned long lastDebounceTime = 0;
 unsigned long debounceDelay = 50; 
 
 
+
+// mapping function
 long l_map(long x, long in_min, long in_max, long out_min, long out_max)
 {
   return (x - in_min) * (out_max - out_min + 1) /
          (in_max - in_min + 1) + out_min;
 } 
 
-int
-read_analog_pot_with_smoothing(byte analog_port_num, byte reread_count)
+
+// read the pot, smooth out the data
+int readPotWithSmoothing(byte analog_port_num, byte reread_count)
 {
   int sensed_port_value = 0;
-
   for (byte i = 0; i < reread_count; i++) {
     sensed_port_value += analogRead(analog_port_num);
     // delayMicroseconds(200);
   }
-
   if (reread_count > 1) {
     sensed_port_value /= reread_count;
   }
-
   return sensed_port_value;
 }
 
 
-// read the pot, translate its native range to our (min..max) range
-// and clip to keep any stray values in that range.
-int
-read_pot_volume_value_with_clipping(int sensed_pot_value)
+// read the pot, and clip to keep any stray values in that range
+int readPotWithClipping(int sensed_pot_value)
 {
   int temp_volume;
 
   temp_volume = l_map(sensed_pot_value,
-      0, // ANALOG_POT_MIN_RANGE,
-      ANALOG_POT_MAX_RANGE,
+      0, // potMinRange,
+      potMaxRange,
       volMin, volMax);
     
   return temp_volume;
 }
 
-void
-handle_analog_pot_value_changes(void)
+
+// runs when pot state changes
+void potValueChanges(void)
 {
-  byte  old_vol;
-  byte  temp_volume;
+  byte old_vol;
+  byte temp_volume;
   int sensed_pot_value;
-
-  sensed_pot_value = read_analog_pot_with_smoothing(
-    SENSED_ANALOG_POT_INPUT_PIN, POT_REREADS
+  // read pot smoothed output
+  sensed_pot_value = readPotWithSmoothing(
+    potAnalogPin, potRereads
   );  // to smooth it out
-
-  if (abs(sensed_pot_value - potValueLast) > POT_CHANGE_THRESH) {
+  // read an average pot value
+  if (abs(sensed_pot_value - potValueLast) > potThreshold) {
     // 1-5 is a good value to ignore noise
-
-    /*
-     * get the pot raw value into our correct volume min..max range
-     */
-    old_vol = volLevel; // the setting *just* before the
-          // user touched the pot
-    temp_volume = read_pot_volume_value_with_clipping(
+    // convert the pot raw value into our correct volume min..max range
+    old_vol = volLevel; // the setting before user touched the pot
+    // read pot clipped output
+    temp_volume = readPotWithClipping(
       sensed_pot_value
     );
     if (temp_volume == old_vol) {
-      // don't update the display (or anything) if
-      // there was no *effective* change
+      // don't update if there was no effective change
       return;
     }
-
-    /*
-     * if we are at this point, there was a real change and
-     * the vol engine needs to be triggered.  we also should
-     * restore backlight just as if the user had pressed a
-     * vol-change IR key.
-     */
-//    lcd.restore_backlight();
-
+    //    lcd.restore_backlight();
+    // volume state changed    
     volLevel = temp_volume;
     if (temp_volume > old_vol) {
-      // are we in mute-mode right now?  if going from mute
-      // to 'arrow-up' we should do a slow ramp-up first
       if (volMute == 1) {
-        // tell the system we are officially
-        // out of mute mode, now
+        // tell the system we out of mute mode
         volMute = 0;
         volUpdate(volLevel, 1);
       }
       else {
-        // not in mute mode, handle the volume
-        // increase normally.
-        // this also sets the volume but also the
-        // graph and db display
+        // not in mute mode, set volume up
         volUpdate(temp_volume, 0);
       }
     }
     else {
-      // not a volume increase but a decrease
-      // this also sets the volume but also the graph
-      // and db display
+      // not in mute mode, set volume down
       volUpdate(temp_volume, 0);
     }
-
-    /*
-     * since this registered a real change, we save the
-     * timestamp and value in our state variables
-     */
+    // real change, save the changed state
     volPotLast = volLevel;
     potValueLast = sensed_pot_value;
   }
 }
 
 
-// logic on this routine is simple: the only time the pot is allowed
-// to be read is when we consider the motor to be stopped (or 'settled').
-void
-analog_sensed_pot_logic(void)
-{
-  if (powerState == 1) {
-      // admin status is 0 for 'no motor in action, now'.
-      // only read the pot IF it's not in motion 'by us'
-      if (potState == MOTOR_SETTLED ||
-          potState == MOTOR_INIT) {
-        handle_analog_pot_value_changes();
-      }
-  } // power was not off
-}
-
-
-void
-motor_pid(void)
+// motor pot PID control loop
+void motorControlLoop(void)
 {
   int target_pot_wiper_value;
-  int admin_sensed_pot_value;
-
-  // given the 'IR' set volume level, find out what wiper value
-  // we should be comparing with
+  int pot_pid_value;
+  // given the 'IR' set volume level, find out what wiper value to compare
   target_pot_wiper_value = l_map(volLevel, volMin, volMax,
-          ANALOG_POT_MIN_RANGE,
-          ANALOG_POT_MAX_RANGE);
-  
-  // this is the oper value of the pot, from the a/d converter
-  admin_sensed_pot_value = read_analog_pot_with_smoothing(
-    SENSED_ANALOG_POT_INPUT_PIN, POT_REREADS
+          potMinRange,
+          potMaxRange);
+  // this is the value of the pot, from the a/d converter
+  pot_pid_value = readPotWithSmoothing(
+    potAnalogPin, potRereads
   );
-  
-  if (abs(target_pot_wiper_value - admin_sensed_pot_value) <= 8) {
+  // average out the values
+  if (abs(target_pot_wiper_value - pot_pid_value) <= 8) {
     // stop the motor!
-    digitalWrite(MOTOR_POT_ROTATE_CCW, LOW);  // stop turning left
-    digitalWrite(MOTOR_POT_ROTATE_CW,  LOW);  // stop turning right
-    potState = MOTOR_COASTING;
-    delay(5);  // 5ms
+    digitalWrite(motorPinCCW, LOW);  // stop turning left
+    digitalWrite(motorPinCW,  LOW);  // stop turning right
+    potState = motorCoasting;
+    delay(5);
     return;
   }
   else {
-    /*
-     * not at target volume yet
-     */
-
-    if (admin_sensed_pot_value < target_pot_wiper_value) {
+    // not at target volume yet
+    if (pot_pid_value < target_pot_wiper_value) {
       // turn clockwise
-
-      // stop turning left
-      digitalWrite(MOTOR_POT_ROTATE_CCW, LOW);
-      // start turning right
-      digitalWrite(MOTOR_POT_ROTATE_CW,  HIGH);
+      digitalWrite(motorPinCCW, LOW);
+      digitalWrite(motorPinCW,  HIGH);
     }
-    else if (admin_sensed_pot_value > target_pot_wiper_value) {
+    else if (pot_pid_value > target_pot_wiper_value) {
       // turn counter-clockwise
-
-      // stop turning right
-      digitalWrite(MOTOR_POT_ROTATE_CW,  LOW);
-      // start turning left
-      digitalWrite(MOTOR_POT_ROTATE_CCW, HIGH);
+      digitalWrite(motorPinCW,  LOW);
+      digitalWrite(motorPinCCW, HIGH);
     }
   }
 } 
 
 
-// a state-driven dispatcher
-void
-motor_pot_logic(void)
+// motor pot state-driven dispatcher
+void motorPot(void)
 {
-  int   admin_sensed_pot_value = 0;
-  static int  motor_stabilized;
-
-  /*
-   * simple PID control for motor pot
-   */
-
-  // If max_vol == min_vol then don't run the motor
-  if (volSpan == 0)
-    return;
-
+  // PID control loop for motor pot
+  int pot_pid_value = 0;
+  static int motor_stabilized;
+// action states
 #if 0
   if (volMute == 1)
-    return; // don't spin the motor if the user
-      // just went down to MUTE
+    return; // don't spin the motor just muted
 #endif
-
+// action states
   switch (potState) {
-  case MOTOR_INIT:
-    /*
-     * initial state, just go to 'settled' from here
-     */
-    potState = MOTOR_SETTLED;
+  case motorInit:
+    // initial state, just go to 'settled' from here
+    potState = motorSettled;
     volPotLast = volLevel;
     break;
-
-  case MOTOR_SETTLED:
+//---------------//
+  case motorSettled:
     /*
      * if we are 'settled' and the pot wiper changed,
      * it was via a human.  this doesn't affect our
@@ -285,40 +219,39 @@ motor_pot_logic(void)
     // if the volume changed via the user's IR, this should
     // trigger us to move to the next state
     if (volLevel != volPotLast) {
-      potState = MOTOR_IN_MOTION;
-      potValueLast = read_analog_pot_with_smoothing(
-        SENSED_ANALOG_POT_INPUT_PIN, POT_REREADS
+      potState = motorInMotion;
+      potValueLast = readPotWithSmoothing(
+        potAnalogPin, potRereads
       );
     }
 
     volPotLast = volLevel;
     break;
-
-  case MOTOR_IN_MOTION:
+//---------------//
+  case motorInMotion:
     /*
      * if the motor is moving, we are looking for our target
      * so we can let go of the motor and let it 'coast' to a stop
      */
-  //  lcd.restore_backlight();
-
+    //  lcd.restore_backlight();
     motor_stabilized = 0;
-    motor_pid();
+    motorControlLoop();
     break;
-
-  case MOTOR_COASTING:
+//---------------//
+  case motorCoasting:
     /*
      * we are waiting for the motor to stop
      * (which means the last value == this value)
      */
   //  lcd.restore_backlight();
     delay(20);
-    admin_sensed_pot_value = read_analog_pot_with_smoothing(
-      SENSED_ANALOG_POT_INPUT_PIN, POT_REREADS
+    pot_pid_value = readPotWithSmoothing(
+      potAnalogPin, potRereads
     );
-    if (admin_sensed_pot_value == potValueLast) {
+    if (pot_pid_value == potValueLast) {
       if (++motor_stabilized >= 5) {
         // yay! we reached our target
-        potState = MOTOR_SETTLED;
+        potState = motorSettled;
       }
     }
     else {
@@ -326,19 +259,19 @@ motor_pot_logic(void)
       // so reset our 'sameness' counter
       motor_stabilized = 0;
     }
-
+//---------------//
     // this is the operating value of the pot,
     // from the a/d converter
-    potValueLast = admin_sensed_pot_value;
+    potValueLast = pot_pid_value;
     break;
-
+//
   default:
     break;
   }
 }
 
 
-// Increment volume
+// increment volume up/down slow/fast
 void volIncrement (byte dir_flag, byte speed_flag)
 {
   if (dir_flag == volControlUp) {
@@ -402,7 +335,7 @@ void volIncrement (byte dir_flag, byte speed_flag)
 }
 
 
-// Set a specific volume level
+// set a specific volume level
 void volUpdate (byte _vol, byte _force) 
 {
    setRelays(volSetAddr, volResetAddr, _vol, volRelayCount, _force);  
@@ -410,52 +343,49 @@ void volUpdate (byte _vol, byte _force)
 }
 
 
-// Set a relay controller board (volume or inputs)
+// set a relay controller board (volume or inputs)
 void setRelays(byte pcf_a, byte pcf_b,  // first pair of i2c addr's
       byte vol_byte,                    // the 0..255 value to write
       byte installed_relay_count,    // how many bits are installed
       byte forced_update_flag)  // forced or relative mode (1=forced)
 {
   int bitnum;
-  byte  mask_left;
-  byte  mask_right;
-  byte  just_the_current_bit;
-  byte  just_the_previous_bit;
-  byte  shifted_one_bit;
-  
-// this must to be able to underflow to *negative* numbers
-// walk the bits and just count the bit-changes and save into left and right masks
+  byte mask_left;
+  byte mask_right;
+  byte just_the_current_bit;
+  byte just_the_previous_bit;
+  byte shifted_one_bit;
+  // this must to be able to underflow to *negative* numbers
+  // walk the bits and just count the bit-changes and save into left and right masks
   mask_left = mask_right = 0;
-  
+  //
   // this loop walks ALL bits, even the 'mute bit'
   for (bitnum = (installed_relay_count-1); bitnum >= 0 ; bitnum--) {
-    
+    //
     // optimize: calc this ONLY once per loop
     shifted_one_bit = (1 << bitnum);
-    
+    //
     // this is the new volume value; and just the bit we are walking
     just_the_current_bit = (vol_byte & shifted_one_bit);
-    
+    //
     // logical AND to extra just the bit we are interested in
     just_the_previous_bit = (volLastLevel & shifted_one_bit);
-    
+    //
     // examine our current bit and see if it changed from the last run
     if (just_the_previous_bit != just_the_current_bit ||
         forced_update_flag == 1) {
-     // latch the '1' on the left or right side of the relays
-     
+      //	
+      // latch the '1' on the left or right side of the relays
       if (just_the_current_bit != 0) {
-      // a '1' in this bit pos
-      // (1 << bitnum);
+        // a '1' in this bit pos
+        // (1 << bitnum);
         mask_left |= ((byte)shifted_one_bit);
       } 
       else { // (1 << bitnum);
         mask_right |= ((byte)shifted_one_bit);
       }
-      
     } // the 2 bits were different
   } // for each of the 8 bits
-  
 // set upper relays
   PCFexpanderWrite(pcf_b, mask_right);
   PCFexpanderWrite(pcf_a, 0x00);
@@ -467,6 +397,7 @@ void setRelays(byte pcf_a, byte pcf_b,  // first pair of i2c addr's
 }
 
 
+// reset all pins PCF8574A I/O expander
 void resetPCF(byte pcf_a, byte pcf_b)
 {
   // let them settle before we unlatch them
@@ -481,6 +412,7 @@ void resetPCF(byte pcf_a, byte pcf_b)
 }
 
 
+// read a byte from PCF8574A I/O expander
 byte PCFexpanderRead(int address) 
 {
  byte _data;
@@ -492,6 +424,7 @@ byte PCFexpanderRead(int address)
 }
 
 
+// write a byte to PCF8574A I/O expander
 void PCFexpanderWrite(byte address, byte _data ) 
 {
  Wire.beginTransmission(address);
@@ -500,6 +433,7 @@ void PCFexpanderWrite(byte address, byte _data )
 }
 
 
+// receive IR remote commands 
 void irReceive() 
 {
   if (IrReceiver.decode()) {
@@ -540,17 +474,16 @@ void irReceive()
 }
 
 
+// power on/off
 void setPowerState() {
   // read pin state from MCP23008
   int reading = lcd.readPin(powerPin);
-  // If switch changed
+  // if switch changed
   if (reading != lastPowerButton) {
     // reset the debouncing timer
     lastDebounceTime = millis();
   }
   if ((millis() - lastDebounceTime) > debounceDelay) {
-    // whatever the reading is at, it's been there for longer than the debounce
-    // delay, so take it as the actual current state:
     // if the button state has changed:
     if (reading != powerButton) {
       powerButton = reading;
@@ -569,7 +502,7 @@ void setPowerState() {
       // runs once on boot
       lcd.setCursor(6,0);
       lcd.print("Power On");
-      potState = MOTOR_INIT;
+      potState = motorInit;
       volUpdate(volLevel, 1);
     } else {  
       // runs once on shutdown
@@ -589,28 +522,32 @@ void setPowerState() {
 }
 
 
+// initialization
 void init(bool _type ) 
-{ // 0=cold boot 1=warm boot
+{ // 0=cold 1=warm boot
   if (_type == 0){
-    // RS-232
-    Serial.begin(9600);
-    // IR
+    // IR remote
     IrReceiver.begin(IRpin);
     // 16x2 display (calls Wire.begin)
     lcd.begin(16,2); 
-    // Pot
-    pinMode(16, OUTPUT);
-    pinMode(17, OUTPUT);
-    digitalWrite(16, LOW);
-    digitalWrite(17, LOW);
-    pinMode(1, INPUT);
+    // Motor pot
+    pinMode(potAnalogPin, INPUT);   
+    pinMode(motorPinCW, OUTPUT);
+    pinMode(motorPinCCW, OUTPUT);
+    digitalWrite(motorPinCW, LOW);
+    digitalWrite(motorPinCCW, LOW);
+    // IR codes over serial
+    irCodeScan = 1;
+    // Serial support
+    if (irCodeScan == 1){
+      Serial.begin(9600);
+    }
   }
   // Clear display
   lcd.clear();
   // Set I/O expander to all lows
   resetPCF(volSetAddr,volResetAddr);
 }
-
 
 
 void setup()
@@ -620,11 +557,19 @@ delay(100);
 }
 
 
+// superloop
 void loop()
 {
-  irCodeScan = 1;
+  // IR remote
   irReceive();
-  analog_sensed_pot_logic();
-  motor_pot_logic();
+  // motor potentiometer 
+  if (powerState == 1) {
+    if (potState == motorSettled ||
+        potState == motorInit) {
+    potValueChanges();
+    }
+  } 
+  motorPot();
+  // power management
   setPowerState();
 }

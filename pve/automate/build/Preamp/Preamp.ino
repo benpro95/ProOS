@@ -9,9 +9,9 @@
 #include <Wire.h> 
 
 
-// I2C (0x3E) Volume Reset
-// I2C (0x3F) Volume Set
-// I2C (0x27) Display / Power Button
+// I2C addresses
+#define inputResetAddr 0x3A
+#define inputSetAddr 0x3B
 #define volResetAddr 0x3E
 #define volSetAddr 0x3F
 #define lcdAddr 0x27
@@ -24,7 +24,8 @@ int IRpin = 8;
 bool irCodeScan = 0;
 
 // Input selector
-int inputSelected = 0;
+byte inputSelected = 0;
+byte inputRelayCount = 3;
 
 // Relay attenuator
 #define volControlDown 1
@@ -58,8 +59,9 @@ byte potState;
 
 // Power
 #define powerPin 5
+byte startDelay = 3; // startup delay in seconds
+bool powerCycle = 0;
 bool powerState = 0;
-bool powerCycled = 0;
 byte powerButton = 0;
 byte lastPowerButton = 0;
 unsigned long lastDebounceTime = 0;
@@ -193,7 +195,6 @@ void motorControlLoop(void)
 // motor pot state-driven dispatcher
 void motorPot(void)
 {
-  // PID control loop for motor pot
   int pot_pid_value = 0;
   static int motor_stabilized;
   if (powerState == 0)
@@ -272,6 +273,17 @@ void motorPot(void)
   default:
     break;
   }
+}
+
+
+// setup volume range
+void volRange()
+{
+  // for 7 relays, this would be 128-1 = 127
+  byte max_byte_size = (1 << volRelayCount) - 1;
+  volMin = 0;
+  volMax = max_byte_size;
+  volSpan = abs(volMax - volMin);
 }
 
 
@@ -358,40 +370,66 @@ void volUpdate (byte _vol, byte _force)
 void lcdVolume(int _level) {
 // update display  
   long lcdVolLevel = map(_level, volMin, volMax, 0, 100);
-  lcd.setCursor(0,1);
-  lcd.print("   "); 
-  lcd.setCursor(0,1);
-  lcd.print(lcdVolLevel); 
+  if (_level == 0) {
+    lcd.setCursor(13,1);
+    lcd.print("    "); 
+    lcd.setCursor(13,1);
+    lcd.print(lcdVolLevel); 
+    lcd.print("MUTE"); 
+  } else {
+    lcd.setCursor(13,1);
+    lcd.print("    "); 
+    lcd.setCursor(13,1);
+    lcd.print(lcdVolLevel); 
+    lcd.print(String(lcdVolLevel) + String("%"));
+  }    
 }
 
 
+// mute system
 void volMuteToggle()
 {
-	if (volMute == 0) { // mute==0 when mute feature is OFF 
-		if (volSpan == 0) { // Don't mute if min_vol == max_vol
-			return;
-		}
-		digitalWrite(motorPinCW, LOW);  // stop turning left
-		digitalWrite(motorPinCCW,  LOW);  // stop turning right
-		volUpdate(volMin, 1);
-		volMute = 1;  // toggle its value
+  if (volMute == 0) { // mute==0 when mute feature is OFF 
+    if (volSpan == 0) { // Don't mute if min_vol == max_vol
+      return;
+      }
+      digitalWrite(motorPinCW, LOW);  // stop turning left
+      digitalWrite(motorPinCCW, LOW);  // stop turning right
+      volUpdate(volMin, 1);
+      volMute = 1;
 		//redraw_volume_display(volume, 1);  // draw the '--' chars
 	} 
-	else {	// UNMUTE
-		volMute = 0;  // toggle its value
+	else {	// unmute
+		volMute = 0;  
 		volUpdate(volLevel, 1);
 	}
 }
 
 
-void volRange()
+// set a specific audio input
+void inputUpdate (byte _input) 
 {
-  // for 7 relays, this would be 128-1 = 127
-  byte max_byte_size = (1 << volRelayCount) - 1;
-  volMin = 0;
-  volMax = max_byte_size;
-  volSpan = abs(volMax - volMin);
+  byte _state; 
+  if (_input == 0) {  // mute inputs
+    _state = B00000000;
+  }  
+  if (_input == 1) {  // input #1
+    _state = B00000001;
+  }    
+  if (_input == 2) {  // input #2
+    _state = B00000010;
+  }  
+  if (_input == 3) {  // input #3
+    _state = B00000100;
+  }
+  if (_input >= 4) {  // invalid setting
+    return;
+  } // set input selector relays
+  setRelays(inputSetAddr, inputResetAddr, _state, inputRelayCount, 1);  
+  inputSelected = _input;
+  // update display
 }
+
 
 // set a relay controller board (volume or inputs)
 void setRelays(byte pcf_a, byte pcf_b,  // first pair of i2c addr's
@@ -502,7 +540,7 @@ void irReceive()
       if (IrReceiver.decodedIRData.command == 0x3) {
         // Power toggle
         powerState = !powerState;  
-        powerCycled = 0;
+        powerCycle = 1;
       }  
       if (powerState == 1) {
         if (IrReceiver.decodedIRData.command == 0xC) {
@@ -549,74 +587,66 @@ void setPowerState() {
       // power state has changed!
       if (powerButton == 1) { 
         powerState = !powerState;  
-        powerCycled = 0;
+        powerCycle = 1;
       }
     }
   }
   lastPowerButton = reading; 
   // power state actions  
-  if (powerCycled == 0){  
-    init(1); 
+  if (powerCycle == 1){  
+	// calculate volume limits
+	volRange();   	  
+	// reset display
+	lcd.clear();
+	// one-shot triggers
     if (powerState == 1){
-      // runs once on boot
+      /// runs once on boot
       lcd.setCursor(6,0);
       lcd.print("Power On");
-      // read volume from pot
+      delay(startDelay);
+      lcd.clear();
+      // set volume from pot
       potState = motorInit;
       volUpdate(volLevel, 1);
+      // set audio input
+	  inputUpdate(1);
     } else {  
-      // runs once on shutdown
-      volUpdate(0,0);  
+      /// runs once on shutdown
+      volUpdate(0,1); // mute    	
+      // shutdown animation
       lcd.clear();
       lcd.setCursor(6,0);
-      lcd.print("Power Off"); 
-      delay(500);
-      lcd.clear();
-      lcd.setCursor(4,0);
-      lcd.print("Preamp v1.0"); 
-      lcd.setCursor(0,1);
-      lcd.print("Ben Provenzano III"); 
+      lcd.print("Power Off"); 	
     }  
-    powerCycled = 1;  
+  powerCycle = 0;  
   }  
 }
 
 
-// initialization (0=cold 1=warm boot)
-void init(bool _type ) { 
-  // set I/O expander to all lows
-  resetPCF(volSetAddr,volResetAddr);	
-  if (_type == 0){
-    // IR remote
-    IrReceiver.begin(IRpin);
-    // 16x2 display (calls Wire.begin)
-    lcd.begin(16,2); 
-    // motor pot
-    pinMode(potAnalogPin, INPUT);   
-    pinMode(motorPinCW, OUTPUT);
-    pinMode(motorPinCCW, OUTPUT);
-    digitalWrite(motorPinCW, LOW);
-    digitalWrite(motorPinCCW, LOW);
-    // IR codes over serial
-    irCodeScan = 0;
-    // serial support
-    if (irCodeScan == 1){
-      Serial.begin(9600);
-    }
-  }
+// initialization 
+void setup() 
+{ 
+  startDelay = startDelay * 1000;	  	
+  // reset expanders
+  resetPCF(volSetAddr,volResetAddr);
   // calculate volume limits
-  volRange();   	  
-  // clear display
-  lcd.clear();
-  // set I/O expander to all lows
-  delay(375);
-  resetPCF(volSetAddr,volResetAddr);	
-}
-
-
-void setup()
-{
-init(0);
+  volRange(); 
+  // IR remote
+  IrReceiver.begin(IRpin);
+  // 16x2 display (calls Wire.begin)
+  lcd.begin(16,2); 
+  // motor pot
+  pinMode(potAnalogPin, INPUT);   
+  pinMode(motorPinCW, OUTPUT);
+  pinMode(motorPinCCW, OUTPUT);
+  digitalWrite(motorPinCW, LOW);
+  digitalWrite(motorPinCCW, LOW);
+  // IR codes over serial
+  irCodeScan = 0;
+  // serial support
+  if (irCodeScan == 1){
+    Serial.begin(9600);
+  }
 }
 
 

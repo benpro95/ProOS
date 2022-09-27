@@ -64,6 +64,7 @@ int I2CIO::begin (  uint8_t i2cAddr )
    Wire.beginTransmission(_i2cAddr); 
    Wire.write(0x09);  // GPIO access register
    Wire.endTransmission(); 
+   delayMicroseconds(500);
    _initialised = Wire.requestFrom ( _i2cAddr, (uint8_t)1 );
 
 #if (ARDUINO <  100)
@@ -76,11 +77,13 @@ int I2CIO::begin (  uint8_t i2cAddr )
     Wire.write(0x00); // IODIRA register
     Wire.write(B00100000); // set pin 5 to input and rest as outputs
     Wire.endTransmission();
+    delayMicroseconds(500);
 
     Wire.beginTransmission (_i2cAddr);
     Wire.write(0x06); // GPIO pull-up register
     Wire.write(B00100000); // set pin 5 pull-up resistor
     Wire.endTransmission();
+    delayMicroseconds(500);
 
  return ( _initialised );   
 }
@@ -130,7 +133,8 @@ uint8_t I2CIO::read ( void )
    {
       Wire.beginTransmission(_i2cAddr); 
       Wire.write(0x09);  // GPIO access register
-      Wire.endTransmission();     
+      Wire.endTransmission();  
+      delayMicroseconds(100);   
       Wire.requestFrom ( _i2cAddr, (uint8_t)1 );
 #if (ARDUINO <  100)
       retVal = ( _dirMask & Wire.receive ( ) );
@@ -158,9 +162,11 @@ int I2CIO::write ( uint8_t value )
 
 #if (ARDUINO <  100)
       Wire.send(0x09);        //MCP23008 internal register to enable GPIO access
+      delayMicroseconds(100);
       Wire.send ( _shadow );
 #else
       Wire.write(0x09);       //MCP23008 internal register to enable GPIO access
+      delayMicroseconds(100);
       Wire.write ( _shadow );
 #endif  
       status = Wire.endTransmission ();

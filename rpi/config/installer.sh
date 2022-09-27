@@ -72,10 +72,6 @@ adduser pi
 chown -R pi:pi /home/pi
 chsh -s /bin/bash pi
 
-## Remove LSB scripts
-insserv -r bootlogs
-insserv -r console-setup
-
 ## Node.js APT Key
 curl --silent -L https://deb.nodesource.com/gpgkey/nodesource.gpg.key | \
   gpg --no-default-keyring --keyring /etc/apt/trusted.gpg --import -

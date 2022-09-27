@@ -24,8 +24,7 @@ int IRpin = 8;
 bool irCodeScan = 0;
 
 // Input selector
-int selectedInput = 0;
-long muteDelay = 1000;
+int inputSelected = 0;
 
 // Relay attenuator
 #define volControlDown 1
@@ -37,23 +36,23 @@ byte volLevel = 0;
 byte volLastLevel = 0;
 byte volCoarseSteps = 4;
 byte volRelayCount = 6;
-byte volMax = 63;
-byte volMin = 0;
-
+byte volSpan;
+byte volMax;
+byte volMin;
 
 // Motor Pot
-#define motorInit 1
-#define motorSettled 2  // motor pot is at resting state
-#define motorInMotion 3 // motor pot is moving right now
-#define motorCoasting 4 // motor pot just passed its
-#define potThreshold 3
+#define motorInit 1 // motor 
+#define motorSettled 2 // at resting state
+#define motorInMotion 3 // is moving right now
+#define motorCoasting 4 // just passed its read value
+#define potThreshold 5
 #define potRereads 10 
 #define potAnalogPin 1
 #define motorPinCW 16 
 #define motorPinCCW 17 
 #define potMinRange 0
 #define potMaxRange 1023
-int potValueLast;    // range from 0..1023
+int potValueLast; // range from 0..1023
 byte volPotLast;
 byte potState;
 
@@ -197,6 +196,11 @@ void motorPot(void)
   // PID control loop for motor pot
   int pot_pid_value = 0;
   static int motor_stabilized;
+  if (powerState == 0)
+	return;  
+  // If max_vol == min_vol then don't run the motor
+  if (volSpan == 0)
+	return;  
 // action states
 #if 0
   if (volMute == 1)
@@ -338,10 +342,54 @@ void volIncrement (byte dir_flag, byte speed_flag)
 // set a specific volume level
 void volUpdate (byte _vol, byte _force) 
 {
-   setRelays(volSetAddr, volResetAddr, _vol, volRelayCount, _force);  
-   volLastLevel = volLevel;
+// set volume
+  if (volMute == 0) {
+    setRelays(volSetAddr, volResetAddr, _vol, volRelayCount, _force);    
+    volLastLevel = volLevel;
+  }
+  // update display
+  lcdVolume(_vol);   
 }
 
+
+// volume status on display
+void lcdVolume(int _level) {
+// update display  
+  long lcdVolLevel = map(_level, volMin, volMax, 0, 100);
+  lcd.setCursor(0,1);
+  lcd.print("   "); 
+  lcd.setCursor(0,1);
+  lcd.print(lcdVolLevel); 
+}
+
+
+void toggle_mute()
+{
+	if (volMute == 0) { // mute==0 when mute feature is OFF 
+		if (vol_span == 0) { // Don't mute if min_vol == max_vol
+			return;
+		}
+		digitalWrite(MOTOR_POT_ROTATE_CCW, LOW);  // stop turning left
+		digitalWrite(MOTOR_POT_ROTATE_CW,  LOW);  // stop turning right
+		volUpdate(volMin, 1);
+		volMute = 1;  // toggle its value
+		//redraw_volume_display(volume, 1);  // draw the '--' chars
+	} 
+	else {	// UNMUTE
+		volMute = 0;  // toggle its value
+		volUpdate(volLevel, 1);
+	}
+}
+
+
+void volRange()
+{
+  // for 7 relays, this would be 128-1 = 127
+  byte max_byte_size = (1 << volRelayCount) - 1;
+  volMin = 0;
+  volMax = max_byte_size;
+  volSpan = abs(volMax - volMin);
+}
 
 // set a relay controller board (volume or inputs)
 void setRelays(byte pcf_a, byte pcf_b,  // first pair of i2c addr's
@@ -441,8 +489,11 @@ void irReceive()
     if (irCodeScan == 1) {   
       if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
         IrReceiver.printIRResultRawFormatted(&Serial, true);
-      }
+        Serial.println("*"); 	
+      } else {
         IrReceiver.printIRResultMinimal(&Serial);
+        Serial.println("*"); 	
+      }  
     }
     // IR functions 
     if (IrReceiver.decodedIRData.address == 0xCE) {  
@@ -453,23 +504,29 @@ void irReceive()
       }  
       if (powerState == 1) {
         if (IrReceiver.decodedIRData.command == 0xC) {
-          // Volume down
+          // Volume down fast
           volIncrement(1,2);
-          lcd.clear();
-          lcd.setCursor(7,0);
-          lcd.print(volLevel); 
         }      
         if (IrReceiver.decodedIRData.command == 0xA) {
-          // Volume up
+          // Volume up fast
           volIncrement(2,2);
-          lcd.clear();
-          lcd.setCursor(7,0);
-          lcd.print(volLevel); 
+        }
+        if (IrReceiver.decodedIRData.command == 0x9) {
+          // Volume down slow
+          volIncrement(1,1);
+        }      
+        if (IrReceiver.decodedIRData.command == 0x6) {
+          // Volume up slow
+          volIncrement(2,1);
+        }
+        if (IrReceiver.decodedIRData.command == 0x5F) {
+          // Mute
+          toggle_mute();
         }
       }  
-    delay(50); 
-    IrReceiver.resume();  
     }
+  delay(150); 
+  IrReceiver.resume();         
   }
 }
 
@@ -497,11 +554,12 @@ void setPowerState() {
   lastPowerButton = reading; 
   // power state actions  
   if (powerCycled == 0){  
-    init(1);
+    init(1); 
     if (powerState == 1){
       // runs once on boot
       lcd.setCursor(6,0);
       lcd.print("Power On");
+      // read volume from pot
       potState = motorInit;
       volUpdate(volLevel, 1);
     } else {  
@@ -522,54 +580,57 @@ void setPowerState() {
 }
 
 
-// initialization
-void init(bool _type ) 
-{ // 0=cold 1=warm boot
+// initialization (0=cold 1=warm boot)
+void init(bool _type ) { 
+  // set I/O expander to all lows
+  resetPCF(volSetAddr,volResetAddr);	
   if (_type == 0){
     // IR remote
     IrReceiver.begin(IRpin);
     // 16x2 display (calls Wire.begin)
     lcd.begin(16,2); 
-    // Motor pot
+    // motor pot
     pinMode(potAnalogPin, INPUT);   
     pinMode(motorPinCW, OUTPUT);
     pinMode(motorPinCCW, OUTPUT);
     digitalWrite(motorPinCW, LOW);
     digitalWrite(motorPinCCW, LOW);
     // IR codes over serial
-    irCodeScan = 1;
-    // Serial support
+    irCodeScan = 0;
+    // serial support
     if (irCodeScan == 1){
       Serial.begin(9600);
     }
   }
-  // Clear display
+  // calculate volume limits
+  volRange();   	  
+  // clear display
   lcd.clear();
-  // Set I/O expander to all lows
-  resetPCF(volSetAddr,volResetAddr);
+  // set I/O expander to all lows
+  delay(375);
+  resetPCF(volSetAddr,volResetAddr);	
 }
 
 
 void setup()
 {
 init(0);
-delay(100);
 }
 
 
 // superloop
 void loop()
 {
-  // IR remote
+  // IR remote (1st)
   irReceive();
-  // motor potentiometer 
+  // motor potentiometer (2nd)
   if (powerState == 1) {
     if (potState == motorSettled ||
         potState == motorInit) {
     potValueChanges();
     }
+    motorPot();
   } 
-  motorPot();
-  // power management
-  setPowerState();
+  // power management (last)
+  setPowerState();	  
 }

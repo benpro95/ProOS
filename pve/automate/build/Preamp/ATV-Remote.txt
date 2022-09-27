@@ -1,16 +1,8 @@
-Apple TV Remote 
+Apple TV IR Remote
 
-Protocol=NEC Address=0x0 Command=0x0 Raw-Data=0x77E13073 (32 bits) DOWN
-
-Protocol=NEC Address=0x0 Command=0x0 Raw-Data=0x77E15073 (32 bits) UP
-
-Protocol=NEC Address=0x0 Command=0x0 Raw-Data=0x77E13A73 (32 bits) CENTER
-
-Protocol=NEC Address=0x0 Command=0x0 Raw-Data=0x77E16073 (32 bits) RIGHT
-
-Protocol=NEC Address=0x0 Command=0x0 Raw-Data=0x77E19073 (32 bits) LEFT
-
-Protocol=NEC Address=0x0 Command=0x0 Raw-Data=0x77E1C073 (32 bits) MENU
-
-Protocol=NEC Address=0x0 Command=0x0 Raw-Data=0x77E1FA73 (32 bits) PLAY/PAUSE
-
+P=2 A=0xCE C=0x3 Raw=0xCE0387EE   Menu
+P=2 A=0xCE C=0x5F Raw=0xCE5F87EE  Play/Pause
+P=2 A=0xCE C=0xA Raw=0xCE0A87EE   Up
+P=2 A=0xCE C=0xC Raw=0xCE0C87EE   Down
+P=2 A=0xCE C=0x9 Raw=0xCE0687EE   Left
+P=2 A=0xCE C=0x6 Raw=0xCE0687EE   Right

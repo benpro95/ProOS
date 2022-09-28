@@ -19,6 +19,14 @@
 // 16x2 Display
 uint8_t lcdCols = 16; // number of columns in the LCD
 uint8_t lcdRows = 2;  // number of rows in the LCD
+// progress bar characters
+uint8_t bar1[8] = {0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10};
+uint8_t bar2[8] = {0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18};
+uint8_t bar3[8] = {0x1C,0x1C,0x1C,0x1C,0x1C,0x1C,0x1C,0x1C};
+uint8_t bar4[8] = {0x1E,0x1E,0x1E,0x1E,0x1E,0x1E,0x1E,0x1E};
+uint8_t bar5[8] = {0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F};
+uint8_t speaker[8] = {B00001,B00011,B01111,B01111,B01111,B00011,B00001,B00000};
+uint8_t sound[8] = {B00001,B00011,B00101,B01001,B01001,B01011,B11011,B11000};
 LiquidCrystal_I2C lcd(lcdAddr);
 
 // IR (pin 8)
@@ -28,9 +36,9 @@ bool irCodeScan = 0;
 // Input selector
 uint8_t inputSelected = 0;
 uint8_t inputRelayCount = 3;
-int inputName1 = "DAC";
-int inputName2 = "Aux #1";
-int inputName3 = "Aux #2";
+String inputName1 = "DAC";
+String inputName2 = "Aux #1";
+String inputName3 = "Aux #2";
 
 // Relay attenuator
 uint8_t volCoarseSteps = 4; // volume steps to skip for coarse adjust
@@ -68,7 +76,8 @@ int startDelay = 8; // startup delay in seconds, unmutes after
 int shutdownTime = 6; // shutdown delay before turning off aux power
 int initStartDelay = 6; // delay on initial cold start
 uint8_t debounceDelay = 50; // button debounce delay in ms
-unsigned long lastDebounceTime = 0;
+unsigned long systemTime1 = 0;
+unsigned long systemTime2 = 0;
 uint8_t lastPowerButton = 0;
 uint8_t powerButton = 0;
 bool powerCycle = 0;
@@ -152,7 +161,6 @@ void potValueChanges(void)
       // don't update if there was no effective change
       return;
     }
-    //    lcd.restore_backlight();
     // volume state changed    
     volLevel = temp_volume;
     if (temp_volume > old_vol) {
@@ -323,7 +331,6 @@ void volIncrement (uint8_t dir_flag, uint8_t speed_flag)
     volMute = 0;
     volUpdate(volLevel, 1);
     return;
-   // !! add restore display volume (unmute)
   }
   if (dir_flag == volControlUp) {
     if (speed_flag == volControlSlow) {    
@@ -382,7 +389,7 @@ void volUpdate (uint8_t _vol, uint8_t _force)
     setRelays(volSetAddr, volResetAddr, _vol, volRelayCount, _force);    
     volLastLevel = volLevel;
     // update display
-    lcdVolume(_vol); 
+    lcdVolume(_vol);
   }  
 }
 
@@ -418,7 +425,7 @@ void volMuteToggle()
 void inputUpdate (uint8_t _input) 
 {
   uint8_t _state; 
-  uint8_t _name; 
+  String _name; 
   if (_input == 0) {  // mute inputs
     _state = B00000000;
     _name = "        ";
@@ -441,7 +448,7 @@ void inputUpdate (uint8_t _input)
   setRelays(inputSetAddr, inputResetAddr, _state, inputRelayCount, 1);  
   inputSelected = _input;
   // update display
-  lcd.setCursor(0,1);
+  lcd.setCursor(1,1);
   lcd.print(_name); 
 }
 
@@ -538,7 +545,7 @@ void PCFexpanderWrite(uint8_t address, uint8_t _data )
 
 // volume status on display
 void lcdVolume(int _level) {
-// update volume percentage  
+// update percentage  
   int _lcdlevel = map(_level, volMin, volMax, 0, 100);
   if (_lcdlevel == 0) {
     return;
@@ -559,7 +566,6 @@ void lcdVolume(int _level) {
   lcdBar(0,_lcdlevel,0,1024);
   }
 }   
-
 
 // display a progress bar
 void lcdBar (int row, int var, int minVal, int maxVal)
@@ -583,6 +589,15 @@ void lcdBar (int row, int var, int minVal, int maxVal)
     lcd.setCursor (x, row);
     lcd.write (1022);
   }
+}
+
+void lcdBarSetup()
+{
+  lcd.createChar(1, bar1);
+  lcd.createChar(2, bar2);
+  lcd.createChar(3, bar3);
+  lcd.createChar(4, bar4);
+  lcd.createChar(5, bar5);
 }
 
 
@@ -611,7 +626,10 @@ void lcdStandby()
   lcd.setCursor(0,0);
   lcd.print("Preamp v5");
   lcd.setCursor(0,1);
-  lcd.print("ProDesigns"); 	
+  lcd.print("ProDesigns"); 
+  lcd.createChar(1, speaker);
+  lcd.setCursor(15,1);
+  lcd.print(char(1));
 }  
 
 
@@ -674,9 +692,9 @@ void setPowerState() {
   // if switch changed
   if (reading != lastPowerButton) {
     // reset the debouncing timer
-    lastDebounceTime = millis();
+    systemTime2 = millis();
   }
-  if ((millis() - lastDebounceTime) > debounceDelay) {
+  if ((millis() - systemTime2) > debounceDelay) {
     // if the button state has changed:
     if (reading != powerButton) {
       powerButton = reading;
@@ -701,9 +719,15 @@ void setPowerState() {
       lcd.print("Power On");
       // turn on aux power here
 
+      delay(500);
       // loading bar
+      lcdBarSetup();
       lcdTimedBar(startDelay,1);
       lcd.clear();
+      // music icon
+      lcd.createChar(1, sound);
+      lcd.setCursor(0,1);
+      lcdBarSetup();
       // set volume from pot
       potState = motorInit;
       volUpdate(volLevel, 1);
@@ -734,17 +758,6 @@ void setup()
   // reset expanders
   resetPCF(volSetAddr,volResetAddr);
   resetPCF(inputSetAddr,inputResetAddr);  
-  // LCD progress bar characters
-  uint8_t bar1[8] = {0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10};
-  uint8_t bar2[8] = {0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18};
-  uint8_t bar3[8] = {0x1C,0x1C,0x1C,0x1C,0x1C,0x1C,0x1C,0x1C};
-  uint8_t bar4[8] = {0x1E,0x1E,0x1E,0x1E,0x1E,0x1E,0x1E,0x1E};
-  uint8_t bar5[8] = {0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F};
-  lcd.createChar(1, bar1);
-  lcd.createChar(2, bar2);
-  lcd.createChar(3, bar3);
-  lcd.createChar(4, bar4);
-  lcd.createChar(5, bar5);
   // motor pot
   pinMode(potAnalogPin, INPUT);   
   pinMode(motorPinCW, OUTPUT);
@@ -756,9 +769,10 @@ void setup()
   // IR remote
   IrReceiver.begin(IRpin);  
   // initial boot display
+  lcdBarSetup();
   lcdTimedBar(initStartDelay,1);
   // IR codes over serial
-  irCodeScan = 1;
+  irCodeScan = 0;
   // serial support
   if (irCodeScan == 1){
     Serial.begin(9600);

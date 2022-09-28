@@ -17,6 +17,8 @@
 #define lcdAddr 0x27
 
 // 16x2 Display
+byte lcdCols = 16; // number of columns in the LCD
+byte lcdRows = 2;  // number of rows in the LCD
 LiquidCrystal_I2C lcd(lcdAddr);
 
 // IR (pin 8)
@@ -28,38 +30,38 @@ byte inputSelected = 0;
 byte inputRelayCount = 3;
 
 // Relay attenuator
+byte volCoarseSteps = 4; // volume steps to skip for coarse adjust
+byte volRelayCount = 6; // number of relays on volume attenuator board
 #define volControlDown 1
 #define volControlUp 2
 #define volControlSlow 1 
 #define volControlFast 2
-bool volMute;
-byte volLevel = 0;
 byte volLastLevel = 0;
-byte volCoarseSteps = 4;
-byte volRelayCount = 6;
-byte volSpan;
+byte volLevel = 0;
 byte volMax;
 byte volMin;
+byte volSpan;
+bool volMute;
 
 // Motor Pot
-#define motorInit 1 // motor 
-#define motorSettled 2 // at resting state
-#define motorInMotion 3 // is moving right now
-#define motorCoasting 4 // just passed its read value
-#define potThreshold 5
-#define potRereads 10 
-#define potAnalogPin 1
-#define motorPinCW 16 
-#define motorPinCCW 17 
-#define potMinRange 0
-#define potMaxRange 1023
+#define motorInit 1 // motor initialization
+#define motorSettled 2 // pot at resting state
+#define motorInMotion 3 // pot is moving right now
+#define motorCoasting 4 // pot just passed read value
+#define potThreshold 5 // pot value change threshold
+#define potRereads 10 // amount of pot readings 
+#define potAnalogPin 1 // pot reading pin A1
+#define motorPinCW 16 // motor H-bridge CW pin
+#define motorPinCCW 17 // motor H-bridge CCW pin
+#define potMinRange 30  // lowest pot reading
+#define potMaxRange 1023 // highest pot reading
 int potValueLast; // range from 0..1023
 byte volPotLast;
 byte potState;
 
 // Power
 #define powerPin 5
-byte startDelay = 3; // startup delay in seconds
+int startDelay = 10; // startup delay in seconds
 bool powerCycle = 0;
 bool powerState = 0;
 byte powerButton = 0;
@@ -238,7 +240,6 @@ void motorPot(void)
      * if the motor is moving, we are looking for our target
      * so we can let go of the motor and let it 'coast' to a stop
      */
-    //  lcd.restore_backlight();
     motor_stabilized = 0;
     motorControlLoop();
     break;
@@ -248,7 +249,6 @@ void motorPot(void)
      * we are waiting for the motor to stop
      * (which means the last value == this value)
      */
-  //  lcd.restore_backlight();
     delay(20);
     pot_pid_value = readPotWithSmoothing(
       potAnalogPin, potRereads
@@ -368,41 +368,53 @@ void volUpdate (byte _vol, byte _force)
 
 // volume status on display
 void lcdVolume(int _level) {
-// update display  
-  long lcdVolLevel = map(_level, volMin, volMax, 0, 100);
-  if (_level == 0) {
-    lcd.setCursor(13,1);
-    lcd.print("    "); 
-    lcd.setCursor(13,1);
-    lcd.print(lcdVolLevel); 
-    lcd.print("MUTE"); 
+// update volume percentage  
+  int _lcdlevel = map(_level, volMin, volMax, 0, 100);
+  if (_lcdlevel == 0) {
+    return;
   } else {
-    lcd.setCursor(13,1);
-    lcd.print("    "); 
-    lcd.setCursor(13,1);
-    lcd.print(lcdVolLevel); 
-    lcd.print(String(lcdVolLevel) + String("%"));
-  }    
-}
+  	if (_lcdlevel == 100) {
+      lcd.setCursor(12,1);
+      lcd.print("    "); 
+      lcd.setCursor(13,1);
+      lcd.print("MAX"); 
+    } else {
+      lcd.setCursor(12,1);
+      lcd.print("    "); 
+      lcd.setCursor(13,1);
+      lcd.print(String(_lcdlevel) + String("%"));
+    }
+  // draw volume progress bar if unmuted
+  _lcdlevel = map(_level, volMin, volMax, 0, 1024);
+  lcdBar(0,_lcdlevel,0,1024);
+  }
+}   
 
 
-// mute system
+// mute system  !! make accept 3 args toggle, off, on
 void volMuteToggle()
-{
-  if (volMute == 0) { // mute==0 when mute feature is OFF 
+{	
+  lcd.clear();	
+  if (volMute == 0) { // 0 when mute feature is OFF 
     if (volSpan == 0) { // Don't mute if min_vol == max_vol
       return;
-      }
-      digitalWrite(motorPinCW, LOW);  // stop turning left
-      digitalWrite(motorPinCCW, LOW);  // stop turning right
-      volUpdate(volMin, 1);
-      volMute = 1;
-		//redraw_volume_display(volume, 1);  // draw the '--' chars
-	} 
-	else {	// unmute
-		volMute = 0;  
-		volUpdate(volLevel, 1);
-	}
+    } // stop motor turning
+    digitalWrite(motorPinCW, LOW);   
+    digitalWrite(motorPinCCW, LOW);
+    // set volume to min
+    volUpdate(volMin, 1);
+    // display mute status
+    lcd.setCursor(12,1);
+    lcd.print("MUTE"); 
+    lcd.setCursor(0,0);
+    lcd.print("----------------"); 
+    // set mute flag
+    volMute = 1;
+  } 
+  else { // unmute
+    volMute = 0;  
+    volUpdate(volLevel, 1);
+  }
 }
 
 
@@ -521,7 +533,48 @@ void PCFexpanderWrite(byte address, byte _data )
 }
 
 
-// receive IR remote commands 
+// display a progress bar
+void lcdBar (int row, int var, int minVal, int maxVal)
+{
+  int block = map(var, minVal, maxVal, 0, 16); // Block represent the current LCD space
+  int line = map(var, minVal, maxVal, 0, 80); // Line represent the lines to be displayed
+  int bar = (line-(block*5)); // Bar represent the actual lines that will be printed
+  // Print all the filled blocks
+  for (int x = 0; x < block; x++)                       
+  {
+    lcd.setCursor (x, row);
+    lcd.write (1023);
+  }
+  // Set the cursor at the current block and print the numbers of line needed
+  lcd.setCursor (block, row);                           
+  if (bar != 0) lcd.write (bar);
+  if (block == 0 && line == 0) lcd.write (1022); // Unless there is nothing to print, show blank
+  // Print all the blank blocks
+  for (int x = 16; x > block; x--) 
+  {
+    lcd.setCursor (x, row);
+    lcd.write (1022);
+  }
+}
+
+
+// display progress bar # of seconds 
+void lcdTimedBar(int _sec)
+{ // seconds to loops
+  _sec = _sec * 10;
+  for ( int _incr = 0; _incr < _sec; _incr++ ) {
+  	int _size = _sec * 3;
+    lcdBar(0,_incr,0,_size);
+    lcdBar(1,_incr,0,_size);
+    // also reset PCF expanders
+    resetPCF(volSetAddr,volResetAddr);
+    resetPCF(inputSetAddr,inputResetAddr);
+    _incr++;
+  }    
+}  
+
+
+// receive IR remote commands !! add code to detect threshold of data (avoid dupl key presses) !!
 void irReceive() 
 {
   if (IrReceiver.decode()) {
@@ -565,7 +618,7 @@ void irReceive()
         }
       }  
     }
-  delay(150); 
+  delay(75); 
   IrReceiver.resume();         
   }
 }
@@ -600,10 +653,11 @@ void setPowerState() {
 	lcd.clear();
 	// one-shot triggers
     if (powerState == 1){
-      /// runs once on boot
+      /// runs once on boot ///
       lcd.setCursor(6,0);
       lcd.print("Power On");
-      delay(startDelay);
+      // loading bar
+      lcdTimedBar(startDelay);
       lcd.clear();
       // set volume from pot
       potState = motorInit;
@@ -611,11 +665,11 @@ void setPowerState() {
       // set audio input
 	  inputUpdate(1);
     } else {  
-      /// runs once on shutdown
+      /// runs once on shutdown ///
       volUpdate(0,1); // mute    	
       // shutdown animation
       lcd.clear();
-      lcd.setCursor(6,0);
+      lcd.setCursor(4,0);
       lcd.print("Power Off"); 	
     }  
   powerCycle = 0;  
@@ -625,22 +679,35 @@ void setPowerState() {
 
 // initialization 
 void setup() 
-{ 
-  startDelay = startDelay * 1000;	  	
+{ 	
+  // 16x2 display (calls Wire.begin)
+  lcd.begin(lcdCols,lcdRows); 
   // reset expanders
   resetPCF(volSetAddr,volResetAddr);
-  // calculate volume limits
-  volRange(); 
-  // IR remote
-  IrReceiver.begin(IRpin);
-  // 16x2 display (calls Wire.begin)
-  lcd.begin(16,2); 
+  resetPCF(inputSetAddr,inputResetAddr);  
+  // LCD progress bar characters
+  byte bar1[8] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10};
+  byte bar2[8] = { 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18};
+  byte bar3[8] = { 0x1C, 0x1C, 0x1C, 0x1C, 0x1C, 0x1C, 0x1C, 0x1C};
+  byte bar4[8] = { 0x1E, 0x1E, 0x1E, 0x1E, 0x1E, 0x1E, 0x1E, 0x1E};
+  byte bar5[8] = { 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F};
+  lcd.createChar(1, bar1);
+  lcd.createChar(2, bar2);
+  lcd.createChar(3, bar3);
+  lcd.createChar(4, bar4);
+  lcd.createChar(5, bar5);
   // motor pot
   pinMode(potAnalogPin, INPUT);   
   pinMode(motorPinCW, OUTPUT);
   pinMode(motorPinCCW, OUTPUT);
   digitalWrite(motorPinCW, LOW);
-  digitalWrite(motorPinCCW, LOW);
+  digitalWrite(motorPinCCW, LOW);  
+  // IR remote
+  IrReceiver.begin(IRpin);  
+  // calculate volume limits
+  volRange(); 
+  // initial boot loading bar
+  lcdTimedBar(3);
   // IR codes over serial
   irCodeScan = 0;
   // serial support

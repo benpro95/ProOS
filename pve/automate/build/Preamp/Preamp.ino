@@ -8,7 +8,6 @@
 #include <Arduino.h>
 #include <Wire.h> 
 
-
 // I2C addresses
 #define inputResetAddr 0x3A
 #define inputSetAddr 0x3B
@@ -20,7 +19,9 @@
 LiquidCrystal_I2C lcd(lcdAddr);
 uint8_t lcdCols = 16; // number of columns in the LCD
 uint8_t lcdRows = 2;  // number of rows in the LCD
-#define lcdBacklightPin = 9; // display backlight pin
+#define lcdBacklightPin 9 // display backlight pin
+uint8_t lcdOffBrightness = 120; // standby-off LCD brightness level
+uint8_t lcdOnBrightness = 230; // online LCD brightness level
 // progress bar characters
 uint8_t bar1[8] = {0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10};
 uint8_t bar2[8] = {0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18};
@@ -30,20 +31,16 @@ uint8_t bar5[8] = {0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F};
 uint8_t speaker[8] = {B00001,B00011,B01111,B01111,B01111,B00011,B00001,B00000};
 uint8_t sound[8] = {B00001,B00011,B00101,B01001,B01001,B01011,B11011,B11000};
 
-
-
-
-
 // IR (pin 8)
 int IRpin = 8;
 bool irCodeScan = 0;
 
 // Input selector
-uint8_t inputSelected = 0;
+String inputSelected;
+String inputName1 = "DIGITAL";
+String inputName2 = "AUX";
+String inputName3 = "PHONO";
 uint8_t inputRelayCount = 3;
-String inputName1 = "Digital";
-String inputName2 = "Aux";
-String inputName3 = "Phono";
 
 // Relay attenuator
 uint8_t volCoarseSteps = 4; // volume steps to skip for coarse adjust
@@ -78,6 +75,7 @@ uint8_t potState;
 // Power
 #define powerButtonPin 5
 #define powerRelayPin 7
+#define hpfRelayPin 3
 int startDelay = 4; // startup delay in seconds, unmutes after
 int shutdownTime = 2; // shutdown delay before turning off aux power
 int initStartDelay = 6; // delay on initial cold start
@@ -401,8 +399,7 @@ void volUpdate (uint8_t _vol, uint8_t _force)
 
 // mute system  !! make accept 3 args toggle, off, on
 void volMuteToggle()
-{	
-  lcd.clear();	
+{		
   if (volMute == 0) { // 0 when mute feature is OFF 
     if (volSpan == 0) { // Don't mute if min_vol == max_vol
       return;
@@ -421,6 +418,9 @@ void volMuteToggle()
   } 
   else { // unmute
     volMute = 0;  
+    lcd.setCursor(0,0);
+    lcd.print("                "); 
+    inputUpdate(0); // just redraw input 
     volUpdate(volLevel, 1);
   }
 }
@@ -429,11 +429,12 @@ void volMuteToggle()
 // set a specific audio input
 void inputUpdate (uint8_t _input) 
 {
+  bool _lcdonly = 0;	
   uint8_t _state; 
   String _name; 
-  if (_input == 0) {  // mute inputs
-    _state = B00000000;
-    _name = "        ";
+  // select input
+  if (_input == 0) {  // just update display
+     _lcdonly = 1;
   }  
   if (_input == 1) {  // input #1
     _state = B00000001;
@@ -449,10 +450,17 @@ void inputUpdate (uint8_t _input)
   }
   if (_input >= 4) {  // invalid setting
     return;
-  } // set input selector relays
-  setRelays(inputSetAddr, inputResetAddr, _state, inputRelayCount, 1);  
-  inputSelected = _input;
+  }
+  if (_lcdonly == 0) {
+  	  // set input relays
+      setRelays(inputSetAddr, inputResetAddr, _state, inputRelayCount, 1);  
+      inputSelected = _name;	  
+  } else {
+      _name = inputSelected;
+  }
   // update display
+  lcd.setCursor(2,1);
+  lcd.print("          "); 
   lcd.setCursor(2,1);
   lcd.print(_name); 
 }
@@ -619,6 +627,7 @@ void lcdTimedBar(uint8_t _sec, bool _doublebar)
 // display in standby mode
 void lcdStandby()
 { 
+  analogWrite(lcdBacklightPin, lcdOffBrightness);	
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("Preamp v5");
@@ -712,8 +721,9 @@ void setPowerState() {
 	// one-shot triggers
     if (powerState == 1){
       /// runs once on boot ///
+      analogWrite(lcdBacklightPin, lcdOnBrightness);
       lcd.setCursor(0,0);
-      lcd.print("Power On");
+      lcd.print("Starting Up...");
       // turn on preamp power here
       digitalWrite(powerRelayPin, HIGH);  
       delay(500);
@@ -754,18 +764,22 @@ void setup()
   // reset expanders
   resetPCF(volSetAddr,volResetAddr);
   resetPCF(inputSetAddr,inputResetAddr);  
-  // direct I/O devices
+  // motor pot
   pinMode(potAnalogPin, INPUT);   
   pinMode(motorPinCW, OUTPUT);
   pinMode(motorPinCCW, OUTPUT);
   digitalWrite(motorPinCW, LOW);
   digitalWrite(motorPinCCW, LOW);
+  // display backlight
   pinMode(lcdBacklightPin, OUTPUT);  
   digitalWrite(lcdBacklightPin, LOW);
-  pinMode(lcdBacklightPin, OUTPUT);  
-  digitalWrite(lcdBacklightPin, LOW);  
+  analogWrite(lcdBacklightPin, lcdOffBrightness);
+  // preamp power control
   pinMode(powerRelayPin, OUTPUT);  
   digitalWrite(powerRelayPin, LOW);  
+  // HPF control
+  pinMode(hpfRelayPin, OUTPUT);  
+  digitalWrite(hpfRelayPin, LOW);    
   // calculate volume limits
   volRange();   
   // IR remote
@@ -788,9 +802,8 @@ void setup()
 }
 
 // input selector IR
-// input selector display 
+// input selector display (fix)
 // HPF on/off logic
-// aux power on/off logic 
 // switch logic (toggle) 
 // IR mute,unmute,toggle
 // IR volume levels 10,20,30,40

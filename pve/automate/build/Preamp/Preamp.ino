@@ -398,7 +398,7 @@ void volUpdate (uint8_t _vol, uint8_t _force)
 
 
 // mute system
-void volMute()
+void muteSystem()
 {	
   if (volSpan == 0) { // Don't mute if min_vol == max_vol
     return;
@@ -421,7 +421,7 @@ void volMute()
   volMute = 1;	
 }
 
-void volUnmute()
+void unmuteSystem()
 {	
   volMute = 0;  
   lcd.setCursor(0,0);
@@ -433,13 +433,13 @@ void volUnmute()
   lcd.print(char(0));	
 }
 
-void volMuteToggle()
+void muteToggle()
 {		
   if (volMute == 0) { // 0 when mute feature is OFF 
-    volMute();
+    muteSystem();
   } 
   else {
-    volUnmute();
+    unmuteSystem();
   }
 }
 
@@ -699,7 +699,7 @@ void irReceive()
         }
         if (IrReceiver.decodedIRData.command == 0x5F) {
           // Mute
-          volMuteToggle();
+          muteToggle();
         }
       }  
     }
@@ -739,38 +739,49 @@ void setPowerState() {
 	// one-shot triggers
     if (powerState == 1){
       /// runs once on boot ///
-      analogWrite(lcdBacklightPin, lcdOnBrightness);
-      lcd.setCursor(0,0);
-      lcd.print("Starting Up...");
-      // turn on preamp power here
-      digitalWrite(powerRelayPin, HIGH);  
-      delay(500);
-      // loading bar 
-      lcdTimedBar(startDelay,1);
-      lcd.clear();
-      // music icon
-      lcd.createChar(0, sound);
-      lcd.setCursor(0,1);
-      lcd.print(char(0));
-      // set volume from pot
-      potState = motorInit;
-      volUpdate(volLevel, 1);
-      // set audio input
-	  inputUpdate(1);
+      startup();
     } else {  
       /// runs once on shutdown ///
-      volUpdate(0,1); // mute    	
-      // shutdown animation
-      lcd.clear();
-      lcd.setCursor(0,0);
-      lcd.print("Shutting Down..."); 	
-      lcdTimedBar(shutdownTime,0);	
-      lcdStandby();
-      // turn off preamp power here
-      digitalWrite(powerRelayPin, LOW);  
+      shutdown();
     }  
   powerCycle = 0;  
   }  
+}
+
+void shutdown() {
+  // shutdown routines
+  muteSystem(); // mute    	
+  // shutdown animation
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Shutting Down..."); 	
+  lcdTimedBar(shutdownTime,0);	
+  lcdStandby();
+  // turn off preamp power here
+  digitalWrite(powerRelayPin, LOW);  	
+}
+
+void startup() {
+  // startup routines
+  analogWrite(lcdBacklightPin, lcdOnBrightness);
+  lcd.setCursor(0,0);
+  lcd.print("Starting Up...");
+  // turn on preamp power here
+  digitalWrite(powerRelayPin, HIGH);  
+  delay(500);
+  // loading bar 
+  lcdTimedBar(startDelay,1);
+  lcd.clear();
+  // music icon
+  lcd.createChar(0, sound);
+  lcd.setCursor(0,1);
+  lcd.print(char(0));
+  // set volume from pot
+  volMute = 0;
+  potState = motorInit;
+  volUpdate(volLevel, 1);
+  // set audio input
+  inputUpdate(1);
 }
 
 

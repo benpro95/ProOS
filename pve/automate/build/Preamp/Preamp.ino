@@ -366,31 +366,6 @@ void volUpdate (byte _vol, byte _force)
 }
 
 
-// volume status on display
-void lcdVolume(int _level) {
-// update volume percentage  
-  int _lcdlevel = map(_level, volMin, volMax, 0, 100);
-  if (_lcdlevel == 0) {
-    return;
-  } else {
-  	if (_lcdlevel == 100) {
-      lcd.setCursor(12,1);
-      lcd.print("    "); 
-      lcd.setCursor(13,1);
-      lcd.print("MAX"); 
-    } else {
-      lcd.setCursor(12,1);
-      lcd.print("    "); 
-      lcd.setCursor(13,1);
-      lcd.print(String(_lcdlevel) + String("%"));
-    }
-  // draw volume progress bar if unmuted
-  _lcdlevel = map(_level, volMin, volMax, 0, 1024);
-  lcdBar(0,_lcdlevel,0,1024);
-  }
-}   
-
-
 // mute system  !! make accept 3 args toggle, off, on
 void volMuteToggle()
 {	
@@ -533,6 +508,31 @@ void PCFexpanderWrite(byte address, byte _data )
 }
 
 
+// volume status on display
+void lcdVolume(int _level) {
+// update volume percentage  
+  int _lcdlevel = map(_level, volMin, volMax, 0, 100);
+  if (_lcdlevel == 0) {
+    return;
+  } else {
+  	if (_lcdlevel == 100) {
+      lcd.setCursor(12,1);
+      lcd.print("    "); 
+      lcd.setCursor(13,1);
+      lcd.print("MAX"); 
+    } else {
+      lcd.setCursor(12,1);
+      lcd.print("    "); 
+      lcd.setCursor(13,1);
+      lcd.print(String(_lcdlevel) + String("%"));
+    }
+  // draw volume progress bar if unmuted
+  _lcdlevel = map(_level, volMin, volMax, 0, 1024);
+  lcdBar(0,_lcdlevel,0,1024);
+  }
+}   
+
+
 // display a progress bar
 void lcdBar (int row, int var, int minVal, int maxVal)
 {
@@ -558,18 +558,32 @@ void lcdBar (int row, int var, int minVal, int maxVal)
 }
 
 
-// display progress bar # of seconds 
-void lcdTimedBar(byte _sec)
+// display progress bar for # of seconds 
+void lcdTimedBar(byte _sec, bool _doublebar)
 { // seconds to loops
-  int _loops = _sec * 10;
+  int _loops = _sec * 25;
   for ( int _incr = 0; _incr < _loops; _incr++ ) {
-    lcdBar(0,_incr,0,_loops);
+  	if (_doublebar == 1) {
+      lcdBar(0,_incr,0,_loops);
+    }
     lcdBar(1,_incr,0,_loops);
     // also reset PCF expanders
     resetPCF(volSetAddr,volResetAddr);
     resetPCF(inputSetAddr,inputResetAddr);
-    _incr = _incr + 4;
+    _incr = _incr + 5;
+    delay(20);
   }    
+}  
+
+
+// display in standby mode
+void lcdStandby()
+{ 
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Preamp v5");
+  lcd.setCursor(0,1);
+  lcd.print("ProDesigns"); 	
 }  
 
 
@@ -656,7 +670,7 @@ void setPowerState() {
       lcd.setCursor(6,0);
       lcd.print("Power On");
       // loading bar
-      lcdTimedBar(startDelay);
+      lcdTimedBar(startDelay,1);
       lcd.clear();
       // set volume from pot
       potState = motorInit;
@@ -668,8 +682,10 @@ void setPowerState() {
       volUpdate(0,1); // mute    	
       // shutdown animation
       lcd.clear();
-      lcd.setCursor(4,0);
-      lcd.print("Power Off"); 	
+      lcd.setCursor(0,0);
+      lcd.print("Shutting Down..."); 	
+      lcdTimedBar(2,0);	
+      lcdStandby();
     }  
   powerCycle = 0;  
   }  
@@ -706,18 +722,15 @@ void setup()
   // calculate volume limits
   volRange(); 
   // initial boot display
-  lcdTimedBar(4);
-  lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print("HiFi Preamp v5");
-  lcd.setCursor(0,1);
-  lcd.print("by Ben Provenzano"); 	
+  lcdTimedBar(3,1);
   // IR codes over serial
   irCodeScan = 0;
   // serial support
   if (irCodeScan == 1){
     Serial.begin(9600);
   }
+  // startup complete
+  lcdStandby();
 }
 
 

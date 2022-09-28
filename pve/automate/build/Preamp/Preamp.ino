@@ -559,17 +559,16 @@ void lcdBar (int row, int var, int minVal, int maxVal)
 
 
 // display progress bar # of seconds 
-void lcdTimedBar(int _sec)
+void lcdTimedBar(byte _sec)
 { // seconds to loops
-  _sec = _sec * 10;
-  for ( int _incr = 0; _incr < _sec; _incr++ ) {
-  	int _size = _sec * 3;
-    lcdBar(0,_incr,0,_size);
-    lcdBar(1,_incr,0,_size);
+  int _loops = _sec * 10;
+  for ( int _incr = 0; _incr < _loops; _incr++ ) {
+    lcdBar(0,_incr,0,_loops);
+    lcdBar(1,_incr,0,_loops);
     // also reset PCF expanders
     resetPCF(volSetAddr,volResetAddr);
     resetPCF(inputSetAddr,inputResetAddr);
-    _incr++;
+    _incr = _incr + 4;
   }    
 }  
 
@@ -706,8 +705,13 @@ void setup()
   IrReceiver.begin(IRpin);  
   // calculate volume limits
   volRange(); 
-  // initial boot loading bar
-  lcdTimedBar(3);
+  // initial boot display
+  lcdTimedBar(4);
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("HiFi Preamp v5");
+  lcd.setCursor(0,1);
+  lcd.print("by Ben Provenzano"); 	
   // IR codes over serial
   irCodeScan = 0;
   // serial support

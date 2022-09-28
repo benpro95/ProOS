@@ -17,8 +17,8 @@
 #define lcdAddr 0x27
 
 // 16x2 Display
-byte lcdCols = 16; // number of columns in the LCD
-byte lcdRows = 2;  // number of rows in the LCD
+uint8_t lcdCols = 16; // number of columns in the LCD
+uint8_t lcdRows = 2;  // number of rows in the LCD
 LiquidCrystal_I2C lcd(lcdAddr);
 
 // IR (pin 8)
@@ -26,21 +26,24 @@ int IRpin = 8;
 bool irCodeScan = 0;
 
 // Input selector
-byte inputSelected = 0;
-byte inputRelayCount = 3;
+uint8_t inputSelected = 0;
+uint8_t inputRelayCount = 3;
+int inputName1 = "DAC";
+int inputName2 = "Aux #1";
+int inputName3 = "Aux #2";
 
 // Relay attenuator
-byte volCoarseSteps = 4; // volume steps to skip for coarse adjust
-byte volRelayCount = 6; // number of relays on volume attenuator board
+uint8_t volCoarseSteps = 4; // volume steps to skip for coarse adjust
+uint8_t volRelayCount = 6; // number of relays on volume attenuator board
 #define volControlDown 1
 #define volControlUp 2
 #define volControlSlow 1 
 #define volControlFast 2
-byte volLastLevel = 0;
-byte volLevel = 0;
-byte volMax;
-byte volMin;
-byte volSpan;
+uint8_t volLastLevel = 0;
+uint8_t volLevel = 0;
+uint8_t volMax;
+uint8_t volMin;
+uint8_t volSpan;
 bool volMute;
 
 // Motor Pot
@@ -56,24 +59,40 @@ bool volMute;
 #define potMinRange 30  // lowest pot reading
 #define potMaxRange 1023 // highest pot reading
 int potValueLast; // range from 0..1023
-byte volPotLast;
-byte potState;
+uint8_t volPotLast;
+uint8_t potState;
 
 // Power
 #define powerPin 5
 int startDelay = 8; // startup delay in seconds, unmutes after
 int shutdownTime = 6; // shutdown delay before turning off aux power
 int initStartDelay = 6; // delay on initial cold start
+uint8_t debounceDelay = 50; // button debounce delay in ms
+unsigned long lastDebounceTime = 0;
+uint8_t lastPowerButton = 0;
+uint8_t powerButton = 0;
 bool powerCycle = 0;
 bool powerState = 0;
-byte powerButton = 0;
-byte lastPowerButton = 0;
-unsigned long lastDebounceTime = 0;
-unsigned long debounceDelay = 50; 
 
 
 
-// mapping function
+
+// reverse byte function 
+int reverseByte(uint8_t _inByte) 
+{
+  uint8_t _revByte;
+  for (int _revBit = 0; _revBit < 8; _revBit++) {
+    if (bitRead(_inByte, _revBit) == 1) {
+      bitWrite(_revByte, (7 - _revBit), 1);
+    } else {
+      bitWrite(_revByte, (7 - _revBit), 0);
+    }
+  }
+  return _revByte;
+}
+
+
+// mapping function (fixed)
 long l_map(long x, long in_min, long in_max, long out_min, long out_max)
 {
   return (x - in_min) * (out_max - out_min + 1) /
@@ -82,10 +101,10 @@ long l_map(long x, long in_min, long in_max, long out_min, long out_max)
 
 
 // read the pot, smooth out the data
-int readPotWithSmoothing(byte analog_port_num, byte reread_count)
+int readPotWithSmoothing(uint8_t analog_port_num, uint8_t reread_count)
 {
   int sensed_port_value = 0;
-  for (byte i = 0; i < reread_count; i++) {
+  for (uint8_t i = 0; i < reread_count; i++) {
     sensed_port_value += analogRead(analog_port_num);
     // delayMicroseconds(200);
   }
@@ -113,8 +132,8 @@ int readPotWithClipping(int sensed_pot_value)
 // runs when pot state changes
 void potValueChanges(void)
 {
-  byte old_vol;
-  byte temp_volume;
+  uint8_t old_vol;
+  uint8_t temp_volume;
   int sensed_pot_value;
   // read pot smoothed output
   sensed_pot_value = readPotWithSmoothing(
@@ -282,7 +301,7 @@ void motorPot(void)
 void volRange()
 {
   // for 7 relays, this would be 128-1 = 127
-  byte max_byte_size = (1 << volRelayCount) - 1;
+  uint8_t max_byte_size = (1 << volRelayCount) - 1;
   volMin = 0;
   volMax = max_byte_size;
   volSpan = abs(volMax - volMin);
@@ -290,7 +309,7 @@ void volRange()
 
 
 // increment volume up/down slow/fast
-void volIncrement (byte dir_flag, byte speed_flag)
+void volIncrement (uint8_t dir_flag, uint8_t speed_flag)
 {
   if (dir_flag == volControlUp) {
     if (volLevel >= volMax)
@@ -356,7 +375,7 @@ void volIncrement (byte dir_flag, byte speed_flag)
 
 
 // set a specific volume level
-void volUpdate (byte _vol, byte _force) 
+void volUpdate (uint8_t _vol, uint8_t _force) 
 {
 // set volume
   if (volMute == 0) {
@@ -396,20 +415,25 @@ void volMuteToggle()
 
 
 // set a specific audio input
-void inputUpdate (byte _input) 
+void inputUpdate (uint8_t _input) 
 {
-  byte _state; 
+  uint8_t _state; 
+  uint8_t _name; 
   if (_input == 0) {  // mute inputs
     _state = B00000000;
+    _name = "        ";
   }  
   if (_input == 1) {  // input #1
     _state = B00000001;
+    _name = inputName1;
   }    
   if (_input == 2) {  // input #2
     _state = B00000010;
+    _name = inputName2;
   }  
   if (_input == 3) {  // input #3
     _state = B00000100;
+    _name = inputName3;
   }
   if (_input >= 4) {  // invalid setting
     return;
@@ -417,21 +441,23 @@ void inputUpdate (byte _input)
   setRelays(inputSetAddr, inputResetAddr, _state, inputRelayCount, 1);  
   inputSelected = _input;
   // update display
+  lcd.setCursor(0,1);
+  lcd.print(_name); 
 }
 
 
 // set a relay controller board (volume or inputs)
-void setRelays(byte pcf_a, byte pcf_b,  // first pair of i2c addr's
-      byte vol_byte,                    // the 0..255 value to write
-      byte installed_relay_count,    // how many bits are installed
-      byte forced_update_flag)  // forced or relative mode (1=forced)
+void setRelays(uint8_t pcf_a, uint8_t pcf_b,  // first pair of i2c addr's
+      uint8_t vol_byte,                    // the 0..255 value to write
+      uint8_t installed_relay_count,    // how many bits are installed
+      uint8_t forced_update_flag)  // forced or relative mode (1=forced)
 {
   int bitnum;
-  byte mask_left;
-  byte mask_right;
-  byte just_the_current_bit;
-  byte just_the_previous_bit;
-  byte shifted_one_bit;
+  uint8_t mask_left;
+  uint8_t mask_right;
+  uint8_t just_the_current_bit;
+  uint8_t just_the_previous_bit;
+  uint8_t shifted_one_bit;
   // this must to be able to underflow to *negative* numbers
   // walk the bits and just count the bit-changes and save into left and right masks
   mask_left = mask_right = 0;
@@ -456,10 +482,10 @@ void setRelays(byte pcf_a, byte pcf_b,  // first pair of i2c addr's
       if (just_the_current_bit != 0) {
         // a '1' in this bit pos
         // (1 << bitnum);
-        mask_left |= ((byte)shifted_one_bit);
+        mask_left |= ((uint8_t)shifted_one_bit);
       } 
       else { // (1 << bitnum);
-        mask_right |= ((byte)shifted_one_bit);
+        mask_right |= ((uint8_t)shifted_one_bit);
       }
     } // the 2 bits were different
   } // for each of the 8 bits
@@ -475,7 +501,7 @@ void setRelays(byte pcf_a, byte pcf_b,  // first pair of i2c addr's
 
 
 // reset all pins PCF8574A I/O expander
-void resetPCF(byte pcf_a, byte pcf_b)
+void resetPCF(uint8_t pcf_a, uint8_t pcf_b)
 {
   // let them settle before we unlatch them
   delayMicroseconds(3700);
@@ -490,9 +516,9 @@ void resetPCF(byte pcf_a, byte pcf_b)
 
 
 // read a byte from PCF8574A I/O expander
-byte PCFexpanderRead(int address) 
+uint8_t PCFexpanderRead(int address) 
 {
- byte _data;
+ uint8_t _data;
  Wire.requestFrom(address, 1);
  if(Wire.available()) {
    _data = Wire.read();
@@ -502,7 +528,7 @@ byte PCFexpanderRead(int address)
 
 
 // write a byte to PCF8574A I/O expander
-void PCFexpanderWrite(byte address, byte _data ) 
+void PCFexpanderWrite(uint8_t address, uint8_t _data ) 
 {
  Wire.beginTransmission(address);
  Wire.write(_data);
@@ -561,7 +587,7 @@ void lcdBar (int row, int var, int minVal, int maxVal)
 
 
 // display progress bar for # of seconds 
-void lcdTimedBar(byte _sec, bool _doublebar)
+void lcdTimedBar(uint8_t _sec, bool _doublebar)
 { // seconds to loops
   int _loops = _sec * 32;
   for ( int _incr = 0; _incr < _loops; _incr++ ) {
@@ -613,11 +639,13 @@ void irReceive()
       if (powerState == 1) {
         if (IrReceiver.decodedIRData.command == 0xC) {
           // Volume down fast
-          volIncrement(1,2);
+          //volIncrement(1,2);
+        	inputUpdate(2);
         }      
         if (IrReceiver.decodedIRData.command == 0xA) {
           // Volume up fast
-          volIncrement(2,2);
+          //volIncrement(2,2);
+        	inputUpdate(3);
         }
         if (IrReceiver.decodedIRData.command == 0x9) {
           // Volume down slow
@@ -707,11 +735,11 @@ void setup()
   resetPCF(volSetAddr,volResetAddr);
   resetPCF(inputSetAddr,inputResetAddr);  
   // LCD progress bar characters
-  byte bar1[8] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10};
-  byte bar2[8] = { 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18};
-  byte bar3[8] = { 0x1C, 0x1C, 0x1C, 0x1C, 0x1C, 0x1C, 0x1C, 0x1C};
-  byte bar4[8] = { 0x1E, 0x1E, 0x1E, 0x1E, 0x1E, 0x1E, 0x1E, 0x1E};
-  byte bar5[8] = { 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F};
+  uint8_t bar1[8] = {0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10};
+  uint8_t bar2[8] = {0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18};
+  uint8_t bar3[8] = {0x1C,0x1C,0x1C,0x1C,0x1C,0x1C,0x1C,0x1C};
+  uint8_t bar4[8] = {0x1E,0x1E,0x1E,0x1E,0x1E,0x1E,0x1E,0x1E};
+  uint8_t bar5[8] = {0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F};
   lcd.createChar(1, bar1);
   lcd.createChar(2, bar2);
   lcd.createChar(3, bar3);
@@ -730,7 +758,7 @@ void setup()
   // initial boot display
   lcdTimedBar(initStartDelay,1);
   // IR codes over serial
-  irCodeScan = 0;
+  irCodeScan = 1;
   // serial support
   if (irCodeScan == 1){
     Serial.begin(9600);
@@ -746,6 +774,7 @@ void setup()
 // switch logic (toggle) 
 // IR mute,unmute,toggle
 // IR volume levels 10,20,30,40
+// IR repeat codes fix 
 // standby screen date with IR sync 
 
 

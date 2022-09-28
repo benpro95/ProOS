@@ -1,0 +1,768 @@
+// Preamp Controller v1.0 
+// by Ben Provenzano III
+// 09/28/2022
+
+// Libraries //
+#include "LiquidCrystal_I2C.h" // custom for MCP23008-E/P, power button support
+#include <IRremote.hpp>
+#include <Arduino.h>
+#include <Wire.h> 
+
+
+// I2C addresses
+#define inputResetAddr 0x3A
+#define inputSetAddr 0x3B
+#define volResetAddr 0x3E
+#define volSetAddr 0x3F
+#define lcdAddr 0x27
+
+// 16x2 Display
+byte lcdCols = 16; // number of columns in the LCD
+byte lcdRows = 2;  // number of rows in the LCD
+LiquidCrystal_I2C lcd(lcdAddr);
+
+// IR (pin 8)
+int IRpin = 8;
+bool irCodeScan = 0;
+
+// Input selector
+byte inputSelected = 0;
+byte inputRelayCount = 3;
+
+// Relay attenuator
+byte volCoarseSteps = 4; // volume steps to skip for coarse adjust
+byte volRelayCount = 6; // number of relays on volume attenuator board
+#define volControlDown 1
+#define volControlUp 2
+#define volControlSlow 1 
+#define volControlFast 2
+byte volLastLevel = 0;
+byte volLevel = 0;
+byte volMax;
+byte volMin;
+byte volSpan;
+bool volMute;
+
+// Motor Pot
+#define motorInit 1 // motor initialization
+#define motorSettled 2 // pot at resting state
+#define motorInMotion 3 // pot is moving right now
+#define motorCoasting 4 // pot just passed read value
+#define potThreshold 5 // pot value change threshold
+#define potRereads 10 // amount of pot readings 
+#define potAnalogPin 1 // pot reading pin A1
+#define motorPinCW 16 // motor H-bridge CW pin
+#define motorPinCCW 17 // motor H-bridge CCW pin
+#define potMinRange 30  // lowest pot reading
+#define potMaxRange 1023 // highest pot reading
+int potValueLast; // range from 0..1023
+byte volPotLast;
+byte potState;
+
+// Power
+#define powerPin 5
+int startDelay = 8; // startup delay in seconds, unmutes after
+int shutdownTime = 6; // shutdown delay before turning off aux power
+int initStartDelay = 6; // delay on initial cold start
+bool powerCycle = 0;
+bool powerState = 0;
+byte powerButton = 0;
+byte lastPowerButton = 0;
+unsigned long lastDebounceTime = 0;
+unsigned long debounceDelay = 50; 
+
+
+
+// mapping function
+long l_map(long x, long in_min, long in_max, long out_min, long out_max)
+{
+  return (x - in_min) * (out_max - out_min + 1) /
+         (in_max - in_min + 1) + out_min;
+} 
+
+
+// read the pot, smooth out the data
+int readPotWithSmoothing(byte analog_port_num, byte reread_count)
+{
+  int sensed_port_value = 0;
+  for (byte i = 0; i < reread_count; i++) {
+    sensed_port_value += analogRead(analog_port_num);
+    // delayMicroseconds(200);
+  }
+  if (reread_count > 1) {
+    sensed_port_value /= reread_count;
+  }
+  return sensed_port_value;
+}
+
+
+// read the pot, and clip to keep any stray values in that range
+int readPotWithClipping(int sensed_pot_value)
+{
+  int temp_volume;
+
+  temp_volume = l_map(sensed_pot_value,
+      0, // potMinRange,
+      potMaxRange,
+      volMin, volMax);
+    
+  return temp_volume;
+}
+
+
+// runs when pot state changes
+void potValueChanges(void)
+{
+  byte old_vol;
+  byte temp_volume;
+  int sensed_pot_value;
+  // read pot smoothed output
+  sensed_pot_value = readPotWithSmoothing(
+    potAnalogPin, potRereads
+  );  // to smooth it out
+  // read an average pot value
+  if (abs(sensed_pot_value - potValueLast) > potThreshold) {
+    // 1-5 is a good value to ignore noise
+    // convert the pot raw value into our correct volume min..max range
+    old_vol = volLevel; // the setting before user touched the pot
+    // read pot clipped output
+    temp_volume = readPotWithClipping(
+      sensed_pot_value
+    );
+    if (temp_volume == old_vol) {
+      // don't update if there was no effective change
+      return;
+    }
+    //    lcd.restore_backlight();
+    // volume state changed    
+    volLevel = temp_volume;
+    if (temp_volume > old_vol) {
+      if (volMute == 1) {
+        // tell the system we out of mute mode
+        volMute = 0;
+        volUpdate(volLevel, 1);
+      }
+      else {
+        // not in mute mode, set volume up
+        volUpdate(temp_volume, 0);
+      }
+    }
+    else {
+      // not in mute mode, set volume down
+      volUpdate(temp_volume, 0);
+    }
+    // real change, save the changed state
+    volPotLast = volLevel;
+    potValueLast = sensed_pot_value;
+  }
+}
+
+
+// motor pot PID control loop
+void motorControlLoop(void)
+{
+  int target_pot_wiper_value;
+  int pot_pid_value;
+  // given the 'IR' set volume level, find out what wiper value to compare
+  target_pot_wiper_value = l_map(volLevel, volMin, volMax,
+          potMinRange,
+          potMaxRange);
+  // this is the value of the pot, from the a/d converter
+  pot_pid_value = readPotWithSmoothing(
+    potAnalogPin, potRereads
+  );
+  // average out the values
+  if (abs(target_pot_wiper_value - pot_pid_value) <= 8) {
+    // stop the motor!
+    digitalWrite(motorPinCCW, LOW);  // stop turning left
+    digitalWrite(motorPinCW,  LOW);  // stop turning right
+    potState = motorCoasting;
+    delay(5);
+    return;
+  }
+  else {
+    // not at target volume yet
+    if (pot_pid_value < target_pot_wiper_value) {
+      // turn clockwise
+      digitalWrite(motorPinCCW, LOW);
+      digitalWrite(motorPinCW,  HIGH);
+    }
+    else if (pot_pid_value > target_pot_wiper_value) {
+      // turn counter-clockwise
+      digitalWrite(motorPinCW,  LOW);
+      digitalWrite(motorPinCCW, HIGH);
+    }
+  }
+} 
+
+
+// motor pot state-driven dispatcher
+void motorPot(void)
+{
+  int pot_pid_value = 0;
+  static int motor_stabilized;
+  if (powerState == 0)
+	return;  
+  // If max_vol == min_vol then don't run the motor
+  if (volSpan == 0)
+	return;  
+// action states
+#if 0
+  if (volMute == 1)
+    return; // don't spin the motor just muted
+#endif
+// action states
+  switch (potState) {
+  case motorInit:
+    // initial state, just go to 'settled' from here
+    potState = motorSettled;
+    volPotLast = volLevel;
+    break;
+//---------------//
+  case motorSettled:
+    /*
+     * if we are 'settled' and the pot wiper changed,
+     * it was via a human.  this doesn't affect our
+     * motor-driven logic.
+     */
+    // if the volume changed via the user's IR, this should
+    // trigger us to move to the next state
+    if (volLevel != volPotLast) {
+      potState = motorInMotion;
+      potValueLast = readPotWithSmoothing(
+        potAnalogPin, potRereads
+      );
+    }
+
+    volPotLast = volLevel;
+    break;
+//---------------//
+  case motorInMotion:
+    /*
+     * if the motor is moving, we are looking for our target
+     * so we can let go of the motor and let it 'coast' to a stop
+     */
+    motor_stabilized = 0;
+    motorControlLoop();
+    break;
+//---------------//
+  case motorCoasting:
+    /*
+     * we are waiting for the motor to stop
+     * (which means the last value == this value)
+     */
+    delay(20);
+    pot_pid_value = readPotWithSmoothing(
+      potAnalogPin, potRereads
+    );
+    if (pot_pid_value == potValueLast) {
+      if (++motor_stabilized >= 5) {
+        // yay! we reached our target
+        potState = motorSettled;
+      }
+    }
+    else {
+      // we found a value that didn't match,
+      // so reset our 'sameness' counter
+      motor_stabilized = 0;
+    }
+//---------------//
+    // this is the operating value of the pot,
+    // from the a/d converter
+    potValueLast = pot_pid_value;
+    break;
+//
+  default:
+    break;
+  }
+}
+
+
+// setup volume range
+void volRange()
+{
+  // for 7 relays, this would be 128-1 = 127
+  byte max_byte_size = (1 << volRelayCount) - 1;
+  volMin = 0;
+  volMax = max_byte_size;
+  volSpan = abs(volMax - volMin);
+}
+
+
+// increment volume up/down slow/fast
+void volIncrement (byte dir_flag, byte speed_flag)
+{
+  if (dir_flag == volControlUp) {
+    if (volLevel >= volMax)
+      return;
+  } 
+  else if (dir_flag == volControlDown) {
+    if (volLevel <= volMin)
+      return;
+  }
+  if (volMute == 1 ) {
+    volMute = 0;
+    volUpdate(volLevel, 1);
+    return;
+   // !! add restore display volume (unmute)
+  }
+  if (dir_flag == volControlUp) {
+    if (speed_flag == volControlSlow) {    
+      // volume up-slow
+      if (volLevel < volMax &&
+         (volLevel + 1) < volMax) {
+        volLevel += 1;
+      } 
+      else {
+        volLevel = volMax;
+      }
+      volUpdate(volLevel, 0);  
+    } 
+    else if (speed_flag == volControlFast) {
+      // volume up-fast
+      if (volLevel < (volMax - volCoarseSteps)) {
+        volLevel += volCoarseSteps;
+      } 
+      else {
+        volLevel = volMax;
+      }
+      volUpdate(volLevel, 0); 
+    }
+  }
+  else if (dir_flag == volControlDown) {
+    if (speed_flag == volControlSlow) {
+      // volume down-slow
+      if (volLevel > volMin &&
+         (volLevel - 1) > volMin) {
+        volLevel -= 1;
+      } 
+      else {
+        volLevel = volMin;
+      }
+      volUpdate(volLevel, 0); 
+    } 
+    else if (speed_flag == volControlFast) {
+      // volume down-fast
+      if (volLevel > (volMin + volCoarseSteps)) {
+        volLevel -= volCoarseSteps;
+      } 
+      else {
+        volLevel = volMin;
+      }
+      volUpdate(volLevel, 0); 
+    }
+  }
+}
+
+
+// set a specific volume level
+void volUpdate (byte _vol, byte _force) 
+{
+// set volume
+  if (volMute == 0) {
+    setRelays(volSetAddr, volResetAddr, _vol, volRelayCount, _force);    
+    volLastLevel = volLevel;
+    // update display
+    lcdVolume(_vol); 
+  }  
+}
+
+
+// mute system  !! make accept 3 args toggle, off, on
+void volMuteToggle()
+{	
+  lcd.clear();	
+  if (volMute == 0) { // 0 when mute feature is OFF 
+    if (volSpan == 0) { // Don't mute if min_vol == max_vol
+      return;
+    } // stop motor turning
+    digitalWrite(motorPinCW, LOW);   
+    digitalWrite(motorPinCCW, LOW);
+    // set volume to min
+    volUpdate(volMin, 1);
+    // display mute status
+    lcd.setCursor(12,1);
+    lcd.print("MUTE"); 
+    lcd.setCursor(0,0);
+    lcd.print("----------------"); 
+    // set mute flag
+    volMute = 1;
+  } 
+  else { // unmute
+    volMute = 0;  
+    volUpdate(volLevel, 1);
+  }
+}
+
+
+// set a specific audio input
+void inputUpdate (byte _input) 
+{
+  byte _state; 
+  if (_input == 0) {  // mute inputs
+    _state = B00000000;
+  }  
+  if (_input == 1) {  // input #1
+    _state = B00000001;
+  }    
+  if (_input == 2) {  // input #2
+    _state = B00000010;
+  }  
+  if (_input == 3) {  // input #3
+    _state = B00000100;
+  }
+  if (_input >= 4) {  // invalid setting
+    return;
+  } // set input selector relays
+  setRelays(inputSetAddr, inputResetAddr, _state, inputRelayCount, 1);  
+  inputSelected = _input;
+  // update display
+}
+
+
+// set a relay controller board (volume or inputs)
+void setRelays(byte pcf_a, byte pcf_b,  // first pair of i2c addr's
+      byte vol_byte,                    // the 0..255 value to write
+      byte installed_relay_count,    // how many bits are installed
+      byte forced_update_flag)  // forced or relative mode (1=forced)
+{
+  int bitnum;
+  byte mask_left;
+  byte mask_right;
+  byte just_the_current_bit;
+  byte just_the_previous_bit;
+  byte shifted_one_bit;
+  // this must to be able to underflow to *negative* numbers
+  // walk the bits and just count the bit-changes and save into left and right masks
+  mask_left = mask_right = 0;
+  //
+  // this loop walks ALL bits, even the 'mute bit'
+  for (bitnum = (installed_relay_count-1); bitnum >= 0 ; bitnum--) {
+    //
+    // optimize: calc this ONLY once per loop
+    shifted_one_bit = (1 << bitnum);
+    //
+    // this is the new volume value; and just the bit we are walking
+    just_the_current_bit = (vol_byte & shifted_one_bit);
+    //
+    // logical AND to extra just the bit we are interested in
+    just_the_previous_bit = (volLastLevel & shifted_one_bit);
+    //
+    // examine our current bit and see if it changed from the last run
+    if (just_the_previous_bit != just_the_current_bit ||
+        forced_update_flag == 1) {
+      //	
+      // latch the '1' on the left or right side of the relays
+      if (just_the_current_bit != 0) {
+        // a '1' in this bit pos
+        // (1 << bitnum);
+        mask_left |= ((byte)shifted_one_bit);
+      } 
+      else { // (1 << bitnum);
+        mask_right |= ((byte)shifted_one_bit);
+      }
+    } // the 2 bits were different
+  } // for each of the 8 bits
+// set upper relays
+  PCFexpanderWrite(pcf_b, mask_right);
+  PCFexpanderWrite(pcf_a, 0x00);
+  resetPCF(pcf_a, pcf_b);
+// set lower relays
+  PCFexpanderWrite(pcf_a, mask_left);
+  PCFexpanderWrite(pcf_b, 0x00);
+  resetPCF(pcf_a, pcf_b);
+}
+
+
+// reset all pins PCF8574A I/O expander
+void resetPCF(byte pcf_a, byte pcf_b)
+{
+  // let them settle before we unlatch them
+  delayMicroseconds(3700);
+  // do the unlatch (relax) stuff
+  // left side of relay coil
+  PCFexpanderWrite(pcf_a, B00000000);
+  // right side of relay coil
+  PCFexpanderWrite(pcf_b, B00000000);
+  // let the relay hold for a while
+  delayMicroseconds(3700);
+}
+
+
+// read a byte from PCF8574A I/O expander
+byte PCFexpanderRead(int address) 
+{
+ byte _data;
+ Wire.requestFrom(address, 1);
+ if(Wire.available()) {
+   _data = Wire.read();
+ }
+ return _data;
+}
+
+
+// write a byte to PCF8574A I/O expander
+void PCFexpanderWrite(byte address, byte _data ) 
+{
+ Wire.beginTransmission(address);
+ Wire.write(_data);
+ Wire.endTransmission(); 
+}
+
+
+// volume status on display
+void lcdVolume(int _level) {
+// update volume percentage  
+  int _lcdlevel = map(_level, volMin, volMax, 0, 100);
+  if (_lcdlevel == 0) {
+    return;
+  } else {
+  	if (_lcdlevel == 100) {
+      lcd.setCursor(12,1);
+      lcd.print("    "); 
+      lcd.setCursor(13,1);
+      lcd.print("MAX"); 
+    } else {
+      lcd.setCursor(12,1);
+      lcd.print("    "); 
+      lcd.setCursor(13,1);
+      lcd.print(String(_lcdlevel) + String("%"));
+    }
+  // draw volume progress bar if unmuted
+  _lcdlevel = map(_level, volMin, volMax, 0, 1024);
+  lcdBar(0,_lcdlevel,0,1024);
+  }
+}   
+
+
+// display a progress bar
+void lcdBar (int row, int var, int minVal, int maxVal)
+{
+  int block = map(var, minVal, maxVal, 0, 16); // Block represent the current LCD space
+  int line = map(var, minVal, maxVal, 0, 80); // Line represent the lines to be displayed
+  int bar = (line-(block*5)); // Bar represent the actual lines that will be printed
+  // Print all the filled blocks
+  for (int x = 0; x < block; x++)                       
+  {
+    lcd.setCursor (x, row);
+    lcd.write (1023);
+  }
+  // Set the cursor at the current block and print the numbers of line needed
+  lcd.setCursor (block, row);                           
+  if (bar != 0) lcd.write (bar);
+  if (block == 0 && line == 0) lcd.write (1022); // Unless there is nothing to print, show blank
+  // Print all the blank blocks
+  for (int x = 16; x > block; x--) 
+  {
+    lcd.setCursor (x, row);
+    lcd.write (1022);
+  }
+}
+
+
+// display progress bar for # of seconds 
+void lcdTimedBar(byte _sec, bool _doublebar)
+{ // seconds to loops
+  int _loops = _sec * 32;
+  for ( int _incr = 0; _incr < _loops; _incr++ ) {
+  	if (_doublebar == 1) {
+      lcdBar(0,_incr,0,_loops);
+    }
+    lcdBar(1,_incr,0,_loops);
+    // also reset PCF expanders
+    resetPCF(volSetAddr,volResetAddr);
+    resetPCF(inputSetAddr,inputResetAddr);
+    _incr = _incr + 4;
+    delay(40);
+  }    
+}  
+
+
+// display in standby mode
+void lcdStandby()
+{ 
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Preamp v5");
+  lcd.setCursor(0,1);
+  lcd.print("ProDesigns"); 	
+}  
+
+
+// receive IR remote commands !! add code to detect threshold of data (avoid dupl key presses) !!
+void irReceive() 
+{
+  if (IrReceiver.decode()) {
+    // Display IR codes on terminal
+    if (irCodeScan == 1) {   
+      if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
+        IrReceiver.printIRResultRawFormatted(&Serial, true);
+        Serial.println("*"); 	
+      } else {
+        IrReceiver.printIRResultMinimal(&Serial);
+        Serial.println("*"); 	
+      }  
+    }
+    // IR functions 
+    if (IrReceiver.decodedIRData.address == 0xCE) {  
+      if (IrReceiver.decodedIRData.command == 0x3) {
+        // Power toggle
+        powerState = !powerState;  
+        powerCycle = 1;
+      }  
+      if (powerState == 1) {
+        if (IrReceiver.decodedIRData.command == 0xC) {
+          // Volume down fast
+          volIncrement(1,2);
+        }      
+        if (IrReceiver.decodedIRData.command == 0xA) {
+          // Volume up fast
+          volIncrement(2,2);
+        }
+        if (IrReceiver.decodedIRData.command == 0x9) {
+          // Volume down slow
+          volIncrement(1,1);
+        }      
+        if (IrReceiver.decodedIRData.command == 0x6) {
+          // Volume up slow
+          volIncrement(2,1);
+        }
+        if (IrReceiver.decodedIRData.command == 0x5F) {
+          // Mute
+          volMuteToggle();
+        }
+      }  
+    }
+  delay(75); 
+  IrReceiver.resume();         
+  }
+}
+
+
+// power on/off
+void setPowerState() {
+  // read pin state from MCP23008
+  int reading = lcd.readPin(powerPin);
+  // if switch changed
+  if (reading != lastPowerButton) {
+    // reset the debouncing timer
+    lastDebounceTime = millis();
+  }
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    // if the button state has changed:
+    if (reading != powerButton) {
+      powerButton = reading;
+      // power state has changed!
+      if (powerButton == 1) { 
+        powerState = !powerState;  
+        powerCycle = 1;
+      }
+    }
+  }
+  lastPowerButton = reading; 
+  // power state actions  
+  if (powerCycle == 1){  
+	// calculate volume limits
+	volRange();   	  
+	// reset display
+	lcd.clear();
+	// one-shot triggers
+    if (powerState == 1){
+      /// runs once on boot ///
+      lcd.setCursor(6,0);
+      lcd.print("Power On");
+      // turn on aux power here
+
+      // loading bar
+      lcdTimedBar(startDelay,1);
+      lcd.clear();
+      // set volume from pot
+      potState = motorInit;
+      volUpdate(volLevel, 1);
+      // set audio input
+	  inputUpdate(1);
+    } else {  
+      /// runs once on shutdown ///
+      volUpdate(0,1); // mute    	
+      // shutdown animation
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Shutting Down..."); 	
+      lcdTimedBar(shutdownTime,0);	
+      lcdStandby();
+      // turn off aux power here
+
+    }  
+  powerCycle = 0;  
+  }  
+}
+
+
+// initialization 
+void setup() 
+{ 	
+  // 16x2 display (calls Wire.begin)
+  lcd.begin(lcdCols,lcdRows); 
+  // reset expanders
+  resetPCF(volSetAddr,volResetAddr);
+  resetPCF(inputSetAddr,inputResetAddr);  
+  // LCD progress bar characters
+  byte bar1[8] = { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10};
+  byte bar2[8] = { 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18};
+  byte bar3[8] = { 0x1C, 0x1C, 0x1C, 0x1C, 0x1C, 0x1C, 0x1C, 0x1C};
+  byte bar4[8] = { 0x1E, 0x1E, 0x1E, 0x1E, 0x1E, 0x1E, 0x1E, 0x1E};
+  byte bar5[8] = { 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F};
+  lcd.createChar(1, bar1);
+  lcd.createChar(2, bar2);
+  lcd.createChar(3, bar3);
+  lcd.createChar(4, bar4);
+  lcd.createChar(5, bar5);
+  // motor pot
+  pinMode(potAnalogPin, INPUT);   
+  pinMode(motorPinCW, OUTPUT);
+  pinMode(motorPinCCW, OUTPUT);
+  digitalWrite(motorPinCW, LOW);
+  digitalWrite(motorPinCCW, LOW);
+  // calculate volume limits
+  volRange();   
+  // IR remote
+  IrReceiver.begin(IRpin);  
+  // initial boot display
+  lcdTimedBar(initStartDelay,1);
+  // IR codes over serial
+  irCodeScan = 0;
+  // serial support
+  if (irCodeScan == 1){
+    Serial.begin(9600);
+  }
+  // startup complete
+  lcdStandby();
+}
+
+// input selector IR
+// input selector display 
+// HPF on/off logic
+// aux power on/off logic 
+// switch logic (toggle) 
+// IR mute,unmute,toggle
+// IR volume levels 10,20,30,40
+// IR repeat codes fix 
+// standby screen date with IR sync 
+
+
+// superloop
+void loop()
+{
+  // IR remote (1st)
+  irReceive();
+  // motor potentiometer (2nd)
+  if (powerState == 1) {
+    if (potState == motorSettled ||
+        potState == motorInit) {
+    potValueChanges();
+    }
+    motorPot();
+  } 
+  // power management (last)
+  setPowerState();	  
+}

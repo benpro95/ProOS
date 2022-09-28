@@ -61,7 +61,9 @@ byte potState;
 
 // Power
 #define powerPin 5
-int startDelay = 10; // startup delay in seconds
+int startDelay = 8; // startup delay in seconds, unmutes after
+int shutdownTime = 6; // shutdown delay before turning off aux power
+int initStartDelay = 6; // delay on initial cold start
 bool powerCycle = 0;
 bool powerState = 0;
 byte powerButton = 0;
@@ -561,7 +563,7 @@ void lcdBar (int row, int var, int minVal, int maxVal)
 // display progress bar for # of seconds 
 void lcdTimedBar(byte _sec, bool _doublebar)
 { // seconds to loops
-  int _loops = _sec * 25;
+  int _loops = _sec * 32;
   for ( int _incr = 0; _incr < _loops; _incr++ ) {
   	if (_doublebar == 1) {
       lcdBar(0,_incr,0,_loops);
@@ -570,8 +572,8 @@ void lcdTimedBar(byte _sec, bool _doublebar)
     // also reset PCF expanders
     resetPCF(volSetAddr,volResetAddr);
     resetPCF(inputSetAddr,inputResetAddr);
-    _incr = _incr + 5;
-    delay(20);
+    _incr = _incr + 4;
+    delay(40);
   }    
 }  
 
@@ -669,6 +671,8 @@ void setPowerState() {
       /// runs once on boot ///
       lcd.setCursor(6,0);
       lcd.print("Power On");
+      // turn on aux power here
+
       // loading bar
       lcdTimedBar(startDelay,1);
       lcd.clear();
@@ -684,8 +688,10 @@ void setPowerState() {
       lcd.clear();
       lcd.setCursor(0,0);
       lcd.print("Shutting Down..."); 	
-      lcdTimedBar(2,0);	
+      lcdTimedBar(shutdownTime,0);	
       lcdStandby();
+      // turn off aux power here
+
     }  
   powerCycle = 0;  
   }  
@@ -716,13 +722,13 @@ void setup()
   pinMode(motorPinCW, OUTPUT);
   pinMode(motorPinCCW, OUTPUT);
   digitalWrite(motorPinCW, LOW);
-  digitalWrite(motorPinCCW, LOW);  
+  digitalWrite(motorPinCCW, LOW);
+  // calculate volume limits
+  volRange();   
   // IR remote
   IrReceiver.begin(IRpin);  
-  // calculate volume limits
-  volRange(); 
   // initial boot display
-  lcdTimedBar(3,1);
+  lcdTimedBar(initStartDelay,1);
   // IR codes over serial
   irCodeScan = 0;
   // serial support
@@ -732,6 +738,15 @@ void setup()
   // startup complete
   lcdStandby();
 }
+
+// input selector IR
+// input selector display 
+// HPF on/off logic
+// aux power on/off logic 
+// switch logic (toggle) 
+// IR mute,unmute,toggle
+// IR volume levels 10,20,30,40
+// standby screen date with IR sync 
 
 
 // superloop

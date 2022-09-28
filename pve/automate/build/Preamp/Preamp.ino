@@ -21,7 +21,7 @@ uint8_t lcdCols = 16; // number of columns in the LCD
 uint8_t lcdRows = 2;  // number of rows in the LCD
 #define lcdBacklightPin 9 // display backlight pin
 uint8_t lcdOffBrightness = 120; // standby-off LCD brightness level
-uint8_t lcdOnBrightness = 230; // online LCD brightness level
+uint8_t lcdOnBrightness = 240; // online LCD brightness level
 // progress bar characters
 uint8_t bar1[8] = {0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10};
 uint8_t bar2[8] = {0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18};
@@ -37,9 +37,9 @@ bool irCodeScan = 0;
 
 // Input selector
 String inputSelected;
-String inputName1 = "DIGITAL";
-String inputName2 = "AUX";
-String inputName3 = "PHONO";
+String inputName1 = "DIGITAL   ";
+String inputName2 = "AUX       ";
+String inputName3 = "PHONO     ";
 uint8_t inputRelayCount = 3;
 
 // Relay attenuator
@@ -310,8 +310,7 @@ void motorPot(void)
 
 // setup volume range
 void volRange()
-{
-  // for 7 relays, this would be 128-1 = 127
+{ // for 7 relays, this would be 128-1 = 127
   uint8_t max_byte_size = (1 << volRelayCount) - 1;
   volMin = 0;
   volMax = max_byte_size;
@@ -387,41 +386,60 @@ void volIncrement (uint8_t dir_flag, uint8_t speed_flag)
 // set a specific volume level
 void volUpdate (uint8_t _vol, uint8_t _force) 
 {
-// set volume
+// set volume relays
   if (volMute == 0) {
     setRelays(volSetAddr, volResetAddr, _vol, volRelayCount, _force);    
     volLastLevel = volLevel;
     // update display
-    lcdVolume(_vol);
+    lcdVolume(_vol); // redraw progress bar and percentage
+    inputUpdate(0); // just redraw input 
   }  
 }
 
 
-// mute system  !! make accept 3 args toggle, off, on
+// mute system
+void volMute()
+{	
+  if (volSpan == 0) { // Don't mute if min_vol == max_vol
+    return;
+  } // stop motor turning
+  digitalWrite(motorPinCW, LOW);   
+  digitalWrite(motorPinCCW, LOW);
+  // set volume to min
+  volUpdate(volMin, 1);
+  // mute status on display
+  lcd.setCursor(2,1);
+  lcd.print("          "); 
+  lcd.setCursor(0,0);
+  lcd.print("----------------"); 
+  lcd.setCursor(12,1);
+  lcd.print("MUTE"); 
+  lcd.createChar(0, speaker);
+  lcd.setCursor(0,1);
+  lcd.print(char(0));
+  // set mute flag
+  volMute = 1;	
+}
+
+void volUnmute()
+{	
+  volMute = 0;  
+  lcd.setCursor(0,0);
+  lcd.print("                "); 
+  volUpdate(volLevel, 1);
+  // music icon    
+  lcd.createChar(0, sound);
+  lcd.setCursor(0,1);
+  lcd.print(char(0));	
+}
+
 void volMuteToggle()
 {		
   if (volMute == 0) { // 0 when mute feature is OFF 
-    if (volSpan == 0) { // Don't mute if min_vol == max_vol
-      return;
-    } // stop motor turning
-    digitalWrite(motorPinCW, LOW);   
-    digitalWrite(motorPinCCW, LOW);
-    // set volume to min
-    volUpdate(volMin, 1);
-    // display mute status
-    lcd.setCursor(12,1);
-    lcd.print("MUTE"); 
-    lcd.setCursor(0,0);
-    lcd.print("----------------"); 
-    // set mute flag
-    volMute = 1;
+    volMute();
   } 
-  else { // unmute
-    volMute = 0;  
-    lcd.setCursor(0,0);
-    lcd.print("                "); 
-    inputUpdate(0); // just redraw input 
-    volUpdate(volLevel, 1);
+  else {
+    volUnmute();
   }
 }
 
@@ -429,40 +447,40 @@ void volMuteToggle()
 // set a specific audio input
 void inputUpdate (uint8_t _input) 
 {
-  bool _lcdonly = 0;	
-  uint8_t _state; 
-  String _name; 
-  // select input
-  if (_input == 0) {  // just update display
-     _lcdonly = 1;
-  }  
-  if (_input == 1) {  // input #1
-    _state = B00000001;
-    _name = inputName1;
-  }    
-  if (_input == 2) {  // input #2
-    _state = B00000010;
-    _name = inputName2;
-  }  
-  if (_input == 3) {  // input #3
-    _state = B00000100;
-    _name = inputName3;
-  }
-  if (_input >= 4) {  // invalid setting
-    return;
-  }
-  if (_lcdonly == 0) {
-  	  // set input relays
-      setRelays(inputSetAddr, inputResetAddr, _state, inputRelayCount, 1);  
-      inputSelected = _name;	  
-  } else {
-      _name = inputSelected;
-  }
-  // update display
-  lcd.setCursor(2,1);
-  lcd.print("          "); 
-  lcd.setCursor(2,1);
-  lcd.print(_name); 
+  if (volMute == 0) {
+	bool _lcdonly = 0;	
+	uint8_t _state; 
+	String _name; 
+	// select input
+	if (_input == 0) {  // just update display
+	   _lcdonly = 1;
+	}  
+	if (_input == 1) {  // input #1
+	  _state = B00000001;
+	  _name = inputName1;
+	}    
+	if (_input == 2) {  // input #2
+	  _state = B00000010;
+	  _name = inputName2;
+	}  
+	if (_input == 3) {  // input #3
+	  _state = B00000100;
+	  _name = inputName3;
+	}
+	if (_input >= 4) {  // invalid setting
+	  return;
+	}
+	if (_lcdonly == 0) {
+	  // set input relays
+	  setRelays(inputSetAddr, inputResetAddr, _state, inputRelayCount, 1);  
+	  inputSelected = _name;	  
+	} else {
+	    _name = inputSelected;
+	}
+	// update display
+	lcd.setCursor(2,1);
+	lcd.print(_name); 
+  }	  
 }
 
 

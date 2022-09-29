@@ -1,9 +1,6 @@
-///////////////////////////////////////////////////////////////////////////////
 // Preamp Controller v1.0 
 // by Ben Provenzano III
 // 09/28/2022
-///////////////////////////////////////////////////////////////////////////////
-
 
 // Libraries //
 #include "LiquidCrystal_I2C.h" // custom for MCP23008-E/P, power button support
@@ -23,9 +20,9 @@ LiquidCrystal_I2C lcd(lcdAddr);
 uint8_t lcdCols = 16; // number of columns in the LCD
 uint8_t lcdRows = 2;  // number of rows in the LCD
 #define lcdBacklightPin 9 // display backlight pin
-uint8_t lcdOffBrightness = 120; // standby-off LCD brightness level ***
-uint8_t lcdOnBrightness = 240; // online LCD brightness level ***
-// custom characters
+uint8_t lcdOffBrightness = 120; // standby-off LCD brightness level
+uint8_t lcdOnBrightness = 240; // online LCD brightness level
+// progress bar characters
 uint8_t bar1[8] = {0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10};
 uint8_t bar2[8] = {0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18};
 uint8_t bar3[8] = {0x1C,0x1C,0x1C,0x1C,0x1C,0x1C,0x1C,0x1C};
@@ -36,24 +33,26 @@ uint8_t sound[8] = {B00001,B00011,B00101,B01001,B01001,B01011,B11011,B11000};
 
 // IR (pin 8)
 int IRpin = 8;
-bool irCodeScan = 0; // enable IR codes on the terminal (1)
+bool irCodeScan = 0;
 
 // Input selector
 String inputSelected;
-String inputName1 = "DIGITAL   "; //***
-String inputName2 = "AUX       "; //***
-String inputName3 = "PHONO     "; //***
+String inputName1 = "DIGITAL   ";
+String inputName2 = "AUX       ";
+String inputName3 = "PHONO     ";
 uint8_t inputRelayCount = 3;
 
 // Volume control
-uint8_t volCoarseSteps = 4; // volume steps to skip for coarse adjust ***
-uint8_t volRelayCount = 6; // number of relays on volume attenuator board ***
-uint8_t volLimit = 80; // max volume percentage when in limit mode ***
-#define volControlDown 1
-#define volControlUp 2
-#define volControlSlow 1 
-#define volControlFast 2 
+uint8_t volCoarseSteps = 4; // volume steps to skip for coarse adjust
+uint8_t volRelayCount = 6; // number of relays on volume attenuator board
+uint8_t volLimit = 80; // max volume percentage when in limit mode
+#define volControlDown 1 // constant
+#define volControlUp 2 // constant
+#define volControlSlow 1 // constant
+#define volControlFast 2 // constant
 #define volLimitPin 4 // volume limit switch
+#define hpfRelayPin 3 // 50Hz high pass filter on/off
+bool hpfState = 0; // default HPF state 1=on, 0=off
 bool volLimitFlag = 1;
 uint8_t volLastLevel = 0;
 uint8_t volLevel = 0;
@@ -61,10 +60,6 @@ uint8_t volMax;
 uint8_t volMin;
 uint8_t volSpan;
 bool volMute;
-
-// 50Hz high-pass filter 
-#define hpfRelayPin 3 // HPF relay pin
-bool hpfState = 0; // HPF default startup state 1=on, 0=off ***
 
 // Motor Pot
 #define motorInit 1 // motor initialization
@@ -83,20 +78,19 @@ uint8_t volPotLast;
 uint8_t potState;
 
 // Power
-#define powerRelayPin 7
 #define powerButtonPin 5
+#define powerRelayPin 7
+int startDelay = 10; // startup delay in seconds, unmutes after
+int shutdownTime = 5; // shutdown delay before turning off aux power
+int initStartDelay = 3; // delay on initial cold start
+uint8_t debounceDelay = 50; // button debounce delay in ms
+unsigned long sysTime1 = 0;
 uint8_t lastPowerButton = 0;
 uint8_t powerButton = 0;
 bool powerCycle = 0;
 bool powerState = 0;
-int startDelay = 10; // startup delay in seconds, unmutes after ***
-int shutdownTime = 5; // shutdown delay before turning off aux power ***
-int initStartDelay = 3; // delay on initial cold start
-uint8_t debounceDelay = 50; // button debounce delay in ms
-unsigned long sysTime = 0;
 
 
-///////////////////////////////////////////////////////////////////////////////
 
 
 // reverse byte function 
@@ -822,9 +816,9 @@ void setPowerState() {
   // if switch changed
   if (reading != lastPowerButton) {
     // reset the debouncing timer
-    sysTime = millis();
+    sysTime1 = millis();
   }
-  if ((millis() - sysTime) > debounceDelay) {
+  if ((millis() - sysTime1) > debounceDelay) {
     // if the button state has changed:
     if (reading != powerButton) {
       powerButton = reading;
@@ -898,7 +892,7 @@ void startup()
   inputUpdate(1);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+
 // initialization 
 void setup() 
 { 	
@@ -940,26 +934,28 @@ void setup()
   lcd.createChar(5, bar5);
   lcdTimedBar(initStartDelay,1);
   // serial support
-  if (irCodeScan == 1){  
-    Serial.begin(9600);
-  } // startup complete
+  Serial.begin(9600);
+  // IR codes over serial
+  //irCodeScan = 1;  
+  // startup complete
   lcdStandby();
 }
 
-///////////////////////////////////////////////////////////////////////////////
+// IR repeat codes fix, additional codes, volume levels 10,20,30,40
+
 // superloop
 void loop()
 {
-  // motor potentiometer (1st)
+  // IR remote (1st)
+  irReceive();
+  // motor potentiometer (2nd)
   if (powerState == 1) {
     if (potState == motorSettled ||
         potState == motorInit) {
     potValueChanges();
     }
     motorPot();
-  }
-  // IR remote (2nd)
-  irReceive();  
+  } 
   // power management (last)
   setPowerState();	  
 }

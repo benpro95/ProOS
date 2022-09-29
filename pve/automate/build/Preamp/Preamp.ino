@@ -37,6 +37,8 @@ uint8_t sound[8] = {B00001,B00011,B00101,B01001,B01001,B01011,B11011,B11000};
 // IR (pin 8)
 int IRpin = 8;
 bool irCodeScan = 0; // enable IR codes on the terminal (1)
+uint8_t debounceIR = 75; // IR receive max rate (ms)
+uint32_t lastIRcode;
 
 // Input selector
 String inputSelected;
@@ -93,7 +95,8 @@ int startDelay = 10; // startup delay in seconds, unmutes after ***
 int shutdownTime = 5; // shutdown delay before turning off aux power ***
 int initStartDelay = 3; // delay on initial cold start
 uint8_t debounceDelay = 50; // button debounce delay in ms
-unsigned long sysTime = 0;
+uint32_t sysTime0;
+uint32_t sysTime1;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -271,7 +274,6 @@ void motorPot(void)
         potAnalogPin, potRereads
       );
     }
-
     volPotLast = volLevel;
     break;
 //---------------//
@@ -534,7 +536,6 @@ void hpfControl (uint8_t _state)
 }
 
 
-
 // set a relay controller board (volume or inputs)
 void setRelays(uint8_t pcf_a, uint8_t pcf_b,  // first pair of i2c addr's
       uint8_t vol_byte,                    // the 0..255 value to write
@@ -714,101 +715,116 @@ void lcdStandby()
 void irReceive() 
 {
   if (IrReceiver.decode()) {
-    // IR functions 
-    if (IrReceiver.decodedIRData.address == 0xCE) { // remote address
-      digitalWrite(LED_BUILTIN, HIGH); 
-      if (IrReceiver.decodedIRData.command == 0x3F) { // power toggle
-        powerState = !powerState;  
-        powerCycle = 1;
-      }  
-      if (IrReceiver.decodedIRData.command == 0x3) { // power on
-        if (powerState == 0) {
-          powerState = !powerState;  
-          powerCycle = 1;
-        }  
-      }
-      if (IrReceiver.decodedIRData.command == 0x3E) { // power off
-        if (powerState == 1) {
-          powerState = !powerState;  
-          powerCycle = 1;
-        }  
-      }  
-      if (powerState == 1) {
-        if (IrReceiver.decodedIRData.command == 0xC) { // volume down fast
-          volIncrement(1,2);       	
-        }      
-        if (IrReceiver.decodedIRData.command == 0xA) { // volume up fast
-          volIncrement(2,2);
-        }
-        if (IrReceiver.decodedIRData.command == 0x9) { // volume down slow
-          volIncrement(1,1);
-        }      
-        if (IrReceiver.decodedIRData.command == 0x6) { // volume up slow
-          volIncrement(2,1);
-        }
-        if (IrReceiver.decodedIRData.command == 0x5F) { // mute toggle
-          muteSystem(2);
-        }     
-        // inputUpdate(3);
-        // hpfControl(2);
-      }  
-    // display IR codes on terminal
-    if (irCodeScan == 1) {   
-      // display IR codes on terminal   
-      Serial.println("--------------");   
-      if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
-        IrReceiver.printIRResultRawFormatted(&Serial, true);  
-      } else {
-        IrReceiver.printIRResultMinimal(&Serial); 
-      }  
-      Serial.println("--------------"); 
-      // store received IR code (v3 format)
-      uint32_t irrecv = IrReceiver.decodedIRData.decodedRawData;
-      uint32_t irtype = IrReceiver.decodedIRData.protocol;
-      // display v3 format codes
-      Serial.print("IR protocol: "); 
-      Serial.println(irtype);       
-      int32_t irrecv_2s = -irrecv;
-      irrecv_2s = irrecv_2s * -1;
-      Serial.print("IR v3 decimal: "); 
-      Serial.println(irrecv, DEC); 
-      Serial.print("IR v3 (2's-compliment) decimal: "); 
-      Serial.println(irrecv_2s, DEC);  
-      Serial.print("IR v3 hex: "); 
-      Serial.println(irrecv, HEX); 
-      // convert 32-bit code into 4 seperate bytes (pointer)
-      uint8_t *irbyte = (uint8_t*)&irrecv;
-      Serial.print("IR v3 address: "); 
-      Serial.println(irbyte[3], HEX); 
-      Serial.print("IR v3 command: "); 
-      Serial.println(irbyte[2], HEX); 
-      Serial.println("--------------"); 
-      // reverse each byte (v3 format to v2 format)
-      uint8_t irbyte0 = reverseByte(irbyte[0]); 
-      uint8_t irbyte1 = reverseByte(irbyte[1]); 
-      uint8_t irbyte2 = reverseByte(irbyte[2]); 
-      uint8_t irbyte3 = reverseByte(irbyte[3]); 
-      // assemble 4 reversed bytes into 32-bit code
-      uint32_t irv2 = irbyte0; // shift in the first byte
-      irv2 = irv2 * 256 + irbyte1; // shift in the second byte
-      irv2 = irv2 * 256 + irbyte2; // shift in the third byte
-      irv2 = irv2 * 256 + irbyte3; // shift in the last byte
-      // display v2 format codes
-      int32_t irv2_2s = -irv2;
-      irv2_2s = irv2_2s * -1;
-      Serial.print("IR v2 decimal: "); 
-      Serial.println(irv2, DEC); 
-      Serial.print("IR v2 (2's-compliment) decimal: "); 
-      Serial.println(irv2_2s, DEC);  
-      Serial.print("IR v2 hex: "); 
-      Serial.println(irv2, HEX);
-      Serial.println(" "); 
-      Serial.println("v2 2's-comp is used by Automate/Xmit");
-      Serial.println("ignore decimal values with Sony codes, use hex");
-      Serial.println(" ");
-    }
+  	uint32_t irrecv = IrReceiver.decodedIRData.decodedRawData;
+
+  // if switch changed
+  if (irrecv != lastIRcode) {
+    // reset the debouncing timer
+    sysTime1 = millis();
   }
-  delay(50); // resume receiving 
+  if ((millis() - sysTime1) > debounceIR) {
+    // if the button state has changed
+
+	    if (IrReceiver.decodedIRData.address == 0xCE) { // remote address
+	      digitalWrite(LED_BUILTIN, HIGH); 
+	      if (IrReceiver.decodedIRData.command == 0x3F) { // power toggle
+	        powerState = !powerState;  
+	        powerCycle = 1;
+	      }  
+	      if (IrReceiver.decodedIRData.command == 0x3) { // power on
+	        if (powerState == 0) {
+	          powerState = !powerState;  
+	          powerCycle = 1;
+	        }  
+	      }
+	      if (IrReceiver.decodedIRData.command == 0x3E) { // power off
+	        if (powerState == 1) {
+	          powerState = !powerState;  
+	          powerCycle = 1;
+	        }  
+	      }  
+	      if (powerState == 1) {
+	        if (IrReceiver.decodedIRData.command == 0xC) { // volume down fast
+	          volIncrement(1,2);       	
+	        }      
+	        if (IrReceiver.decodedIRData.command == 0xA) { // volume up fast
+	          volIncrement(2,2);
+	        }
+	        if (IrReceiver.decodedIRData.command == 0x9) { // volume down slow
+	          volIncrement(1,1);
+	        }      
+	        if (IrReceiver.decodedIRData.command == 0x6) { // volume up slow
+	          volIncrement(2,1);
+	        }
+	        if (IrReceiver.decodedIRData.command == 0x5F) { // mute toggle
+	          muteSystem(2);
+	        }     
+	        // inputUpdate(3);
+	        // hpfControl(2);
+	      }  
+	    // display IR codes on terminal
+	    if (irCodeScan == 1) {   
+	      // display IR codes on terminal   
+	      Serial.println("--------------");   
+	      if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
+	        IrReceiver.printIRResultRawFormatted(&Serial, true);  
+	      } else {
+	        IrReceiver.printIRResultMinimal(&Serial); 
+	      }  
+	      Serial.println("--------------"); 
+	      uint32_t irtype = IrReceiver.decodedIRData.protocol;
+	      // display v3 format codes
+	      Serial.print("IR protocol: "); 
+	      Serial.println(irtype);       
+	      int32_t irrecv_2s = -irrecv;
+	      irrecv_2s = irrecv_2s * -1;
+	      Serial.print("IR v3 decimal: "); 
+	      Serial.println(irrecv, DEC); 
+	      Serial.print("IR v3 (2's-compliment) decimal: "); 
+	      Serial.println(irrecv_2s, DEC);  
+	      Serial.print("IR v3 hex: "); 
+	      Serial.println(irrecv, HEX); 
+	      // convert 32-bit code into 4 seperate bytes (pointer)
+	      uint8_t *irbyte = (uint8_t*)&irrecv;
+	      Serial.print("IR v3 address: "); 
+	      Serial.println(irbyte[3], HEX); 
+	      Serial.print("IR v3 command: "); 
+	      Serial.println(irbyte[2], HEX); 
+	      Serial.println("--------------"); 
+	      // reverse each byte (v3 format to v2 format)
+	      uint8_t irbyte0 = reverseByte(irbyte[0]); 
+	      uint8_t irbyte1 = reverseByte(irbyte[1]); 
+	      uint8_t irbyte2 = reverseByte(irbyte[2]); 
+	      uint8_t irbyte3 = reverseByte(irbyte[3]); 
+	      // assemble 4 reversed bytes into 32-bit code
+	      uint32_t irv2 = irbyte0; // shift in the first byte
+	      irv2 = irv2 * 256 + irbyte1; // shift in the second byte
+	      irv2 = irv2 * 256 + irbyte2; // shift in the third byte
+	      irv2 = irv2 * 256 + irbyte3; // shift in the last byte
+	      // display v2 format codes
+	      int32_t irv2_2s = -irv2;
+	      irv2_2s = irv2_2s * -1;
+	      Serial.print("IR v2 decimal: "); 
+	      Serial.println(irv2, DEC); 
+	      Serial.print("IR v2 (2's-compliment) decimal: "); 
+	      Serial.println(irv2_2s, DEC);  
+	      Serial.print("IR v2 hex: "); 
+	      Serial.println(irv2, HEX);
+	      Serial.println(" "); 
+	      Serial.println("v2 2's-comp is used by Automate/Xmit");
+	      Serial.println("ignore decimal values with Sony codes, use hex");
+	      Serial.println(" ");
+	    }
+
+
+
+  }
+  lastIRcode = irrecv; 
+
+
+
+
+  }
   IrReceiver.resume();      
   digitalWrite(LED_BUILTIN, LOW);   
   }
@@ -822,9 +838,9 @@ void setPowerState() {
   // if switch changed
   if (reading != lastPowerButton) {
     // reset the debouncing timer
-    sysTime = millis();
+    sysTime0 = millis();
   }
-  if ((millis() - sysTime) > debounceDelay) {
+  if ((millis() - sysTime0) > debounceDelay) {
     // if the button state has changed:
     if (reading != powerButton) {
       powerButton = reading;
@@ -950,16 +966,16 @@ void setup()
 // superloop
 void loop()
 {
+  // IR remote (2nd)
+  irReceive();  
   // motor potentiometer (1st)
   if (powerState == 1) {
     if (potState == motorSettled ||
         potState == motorInit) {
-    potValueChanges();
+      potValueChanges();
     }
     motorPot();
   }
-  // IR remote (2nd)
-  irReceive();  
   // power management (last)
   setPowerState();	  
 }

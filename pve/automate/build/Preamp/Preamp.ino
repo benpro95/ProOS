@@ -34,8 +34,8 @@ uint8_t bar5[8] = {0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F};
 uint8_t speaker[8] = {B00001,B00011,B01111,B01111,B01111,B00011,B00001,B00000};
 uint8_t sound[8] = {B00001,B00011,B00101,B01001,B01001,B01011,B11011,B11000};
 
-// IR (pin 8)
-int IRpin = 8;
+// IR
+int IRpin = 8; // receiver in
 bool irCodeScan = 0; // enable IR codes on the terminal (1)
 uint8_t debounceIR = 60; // IR receive max rate (ms)
 uint32_t irRecv;
@@ -45,7 +45,7 @@ String inputSelected;
 String inputName1 = "DIGITAL   "; //***
 String inputName2 = "AUX       "; //***
 String inputName3 = "PHONO     "; //***
-uint8_t inputRelayCount = 3;
+uint8_t inputRelayCount = 3; 
 
 // Volume control
 uint8_t volCoarseSteps = 4; // volume steps to skip for coarse adjust ***
@@ -73,8 +73,8 @@ bool hpfState = 0; // HPF default startup state 1=on, 0=off ***
 #define motorSettled 2 // pot at resting state
 #define motorInMotion 3 // pot is moving right now
 #define motorCoasting 4 // pot just passed read value
-#define potThreshold 3 // pot value change threshold
-#define potRereads 5 // amount of pot readings 
+#define potThreshold 4 // pot value change threshold ***
+#define potRereads 6 // amount of pot readings ***
 #define potAnalogPin 1 // pot reading pin A1
 #define motorPinCW 16 // motor H-bridge CW pin
 #define motorPinCCW 17 // motor H-bridge CCW pin
@@ -95,8 +95,7 @@ int startDelay = 10; // startup delay in seconds, unmutes after ***
 int shutdownTime = 5; // shutdown delay before turning off aux power ***
 int initStartDelay = 3; // delay on initial cold start
 uint8_t debounceDelay = 50; // button debounce delay in ms
-uint32_t sysTime0;
-uint32_t sysTime1;
+uint32_t powerButtonMillis;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -822,9 +821,9 @@ void setPowerState() {
   // if switch changed
   if (reading != lastPowerButton) {
     // reset the debouncing timer
-    sysTime0 = millis();
+    powerButtonMillis = millis();
   }
-  if ((millis() - sysTime0) > debounceDelay) {
+  if ((millis() - powerButtonMillis) > debounceDelay) {
     // if the button state has changed:
     if (reading != powerButton) {
       powerButton = reading;
@@ -950,9 +949,9 @@ void setup()
 // superloop
 void loop()
 {
-  // IR remote (2nd)
+  // IR remote
   irReceive();  
-  // motor potentiometer (1st)
+  // motor potentiometer
   if (powerState == 1) {
     if (potState == motorSettled ||
         potState == motorInit) {
@@ -960,6 +959,6 @@ void loop()
     }
     motorPot();
   }
-  // power management (last)
+  // power management
   setPowerState();	  
 }

@@ -52,6 +52,7 @@ uint8_t volLimit = 80; // max volume percentage when in limit mode
 #define volControlFast 2 // constant
 #define volLimitPin 4 // volume limit switch
 #define hpfRelayPin 3 // 50Hz high pass filter on/off
+bool hpfState = 0; // default HPF state 1=on, 0=off
 bool volLimitFlag = 1;
 uint8_t volLastLevel = 0;
 uint8_t volLevel = 0;
@@ -311,16 +312,13 @@ void motorPot(void)
 
 // setup volume range
 void volRange()
-{ 
+{ // read volume limit switch 
   int _limitpin = digitalRead(volLimitPin);
-  bool _limitflag;
-  Serial.println(_limitpin);
   if (_limitpin == 1) { // pin high=no limit, low=limited
     volLimitFlag = 1;
   } else {
     volLimitFlag = 0;
-  }
-  // for 7 relays, this would be 128-1 = 127
+  }  // for 7 relays, this would be 128-1 = 127
   uint8_t max_byte_size = (1 << volRelayCount) - 1;
   volMin = 0;
   if (volLimitFlag == 1) {
@@ -329,7 +327,6 @@ void volRange()
   	volMax = (max_byte_size * volLimit) / 100;
   }
   volSpan = abs(volMax - volMin);
-  Serial.println(volMax);
 }
 
 
@@ -497,6 +494,38 @@ void inputUpdate (uint8_t _input)
 	lcd.print(_name); 
   }	  
 }
+
+
+// set a specific audio input
+void hpfControl (uint8_t _state) 
+{
+  if (volMute == 0) {
+	if (_state == 0) {  // HPF off
+	  hpfState = 0;
+	}  
+	if (_state == 1) {  // HPF on
+	  hpfState = 1;
+	}    
+	if (_state == 2) {  // toggle state
+      hpfState =! hpfState;
+	}  
+	if (_state >= 3) {  // invalid 
+	  return;
+	}
+    if (hpfState == 0) {
+	  lcd.setCursor(2,1);
+	  lcd.print("HPF On    ");     
+	  digitalWrite(hpfRelayPin, HIGH);	
+    } else {
+      lcd.setCursor(2,1);
+	  lcd.print("HPF Off   ");   
+	  digitalWrite(hpfRelayPin, LOW);	 
+    }	
+    delay(1200);
+    inputUpdate(0); // only update display
+  }	  
+}
+
 
 
 // set a relay controller board (volume or inputs)
@@ -701,7 +730,8 @@ void irReceive()
         if (IrReceiver.decodedIRData.command == 0xC) {
           // Volume down fast
           //volIncrement(1,2);
-          inputUpdate(2);
+          //inputUpdate(2);
+        	hpfControl(2);
         }      
         if (IrReceiver.decodedIRData.command == 0xA) {
           // Volume up fast
@@ -837,7 +867,8 @@ void setup()
   digitalWrite(powerRelayPin, LOW);  
   // HPF control
   pinMode(hpfRelayPin, OUTPUT);  
-  digitalWrite(hpfRelayPin, LOW);
+  digitalWrite(hpfRelayPin, hpfState);
+  hpfState =! hpfState;
   // volume limit switch 
   pinMode(volLimitPin, INPUT_PULLUP);   
   // calculate volume limits
@@ -859,14 +890,8 @@ void setup()
   lcdStandby();
 }
 
-// input selector IR
-// input selector display (fix)
-// HPF on/off logic
-// switch logic (toggle) 
-// IR mute,unmute,toggle
 // IR volume levels 10,20,30,40
 // IR repeat codes fix 
-
 
 // superloop
 void loop()

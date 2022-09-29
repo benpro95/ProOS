@@ -9,7 +9,7 @@ const int   CONFIG_PORT      = 80;
 // Include libraries
 #include <Arduino.h>
 #include <WiFi.h>
-#include <IRremote.h>
+#include "IRremote.h" //v2.9 local
 #include <RCSwitch.h>
 
 // Enable Serial Messages (0 disable)

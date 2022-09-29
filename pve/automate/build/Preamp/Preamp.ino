@@ -4,7 +4,7 @@
 
 // Libraries //
 #include "LiquidCrystal_I2C.h" // custom for MCP23008-E/P, power button support
-#include <IRremote.hpp>
+#include <IRremote.hpp> // v3+
 #include <Arduino.h>
 #include <Wire.h> 
 
@@ -80,9 +80,9 @@ uint8_t potState;
 // Power
 #define powerButtonPin 5
 #define powerRelayPin 7
-int startDelay = 2; // startup delay in seconds, unmutes after
-int shutdownTime = 1; // shutdown delay before turning off aux power
-int initStartDelay = 6; // delay on initial cold start
+int startDelay = 10; // startup delay in seconds, unmutes after
+int shutdownTime = 5; // shutdown delay before turning off aux power
+int initStartDelay = 3; // delay on initial cold start
 uint8_t debounceDelay = 50; // button debounce delay in ms
 unsigned long sysTime1 = 0;
 uint8_t lastPowerButton = 0;
@@ -715,9 +715,40 @@ void irReceive()
         IrReceiver.printIRResultRawFormatted(&Serial, true);
         Serial.println("*"); 	
       } else {
-        IrReceiver.printIRResultMinimal(&Serial);
+        IrReceiver.printIRResult(&Serial);
         Serial.println("*"); 	
       }  
+      // store received IR code (v3 format)
+      uint32_t irrecv = IrReceiver.decodedIRData.decodedRawData;
+      uint32_t irtype = IrReceiver.decodedIRData.protocol;
+      // display v3 format codes
+      Serial.print("IR Protocol: "); 
+      Serial.println(irtype);       
+      Serial.print("IR v3 Decimal: "); 
+      Serial.println(irrecv, DEC); 
+      Serial.print("IR v3 Hex: "); 
+      Serial.println(irrecv, HEX); 
+      // convert 32-bit code into 4 seperate bytes (pointer)
+      uint8_t *irbyte = (uint8_t*)&irrecv;
+      Serial.print("IR v3 Address: "); 
+      Serial.println(irbyte[3], HEX); 
+      Serial.print("IR v3 Command: "); 
+      Serial.println(irbyte[2], HEX); 
+      // reverse each byte (v3 format to v2 format)
+      uint8_t irbyte0 = reverseByte(irbyte[0]); 
+      uint8_t irbyte1 = reverseByte(irbyte[1]); 
+      uint8_t irbyte2 = reverseByte(irbyte[2]); 
+      uint8_t irbyte3 = reverseByte(irbyte[3]); 
+      // assemble 4 reversed bytes into 32-bit code
+      uint32_t irv2 = irbyte0; // shift in the first byte
+      irv2 = irv2 * 256 + irbyte1; // shift in the second byte
+      irv2 = irv2 * 256 + irbyte2; // shift in the third byte
+      irv2 = irv2 * 256 + irbyte3; // shift in the last byte
+      // display v2 format codes
+      Serial.print("IR v2 Decimal: "); 
+      Serial.println(irv2, DEC); 
+      Serial.print("IR v2 Hex: "); 
+      Serial.println(irv2, HEX);
     }
     // IR functions 
     if (IrReceiver.decodedIRData.address == 0xCE) {  
@@ -811,8 +842,9 @@ void shutdown() {
   digitalWrite(powerRelayPin, LOW);  	
 }
 
-void startup() {
-  // startup routines
+// startup routines
+void startup() 
+{ 
   analogWrite(lcdBacklightPin, lcdOnBrightness);
   lcd.setCursor(0,0);
   lcd.print("Starting Up...");
@@ -885,13 +917,12 @@ void setup()
   // serial support
   Serial.begin(9600);
   // IR codes over serial
-  //irCodeScan = 1;  
+  irCodeScan = 1;  
   // startup complete
   lcdStandby();
 }
 
-// IR volume levels 10,20,30,40
-// IR repeat codes fix 
+// IR repeat codes fix, additional codes, volume levels 10,20,30,40
 
 // superloop
 void loop()

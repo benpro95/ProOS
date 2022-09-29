@@ -42,13 +42,17 @@ String inputName2 = "AUX       ";
 String inputName3 = "PHONO     ";
 uint8_t inputRelayCount = 3;
 
-// Relay attenuator
+// Volume control
 uint8_t volCoarseSteps = 4; // volume steps to skip for coarse adjust
 uint8_t volRelayCount = 6; // number of relays on volume attenuator board
-#define volControlDown 1
-#define volControlUp 2
-#define volControlSlow 1 
-#define volControlFast 2
+uint8_t volLimit = 80; // max volume percentage when in limit mode
+#define volControlDown 1 // constant
+#define volControlUp 2 // constant
+#define volControlSlow 1 // constant
+#define volControlFast 2 // constant
+#define volLimitPin 4 // volume limit switch
+#define hpfRelayPin 3 // 50Hz high pass filter on/off
+bool volLimitFlag = 1;
 uint8_t volLastLevel = 0;
 uint8_t volLevel = 0;
 uint8_t volMax;
@@ -68,16 +72,15 @@ bool volMute;
 #define motorPinCCW 17 // motor H-bridge CCW pin
 #define potMinRange 30  // lowest pot reading
 #define potMaxRange 1023 // highest pot reading
-int potValueLast; // range from 0..1023
+int potValueLast; // range from 0-1023
 uint8_t volPotLast;
 uint8_t potState;
 
 // Power
 #define powerButtonPin 5
 #define powerRelayPin 7
-#define hpfRelayPin 3
-int startDelay = 4; // startup delay in seconds, unmutes after
-int shutdownTime = 2; // shutdown delay before turning off aux power
+int startDelay = 2; // startup delay in seconds, unmutes after
+int shutdownTime = 1; // shutdown delay before turning off aux power
 int initStartDelay = 6; // delay on initial cold start
 uint8_t debounceDelay = 50; // button debounce delay in ms
 unsigned long sysTime1 = 0;
@@ -131,12 +134,10 @@ int readPotWithSmoothing(uint8_t analog_port_num, uint8_t reread_count)
 int readPotWithClipping(int sensed_pot_value)
 {
   int temp_volume;
-
   temp_volume = l_map(sensed_pot_value,
       0, // potMinRange,
       potMaxRange,
       volMin, volMax);
-    
   return temp_volume;
 }
 
@@ -310,11 +311,25 @@ void motorPot(void)
 
 // setup volume range
 void volRange()
-{ // for 7 relays, this would be 128-1 = 127
+{ 
+  int _limitpin = digitalRead(volLimitPin);
+  bool _limitflag;
+  Serial.println(_limitpin);
+  if (_limitpin == 1) { // pin high=no limit, low=limited
+    volLimitFlag = 1;
+  } else {
+    volLimitFlag = 0;
+  }
+  // for 7 relays, this would be 128-1 = 127
   uint8_t max_byte_size = (1 << volRelayCount) - 1;
   volMin = 0;
-  volMax = max_byte_size;
+  if (volLimitFlag == 1) {
+    volMax = max_byte_size; 
+  } else {
+  	volMax = (max_byte_size * volLimit) / 100;
+  }
   volSpan = abs(volMax - volMin);
+  Serial.println(volMax);
 }
 
 
@@ -654,6 +669,8 @@ void lcdStandby()
   lcd.createChar(0, speaker);
   lcd.setCursor(15,1);
   lcd.print(char(0));
+  delay(500);
+  digitalWrite(LED_BUILTIN, LOW);
 }  
 
 
@@ -661,7 +678,9 @@ void lcdStandby()
 void irReceive() 
 {
   if (IrReceiver.decode()) {
-    // Display IR codes on terminal
+  	// status on LED
+  	digitalWrite(LED_BUILTIN, HIGH);
+    // display IR codes on terminal
     if (irCodeScan == 1) {   
       if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
         IrReceiver.printIRResultRawFormatted(&Serial, true);
@@ -682,12 +701,12 @@ void irReceive()
         if (IrReceiver.decodedIRData.command == 0xC) {
           // Volume down fast
           //volIncrement(1,2);
-        	inputUpdate(2);
+          inputUpdate(2);
         }      
         if (IrReceiver.decodedIRData.command == 0xA) {
           // Volume up fast
           //volIncrement(2,2);
-        	inputUpdate(3);
+          inputUpdate(3);
         }
         if (IrReceiver.decodedIRData.command == 0x9) {
           // Volume down slow
@@ -700,11 +719,12 @@ void irReceive()
         if (IrReceiver.decodedIRData.command == 0x5F) {
           // Mute
           muteToggle();
-        }
-      }  
+        }     
+      }    
     }
-  delay(75); 
-  IrReceiver.resume();         
+    delay(75); 
+    IrReceiver.resume();      
+    digitalWrite(LED_BUILTIN, LOW);   
   }
 }
 
@@ -768,9 +788,16 @@ void startup() {
   lcd.print("Starting Up...");
   // turn on preamp power here
   digitalWrite(powerRelayPin, HIGH);  
-  delay(500);
+  delay(650);
   // loading bar 
-  lcdTimedBar(startDelay,1);
+  lcd.clear();
+  if (volLimitFlag == 0){
+    lcd.setCursor(0,0);
+    lcd.print("Volume Limit On");
+    lcdTimedBar(startDelay,0);
+  } else {
+    lcdTimedBar(startDelay,1);
+  }
   lcd.clear();
   // music icon
   lcd.createChar(0, sound);
@@ -793,6 +820,9 @@ void setup()
   // reset expanders
   resetPCF(volSetAddr,volResetAddr);
   resetPCF(inputSetAddr,inputResetAddr);  
+  // LED status LED
+  pinMode(LED_BUILTIN, OUTPUT);  
+  digitalWrite(LED_BUILTIN, HIGH);    
   // motor pot
   pinMode(potAnalogPin, INPUT);   
   pinMode(motorPinCW, OUTPUT);
@@ -801,14 +831,15 @@ void setup()
   digitalWrite(motorPinCCW, LOW);
   // display backlight
   pinMode(lcdBacklightPin, OUTPUT);  
-  digitalWrite(lcdBacklightPin, LOW);
   analogWrite(lcdBacklightPin, lcdOffBrightness);
   // preamp power control
   pinMode(powerRelayPin, OUTPUT);  
   digitalWrite(powerRelayPin, LOW);  
   // HPF control
   pinMode(hpfRelayPin, OUTPUT);  
-  digitalWrite(hpfRelayPin, LOW);    
+  digitalWrite(hpfRelayPin, LOW);
+  // volume limit switch 
+  pinMode(volLimitPin, INPUT_PULLUP);   
   // calculate volume limits
   volRange();   
   // IR remote
@@ -820,12 +851,10 @@ void setup()
   lcd.createChar(4, bar4);
   lcd.createChar(5, bar5);
   lcdTimedBar(initStartDelay,1);
-  // IR codes over serial
-  irCodeScan = 0;
   // serial support
-  if (irCodeScan == 1){
-    Serial.begin(9600);
-  }
+  Serial.begin(9600);
+  // IR codes over serial
+  //irCodeScan = 1;  
   // startup complete
   lcdStandby();
 }

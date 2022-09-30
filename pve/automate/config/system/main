@@ -111,7 +111,8 @@ if [[ "$XMITCMD" == "phono" ]]; then
 fi
 ## Key Stop
 if [[ "$XMITCMD" == "mute" ]]; then
-   XMITCALL="irtx.sony20.101191"
+   ##XMITCALL="irtx.sony20.101191"
+   XMITCALL="irtx.nec.1270259807"
    CALLAPI
    return
 fi

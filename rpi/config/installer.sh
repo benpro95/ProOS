@@ -381,9 +381,6 @@ if [ ! -e /boot/bcm2710-rpi-zero-2.dtb ]; then
 fi
 
 ## OverlayFS Configuration
-cp -f $BIN/overlayRoot.sh /sbin
-chmod 755 /sbin/overlayRoot.sh
-chown root:root /sbin/overlayRoot.sh
 cp -f $BIN/fstab /etc
 chmod 644 /etc/fstab
 chown root:root /etc/fstab
@@ -396,6 +393,7 @@ chown root:root /boot/cmdline.rw
 cp -f $BIN/cmdline.rw /boot/cmdline.txt
 chmod 644 /boot/cmdline.txt
 chown root:root /boot/cmdline.txt
+rm -f /sbin/overlayRoot.sh
 
 ## WiFi Configuration
 raspi-config nonint do_wifi_country US

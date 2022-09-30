@@ -42,6 +42,8 @@ void irReceive()
       uint32_t irrecv = IrReceiver.decodedIRData.decodedRawData;
       uint32_t irtype = IrReceiver.decodedIRData.protocol;
       // display v3 format codes
+      Serial.print(F("Ready to receive IR signals of protocols: "));
+      printActiveIRProtocols(&Serial);
       Serial.print("IR protocol: "); 
       Serial.println(irtype);       
       int32_t irrecv_2s = -irrecv;

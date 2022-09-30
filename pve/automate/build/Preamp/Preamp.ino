@@ -37,7 +37,7 @@ uint8_t sound[8] = {B00001,B00011,B00101,B01001,B01001,B01011,B11011,B11000};
 // IR
 int IRpin = 8; // receiver in
 bool irCodeScan = 0; // enable IR codes on the terminal (1)
-uint8_t debounceIR = 60; // IR receive max rate (ms)
+uint8_t debounceIR = 75; // IR receive max rate (ms)
 uint32_t irRecv;
 
 // Input selector
@@ -48,7 +48,7 @@ String inputName3 = "PHONO     "; //***
 uint8_t inputRelayCount = 3; 
 
 // Volume control
-uint8_t volCoarseSteps = 4; // volume steps to skip for coarse adjust ***
+uint8_t volCoarseSteps = 3; // volume steps to skip for coarse adjust ***
 uint8_t volRelayCount = 6; // number of relays on volume attenuator board ***
 uint8_t volLimit = 80; // max volume percentage when in limit mode ***
 #define volControlDown 1
@@ -467,7 +467,7 @@ void muteSystem(uint8_t _state)
 // set a specific audio input
 void inputUpdate (uint8_t _input) 
 {
-  if (volMute == 0) {
+ if (volMute == 0) {
 	bool _lcdonly = 0;	
 	uint8_t _state; 
 	String _name; 
@@ -500,7 +500,7 @@ void inputUpdate (uint8_t _input)
 	// update display
 	lcd.setCursor(2,1);
 	lcd.print(_name); 
-  }	  
+ }	  
 }
 
 
@@ -699,9 +699,10 @@ void lcdStandby()
   analogWrite(lcdBacklightPin, lcdOffBrightness);	
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print("Preamp v5");
+  lcd.print("ProHiFi");
   lcd.setCursor(0,1);
-  lcd.print("ProDesigns"); 
+  lcd.print("Preamp v5.0");
+  lcd.setCursor(10,0);  
   lcd.createChar(0, speaker);
   lcd.setCursor(15,1);
   lcd.print(char(0));
@@ -710,106 +711,131 @@ void lcdStandby()
 }  
 
 
-// receive IR remote commands
+// receive IR remote commands 
+// Philips SRP9232D/27 Universal Remote
+// programmed with code '1376' (Onkyo)
+// commented codes are for Xmit
 void irReceive() 
 {
   if (IrReceiver.decode()) {
+  digitalWrite(LED_BUILTIN, HIGH); 
   // code detected
-    if (IrReceiver.decodedIRData.address == 0xCE) { // remote address
-      digitalWrite(LED_BUILTIN, HIGH); 
-      if (IrReceiver.decodedIRData.command == 0x3) { // power toggle
-        powerState = !powerState;  
+  if (powerState == 1) {
+    if (IrReceiver.decodedIRData.address == 0x6DD2) { // address      
+	    if (IrReceiver.decodedIRData.command == 0x3) { // volume down fast (VOL-) 1270267967
+	      volIncrement(1,2);       	
+	    }      
+	    if (IrReceiver.decodedIRData.command == 0x2) { // volume up fast (VOL+) 1270235327
+	      volIncrement(2,2);
+	    }	  
+	    if (IrReceiver.decodedIRData.command == 0x5) { // mute toggle (MUTE) 1270259807
+	      muteSystem(2);
+	    }   
+	  }	      
+    if (IrReceiver.decodedIRData.address == 0xACD2) { // address      
+	    if (IrReceiver.decodedIRData.command == 0xE) { // input (1) 1261793423
+	      inputUpdate(1); 
+	    }      
+	    if (IrReceiver.decodedIRData.command == 0xF) { // input (2) 1261826063
+	      inputUpdate(2); 
+	    }    
+	    if (IrReceiver.decodedIRData.command == 0x10) { // input (3) 1261766903
+     	  inputUpdate(3); 
+	    }  
+	    if (IrReceiver.decodedIRData.command == 0x17) { // force mute (0) 1261824023
+       	muteSystem(0); 
+	    } 	         	  	    
+	  }	                                    
+    if (IrReceiver.decodedIRData.address == 0x6CD2) { // address      
+	    if (IrReceiver.decodedIRData.command == 0x9B) { // volume down slow (DOWN) 1261885734
+	      volIncrement(1,1);
+	    }      
+	    if (IrReceiver.decodedIRData.command == 0x9A) { // volume up slow (UP) 1261853094
+	      volIncrement(2,1);
+	    }    
+	      if (IrReceiver.decodedIRData.command == 0x8D) { // HPF control (PLAY) 1261875534
+     	  hpfControl(2);
+	    }         	  	    
+	  }	           
+  }    
+  if (IrReceiver.decodedIRData.address == 0x6DD2) { // address
+    if (IrReceiver.decodedIRData.command == 0x4) { // power toggle (POWER) 1270227167
+      powerState = !powerState;  
+      powerCycle = 1;
+      delay(100);
+    }  
+  }    
+  if (IrReceiver.decodedIRData.address == 0x6CD2) { // address    
+    if (IrReceiver.decodedIRData.command == 0x99) { // power on (HOME) 1261869414
+      if (powerState == 0) {
+        powerState = 1;  
         powerCycle = 1;
       }  
-      if (IrReceiver.decodedIRData.command == 0x3F) { // power on
-        if (powerState == 0) {
-          powerState = !powerState;  
-          powerCycle = 1;
-        }  
-      }
-      if (IrReceiver.decodedIRData.command == 0x3E) { // power off
-        if (powerState == 1) {
-          powerState = !powerState;  
-          powerCycle = 1;
-        }  
-      }  
+    }  
+    if (IrReceiver.decodedIRData.command == 0x8E) { // power off (STOP) 1261859214
       if (powerState == 1) {
-        if (IrReceiver.decodedIRData.command == 0xC) { // volume down fast
-          volIncrement(1,2);       	
-        }      
-        if (IrReceiver.decodedIRData.command == 0xA) { // volume up fast
-          volIncrement(2,2);
-        }
-        if (IrReceiver.decodedIRData.command == 0x9) { // volume down slow
-          volIncrement(1,1);
-        }      
-        if (IrReceiver.decodedIRData.command == 0x6) { // volume up slow
-          volIncrement(2,1);
-        }
-        if (IrReceiver.decodedIRData.command == 0x5F) { // mute toggle
-          muteSystem(2);
-        }     
-        // inputUpdate(3);
-        // hpfControl(2);
+        powerState = 0; 
+        powerCycle = 1;
       }  
-    // display IR codes on terminal
-    if (irCodeScan == 1) {   
-      // display IR codes on terminal   
-      Serial.println("--------------");   
-      if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
-        IrReceiver.printIRResultRawFormatted(&Serial, true);  
-      } else {
-        IrReceiver.printIRResultMinimal(&Serial); 
-      }  
-      Serial.println("--------------"); 
-      irRecv = IrReceiver.decodedIRData.decodedRawData;
-      uint32_t irtype = IrReceiver.decodedIRData.protocol;
-      // display v3 format codes
-      Serial.print("IR protocol: "); 
-      Serial.println(irtype);       
-      int32_t irRecv_2s = -irRecv;
-      irRecv_2s = irRecv_2s * -1;
-      Serial.print("IR v3 decimal: "); 
-      Serial.println(irRecv, DEC); 
-      Serial.print("IR v3 (2's-compliment) decimal: "); 
-      Serial.println(irRecv_2s, DEC);  
-      Serial.print("IR v3 hex: "); 
-      Serial.println(irRecv, HEX); 
-      // convert 32-bit code into 4 seperate bytes (pointer)
-      uint8_t *irbyte = (uint8_t*)&irRecv;
-      Serial.print("IR v3 address: "); 
-      Serial.println(irbyte[3], HEX); 
-      Serial.print("IR v3 command: "); 
-      Serial.println(irbyte[2], HEX); 
-      Serial.println("--------------"); 
-      // reverse each byte (v3 format to v2 format)
-      uint8_t irbyte0 = reverseByte(irbyte[0]); 
-      uint8_t irbyte1 = reverseByte(irbyte[1]); 
-      uint8_t irbyte2 = reverseByte(irbyte[2]); 
-      uint8_t irbyte3 = reverseByte(irbyte[3]); 
-      // assemble 4 reversed bytes into 32-bit code
-      uint32_t irv2 = irbyte0; // shift in the first byte
-      irv2 = irv2 * 256 + irbyte1; // shift in the second byte
-      irv2 = irv2 * 256 + irbyte2; // shift in the third byte
-      irv2 = irv2 * 256 + irbyte3; // shift in the last byte
-      // display v2 format codes
-      int32_t irv2_2s = -irv2;
-      irv2_2s = irv2_2s * -1;
-      Serial.print("IR v2 decimal: "); 
-      Serial.println(irv2, DEC); 
-      Serial.print("IR v2 (2's-compliment) decimal: "); 
-      Serial.println(irv2_2s, DEC);  
-      Serial.print("IR v2 hex: "); 
-      Serial.println(irv2, HEX);
-      Serial.println(" "); 
-      Serial.println("v2 2's-comp is used by Automate/Xmit");
-      Serial.println("ignore decimal values with Sony codes, use hex");
-      Serial.println(" ");
-      }
-    }
-    delay(debounceIR);
-    IrReceiver.resume();      
-    digitalWrite(LED_BUILTIN, LOW);   
+    }  
+  }       
+  // display IR codes on terminal
+  if (irCodeScan == 1) {   
+	  // display IR codes on terminal   
+	  Serial.println("--------------");   
+	  if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
+	    IrReceiver.printIRResultRawFormatted(&Serial, true);  
+	  } else {
+	    IrReceiver.printIRResultMinimal(&Serial); 
+	  }  
+	  Serial.println("--------------"); 
+	  irRecv = IrReceiver.decodedIRData.decodedRawData;
+	  uint32_t irtype = IrReceiver.decodedIRData.protocol;
+	  // display v3 format codes
+	  Serial.print("IR protocol: "); 
+	  Serial.println(irtype);       
+	  int32_t irRecv_2s = -irRecv;
+	  irRecv_2s = irRecv_2s * -1;
+	  Serial.print("IR v3 decimal: "); 
+	  Serial.println(irRecv, DEC); 
+	  Serial.print("IR v3 (2's-compliment) decimal: "); 
+	  Serial.println(irRecv_2s, DEC);  
+	  Serial.print("IR v3 hex: "); 
+	  Serial.println(irRecv, HEX); 
+	  // convert 32-bit code into 4 seperate bytes (pointer)
+	  uint8_t *irbyte = (uint8_t*)&irRecv;
+	  Serial.print("IR v3 address: "); 
+	  Serial.println(irbyte[3], HEX); 
+	  Serial.print("IR v3 command: "); 
+	  Serial.println(irbyte[2], HEX); 
+	  Serial.println("--------------"); 
+	  // reverse each byte (v3 format to v2 format)
+	  uint8_t irbyte0 = reverseByte(irbyte[0]); 
+	  uint8_t irbyte1 = reverseByte(irbyte[1]); 
+	  uint8_t irbyte2 = reverseByte(irbyte[2]); 
+	  uint8_t irbyte3 = reverseByte(irbyte[3]); 
+	  // assemble 4 reversed bytes into 32-bit code
+	  uint32_t irv2 = irbyte0; // shift in the first byte
+	  irv2 = irv2 * 256 + irbyte1; // shift in the second byte
+	  irv2 = irv2 * 256 + irbyte2; // shift in the third byte
+	  irv2 = irv2 * 256 + irbyte3; // shift in the last byte
+	  // display v2 format codes
+	  int32_t irv2_2s = -irv2;
+	  irv2_2s = irv2_2s * -1;
+	  Serial.print("IR v2 decimal: "); 
+	  Serial.println(irv2, DEC); 
+	  Serial.print("IR v2 (2's-compliment) decimal: "); 
+	  Serial.println(irv2_2s, DEC);  
+	  Serial.print("IR v2 hex: "); 
+	  Serial.println(irv2, HEX);
+	  Serial.println(" "); 
+	  Serial.println("v2 2's-comp is used by Automate/Xmit");
+	  Serial.println("ignore decimal values with Sony codes, use hex");
+	  Serial.println(" ");
+  }
+  delay(debounceIR);
+  IrReceiver.resume();      
+  digitalWrite(LED_BUILTIN, LOW);   
   }
 }
 

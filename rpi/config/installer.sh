@@ -350,6 +350,9 @@ fi
 rm -f /opt/rpi/remotes/leds
 rm -f /tmp/global-fc.lock
 
+## Enable overlayFS filesystem
+raspi-config nonint enable_overlayfs
+
 ## Set bootloader RO
 mount -o remount,ro /boot
 

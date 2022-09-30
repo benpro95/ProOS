@@ -8,8 +8,6 @@ ARG2=$2
 case "$1" in
 
 boot)
-## Startup Sound
-/usr/bin/mpv --no-video --volume=40 /opt/rpi/sounds/ps2.wav &
 ## CPU Activity LED Mode
 echo cpu | tee /sys/class/leds/led0/trigger &>/dev/null
 ## AirPlay Support

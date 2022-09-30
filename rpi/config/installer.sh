@@ -387,16 +387,12 @@ fi
 cp -f $BIN/fstab /etc
 chmod 644 /etc/fstab
 chown root:root /etc/fstab
-cp -f $BIN/cmdline.ro /boot/
-chmod 644 /boot/cmdline.ro
-chown root:root /boot/cmdline.ro
-cp -f $BIN/cmdline.rw /boot/
-chmod 644 /boot/cmdline.rw
-chown root:root /boot/cmdline.rw
-cp -f $BIN/cmdline.rw /boot/cmdline.txt
+cp -f $BIN/cmdline.txt /boot/cmdline.txt
 chmod 644 /boot/cmdline.txt
 chown root:root /boot/cmdline.txt
 rm -f /sbin/overlayRoot.sh
+rm -f /boot/cmdline.rw
+rm -f /boot/cmdline.ro
 
 ## WiFi Configuration
 raspi-config nonint do_wifi_country US

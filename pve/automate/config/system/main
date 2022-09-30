@@ -106,7 +106,7 @@ fi
 if [[ "$XMITCMD" == "dac" ]]; then
    XMITCALL="irtx.nec.1261793423"
    CALLAPI
-   return
+   return   
 fi
 ## Key 2
 if [[ "$XMITCMD" == "aux" ]]; then
@@ -120,6 +120,14 @@ if [[ "$XMITCMD" == "phono" ]]; then
    CALLAPI
    return
 fi
+if [[ "$XMITCMD" == "airplay" ]]; then
+   XMITCALL="irtx.nec.1261799543"
+   CALLAPI
+   return
+if [[ "$XMITCMD" == "pcmode" ]]; then
+   XMITCALL="irtx.nec.1261783223"
+   CALLAPI
+   return   
 ## Key Mute / Toggle
 if [[ "$XMITCMD" == "mute" ]]; then
    XMITCALL="irtx.nec.1270259807"

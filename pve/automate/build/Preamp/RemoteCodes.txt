@@ -51,8 +51,8 @@ IR v2 hex: 4B3508F7
 
 --------------
 P=7 A=0xACD2 C=0x11 Raw=0xEE11ACD2--------------
-(4)
-IR v3 decimal: 3994135762
+(4) AIRPLAY
+IR v3 d ecimal: 3994135762
 IR v3 (2's-compliment) decimal: -300831534
 IR v3 hex: EE11ACD2
 IR v3 address: EE

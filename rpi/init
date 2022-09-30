@@ -151,7 +151,7 @@ rw)
 echo 'Rebooting in read/write mode...'
 systemctl stop rpi-*
 mount -o remount,rw /boot
-cp -f /boot/cmdline.rw /boot/cmdline.txt
+raspi-config nonint disable_overlayfs
 mount -o remount,ro /boot
 shutdown -r now
 exit
@@ -162,7 +162,7 @@ ro)
 echo 'Rebooting in read/only mode...'
 systemctl stop rpi-*
 mount -o remount,rw /boot
-cp -f /boot/cmdline.ro /boot/cmdline.txt
+raspi-config nonint enable_overlayfs
 mount -o remount,ro /boot
 shutdown -r now
 exit
@@ -186,6 +186,8 @@ apt-get upgrade
 apt-get dist-upgrade
 apt-get autoremove -y
 apt-get clean -y
+raspi-config nonint enable_overlayfs
+/opt/rpi/init rw
 echo " "
 echo "Re-enable read-only mode after rebooting!"
 ## Reboot step

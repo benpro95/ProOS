@@ -23,8 +23,8 @@ LiquidCrystal_I2C lcd(lcdAddr);
 uint8_t lcdCols = 16; // number of columns in the LCD
 uint8_t lcdRows = 2;  // number of rows in the LCD
 #define lcdBacklightPin 9 // display backlight pin
-uint8_t lcdOffBrightness = 120; // standby-off LCD brightness level ***
-uint8_t lcdOnBrightness = 240; // online LCD brightness level ***
+uint8_t lcdOffBrightness = 175; // standby-off LCD brightness level ***
+uint8_t lcdOnBrightness = 245; // online LCD brightness level ***
 // custom characters
 uint8_t bar1[8] = {0x10,0x10,0x10,0x10,0x10,0x10,0x10,0x10};
 uint8_t bar2[8] = {0x18,0x18,0x18,0x18,0x18,0x18,0x18,0x18};
@@ -45,28 +45,31 @@ String inputSelected;
 String inputName1 = "DIGITAL   "; //***
 String inputName2 = "AUX       "; //***
 String inputName3 = "PHONO     "; //***
+String inputName4 = "AIRPLAY   "; //***
+String inputName5 = "PC        "; //*** 
 uint8_t inputRelayCount = 3; 
 
 // Volume control
-uint8_t volCoarseSteps = 3; // volume steps to skip for coarse adjust ***
-uint8_t volRelayCount = 6; // number of relays on volume attenuator board ***
-uint8_t volLimit = 80; // max volume percentage when in limit mode ***
+uint8_t volCoarseSteps = 6; // volume steps to skip for coarse adjust ***
+uint8_t volRelayCount = 8; // number of relays on volume attenuator board ***
+uint8_t volMaxLimit = 90; // max percentage of volume range (100%) when in limit mode ***
+uint8_t volMinLimit = 50; // min percentage of volume range (0%)
 #define volControlDown 1
 #define volControlUp 2
 #define volControlSlow 1 
 #define volControlFast 2 
-#define volLimitPin 4 // volume limit switch
+#define volLimitPin 12 // volume limit switch
 bool volLimitFlag = 1;
 uint8_t volLastLevel = 0;
 uint8_t volLevel = 0;
+uint8_t volSpan;
 uint8_t volMax;
 uint8_t volMin;
-uint8_t volSpan;
 bool volMute;
 
 // 50Hz high-pass filter 
-#define hpfRelayPin 3 // HPF relay pin
-bool hpfState = 0; // HPF default startup state 1=on, 0=off ***
+#define hpfRelayPin 10 // HPF relay pin
+bool hpfState = 1; // HPF default startup state 0=on, 1=off ***
 
 // Motor Pot
 #define motorInit 1 // motor initialization
@@ -327,11 +330,11 @@ void volRange()
     volLimitFlag = 0;
   }  // for 7 relays, this would be 128-1 = 127
   uint8_t max_byte_size = (1 << volRelayCount) - 1;
-  volMin = 0;
+  volMin = (max_byte_size * volMinLimit) / 100;
   if (volLimitFlag == 1) {
     volMax = max_byte_size; 
   } else {
-  	volMax = (max_byte_size * volLimit) / 100;
+  	volMax = (max_byte_size * volMaxLimit) / 100;
   }
   volSpan = abs(volMax - volMin);
 }
@@ -475,7 +478,7 @@ void inputUpdate (uint8_t _input)
 	if (_input == 0) {  // just update display
 	   _lcdonly = 1;
 	}  
-	if (_input == 1) {  // input #1
+	if (_input == 1) {  // input #1 
 	  _state = B00000001;
 	  _name = inputName1;
 	}    
@@ -487,7 +490,15 @@ void inputUpdate (uint8_t _input)
 	  _state = B00000100;
 	  _name = inputName3;
 	}
-	if (_input >= 4) {  // invalid setting
+  if (_input == 4) {  // input #4 (display only)
+    _lcdonly = 1;
+    inputSelected = inputName4;
+  }  
+  if (_input == 5) {  // input #5 (display only)
+    _lcdonly = 1;
+    inputSelected = inputName5;
+  }    
+	if (_input >= 6) {  // invalid setting
 	  return;
 	}
 	if (_lcdonly == 0) {
@@ -508,10 +519,10 @@ void inputUpdate (uint8_t _input)
 void hpfControl (uint8_t _state) 
 {
   if (volMute == 0) {
-	if (_state == 0) {  // HPF off
+	if (_state == 0) {  // HPF on
 	  hpfState = 0;
 	}  
-	if (_state == 1) {  // HPF on
+	if (_state == 1) {  // HPF off
 	  hpfState = 1;
 	}    
 	if (_state == 2) {  // toggle state
@@ -522,14 +533,14 @@ void hpfControl (uint8_t _state)
 	}
     if (hpfState == 0) {
 	  lcd.setCursor(2,1);
-	  lcd.print("HPF On    ");     
+	  lcd.print("HPF Off    ");     
 	  digitalWrite(hpfRelayPin, HIGH);	
     } else {
       lcd.setCursor(2,1);
-	  lcd.print("HPF Off   ");   
+	  lcd.print("HPF On   ");   
 	  digitalWrite(hpfRelayPin, LOW);	 
     }	
-    delay(1200);
+    delay(2000);
     inputUpdate(0); // only update display
   }	  
 }
@@ -741,7 +752,13 @@ void irReceive()
 	    }    
 	    if (IrReceiver.decodedIRData.command == 0x10) { // input (3) 1261766903
      	  inputUpdate(3); 
-	    }  
+	    } 
+      if (IrReceiver.decodedIRData.command == 0x11) { // input (4) just displays airplay
+        inputUpdate(4); 
+      }  
+      if (IrReceiver.decodedIRData.command == 0x12) { // input (5) just displays pc
+        inputUpdate(5); 
+      }            
 	    if (IrReceiver.decodedIRData.command == 0x17) { // force mute (0) 1261824023
        	muteSystem(0); 
 	    } 	         	  	    

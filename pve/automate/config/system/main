@@ -85,88 +85,80 @@ fi
 ##
 ## Power
 if [[ "$XMITCMD" == "pwrhifi" ]]; then
-   ## Reset sub volume token
    rm -f /var/lock/rpi/subs.enabled 
-   XMITCALL="irtx.sony20.691015"
+   XMITCALL="irtx.nec.1270227167"
+   CALLAPI
+   return
+fi
+if [[ "$XMITCMD" == "hifioff" ]]; then
+   rm -f /var/lock/rpi/subs.enabled 
+   XMITCALL="irtx.nec.1261859214"
+   CALLAPI
+   return
+fi
+if [[ "$XMITCMD" == "hifion" ]]; then
+   rm -f /var/lock/rpi/subs.enabled 
+   XMITCALL="irtx.nec.1261869414"
    CALLAPI
    return
 fi
 ## Key 1
 if [[ "$XMITCMD" == "dac" ]]; then
-   XMITCALL="irtx.sony20.2887"
+   XMITCALL="irtx.nec.1261793423"
    CALLAPI
    return
 fi
 ## Key 2
 if [[ "$XMITCMD" == "aux" ]]; then
-   XMITCALL="irtx.sony20.527175"
+   XMITCALL="irtx.nec.1261826063"
    CALLAPI
    return
 fi
 ## Key 3
 if [[ "$XMITCMD" == "phono" ]]; then
-   XMITCALL="irtx.sony20.265031"
+   XMITCALL="irtx.nec.1261766903"
    CALLAPI
    return
 fi
-## Key Stop
+## Key Mute / Toggle
 if [[ "$XMITCMD" == "mute" ]]; then
-   ##XMITCALL="irtx.sony20.101191"
    XMITCALL="irtx.nec.1270259807"
    CALLAPI
    return
 fi
-## Key Rewind
-if [[ "$XMITCMD" == "dwnf" ]]; then
-   XMITCALL="irtx.sony20.887623"
+## Key Force Mute 
+if [[ "$XMITCMD" == "forcemute" ]]; then
+   XMITCALL="irtx.nec.1261824023"
    CALLAPI
    return
 fi
-## Key Forward
-if [[ "$XMITCMD" == "upf" ]]; then
-   XMITCALL="irtx.sony20.232263"
+## Key Toggle Hi-Pass Filter
+if [[ "$XMITCMD" == "togglehpf" ]]; then
+   XMITCALL="irtx.nec.1261875534"
    CALLAPI
    return
 fi
 ## Key Down
-if [[ "$XMITCMD" == "dwnc" ]]; then
-   XMITCALL="irtx.sony20.379719"
+if [[ "$XMITCMD" == "dwnf" ]]; then
+   XMITCALL="irtx.nec.1261885734"
    CALLAPI
    return
 fi
 ## Key Up
+if [[ "$XMITCMD" == "upf" ]]; then
+   XMITCALL="irtx.nec.1261853094"
+   CALLAPI
+   return
+fi
+## Key Vol-
+if [[ "$XMITCMD" == "dwnc" ]]; then
+   XMITCALL="irtx.nec.1270267967"
+   CALLAPI
+   return
+fi
+## Key Vol+
 if [[ "$XMITCMD" == "upc" ]]; then
-   XMITCALL="irtx.sony20.641863"
-   CALLAPI
-   return
-fi
-## Key Left
-if [[ "$XMITCMD" == "preleft" ]]; then
-   XMITCALL="irtx.sony20.904007"
-   CALLAPI
-   return
-fi
-## Key Right
-if [[ "$XMITCMD" == "preright" ]]; then
-   XMITCALL="irtx.sony20.248647"
-   CALLAPI
-   return
-fi
-## Key Display
-if [[ "$XMITCMD" == "display" ]]; then
-   XMITCALL="irtx.sony20.535367"
-   CALLAPI
-   return
-fi
-## Key Backlight
-if [[ "$XMITCMD" == "backlight" ]]; then
-   XMITCALL="irtx.sony20.813895"
-   CALLAPI
-   return
-fi
-## Key Menu
-if [[ "$XMITCMD" == "menu" ]]; then
-   XMITCALL="irtx.sony20.609095"
+   XMITCALL="irtx.nec.1270235327"
    CALLAPI
    return
 fi

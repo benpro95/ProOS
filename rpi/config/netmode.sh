@@ -168,6 +168,7 @@ case "$1" in
 
 boot)
 ## REQUIRED TO START NETWORKING!!
+rfkill unblock wifi
 BOOTUP="yes"
 if [ ! -e /boot/ap-bridge.enable ]; then
   if [ ! -e /boot/apd.enable ]; then

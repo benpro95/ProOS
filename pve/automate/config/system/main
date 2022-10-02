@@ -81,7 +81,7 @@ fi
 ##
 ##### FUNCTIONS SECTION ######
 ##
-### HiFi Preamp 'Sony RMT-B118A Remote' Sony 20-bit
+### HiFi Preamp (Philips Universal Remote) NEC 32-bit
 ##
 ## Power
 if [[ "$XMITCMD" == "pwrhifi" ]]; then
@@ -102,32 +102,36 @@ if [[ "$XMITCMD" == "hifion" ]]; then
    CALLAPI
    return
 fi
-## Key 1
+## DAC
 if [[ "$XMITCMD" == "dac" ]]; then
    XMITCALL="irtx.nec.1261793423"
    CALLAPI
    return   
 fi
-## Key 2
+## Aux
 if [[ "$XMITCMD" == "aux" ]]; then
    XMITCALL="irtx.nec.1261826063"
    CALLAPI
    return
 fi
-## Key 3
-if [[ "$XMITCMD" == "phono" ]]; then
+## Phono
+if [[ "$XMITCMD" == "phono" ]]; then 
    XMITCALL="irtx.nec.1261766903"
    CALLAPI
    return
 fi
+## Airplay
 if [[ "$XMITCMD" == "airplay" ]]; then
    XMITCALL="irtx.nec.1261799543"
    CALLAPI
    return
+fi   
+## PC Mode
 if [[ "$XMITCMD" == "pcmode" ]]; then
    XMITCALL="irtx.nec.1261783223"
    CALLAPI
    return   
+fi   
 ## Key Mute / Toggle
 if [[ "$XMITCMD" == "mute" ]]; then
    XMITCALL="irtx.nec.1270259807"
@@ -171,39 +175,39 @@ if [[ "$XMITCMD" == "upc" ]]; then
    return
 fi
 ##
-### Class D Amp (Toshiba CT-90302 Remote) NEC 32-bit
+### Class D Amp (Philips Universal Remote) NEC 32-bit
 ##
 ## Mute Key
 if [[ "$XMITCMD" == "subpwr" ]]; then
-   XMITCALL="irtx.nec.50137335"
+   XMITCALL="irtx.nec.551506095"
    CALLAPI
    return
 fi
 ##
 ## (0) Key
 if [[ "$XMITCMD" == "subon" ]]; then
-   XMITCALL="irtx.nec.50135295"
+   XMITCALL="irtx.nec.551504055"
    CALLAPI
    return
 fi
 ##
 ## (1) Key
 if [[ "$XMITCMD" == "suboff" ]]; then
-   XMITCALL="irtx.nec.50167935"
+   XMITCALL="irtx.nec.551520375"
    CALLAPI
    return
 fi
 ##
 ## Vol (+) Key
 if [[ "$XMITCMD" == "subup" ]]; then
-   XMITCALL="irtx.nec.50157735"
+   XMITCALL="irtx.nec.551502015"
    CALLAPI
    return
 fi
 ##
 ## Vol (-) Key
 if [[ "$XMITCMD" == "subdwn" ]]; then
-   XMITCALL="irtx.nec.50165895"
+   XMITCALL="irtx.nec.551534655"
    CALLAPI
    return
 fi
@@ -521,27 +525,6 @@ XMITCMD="rfb1" ; XMITARG="off" ; XMIT
 exit
 ;;
 
-## Audio Power
-hifion)
-if ping -W 2 -c 1 hifi.home > /dev/null 2> /dev/null
-then
-  echo "hifi.local is online"
-else
-  XMITCMD="pwrhifi" ; XMIT 
-fi
-exit
-;;
-##
-hifioff)
-if ping -W 2 -c 1 hifi.home > /dev/null 2> /dev/null
-then
-  XMITCMD="pwrhifi" ; XMIT 
-else
-  echo "hifi.local is offline"
-fi
-exit
-;;
-
 ## PC Power
 pcon)
 if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
@@ -563,40 +546,6 @@ fi
 exit
 ;;
 
-submute)
-if [ -e /var/lock/rpi/subs.enabled ]; then
-  ### Subwoofer mute/disable
-  XMITCMD="subpwr" ; XMIT 
-fi
-exit
-;;
-
-subup)
-if [ -e /var/lock/rpi/subs.enabled ]; then
-  ### Subwoofer volume up
-  XMITCMD="subup" ; XMIT 
-fi
-exit
-;;
-
-subdwn)
-if [ -e /var/lock/rpi/subs.enabled ]; then
-  ### Subwoofer volume down
-  XMITCMD="subdwn" ; XMIT 
-fi
-exit
-;;
-
-subs)
-## Toggle volume control to subwoofers
-if [ ! -e /var/lock/rpi/subs.enabled ]; then
-   touch /var/lock/rpi/subs.enabled
-else
-   rm -f /var/lock/rpi/subs.enabled
-fi
-exit
-;;
-
 autodac)
 ## Reset volume tokens
 rm -f /var/lock/rpi/subs.enabled
@@ -614,6 +563,8 @@ rm -f /var/lock/rpi/subs.enabled
 XMITCMD="usb" ; XMIT 
 ## Preamp DAC Input
 XMITCMD="dac" ; XMIT 
+## Preamp PC Mode
+XMITCMD="pcmode" ; XMIT 
 exit
 ;;
 
@@ -625,6 +576,8 @@ rm -f /var/lock/rpi/subs.enabled
 XMITCMD="coaxial" ; XMIT 
 ## Preamp DAC Input
 XMITCMD="dac" ; XMIT 
+## Preamp AirPlay Mode
+XMITCMD="airplay" ; XMIT 
 exit
 ;;
 
@@ -674,12 +627,7 @@ else
   echo "wkst.home is offline"
 fi
 ## Audio System Power Off
-if ping -W 2 -c 1 hifi.home > /dev/null 2> /dev/null
-then
-  XMITCMD="pwrhifi" ; XMIT 
-else
-  echo "hifi.home is offline"
-fi
+XMITCMD="hifioff" ; XMIT 
 ## Blank LEDwalls
 /opt/rpi/leds stop
 ## Turn Off Apple TV

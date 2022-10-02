@@ -312,13 +312,13 @@ useradd motion -g motion --shell /bin/false
 groupmod -g 1005 motion
 usermod -u 1005 motion
 
-## Remove Conflicts ***
+## Remove Packages
 apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp udhcpd usbmuxd
 apt-get remove --purge -y exim4 exim4-base exim4-config exim4-daemon-light udisks2 \
   tigervnc-common tigervnc-standalone-server iptables-persistent bridge-utils vlc ntfs-3g \
   lxlock xscreensaver xscreensaver-data gvfs gvfs-backends vnc4server light-locker libudisks2-0 \
   desktop-file-utils exfat-fuse exfat-utils gdisk gnome-mime-data wolfram-engine libssl-doc \
-  libatasmart4 libavahi-glib1 gvfs-common gvfs-daemons gvfs-libs mpd mpc
+  libatasmart4 libavahi-glib1 gvfs-common gvfs-daemons gvfs-libs mpd mpc modemmanager
 apt-get -y autoremove
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades

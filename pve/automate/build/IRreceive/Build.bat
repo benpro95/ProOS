@@ -3,7 +3,7 @@ SET ARDUINO_LIB=Z:\Arduino\libraries
 
 SET SKETCH_PATH=Z:\ProOS\pve\automate\build\IRreceive
 SET SKETCH_NAME=IRreceive.ino
-SET ARDUINO_PORT=COM5
+SET ARDUINO_PORT=COM9
 
 rmdir /s /q "%LocalAppData%\Arduino15\build"
 mkdir "%LocalAppData%\Arduino15\build"

@@ -141,7 +141,7 @@ apt-get install -y --no-upgrade --ignore-missing xserver-xorg xorg \
 
 ## Install Chromium
 apt-mark unhold chromium-browser chromium-codecs-ffmpeg chromium-codecs-ffmpeg-extra
-apt-get install -y --no-upgrade --ignore-missing chromium-browser chromium-codecs-ffmpeg chromium-codecs-ffmpeg-extra
+apt-get install -y --no-upgrade --ignore-missing chromium-browser
 
 ## Disable Swap
 dphys-swapfile swapoff

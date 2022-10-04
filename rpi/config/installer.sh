@@ -226,7 +226,7 @@ if [ "${OSVER}" = "bullseye" ]; then
     apt-get install -y --no-upgrade --ignore-missing dh-autoreconf libortp-dev libusb-dev \
      libudev-dev libical-dev libsbc1 libsbc-dev libdbus-1-dev
     ## Compile FDK AAC from source
-    git clone --depth 1 git://github.com/mstorsjo/fdk-aac.git
+    git clone --depth 1 https://github.com/mstorsjo/fdk-aac.git
     cd fdk-aac
     autoreconf -fiv
     ./configure --enable-shared --enable-static

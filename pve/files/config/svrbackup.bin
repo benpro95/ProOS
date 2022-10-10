@@ -63,9 +63,12 @@ do
     #################################
     if [ ! -e /mnt/extbkps/${!USB256VAR}/Ben ] ; then
       echo "drive not connected ${!USB256VAR}"
-      echo " "
     else
       ##### BEGIN BACKUP #####
+      if [ -e /mnt/extbkps/${!USB256VAR}/Ben/LastSynced.txt ]; then
+        LASTSYNC=$(date -r /mnt/extbkps/${!USB256VAR}/Ben/LastSynced.txt -R)
+        echo "*** drive ${!USB256VAR} last synced on $LASTSYNC ***"
+      fi  
       #### Ben Share ####
       if [ ! -e /mnt/ben/ProOS ]; then
         echo "Ben folder not found!"
@@ -92,9 +95,10 @@ do
         rsync --progress -aP --exclude="Movies/" --exclude="Music/" --exclude="TV Shows/" \
         /mnt/media/ /mnt/extbkps/${!USB256VAR}/Media/ -delete --delete-excluded
       fi
-      touch /mnt/extbkps/${!USB256VAR}/LastSynced.txt 
       ##### END BACKUP #####
+      touch /mnt/extbkps/${!USB256VAR}/Ben/LastSynced.txt
     fi
+    echo " " 
   fi  
 done
 ###################################
@@ -107,9 +111,12 @@ do
     #################################
     if [ ! -e /mnt/extbkps/${!HDDVAR}/Ben ]; then
       echo "drive not connected ${!HDDVAR}"
-      echo " "
     else
       ##### BEGIN BACKUP #####
+      if [ -e /mnt/extbkps/${!HDDVAR}/Ben/LastSynced.txt ]; then
+        LASTSYNC=$(date -r /mnt/extbkps/${!HDDVAR}/Ben/LastSynced.txt -R)
+        echo "*** drive ${!HDDVAR} last synced on $LASTSYNC ***"
+      fi        
       #### Ben Share ####
       if [ ! -e /mnt/ben/ProOS ]; then
         echo "Ben folder not found!"
@@ -133,9 +140,10 @@ do
         echo "syncing 'Media' share to ${!HDDVAR} drive..."
         rsync --progress -aP /mnt/media/ /mnt/extbkps/${!HDDVAR}/Media/ -delete --delete-excluded
       fi
-      touch /mnt/extbkps/${!HDDVAR}/LastSynced.txt 
       ##### END BACKUP #####
+      touch /mnt/extbkps/${!HDDVAR}/Ben/LastSynced.txt 
     fi
+    echo " "     
   fi  
 done
 

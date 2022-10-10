@@ -11,7 +11,7 @@ ZFSPOOL4="usb256-05" # SanDisk Ultra 256GB (Late 2022)
 ZFSPOOL6="hdd4tb-01" # HGST 4GB Hard Drive (2016)
 ZFSPOOL7="hdd4tb-02" # HGST 4GB Hard Drive (2017)
 ZFSPOOL8="hdd4tb-03" # WD 4TB Blue Hard Drive (2018)
-ZFSPOOL9=""
+ZFSPOOL9="hdd4tb-04" # WD 4TB Red Hard Drive (2017)
 ZFSPOOL10=""
 
 ## VM Log File

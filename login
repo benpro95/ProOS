@@ -198,15 +198,11 @@ fi
 ######### START AUTOSYNC ##########
 if [ "$SYNCSTATE" = "start" ]; then
   HOSTCHK
-  echo "*** ProOS NetInstall ***"
   echo ""
-  echo "System must be in read-write mode."
-  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-   $ROOTDIR/.ssh/rpi.rsa root@$HOST "df -h"
-  read -p "Do you want to reboot in read-write mode? " -n 1 -r
-  echo
-  if [[ ! $REPLY =~ ^[Nn]$ ]]
-  then
+  STRIN=$(ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $ROOTDIR/.ssh/rpi.rsa root@$HOST "df -h")
+  SUBSTR="overlay"
+  if [[ "$STRIN" == *"$SUBSTR"* ]]; then
+  	 echo "Read/only root filesystem detected, rebooting in read/write mode..."
      ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
       $ROOTDIR/.ssh/rpi.rsa root@$HOST "/opt/rpi/init rw"
      echo "Waiting 30 seconds..."
@@ -227,6 +223,8 @@ if [ "$SYNCSTATE" = "start" ]; then
           exit
         fi
      fi
+  else
+    echo "Read/write root filesystem detected."   
   fi
 
   wait_time=03 # seconds

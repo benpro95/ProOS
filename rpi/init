@@ -148,23 +148,39 @@ exit
 
 rw)
 ## Enable read/write mode
-echo 'Rebooting in read/write mode...'
-systemctl stop rpi-*
-mount -o remount,rw /boot
-raspi-config nonint disable_overlayfs
-mount -o remount,ro /boot
-shutdown -r now
+STRIN=$(df -h)
+SUBSTR="overlay"
+if [[ "$STRIN" == *"$SUBSTR"* ]]; then
+  ## Overlay mode on
+  echo 'Rebooting in read/write mode...'
+  systemctl stop rpi-*
+  mount -o remount,rw /boot
+  raspi-config nonint disable_overlayfs
+  mount -o remount,ro /boot
+  shutdown -r now  
+else
+  ## Overlay mode off   
+  echo "Already in read/write mode."
+fi  
 exit
 ;;
 
 ro)
 ## Enable read/only mode
-echo 'Rebooting in read/only mode...'
-systemctl stop rpi-*
-mount -o remount,rw /boot
-raspi-config nonint enable_overlayfs
-mount -o remount,ro /boot
-shutdown -r now
+STRIN=$(df -h)
+SUBSTR="overlay"
+if [[ "$STRIN" == *"$SUBSTR"* ]]; then
+  ## Overlay mode on
+  echo "Already in read/only mode."
+else
+  ## Overlay mode off   
+  echo 'Rebooting in read/only mode...'
+  systemctl stop rpi-*
+  mount -o remount,rw /boot
+  raspi-config nonint enable_overlayfs
+  mount -o remount,ro /boot
+  shutdown -r now
+fi
 exit
 ;;
 

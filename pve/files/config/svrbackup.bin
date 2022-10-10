@@ -20,7 +20,9 @@ USB256DRV6=""
 HDDRV1="hdd4tb-01"
 HDDRV2="hdd4tb-02"
 HDDRV3="hdd4tb-03"
-HDDRV4=""
+HDDRV4="hdd4tb-04"
+HDDRV5=""
+HDDRV6=""
 
 ### Lock file
 if [ -f "/tmp/backupsvr.lock" ]; then
@@ -90,6 +92,7 @@ do
         rsync --progress -aP --exclude="Movies/" --exclude="Music/" --exclude="TV Shows/" \
         /mnt/media/ /mnt/extbkps/${!USB256VAR}/Media/ -delete --delete-excluded
       fi
+      touch /mnt/extbkps/${!USB256VAR}/LastSynced.txt 
       ##### END BACKUP #####
     fi
   fi  
@@ -97,7 +100,7 @@ done
 ###################################
 ###################################
 ## Hard Disk Backup ###############
-for ((i=1; i<5; i++))
+for ((i=1; i<7; i++))
 do
   HDDVAR="HDDRV$i"
   if [ ! "${!HDDVAR}" = "" ] ; then
@@ -130,6 +133,7 @@ do
         echo "syncing 'Media' share to ${!HDDVAR} drive..."
         rsync --progress -aP /mnt/media/ /mnt/extbkps/${!HDDVAR}/Media/ -delete --delete-excluded
       fi
+      touch /mnt/extbkps/${!HDDVAR}/LastSynced.txt 
       ##### END BACKUP #####
     fi
   fi  

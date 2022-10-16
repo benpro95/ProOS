@@ -24,8 +24,6 @@ fi
 ## Update Sources
 apt-get --yes update
 
-apt-get remove -y htop bpytop
-
 ## Support Packages
 apt-get install -y --no-upgrade --ignore-missing rsync cron zip screen \
  libsasl2-modules postfix ethtool bpytop htop apt-transport-https lm-sensors \

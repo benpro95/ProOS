@@ -21,9 +21,9 @@ ezButton button1(button_pin1);  // ezButton object I
 ezButton button2(button_pin2);  // ezButton object II
   
 // Define Outputs
-#define relay0 9  // (Ceiling Lamp +12v) [Pin #15]
-#define relay1 10 // (Mac Classic) [Pin #16]
-#define relay2 11 // (Dresser Lamp) [Pin #17]
+#define relay0 9  // (Dresser Lamp +12v) [Pin #15]
+#define relay1 11 // (Mac Classic) [Pin #16]
+#define relay2 10 // (CRT TV) [Pin #17]
 
 // Constants
 int debounce_time = 50; // Inputs debounce time (ms) 

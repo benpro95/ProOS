@@ -72,7 +72,7 @@ echo "(b) backup utility"
 echo "(v) start/stop VM(s)"
 echo "(g) generate a log file"
 echo "(r) attach/detach region(s)"  
-echo "(p) push ProOS to GitHub"
+echo "(p) push changes to GitHub"
 echo "(enter) exit to shell"
 echo " "
 read -p "select option: " -n 1 -r
@@ -82,11 +82,18 @@ echo
 if [[ $REPLY =~ ^[pP]$ ]]
 then
   TIMESTMP=$(date '+%Y-%m-%d %H:%M')
-  echo "uploading changes to GitHub..."
+  echo "uploading all changes to GitHub..."
+  echo "(ProOS) repository"  
   cd /mnt/ben/ProOS
   git add .
   git commit -m "$TIMESTMP"
-  git push -u ProOS master
+  git push
+  cd -
+  echo "(EE-Projects) repository"  
+  cd /mnt/ben/Projects
+  git add .
+  git commit -m "$TIMESTMP"
+  git push
   cd -
   ENDPGRM
 fi

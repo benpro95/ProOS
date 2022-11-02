@@ -88,7 +88,7 @@ then
   cd /mnt/ben/ProOS
   git add .
   git commit -m "$TIMESTMP"
-  git push
+  git push -u ProOS master
   cd -
   echo ""
   echo "*** EE-Projects repository ***"  

@@ -62,6 +62,11 @@ cp /tmp/config/profile.server /home/server/.profile
 chown server:server /home/server/.profile
 chmod +x /home/server/.profile
 
+## Server Login Script
+cp /tmp/config/git.config /home/server/.gitconfig
+chown server:server /home/server/.gitconfig
+chmod 600 /home/server/.gitconfig
+
 ## Remove Passwords
 passwd -d root
 passwd -d server

@@ -83,13 +83,13 @@ if [[ $REPLY =~ ^[pP]$ ]]
 then
   TIMESTMP=$(date '+%Y-%m-%d %H:%M')
   echo "uploading all changes to GitHub..."
-  echo "(ProOS) repository"  
+  echo "*** ProOS repository ***"  
   cd /mnt/ben/ProOS
   git add .
   git commit -m "$TIMESTMP"
   git push
   cd -
-  echo "(EE-Projects) repository"  
+  echo "*** EE-Projects repository ***"  
   cd /mnt/ben/Projects
   git add .
   git commit -m "$TIMESTMP"

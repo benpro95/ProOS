@@ -203,7 +203,7 @@ apt-get dist-upgrade
 apt-get autoremove -y
 apt-get clean -y
 raspi-config nonint enable_overlayfs
-/opt/rpi/init rw
+raspi-config nonint disable_overlayfs
 echo " "
 echo "Re-enable read-only mode after rebooting!"
 ## Reboot step

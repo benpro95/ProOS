@@ -108,7 +108,7 @@ apt-get install -y --no-upgrade --ignore-missing libgtk2.0-dev libbluetooth3 lib
  libxml2-dev libxslt1-dev portaudio19-dev libffi-dev zlib1g-dev libdbus-1-dev
 
  ## AV Codecs Support
-apt-get install -y --no-upgrade --ignore-missing libupnp-dev
+apt-get install -y --no-upgrade --ignore-missing libupnp-dev ffmpeg 
 apt-get remove -y --purge libgstreamer0.10-dev
 apt-get install -y --no-upgrade --ignore-missing libgstreamer1.0-dev gstreamer1.0-plugins-base \
  libx264-dev x264 ffmpeg libswscale-dev libavformat-dev libavcodec-dev \
@@ -143,7 +143,7 @@ update-rc.d dphys-swapfile remove
 apt-get -y remove --purge dphys-swapfile
 
 ## Perl Support
-apt-get install -y --no-upgrade --ignore-missing perl perl-modules
+apt-get install -y --no-upgrade --ignore-missing perl perl-modules-5.32
 
 ## CPU Specific Packages
 if [ "$CPUTYPE" = "Raspberry Pi Zero W Rev 1.1" ]; then
@@ -257,7 +257,14 @@ if [ ! -e /usr/local/bin/shairport-sync ]; then
 fi
 
 ## Camera Motion Server
-apt-get install -y --no-upgrade --ignore-missing motion
+if [ "$REINSTALL" = "yes" ]; then
+  rm -f /usr/bin/motion
+fi
+if [ ! -e /usr/bin/motion ]; then
+  apt-get install -y --no-upgrade --ignore-missing libmicrohttpd12
+  dpkg -i /opt/rpi/pkgs/pi_buster_motion_4.3.2-1_armhf.deb
+  systemctl stop motion
+fi
 groupadd motion
 useradd motion -g motion --shell /bin/false
 groupmod -g 1005 motion
@@ -755,8 +762,9 @@ if [ ! -e /etc/rpi-conf.done ]; then
 systemctl enable ssh avahi-daemon systemd-timesyncd systemd-time-wait-sync
 systemctl enable proinit rpi-cleanup.timer
 systemctl unmask systemd-journald
-## Disabled on startup
 systemctl unmask hostapd
+systemctl unmask motion
+## Disabled on startup
 systemctl disable hostapd dhcpcd networking wpa_supplicant keyboard-setup \
 plymouth sysstat lightdm apache2 lighttpd dnsmasq apt-daily.service wifiswitch plymouth-log \
 apt-daily.timer apt-daily-upgrade.service apt-daily-upgrade.timer sysstat-collect.timer motion \

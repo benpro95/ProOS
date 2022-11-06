@@ -25,7 +25,7 @@ else
 echo "Raspberry Pi detected."
 fi
 OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
-if [ "${OSVER}" = "buster" ] || [ "${OSVER}" = "bullseye" ]; then
+if [ "${OSVER}" = "bullseye" ]; then
   echo "OS version ${OSVER} detected."
 else
   echo "Unsupported OS version ${OSVER} detected."
@@ -76,17 +76,10 @@ chsh -s /bin/bash pi
 curl --silent -L https://deb.nodesource.com/gpgkey/nodesource.gpg.key | \
   gpg --no-default-keyring --keyring /etc/apt/trusted.gpg --import -
 
-## Custom Source List
-if [ "${OSVER}" = "buster" ]; then
-  cp -f $BIN/rpi-apt.buster /etc/apt/sources.list.d/rpi-apt.list
-  chmod 644 /etc/apt/sources.list.d/rpi-apt.list
-  chown root:root /etc/apt/sources.list.d/rpi-apt.list
-fi
-if [ "${OSVER}" = "bullseye" ]; then
-  cp -f $BIN/rpi-apt.bullseye /etc/apt/sources.list.d/rpi-apt.list
-  chmod 644 /etc/apt/sources.list.d/rpi-apt.list
-  chown root:root /etc/apt/sources.list.d/rpi-apt.list  
-fi
+## Source List
+cp -f $BIN/rpi-apt.list /etc/apt/sources.list.d/rpi-apt.list
+chmod 644 /etc/apt/sources.list.d/rpi-apt.list
+chown root:root /etc/apt/sources.list.d/rpi-apt.list  
 
 ## Set boot partition to read/write
 mount -o remount,rw /boot
@@ -150,12 +143,7 @@ update-rc.d dphys-swapfile remove
 apt-get -y remove --purge dphys-swapfile
 
 ## Perl Support
-if [ "${OSVER}" = "buster" ]; then
-  apt-get install -y --no-upgrade --ignore-missing perl perl-modules
-fi
-if [ "${OSVER}" = "bullseye" ]; then
-  apt-get install -y --no-upgrade --ignore-missing perl perl-modules-5.32
-fi
+apt-get install -y --no-upgrade --ignore-missing perl perl-modules
 
 ## CPU Specific Packages
 if [ "$CPUTYPE" = "Raspberry Pi Zero W Rev 1.1" ]; then
@@ -217,32 +205,7 @@ apt-get install -y --no-upgrade --ignore-missing alsa-base alsa-utils mpg321 lam
 apt-get install -y --no-upgrade --ignore-missing bluetooth pi-bluetooth bluez bluez-tools
 
 ## Bluetooth Audio Support
-if [ "${OSVER}" = "buster" ]; then
-  apt-get install -y --no-upgrade --ignore-missing bluealsa
-fi
-if [ "${OSVER}" = "bullseye" ]; then
-  if [ ! -e /usr/bin/bluealsa-aplay ]; then
-    ## Prerequisites
-    apt-get install -y --no-upgrade --ignore-missing dh-autoreconf libortp-dev libusb-dev \
-     libudev-dev libical-dev libsbc1 libsbc-dev libdbus-1-dev
-    ## Compile FDK AAC from source
-    git clone --depth 1 https://github.com/mstorsjo/fdk-aac.git
-    cd fdk-aac
-    autoreconf -fiv
-    ./configure --enable-shared --enable-static
-    make
-    make install
-    make distclean
-    ## Compile BlueALSA from source
-    git clone https://github.com/Arkq/bluez-alsa.git
-    cd bluez-alsa/
-    autoreconf --install
-    mkdir build && cd build
-    ../configure --enable-aac --enable-ofono
-    make && make install
-    cd $BIN
-  fi
-fi
+apt-get install -y --no-upgrade --ignore-missing bluealsa
 
 ## OMX-Player
 if [ "$REINSTALL" = "yes" ]; then
@@ -294,19 +257,7 @@ if [ ! -e /usr/local/bin/shairport-sync ]; then
 fi
 
 ## Camera Motion Server
-if [ "${OSVER}" = "buster" ]; then
-  if [ "$REINSTALL" = "yes" ]; then
-    rm -f /usr/bin/motion
-  fi
-  if [ ! -e /usr/bin/motion ]; then
-    apt-get install -y --no-upgrade --ignore-missing libmicrohttpd12
-    dpkg -i /opt/rpi/pkgs/pi_buster_motion_4.3.2-1_armhf.deb
-    systemctl stop motion
-  fi
-fi
-if [ "${OSVER}" = "bullseye" ]; then
-  apt-get install -y --no-upgrade --ignore-missing motion
-fi
+apt-get install -y --no-upgrade --ignore-missing motion
 groupadd motion
 useradd motion -g motion --shell /bin/false
 groupmod -g 1005 motion
@@ -318,12 +269,16 @@ apt-get remove --purge -y exim4 exim4-base exim4-config exim4-daemon-light udisk
   tigervnc-common tigervnc-standalone-server iptables-persistent bridge-utils vlc ntfs-3g \
   lxlock xscreensaver xscreensaver-data gvfs gvfs-backends vnc4server light-locker libudisks2-0 \
   desktop-file-utils exfat-fuse exfat-utils gdisk gnome-mime-data wolfram-engine libssl-doc \
-  libatasmart4 libavahi-glib1 gvfs-common gvfs-daemons gvfs-libs mpd mpc modemmanager
+  libatasmart4 libavahi-glib1 gvfs-common gvfs-daemons gvfs-libs mpd mpc modemmanager \
+  rng-tools rng-tools-debian
 apt-get -y autoremove
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
 rm -rf /var/log/exim4
 rm -rf /etc/cron.*
+
+## v5.0 Random Number Generator
+apt-get install -y --no-upgrade --ignore-missing rng-tools5
 
 ## Install Replacement Logger
 apt-get install -y --no-upgrade --ignore-missing busybox-syslogd
@@ -448,11 +403,6 @@ chown root:root /etc/sysctl.conf
 cp -f $BIN/journald.conf /etc/systemd
 chmod 644 /etc/systemd/journald.conf
 chown root:root /etc/systemd/journald.conf
-
-## Supress Logging (Random Number Generator)
-if [ "${OSVER}" = "bullseye" ]; then
-  sed -i 's/RNGDOPTIONS=.*/RNGDOPTIONS=--stats-interval=0/' /etc/init.d/rng-tools-debian
-fi
 
 ## Kernel Drivers Configuration
 cp -f $BIN/modules /etc

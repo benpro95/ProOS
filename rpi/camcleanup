@@ -4,6 +4,7 @@
 ### run as root user only!
 
 FLASH_PATH="/media/usb0"
+GDRIVE_PATH="/mnt/ramdisk/gsync"
 
 ## Log file path
 if [ ! -e $FLASH_PATH/cameras ]; then
@@ -18,34 +19,34 @@ then
   echo "Google Drive connected"
   ## Move videos to archive when Google Drive is larger than 7GB
   rm -f /tmp/camcleanup.vars
-  timeout 500 du -sh -t7000000000 /mnt/gsync/Current | awk -F" " '{print $2}' > /tmp/camcleanup.vars
+  timeout 500 du -sh -t7000000000 $GDRIVE_PATH/Current | awk -F" " '{print $2}' > /tmp/camcleanup.vars
   TM_STATUS=$?
   if [[ ("$TM_STATUS" -gt 100 ) || ("$TM_STATUS" -eq 1) ]]
   then
     echo "Timeout exceeded restarting rclone"
-    service motion stop
+    service rpi-motion stop
     service rpi-rclone restart
-    service motion start   
+    service rpi-motion start   
   fi
   if [[ -s /tmp/camcleanup.vars ]] ; then
 	  echo "Google Drive current folder above 6GB limit moving video files $(date)" >> $LOGFILE
-	  mkdir -p /mnt/gsync/Archive
+	  mkdir -p $GDRIVE_PATH/Archive
       TIMESTAMP="$(date +%H-%m-%d)"
-      mkdir -p /mnt/gsync/Archive/$TIMESTAMP
-	  mv /mnt/gsync/Current/* /mnt/gsync/Archive/$TIMESTAMP/
+      mkdir -p $GDRIVE_PATH/Archive/$TIMESTAMP
+	  mv $GDRIVE_PATH/Current/* $GDRIVE_PATH/Archive/$TIMESTAMP/
   else
     echo "Google Drive current folder under 7GB"
   fi
   ###############################################################
   ## Delete archived videos, when Google Drive is 95% full
   DISKCAP=""
-  DISKCAP=$(timeout 500 df -Pk /mnt/gsync | awk 'NR==2 {print $5}')
+  DISKCAP=$(timeout 500 df -Pk $GDRIVE_PATH | awk 'NR==2 {print $5}')
   DISKCAP=${DISKCAP%\%}
   if [[ "$DISKCAP" -gt "95" ]] ; then
 	  echo "Google Drive usage $DISKCAP% deleting archived video files $(date)" >> $LOGFILE
-	  rm -rf /mnt/gsync/Archive
-	  mkdir -p /mnt/gsync/Archive
-	  chmod -R 777 /mnt/gsync/Archive
+	  rm -rf $GDRIVE_PATH/Archive
+	  mkdir -p $GDRIVE_PATH/Archive
+	  chmod -R 777 $GDRIVE_PATH/Archive
   else
     echo "Google Drive usage less than 95% not deleting archived"
   fi

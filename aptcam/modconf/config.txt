@@ -22,11 +22,9 @@ disable_splash=1
 #-------Disable Audio------
 dtparam=audio=off
 
-#-------Disable the Act/Pwr LEDs-------
+#-------Disable Activity LED------
 dtparam=act_led_trigger=none
 dtparam=act_led_activelow=off
-dtparam=pwr_led_trigger=none
-dtparam=pwr_led_activelow=off
 
 #------Reboot when exceeds-----
 temp_limit=75

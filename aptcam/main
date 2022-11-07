@@ -132,7 +132,7 @@ else
   sleep 5.75
 fi
 ## Motion Server
-systemctl start motion
+systemctl start rpi-motion
 ## Cameras Cleanup Timer
 systemctl start rpi-camcleanup.timer
 ## Automatic Infrared LED

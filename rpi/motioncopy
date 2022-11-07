@@ -57,7 +57,7 @@ FILE_NAME=$2
 
 ## Folder paths
 SERVER_PATH="/mnt/smb/Cameras"
-GDRIVE_PATH="/mnt/gsync/Current"
+GDRIVE_PATH="/mnt/ramdisk/gsync/Current"
 FLASH_PATH="/media/usb0/cameras"
 
 ## Log file path

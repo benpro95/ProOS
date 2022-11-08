@@ -262,7 +262,7 @@ if [ "$REINSTALL" = "yes" ]; then
 fi
 if [ ! -e /usr/bin/motion ]; then
   apt-get install -y --no-upgrade --ignore-missing libmicrohttpd12
-  dpkg -i /opt/rpi/pkgs/pi_buster_motion_4.3.2-1_armhf.deb
+  dpkg -i /opt/rpi/pkgs/pi_bullseye_motion_4.5.0-1_armhf.deb
   systemctl stop motion
 fi
 groupadd motion

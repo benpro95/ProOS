@@ -68,9 +68,7 @@ else
 fi  
 
 ## Delete videos from RAM cache if size limit exceeded 
-DISKCAP=""
-DISKCAP=$(df -Pk /mnt/ramdisk 'NR==2 {print $5}')
-DISKCAP=${DISKCAP%\%}
+DISKCAP=50
 if [[ "$DISKCAP" -gt "95" ]] ; then
   echo "RAM cache over $DISKCAP% moving files! $(date)" >> $LOGFILE
   if [ ! -e $FLASH_PATH ]; then
@@ -82,7 +80,7 @@ if [[ "$DISKCAP" -gt "95" ]] ; then
   fi
     cp -rvf /mnt/ramdisk/"$CAM_NAME"/* "$DEST_PATH"/ >> $LOGFILE
   fi
-  rm -rf /mnt/ramdisk/*
+  rm -rf /mnt/ramdisk/"$CAM_NAME"
 fi
 mkdir -p /mnt/ramdisk/"$CAM_NAME"
 

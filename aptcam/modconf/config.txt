@@ -25,8 +25,8 @@ dtparam=audio=off
 #-------Disable Activity & Power LEDs------
 dtparam=act_led_trigger=none
 dtparam=act_led_activelow=off
-dtparam=act_pwr_trigger=none
-dtparam=act_pwr_activelow=off
+dtparam=pwr_led_trigger=default-on
+dtparam=pwr_led_activelow=off
 
 #------Reboot when exceeds-----
 temp_limit=75

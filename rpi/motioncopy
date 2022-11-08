@@ -66,9 +66,12 @@ if [ ! -e $FLASH_PATH ]; then
 else
   LOGFILE="$FLASH_PATH/motioncopy.log"
 fi  
+echo "Debug - Input File: $FILE_NAME $(date)" >> $LOGFILE
 
 ## Delete videos from RAM cache if size limit exceeded 
-DISKCAP=50
+DISKCAP=""
+DISKCAP=$(timeout 500 df -Pk /mnt/ramdisk | awk 'NR==2 {print $5}')
+DISKCAP=${DISKCAP%\%}
 if [[ "$DISKCAP" -gt "95" ]] ; then
   echo "RAM cache over $DISKCAP% moving files! $(date)" >> $LOGFILE
   if [ ! -e $FLASH_PATH ]; then

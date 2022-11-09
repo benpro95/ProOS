@@ -75,6 +75,7 @@ else
 fi
 
 ## Log file trim
+truncate -s '<256KB' /tmp/motion.log
 truncate -s '<128KB' /tmp/motionping.log
 truncate -s '<128KB' /tmp/motioncopy.log
 truncate -s '<128KB' /tmp/camcleanup.log

@@ -2,18 +2,6 @@
 ## Runs every 40 seconds on Proxmox
 ################################
 
-## External Backup Drives
-ZFSPOOL1="usb256-01" # SanDisk Ultra 256GB (2020)
-ZFSPOOL2="usb256-02" # SanDisk Ultra 256GB (2021)
-ZFSPOOL3="usb256-03" # SanDisk Ultra 256GB (Early 2022)
-ZFSPOOL4="usb256-04" # SanDisk Ultra 256GB (Mid 2022)
-ZFSPOOL5="usb256-05" # SanDisk Ultra 256GB (Late 2022)
-ZFSPOOL6="hdd4tb-01" # HGST 4GB Hard Drive (2016)
-ZFSPOOL7="hdd4tb-02" # HGST 4GB Hard Drive (2017)
-ZFSPOOL8="hdd4tb-03" # WD 4TB Blue Hard Drive (2018)
-ZFSPOOL9="hdd4tb-04" # WD 4TB Red Hard Drive (2017)
-ZFSPOOL10="hdd4tb-05" # WD 4TB Red Hard Drive (2022)
-
 ## VM Log File
 VMLOGFILE="/mnt/extbkps/keytmp/vmlog.txt"
 
@@ -36,21 +24,22 @@ if [ -e /mnt/extbkps/keytmp/pass.txt ]; then
   fi
   echo ""
   readarray -t ZFSPOOLS < /mnt/extbkps/drives.txt
-  for POOL in "${ZFSPOOLS[@]}"; do
+  for _POOL in "${ZFSPOOLS[@]}"; do
+    POOL=$(echo $_POOL | sed -e 's/\r//g')
     if [ ! "$POOL" == "" ]; then
-      if [ "$POOL" = "tank" ] || \
-         [ "$POOL" = "datastore" ] || \
-         [ "$POOL" = "rpool" ] ; then
+      if [ "$POOL" == "tank" ] || \
+         [ "$POOL" == "datastore" ] || \
+         [ "$POOL" == "rpool" ] ; then
         echo "invalid pool specified."
       else
         echo "importing ZFS backup volume $POOL."
-        zpool import "$POOL"
-   	    zfs load-key -L file:///mnt/extbkps/keytmp/pass.txt "$POOL"/extbkp
-  	    zfs mount "$POOL"/extbkp
-  	    zpool status "$POOL"
+        zpool import $POOL
+   	    zfs load-key -L file:///mnt/extbkps/keytmp/pass.txt $POOL/extbkp
+  	    zfs mount $POOL/extbkp
+  	    zpool status $POOL
       fi
-      echo ""  
-    fi  
+      echo ""
+    fi
   done
   zfs list
   echo ""
@@ -65,16 +54,17 @@ if [ -e /mnt/extbkps/keytmp/unmount.txt ]; then
   touch /tmp/actiontrig.lock
   echo ""
   readarray -t ZFSPOOLS < /mnt/extbkps/drives.txt
-  for POOL in "${ZFSPOOLS[@]}"; do
+  for _POOL in "${ZFSPOOLS[@]}"; do
+    POOL=$(echo $_POOL | sed -e 's/\r//g')
     if [ ! "$POOL" == "" ]; then
-      if [ "$POOL" = "tank" ] || \
-         [ "$POOL" = "datastore" ] || \
-         [ "$POOL" = "rpool" ] ; then
+      if [ "$POOL" == "tank" ] || \
+         [ "$POOL" == "datastore" ] || \
+         [ "$POOL" == "rpool" ] ; then
         echo "invalid pool specified."
       else
         echo "unmounting ZFS backup volume $POOL."
-        zfs unmount /mnt/extbkps/"$POOL"
-        zpool export "$POOL"
+        zfs unmount /mnt/extbkps/$POOL
+        zpool export $POOL
       fi
       echo ""  
     fi  

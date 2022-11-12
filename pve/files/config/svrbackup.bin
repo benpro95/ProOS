@@ -41,99 +41,92 @@ fi
 ## Read Backup Drive Names
 readarray -t ZFSPOOLS < /mnt/extbkps/drives.txt
 
-###################################
-###################################
-## 256GB Backup ###################
-for _USBPOOL in "${ZFSPOOLS[@]}"; do
-  USBPOOL=$(echo $_USBPOOL | sed -e 's/\r//g')
-  if [ ! "$USBPOOL" == "" ]; then
-    if [[ ${USBPOOL::3} == "usb" ]]; then
+#######################
+#######################
+## Backup #############
+for _POOL in "${ZFSPOOLS[@]}"; do
+  POOL=$(echo $_POOL | sed -e 's/\r//g')
+  if [ ! "$POOL" == "" ]; then
+  	## USB Flash Drives
+    if [[ ${POOL::3} == "usb" ]]; then
       #################################
-      if [ ! -e /mnt/extbkps/$USBPOOL/Ben ]; then
-        echo "USB drive not connected $USBPOOL"
+      if [ ! -e /mnt/extbkps/$POOL/Ben ]; then
+        echo "flash drive not connected $POOL"
       else
         ##### BEGIN BACKUP #####
-        if [ -e /mnt/extbkps/$USBPOOL/Ben/LastSynced.txt ]; then
-          LASTSYNC=$(date -r /mnt/extbkps/$USBPOOL/Ben/LastSynced.txt -R)
-          echo "*** USB drive $USBPOOL last synced on $LASTSYNC ***"
+        if [ -e /mnt/extbkps/$POOL/Ben/LastSynced.txt ]; then
+          LASTSYNC=$(date -r /mnt/extbkps/$POOL/Ben/LastSynced.txt -R)
+          echo "*** flash drive $POOL last synced on $LASTSYNC ***"
         fi  
         #### Ben Share ####
         if [ ! -e /mnt/ben/ProOS ]; then
-          echo "Ben folder not found!"
+          echo "ben folder not found!"
         else
-          echo "syncing 'Ben' share to $USBPOOL drive..."
+          echo "syncing 'Ben' share to $POOL drive..."
           rsync --progress $CHECKSUM -aP \
           --exclude="Software/Workstation/**.adi" --exclude='Software/Playstation' \
           --exclude='Software/**VM.zip' --exclude='Software/**HD.zip' --exclude='Software/**HD.7z' \
-          /mnt/ben/ /mnt/extbkps/$USBPOOL/Ben/ -delete --delete-excluded
+          /mnt/ben/ /mnt/extbkps/$POOL/Ben/ -delete --delete-excluded
         fi
         #### Regions Share ####
         if [ ! -e /mnt/.regions/Private ]; then
-          echo "Regions folder not found!"
+          echo "regions folder not found!"
         else
-          echo "syncing 'Regions' share to $USBPOOL drive..."
+          echo "syncing 'Regions' share to $POOL drive..."
           rsync --progress $CHECKSUM -aP --exclude="Public/Movies/" \
-          /mnt/.regions/ /mnt/extbkps/$USBPOOL/.Regions/ -delete --delete-excluded
+          /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
         fi
         #### Media Share ####
         if [ ! -e /mnt/media/Music ]; then
-          echo "Media folder not found!"
+          echo "media folder not found!"
         else
-          echo "syncing 'Media' share to $USBPOOL drive..."
+          echo "syncing 'Media' share to $POOL drive..."
           rsync --progress -aP --exclude="Movies/" --exclude="Music/" --exclude="TV Shows/" \
-          /mnt/media/ /mnt/extbkps/$USBPOOL/Media/ -delete --delete-excluded
+          /mnt/media/ /mnt/extbkps/$POOL/Media/ -delete --delete-excluded
         fi
         ##### END BACKUP #####
-        touch /mnt/extbkps/$USBPOOL/Ben/LastSynced.txt
+        touch /mnt/extbkps/$POOL/Ben/LastSynced.txt
       fi  
     fi
-    echo " " 
-  fi  
-done
-###################################
-###################################
-## Hard Disk Backup ###############
-for _HDDPOOL in "${ZFSPOOLS[@]}"; do
-  HDDPOOL=$(echo $_HDDPOOL | sed -e 's/\r//g')
-  if [ ! "$HDDPOOL" == "" ]; then
-    if [[ ${HDDPOOL::3} == "hdd" ]]; then
+    ## Hard Drives
+    if [[ ${POOL::3} == "hdd" ]]; then
       #################################
-      if [ ! -e /mnt/extbkps/$HDDPOOL/Ben ]; then
-        echo "hard drive not connected $HDDPOOL"
+      if [ ! -e /mnt/extbkps/$POOL/Ben ]; then
+        echo "hard drive not connected $POOL"
       else
         ##### BEGIN BACKUP #####
-        if [ -e /mnt/extbkps/$HDDPOOL/Ben/LastSynced.txt ]; then
-          LASTSYNC=$(date -r /mnt/extbkps/$HDDPOOL/Ben/LastSynced.txt -R)
-          echo "*** hard drive $HDDPOOL last synced on $LASTSYNC ***"
+        if [ -e /mnt/extbkps/$POOL/Ben/LastSynced.txt ]; then
+          LASTSYNC=$(date -r /mnt/extbkps/$POOL/Ben/LastSynced.txt -R)
+          echo "*** hard drive $POOL last synced on $LASTSYNC ***"
         fi        
         #### Ben Share ####
         if [ ! -e /mnt/ben/ProOS ]; then
-          echo "Ben folder not found!"
+          echo "ben folder not found!"
         else
-          echo "syncing 'Ben' share to $HDDPOOL drive..."
+          echo "syncing 'Ben' share to $POOL drive..."
           rsync --progress $CHECKSUM -aP \
-          /mnt/ben/ /mnt/extbkps/$HDDPOOL/Ben/ -delete --delete-excluded
+          /mnt/ben/ /mnt/extbkps/$POOL/Ben/ -delete --delete-excluded
         fi
         #### Regions Share ####
         if [ ! -e /mnt/.regions/Private ]; then
-          echo "Regions folder not found!"
+          echo "regions folder not found!"
         else
-          echo "syncing 'Regions' share to $HDDPOOL drive..."
+          echo "syncing 'Regions' share to $POOL drive..."
           rsync --progress $CHECKSUM -aP \
-          /mnt/.regions/ /mnt/extbkps/$HDDPOOL/.Regions/ -delete --delete-excluded
+          /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
         fi
         #### Media Share ####
         if [ ! -e /mnt/media/Music ]; then
-          echo "Media folder not found!"
+          echo "media folder not found!"
         else
-          echo "syncing 'Media' share to $HDDPOOL drive..."
-          rsync --progress -aP /mnt/media/ /mnt/extbkps/$HDDPOOL/Media/ -delete --delete-excluded
+          echo "syncing 'Media' share to $POOL drive..."
+          rsync --progress -aP /mnt/media/ /mnt/extbkps/$POOL/Media/ -delete --delete-excluded
         fi
         ##### END BACKUP #####
-        touch /mnt/extbkps/$HDDPOOL/Ben/LastSynced.txt 
+        touch /mnt/extbkps/$POOL/Ben/LastSynced.txt 
       fi
-      echo " " 
-    fi      
+    fi
+    echo "" 
   fi  
 done
 

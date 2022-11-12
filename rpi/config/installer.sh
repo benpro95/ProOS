@@ -205,7 +205,7 @@ apt-get install -y --no-upgrade --ignore-missing alsa-base alsa-utils mpg321 lam
 apt-get install -y --no-upgrade --ignore-missing bluetooth pi-bluetooth bluez bluez-tools
 
 ## Bluetooth Audio Support
-apt-get install -y --no-upgrade --ignore-missing bluealsa
+dpkg -i /opt/rpi/pkgs/bluealsa_0.13_armhf.deb
 
 ## OMX-Player
 if [ "$REINSTALL" = "yes" ]; then

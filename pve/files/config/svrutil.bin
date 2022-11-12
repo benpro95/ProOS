@@ -251,7 +251,7 @@ then
     echo " "
     REPLY=""
     echo "$VMHOST virtual machine selected."
-    read -p "select (b) to boot,(s) to shutdown, (r) to restore: " -n 1 -r
+    read -p "select (b) to boot, (s) to shutdown, (r) to restore: " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Bb]$ ]]
     then
@@ -269,7 +269,7 @@ then
     if [[ $REPLY =~ ^[Rr]$ ]]
     then
      touch /mnt/extbkps/keytmp/restore$VMHOST.txt
-     restore_time=450
+     restore_time=300
      temp_cnt=${restore_time}
      while [[ ${temp_cnt} -gt 0 ]];
      do

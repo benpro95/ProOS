@@ -15,14 +15,14 @@ USB256DRV2="usb256-02"
 USB256DRV3="usb256-03"
 USB256DRV4="usb256-04"
 USB256DRV5="usb256-05"
-USB256DRV6=""
+USB256DRV6="usb256-06" ## not used
 #### 4TB Drives ####
 HDDRV1="hdd4tb-01"
 HDDRV2="hdd4tb-02"
 HDDRV3="hdd4tb-03"
 HDDRV4="hdd4tb-04"
-HDDRV5=""
-HDDRV6=""
+HDDRV5="hdd4tb-05"
+HDDRV6="hdd4tb-06" ## Not used
 
 ### Lock file
 if [ -f "/tmp/backupsvr.lock" ]; then

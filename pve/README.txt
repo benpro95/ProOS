@@ -109,7 +109,7 @@ zfs set com.sun:auto-snapshot=false BKP-POOL/extbkp
 (Run these in files VM as root)
 mkdir -p /mnt/extbkps/BKP-VOL/Ben
 mkdir -p /mnt/extbkps/BKP-VOL/Media
-mkdir -p /mnt/extbkps/BKP-VOL/.Archive
+mkdir -p /mnt/extbkps/BKP-VOL/.Regions
 chown -R server:server /mnt/extbkps/BKP-VOL/*
 
 (Detach backup ZFS)

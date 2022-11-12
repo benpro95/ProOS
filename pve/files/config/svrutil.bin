@@ -251,7 +251,7 @@ then
     echo " "
     REPLY=""
     echo "$VMHOST virtual machine selected."
-    read -p "select (b) to boot or (s) to shutdown: " -n 1 -r
+    read -p "select (b) to boot,(s) to shutdown, (r) to restore: " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Bb]$ ]]
     then
@@ -260,6 +260,20 @@ then
      while [[ ${temp_cnt} -gt 0 ]];
      do
        printf "\rwait %2d second(s) for startup to trigger." ${temp_cnt}
+       sleep 1
+       ((temp_cnt--))
+     done
+     echo " "
+     cat /mnt/extbkps/keytmp/vmlog.txt
+    fi
+    if [[ $REPLY =~ ^[Rr]$ ]]
+    then
+     touch /mnt/extbkps/keytmp/restore$VMHOST.txt
+     restore_time=450
+     temp_cnt=${restore_time}
+     while [[ ${temp_cnt} -gt 0 ]];
+     do
+       printf "\rwait %2d second(s) for VM to restore." ${temp_cnt}
        sleep 1
        ((temp_cnt--))
      done

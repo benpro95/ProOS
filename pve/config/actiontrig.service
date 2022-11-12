@@ -6,4 +6,4 @@ LogLevelMax=notice
 StandardOutput=append:/mnt/extbkps/keytmp/status.txt
 Type=oneshot
 RemainAfterExit=no
-ExecStart=-/usr/bin/actiontrig
+ExecStart=-/usr/bin/actiontrig.sh

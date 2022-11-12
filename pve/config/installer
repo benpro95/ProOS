@@ -54,16 +54,17 @@ cp -f /tmp/config/rc.local /etc/
 chmod 755 /etc/rc.local
 chown root:root /etc/rc.local
 
-## Action Script Timer
+## Actions Script Timer
 cp -f /tmp/config/actiontrig.timer /etc/systemd/system/
 chmod 644 /etc/systemd/system/actiontrig.timer
 chown root:root /etc/systemd/system/actiontrig.timer
 cp -f /tmp/config/actiontrig.service /etc/systemd/system/
 chmod 644 /etc/systemd/system/actiontrig.service
 chown root:root /etc/systemd/system/actiontrig.service
-cp -f /tmp/config/actiontrig /usr/bin/
-chmod 755 /usr/bin/actiontrig
-chown root:root /usr/bin/actiontrig
+cp -f /tmp/config/actiontrig.sh /usr/bin/
+chmod 755 /usr/bin/actiontrig.sh
+chown root:root /usr/bin/actiontrig.sh
+rm -f /usr/bin/actiontrig
 
 ## Hosts Configuration
 cp -f /tmp/config/hosts /etc/hosts
@@ -117,12 +118,12 @@ else
 fi
 
 ## System Check Script
-cp -f /tmp/config/sys-check /usr/bin/
+cp -f /tmp/config/sys-check.sh /usr/bin/sys-check
 chmod 755 /usr/bin/sys-check
 chown root:root /usr/bin/sys-check
 
 ## Virtual Machines Backup Script
-cp -f /tmp/config/backupvms /usr/bin/
+cp -f /tmp/config/backupvms.sh /usr/bin/backupvms
 chmod +x /usr/bin/backupvms
 chown root:root /usr/bin/backupvms
 

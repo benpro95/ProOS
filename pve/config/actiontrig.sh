@@ -35,23 +35,22 @@ if [ -e /mnt/extbkps/keytmp/pass.txt ]; then
     truncate -s 0 /mnt/extbkps/keytmp/status.txt
   fi
   echo ""
-  for ((i=1; i<11; i++))
-  do
-    ZFSVAR0="ZFSPOOL$i"
-    if [ "${!ZFSVAR0}" = "" ] || \
-       [ "${!ZFSVAR0}" = "tank" ] || \
-       [ "${!ZFSVAR0}" = "datastore" ] || \
-       [ "${!ZFSVAR0}" = "rpool" ] ; then
-      echo "no pool specified."
-      echo ""
-    else
-      echo "importing ZFS backup volume ${!ZFSVAR0}."
-      zpool import ${!ZFSVAR0}
- 	  zfs load-key -L file:///mnt/extbkps/keytmp/pass.txt ${!ZFSVAR0}/extbkp
-	  zfs mount ${!ZFSVAR0}/extbkp
-	  zpool status ${!ZFSVAR0}
-	  echo ""
-    fi
+  readarray -t ZFSPOOLS < /mnt/extbkps/drives.txt
+  for POOL in "${ZFSPOOLS[@]}"; do
+    if [ ! "$POOL" == "" ]; then
+      if [ "$POOL" = "tank" ] || \
+         [ "$POOL" = "datastore" ] || \
+         [ "$POOL" = "rpool" ] ; then
+        echo "invalid pool specified."
+      else
+        echo "importing ZFS backup volume $POOL."
+        zpool import "$POOL"
+   	    zfs load-key -L file:///mnt/extbkps/keytmp/pass.txt "$POOL"/extbkp
+  	    zfs mount "$POOL"/extbkp
+  	    zpool status "$POOL"
+      fi
+      echo ""  
+    fi  
   done
   zfs list
   echo ""
@@ -65,22 +64,21 @@ if [ -e /mnt/extbkps/keytmp/unmount.txt ]; then
 ###### Runs when file exists ##########################
   touch /tmp/actiontrig.lock
   echo ""
-  for ((i=1; i<11; i++))
-  do
-    ZFSVAR1="ZFSPOOL$i"
-    if [ "${!ZFSVAR1}" = "" ] || \
-       [ "${!ZFSVAR1}" = "tank" ] || \
-       [ "${!ZFSVAR1}" = "datastore" ] || \
-       [ "${!ZFSVAR1}" = "rpool" ] ; then
-      echo "no pool specified."
-      echo ""
-    else
-      echo "unmounting ZFS backup volume ${!ZFSVAR1}."
-      zfs unmount /mnt/extbkps/${!ZFSVAR1}
-      zpool export ${!ZFSVAR1}
-      echo ""
-    fi
-  done
+  readarray -t ZFSPOOLS < /mnt/extbkps/drives.txt
+  for POOL in "${ZFSPOOLS[@]}"; do
+    if [ ! "$POOL" == "" ]; then
+      if [ "$POOL" = "tank" ] || \
+         [ "$POOL" = "datastore" ] || \
+         [ "$POOL" = "rpool" ] ; then
+        echo "invalid pool specified."
+      else
+        echo "unmounting ZFS backup volume $POOL."
+        zfs unmount /mnt/extbkps/"$POOL"
+        zpool export "$POOL"
+      fi
+      echo ""  
+    fi  
+  done 
   zfs unload-key -a
   zpool status
   zfs list
@@ -106,6 +104,19 @@ if [ -e /mnt/extbkps/keytmp/startxana.txt ]; then
   qm start 105 &>> $VMLOGFILE
   date &>> $VMLOGFILE
 fi
+if [ -e /mnt/extbkps/keytmp/restorexana.txt ]; then
+###### Runs when file exists ##########################
+  rm -f /mnt/extbkps/keytmp/restorexana.txt
+  if [ ! -e $VMLOGFILE ]; then
+    touch $VMLOGFILE
+  else
+    truncate -s 0 $VMLOGFILE
+  fi
+  echo "restoring xana VM..." &>> $VMLOGFILE
+  qmrestore /var/lib/vz/dump/vzdump-qemu-105-latest.vma.zst \
+    105 -force -storage scratch &>> $VMLOGFILE
+  date &>> $VMLOGFILE
+fi
 #######################################################
 if [ -e /mnt/extbkps/keytmp/startdev.txt ]; then
 ###### Runs when file exists ##########################
@@ -119,6 +130,7 @@ if [ -e /mnt/extbkps/keytmp/startdev.txt ]; then
   qm start 103 &>> $VMLOGFILE
   date &>> $VMLOGFILE
 fi
+
 
 ### Write Server Log ##################################   
 if [ -e /mnt/extbkps/keytmp/createlog.txt ]; then

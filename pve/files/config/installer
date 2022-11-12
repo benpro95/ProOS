@@ -111,9 +111,14 @@ systemctl restart rsyslog
 cp /tmp/config/svrutil.bin /usr/bin/
 chmod 755 /usr/bin/svrutil.bin
 chown root:root /usr/bin/svrutil.bin
+
+## Backup Script
 cp /tmp/config/svrbackup.bin /usr/bin/
 chmod 755 /usr/bin/svrbackup.bin
 chown root:root /usr/bin/svrbackup.bin
+cp /tmp/config/drives.txt /mnt/extbkps/
+chmod 644 /mnt/extbkps/drives.txt
+chown root:root /mnt/extbkps/drives.txt
 
 ## Camera Cleanup Script
 cp /tmp/config/camcleanup /usr/bin/

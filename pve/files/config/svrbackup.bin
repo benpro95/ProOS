@@ -47,7 +47,7 @@ readarray -t ZFSPOOLS < /mnt/extbkps/drives.txt
 for _USBPOOL in "${ZFSPOOLS[@]}"; do
   USBPOOL=$(echo $_USBPOOL | sed -e 's/\r//g')
   if [ ! "$USBPOOL" == "" ]; then
-    if [[ ${USBPOOL::3} == "USB" ]]; then
+    if [[ ${USBPOOL::3} == "usb" ]]; then
       #################################
       if [ ! -e /mnt/extbkps/$USBPOOL/Ben ]; then
         echo "USB drive not connected $USBPOOL"
@@ -96,7 +96,7 @@ done
 for _HDDPOOL in "${ZFSPOOLS[@]}"; do
   HDDPOOL=$(echo $_HDDPOOL | sed -e 's/\r//g')
   if [ ! "$HDDPOOL" == "" ]; then
-    if [[ ${HDDPOOL::3} == "HDD" ]]; then
+    if [[ ${HDDPOOL::3} == "hdd" ]]; then
       #################################
       if [ ! -e /mnt/extbkps/$HDDPOOL/Ben ]; then
         echo "hard drive not connected $HDDPOOL"

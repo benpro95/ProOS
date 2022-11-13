@@ -16,8 +16,6 @@ This repo contains all the custom scripts and programs that I run on my Raspberr
 
 (ledwall) - 93 Pixel Ring of RGB LED's (over 30 effects, each syncs up over Wi-Fi)
 
-(nespi) - RetroPi Emulator (runs old PS1, GBA, N64, NES games on a Sony Trinitron CRT TV)
-
 (touchpi) - Touch Screen Home Automation Interface (runs custom web UI and controls LED strips)
 
 ** Photos of the projects are in each modules folder

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automate</title>
+<style>
+.btn {
+	position : relative;
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #000099;
+  border: none;
+  box-shadow: 0 9px #000000;
+}
+.btn:hover {
+  background-color: #000080;
+}
+.btn:active {
+  background-color: #000080;
+  box-shadow: 0 5px #000000;
+  transform: translateY(4px);
+}
+</style>
+
+</head>
+
+<header id="head ">
+<div class="container">
+  <div class="logo">
+    <img class="img-fluid" src="https://picsum.photos/id/237/200/300" alt="logo infinity projects">
+  </div>
+</div>
+</header>
+
+<body>
+
+<script>
+function sendRequest(act, arg1, arg2) {
+	let url = "http://"+location.hostname+":9300/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
+//	document.getElementById("bottom").innerHTML = url;
+	fetch(url, {
+    method: 'GET',
+  })
+}
+</script>
+
+<h3>Automate Home</h3>
+  <p>Power Buttons:</p>
+      <input type="button" class="btn" value="Lights On" onclick="sendRequest('main','lightson','')"/>
+      <input type="button" class="btn" value="Dresser On" onclick="sendRequest('main','rfa2on','')"/>
+            <input type="button" class="btn" value="Lights On" onclick="sendRequest('main','lightson','')"/>
+      <input type="button" class="btn" value="Dresser On" onclick="sendRequest('main','rfa2on','')"/>
+            <input type="button" class="btn" value="Lights On" onclick="sendRequest('main','lightson','')"/>
+      <input type="button" class="btn" value="Dresser On" onclick="sendRequest('main','rfa2on','')"/>
+            <input type="button" class="btn" value="Lights On" onclick="sendRequest('main','lightson','')"/>
+      <input type="button" class="btn" value="Dresser On" onclick="sendRequest('main','rfa2on','')"/>
+    <p></p>
+      <input type="button" class="btn" value="Lights Off" onclick="sendRequest('main','lightsoff','')"/> 
+      <input type="button" class="btn" value="Dresser Off" onclick="sendRequest('main','rfa2off','')"/>       
+    <p id="bottom"></p>
+
+</body>
+</html>

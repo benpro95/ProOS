@@ -18,8 +18,8 @@
   <a onclick="GoToHomePage()" class="homelogo">
     <i class="fa fa-home"></i>
   </a>
-    <a href="http://aptcam.home:8081">Camera</a>
-    <a href="room.html">Room</a>
+    <a href="http://aptcam.home:8081">Doorway</a>
+    <a href="room.html">Bedroom</a>
     <a href="leds.html">LEDs</a>
   <a onclick="GoToHomePage()" class="split">Automate</a>
 </div>
@@ -42,9 +42,41 @@
           <span class="button__textlgr"></i>+5dB</span>
       </button>      
     <p></p>
-      <button type="button" class="button" onclick="sendCmd('main','togglehpf','')">
-          <span class="button__text"><i class="fa-solid fa-music"></i> HPF</span>
-      </button>       
+      <button type="button" class="button" onclick="sendCmd('main','phono','')">
+          <span class="button__text"><i class="fa-solid fa-record-vinyl"></i> Phono</span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','dac','')">
+          <span class="button__text"><i class="fa-solid fa-file-audio"></i> DAC</span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','aux','')">
+          <span class="button__text"><i class="fa-solid fa-microphone"></i> Aux</span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','opt','')">
+          <span class="button__text"><i class="fa-regular fa-circle-play"></i> Optical</span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','coax','')">   
+          <span class="button__text"><i class="fa-brands fa-apple"></i> AirPlay</span>
+      </button>      
+    <p></p>
+      <button type="button" class="button" onclick="sendCmd('main','hifion','')">
+          <span class="button__text"><i class="fa-solid fa-toggle-on"></i> System</span>
+      </button>  
+      <button type="button" class="button" onclick="sendCmd('main','hifioff','')">
+          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> System</span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','','')">
+          <span class="button__text"><i class="fa-regular fa-star"></i> </span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','usb','')">
+          <span class="button__text"><i class="fa-solid fa-computer"></i> PC</span>
+      </button>    
+      <button type="button" class="button" onclick="sendCmd('main','autodac','')">
+          <span class="button__text"><i class="fa-solid fa-arrows-rotate"></i> Auto</span>
+      </button>        
+    <p></p>
+      <button type="button" class="button" onclick="sendCmd('main','pwrhifi','')">
+          <span class="button__text"><i class="fa-solid fa-power-off"></i> System</span>
+      </button>  
       <button type="button" class="button" onclick="sendCmd('main','subdwn','')">
           <span class="button__text"><i class="fa-solid fa-volume-low"></i> Sub</span>
       </button>
@@ -54,9 +86,58 @@
       <button type="button" class="button" onclick="sendCmd('main','subup','')">
           <span class="button__text"><i class="fa-solid fa-volume-high"></i> Sub</span>
       </button>    
-      <button type="button" class="button" onclick="sendCmd('main','pwrhifi','')">
-          <span class="button__text"><i class="fa-solid fa-power-off"></i> System</span>
-      </button>                          
+      <button type="button" class="button" onclick="sendCmd('main','togglehpf','')">
+          <span class="button__text"><i class="fa-solid fa-music"></i> HPF</span>
+      </button>    
+    <p></p>
+      <button type="button" class="button" onclick="sendCmd('main','roomon','')">
+          <span class="button__text"><i class="fa-solid fa-toggle-on"></i> Apartment</span>
+      </button>  
+      <button type="button" class="button" onclick="sendCmd('main','rfa3','on')">
+          <span class="button__text"><i class="fa-solid fa-toggle-on"></i> Macs</span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','pcon','')">
+          <span class="button__text"><i class="fa-solid fa-toggle-on"></i> Computer</span>
+      </button>      
+      <button type="button" class="button" onclick="sendCmd('main','rfc1','on')">
+          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Main</span>
+      </button>    
+      <button type="button" class="button" onclick="sendCmd('main','rfa2','on')">
+          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Dresser</span>
+      </button>        
+    <p></p>
+      <button type="button" class="button" onclick="sendCmd('main','roomoff','')">
+          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> Apartment</span>
+      </button>  
+      <button type="button" class="button" onclick="sendCmd('main','rfa3','off')">
+          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> Macs</span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','pcoff','')">
+          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> Computer</span>
+      </button>      
+      <button type="button" class="button" onclick="sendCmd('main','rfc1','off')">
+          <span class="button__text"><i class="fa-regular fa-toggle-off"></i> Main</span>
+      </button>    
+      <button type="button" class="button" onclick="sendCmd('main','rfa2','off')">
+          <span class="button__text"><i class="fa-regular fa-toggle-off"></i> Dresser</span>
+      </button>        
+    <p></p>
+      <button type="button" class="button" onclick="sendCmd('main','rfa1','on')">
+          <span class="button__text"><i class="fa-solid fa-tv"></i> CRT TV</span>
+      </button>  
+      <button type="button" class="button" onclick="sendCmd('main','rfa1','off')">
+          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> CRT TV</span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','','')">
+          <span class="button__text"><i class="fa-regular fa-star"></i> </span>
+      </button>      
+      <button type="button" class="button" onclick="sendCmd('main','lightson','')">
+          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> All Lights</span>
+      </button>    
+      <button type="button" class="button" onclick="sendCmd('main','lightsoff','')">
+          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> All Lights</span>
+      </button>        
+    <p></p>    
     <p class="bodytext" id="bottom"></p>
 </div>
 

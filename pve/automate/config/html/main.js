@@ -6,7 +6,6 @@ function sendCmd(act, arg1, arg2) {
     })
  }
 
-
 function GoToHomePage() {
   window.location = '/';   
 }

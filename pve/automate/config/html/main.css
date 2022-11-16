@@ -1,0 +1,99 @@
+@font-face {
+    font-family: 'JosefinSans';
+    src: url('../fonts/JosefinSans-SemiBold-webfont.eot?v=4.3.0');
+    src: url('../fonts/JosefinSans-SemiBold-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/JosefinSans-SemiBold-webfont.woff2?v=4.3.0') format('woff2'), url('../fonts/JosefinSans-SemiBold-webfont.woff') format('woff'), url('../fonts/JosefinSans-SemiBold-webfont.ttf') format('truetype'), url('../fonts/JosefinSans-SemiBold-webfont.svg') format('svg');
+    font-weight: normal;
+    font-style: normal
+}
+
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    font-family: JosefinSans, sans-serif;
+    font-size: 22px;
+}  	
+html {
+    background-color: black;
+    height: 100%;
+    background-image:
+    linear-gradient(
+      to bottom,
+      rgb(23, 17, 107),
+      rgb(0, 0, 0) 70%
+    );
+    background-repeat: no-repeat; 
+}
+body {
+    margin: 0 5px;
+    height: 100%;
+    min-height: 100%
+    background-color: black; 
+}   
+.button {
+	width: 135px;
+    border: 0;
+    line-height: 4.5;
+    margin:2px;
+    padding: 0 0px;
+    text-align: center;
+    color: #fff;
+    text-shadow: 1px 1px 1px #000;
+    border-radius: 12px;
+    background-color: #0f0254;
+    background-image: linear-gradient(to top left,
+                                      rgba(0, 0, 0, .2),
+                                      rgba(0, 0, 0, .2) 30%,
+                                      rgba(0, 0, 0, 0));
+    box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
+                inset -2px -2px 3px rgba(0, 0, 0, .6);
+}
+.button:hover {
+    background-color: #0f0254;
+    background-image: linear-gradient(to top left,
+                                      rgba(0, 0, 0, .2),
+                                      rgba(0, 0, 0, .2) 50%,
+                                      rgba(0, 0, 0, 0));
+    box-shadow: inset 4px 4px 6px rgba(255, 255, 255, .6),
+                inset -4px -4px 6px rgba(0, 0, 0, .6);
+}
+.button:active {
+    box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
+                inset 2px 2px 3px rgba(0, 0, 0, .6);
+}
+.topnav {
+	line-height: 3;
+  overflow: hidden;
+  background-color: #2d353d;
+}
+
+.topnav a {
+  float: left;
+  padding: 0px 12px;
+  text-decoration: none;
+  text-align: center;
+  color: #fff;
+  text-shadow: 1px 1px 1px #000;
+}
+
+.topnav a:hover {
+  background-color: #000;
+  color: white;
+}
+
+/* Create a right-aligned (split) link inside the navigation bar */
+.topnav a.split {
+  float: right;
+  color: white;
+}	
+
+.topnav a.homelogo {
+  line-height: 2;
+  font-size: 33px;
+}	
+
+.bodytext{
+  color: #fff;
+  padding-left: 8px;
+  font-size: 18px;
+}

@@ -4,123 +4,83 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Automate</title>
-  <link rel="stylesheet" href="font-awesome.min.css">
-  <style>
-	html {
-	    height:100%;
-	} 	
-	body {
-    min-height: 400px;
-    height: auto;
-    background-color: black;
-	  background-image:
-	    linear-gradient(
-	      to bottom,
-	      red,
-	      black 40%
-	    );
-	}
-	.button {
-		width: 140px;
-	    border: 0;
-	    line-height: 4.5;
-	    padding: 0 0px;
-	    font-size: 1.25rem;
-	    text-align: center;
-	    color: #fff;
-	    text-shadow: 1px 1px 1px #000;
-	    border-radius: 10px;
-	    background-color: rgba(220, 0, 0, 1);
-	    background-image: linear-gradient(to top left,
-	                                      rgba(0, 0, 0, .2),
-	                                      rgba(0, 0, 0, .2) 30%,
-	                                      rgba(0, 0, 0, 0));
-	    box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
-	                inset -2px -2px 3px rgba(0, 0, 0, .6);
-	}
-	.button:hover {
-	    background-color: rgba(255, 0, 0, 1);
-	}
-	.button:active {
-	    box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
-	                inset 2px 2px 3px rgba(0, 0, 0, .6);
-	}
-  </style>
+    <link rel="stylesheet" href="font-awesome.min.css">
+    <link rel="stylesheet" href="main.css">
+    <script src="main.js"></script>
 </head>
-<header id="head ">
-<div class="container">
-  <div class="logo">
-    <img src=" " alt="logo">
-  </div>
-</div>
-</header>
 <body>
-<script>
-function sendRequest(act, arg1, arg2) {
-	let url = "http://"+location.hostname+":9300/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
-//	document.getElementById("bottom").innerHTML = url;
-	fetch(url, {
-    method: 'GET',
-  })
-}
-</script>
 
-<h3>Automate Home</h3>
-  <p>Power Buttons:</p>
-      <button class="button" type="button" onclick="sendRequest('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
-      <button class="button" type="button" onclick="sendRequest('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
-      <button class="button" type="button" onclick="sendRequest('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
-      <button class="button" type="button" onclick="sendRequest('main','lightsoff','')"><i class="fa fa-download"></i> Lights Off</button>
-      <button class="button" type="button" onclick="sendRequest('main','lights','')"><i></i> L Toggle</button>
+<div class="topnav">
+  <a onclick="GoToHomePage()" class="homelogo">
+    <i class="fa fa-home"></i>
+  </a>
+    <a href="http://aptcam.home:8081">Camera</a>
+    <a href="room.html">Room</a>
+    <a href="leds.html">LEDs</a>
+  <a onclick="GoToHomePage()" class="split">Automate</a>
+</div>
+
+<div>
     <p></p>
-      <button class="button" type="button" onclick="sendRequest('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
-      <button class="button" type="button" onclick="sendRequest('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
-      <button class="button" type="button" onclick="sendRequest('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
-      <button class="button" type="button" onclick="sendRequest('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
-      <button class="button" type="button" onclick="sendRequest('main','lights','')"><i></i> L Toggle</button>
+      <button class="button" onclick="sendCmd('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
+      <button class="button" onclick="sendCmd('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
+      <button class="button" onclick="sendCmd('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
+      <button class="button" onclick="sendCmd('main','lightsoff','')"><i class="fa fa-download"></i> Lights Off</button>
+      <button class="button" onclick="sendCmd('main','lights','')"><i></i> L Toggle</button>
     <p></p>
-      <button class="button" type="button" onclick="sendRequest('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
-      <button class="button" type="button" onclick="sendRequest('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
-      <button class="button" type="button" onclick="sendRequest('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
-      <button class="button" type="button" onclick="sendRequest('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
-      <button class="button" type="button" onclick="sendRequest('main','lights','')"><i></i> L Toggle</button>
+      <button class="button" onclick="sendCmd('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
+      <button class="button" onclick="sendCmd('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
+      <button class="button" onclick="sendCmd('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
+      <button class="button" onclick="sendCmd('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
+      <button class="button" onclick="sendCmd('main','lights','')"><i></i> L Toggle</button>
     <p></p>
-      <button class="button" type="button" onclick="sendRequest('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
-      <button class="button" type="button" onclick="sendRequest('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
-      <button class="button" type="button" onclick="sendRequest('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
-      <button class="button" type="button" onclick="sendRequest('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
-      <button class="button" type="button" onclick="sendRequest('main','lights','')"><i></i> L Toggle</button>
+      <button class="button" onclick="sendCmd('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
+      <button class="button" onclick="sendCmd('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
+      <button class="button" onclick="sendCmd('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
+      <button class="button" onclick="sendCmd('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
+      <button class="button" onclick="sendCmd('main','lights','')"><i></i> L Toggle</button>
     <p></p>
-      <button class="button" type="button" onclick="sendRequest('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
-      <button class="button" type="button" onclick="sendRequest('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
-      <button class="button" type="button" onclick="sendRequest('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
-      <button class="button" type="button" onclick="sendRequest('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
-      <button class="button" type="button" onclick="sendRequest('main','lights','')"><i></i> L Toggle</button>
+      <button class="button" onclick="sendCmd('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
+      <button class="button" onclick="sendCmd('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
+      <button class="button" onclick="sendCmd('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
+      <button class="button" onclick="sendCmd('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
+      <button class="button" onclick="sendCmd('main','lights','')"><i></i> L Toggle</button>
     <p></p>
-      <button class="button" type="button" onclick="sendRequest('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
-      <button class="button" type="button" onclick="sendRequest('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
-      <button class="button" type="button" onclick="sendRequest('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
-      <button class="button" type="button" onclick="sendRequest('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
-      <button class="button" type="button" onclick="sendRequest('main','lights','')"><i></i> L Toggle</button>
+      <button class="button" onclick="sendCmd('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
+      <button class="button" onclick="sendCmd('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
+      <button class="button" onclick="sendCmd('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
+      <button class="button" onclick="sendCmd('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
+      <button class="button" onclick="sendCmd('main','lights','')"><i></i> L Toggle</button>
     <p></p>
-      <button class="button" type="button" onclick="sendRequest('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
-      <button class="button" type="button" onclick="sendRequest('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
-      <button class="button" type="button" onclick="sendRequest('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
-      <button class="button" type="button" onclick="sendRequest('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
-      <button class="button" type="button" onclick="sendRequest('main','lights','')"><i></i> L Toggle</button>   
+      <button class="button" onclick="sendCmd('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
+      <button class="button" onclick="sendCmd('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
+      <button class="button" onclick="sendCmd('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
+      <button class="button" onclick="sendCmd('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
+      <button class="button" onclick="sendCmd('main','lights','')"><i></i> L Toggle</button>
     <p></p>
-      <button class="button" type="button" onclick="sendRequest('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
-      <button class="button" type="button" onclick="sendRequest('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
-      <button class="button" type="button" onclick="sendRequest('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
-      <button class="button" type="button" onclick="sendRequest('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
-      <button class="button" type="button" onclick="sendRequest('main','lights','')"><i></i> L Toggle</button> 
+      <button class="button" onclick="sendCmd('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
+      <button class="button" onclick="sendCmd('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
+      <button class="button" onclick="sendCmd('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
+      <button class="button" onclick="sendCmd('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
+      <button class="button" onclick="sendCmd('main','lights','')"><i></i> L Toggle</button>   
     <p></p>
-      <button class="button" type="button" onclick="sendRequest('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
-      <button class="button" type="button" onclick="sendRequest('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
-      <button class="button" type="button" onclick="sendRequest('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
-      <button class="button" type="button" onclick="sendRequest('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
-      <button class="button" type="button" onclick="sendRequest('main','lights','')"><i></i> L Toggle</button>                                     
+      <button class="button" onclick="sendCmd('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
+      <button class="button" onclick="sendCmd('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
+      <button class="button" onclick="sendCmd('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
+      <button class="button" onclick="sendCmd('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
+      <button class="button" onclick="sendCmd('main','lights','')"><i></i> L Toggle</button> 
+    <p></p>
+      <button class="button" onclick="sendCmd('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
+      <button class="button" onclick="sendCmd('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
+      <button class="button" onclick="sendCmd('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
+      <button class="button" onclick="sendCmd('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
+      <button class="button" onclick="sendCmd('main','lights','')"><i></i> L Toggle</button>                            
     <p id="bottom"></p>
+</div>
+
+<div>
+  <p class="bodytext">by Ben Provenzano III</p>
+</div>
 
 </body>
 </html>

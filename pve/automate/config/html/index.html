@@ -4,11 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Automate</title>
-    <link rel="stylesheet" href="font-awesome.min.css">
-    <link rel="stylesheet" href="main.css">
+    <link href="fa/css/fontawesome.css" rel="stylesheet">
+    <link href="fa/css/brands.css" rel="stylesheet">
+    <link href="fa/css/solid.css" rel="stylesheet">
+    <link href="main.css" rel="stylesheet">
     <script src="main.js"></script>
 </head>
 <body>
+
+<div class="init"></div>
 
 <div class="topnav">
   <a onclick="GoToHomePage()" class="homelogo">
@@ -20,63 +24,39 @@
   <a onclick="GoToHomePage()" class="split">Automate</a>
 </div>
 
-<div class="lds-spinner"><div>
-
 <div>
     <p></p>
-      <button class="button" onclick="sendCmd('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
-      <button class="button" onclick="sendCmd('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
-      <button class="button" onclick="sendCmd('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
-      <button class="button" onclick="sendCmd('main','lightsoff','')"><i class="fa fa-download"></i> Lights Off</button>
-      <button class="button" onclick="sendCmd('main','lights','')"><i></i> L Toggle</button>
+      <button type="button" class="button" onclick="sendCmd('main','dwnc','')">
+          <span class="button__textlgr"></i>-5dB</span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','dwnf','')">
+          <span class="button__textlgr"><i class="fa-solid fa-volume-low"></i></span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','mute','')">
+          <span class="button__textlgr"><i class="fa-solid fa-volume-xmark"></i></span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','upf','')">
+          <span class="button__textlgr"><i class="fa-solid fa-volume-high"></i></span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','upc','')">   
+          <span class="button__textlgr"></i>+5dB</span>
+      </button>      
     <p></p>
-      <button class="button" onclick="sendCmd('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
-      <button class="button" onclick="sendCmd('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
-      <button class="button" onclick="sendCmd('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
-      <button class="button" onclick="sendCmd('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
-      <button class="button" onclick="sendCmd('main','lights','')"><i></i> L Toggle</button>
-    <p></p>
-      <button class="button" onclick="sendCmd('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
-      <button class="button" onclick="sendCmd('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
-      <button class="button" onclick="sendCmd('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
-      <button class="button" onclick="sendCmd('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
-      <button class="button" onclick="sendCmd('main','lights','')"><i></i> L Toggle</button>
-    <p></p>
-      <button class="button" onclick="sendCmd('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
-      <button class="button" onclick="sendCmd('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
-      <button class="button" onclick="sendCmd('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
-      <button class="button" onclick="sendCmd('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
-      <button class="button" onclick="sendCmd('main','lights','')"><i></i> L Toggle</button>
-    <p></p>
-      <button class="button" onclick="sendCmd('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
-      <button class="button" onclick="sendCmd('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
-      <button class="button" onclick="sendCmd('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
-      <button class="button" onclick="sendCmd('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
-      <button class="button" onclick="sendCmd('main','lights','')"><i></i> L Toggle</button>
-    <p></p>
-      <button class="button" onclick="sendCmd('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
-      <button class="button" onclick="sendCmd('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
-      <button class="button" onclick="sendCmd('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
-      <button class="button" onclick="sendCmd('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
-      <button class="button" onclick="sendCmd('main','lights','')"><i></i> L Toggle</button>
-    <p></p>
-      <button class="button" onclick="sendCmd('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
-      <button class="button" onclick="sendCmd('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
-      <button class="button" onclick="sendCmd('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
-      <button class="button" onclick="sendCmd('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
-      <button class="button" onclick="sendCmd('main','lights','')"><i></i> L Toggle</button>   
-    <p></p>
-      <button class="button" onclick="sendCmd('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
-      <button class="button" onclick="sendCmd('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
-      <button class="button" onclick="sendCmd('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
-      <button class="button" onclick="sendCmd('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
-      <button class="button" onclick="sendCmd('main','lights','')"><i></i> L Toggle</button> 
-    <p></p>
-      <button class="button" onclick="sendCmd('main','rfa2on','')"><i class="fa fa-home"></i> Dre On</button>
-      <button class="button" onclick="sendCmd('main','rfa2off','')"><i class="fa fa-home"></i> Dre Off</button>
-      <button class="button" onclick="sendCmd('main','lightson','')"><i class="fa fa-home"></i> Lights On</button>
-      <button class="button" onclick="sendCmd('main','lightsoff','')"><i class="fa fa-home"></i> Lights Off</button>
-      <button class="button" onclick="sendCmd('main','lights','')"><i></i> L Toggle</button>                            
+      <button type="button" class="button" onclick="sendCmd('main','togglehpf','')">
+          <span class="button__text"><i class="fa-solid fa-music"></i> HPF</span>
+      </button>       
+      <button type="button" class="button" onclick="sendCmd('main','subdwn','')">
+          <span class="button__text"><i class="fa-solid fa-volume-low"></i> Sub</span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','subpwr','')">
+          <span class="button__text"><i class="fa-solid fa-volume-xmark"></i> Sub</span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','subup','')">
+          <span class="button__text"><i class="fa-solid fa-volume-high"></i> Sub</span>
+      </button>    
+      <button type="button" class="button" onclick="sendCmd('main','pwrhifi','')">
+          <span class="button__text"><i class="fa-solid fa-power-off"></i> System</span>
+      </button>                          
     <p class="bodytext" id="bottom"></p>
 </div>
 

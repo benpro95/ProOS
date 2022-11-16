@@ -120,14 +120,6 @@ chown root:root /etc/sudoers.d/nobody-perms
 chmod u=rwx,g=rx,o=rx /etc/sudoers.d/nobody-perms
 chmod u=r,g=r,o= /etc/sudoers.d/nobody-perms
 
-## Unifed Remote Server
-cp -f /tmp/config/urserver.service /etc/systemd/system/
-chmod 644 /etc/systemd/system/urserver.service
-chown root:root /etc/systemd/system/urserver.service
-systemctl disable urserver
-## Set UR theme
-/opt/rpi/init dblue
-
 ## Relax Loop Service
 cp -f /tmp/config/relaxloop.service /etc/systemd/system/
 chmod 644 /etc/systemd/system/relaxloop.service
@@ -168,9 +160,9 @@ ln -sf /opt/system/main /opt/system/xmit
 
 ## Restart Services
 systemctl restart lighttpd
-systemctl restart urserver
 
 ## Clean-up
+rm -f /etc/systemd/system/urserver.service
 systemctl daemon-reload
 rm -rf /tmp/config/
 apt-get autoremove -y

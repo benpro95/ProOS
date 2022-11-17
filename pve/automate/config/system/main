@@ -454,6 +454,14 @@ fi
 exit
 ;;
 
+
+## Sleep Mode
+sleep)
+  /opt/system/main relax waterfall
+  /opt/system/main pcoff
+exit
+;;
+
 ####################################
 ## Automated Multi-Functions
 

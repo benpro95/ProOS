@@ -7,8 +7,6 @@
 case "$1" in
 
 boot)
-## Unified Web Server
-systemctl start rpi-urserver
 ## LED Controller
 /opt/rpi/leds fc 40
 ## Auto Hotspot (on boot only)

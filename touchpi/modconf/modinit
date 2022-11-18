@@ -18,9 +18,6 @@ echo "Components integrity verified."
 fi
 echo "Starting $MODNAME configuration..."
 
-## Enable LED remotes
-ln -sf /opt/rpi/effects/remotes /opt/rpi/remotes/leds
-
 ## Set LED Type
 rm -f /opt/rpi/ledtype.txt
 echo "8x60strips" > /opt/rpi/ledtype.txt
@@ -30,11 +27,6 @@ mount -o remount,rw /boot
 sleep 1.25
 cp -f $BIN/modconf/config.txt /boot/
 mount -o remount,ro /boot
-
-## Light Web Server (disable redirection to port :9510)
-cp -f /etc/lighttpd/lighttpd-noredir.conf /etc/lighttpd/lighttpd.conf
-chmod 644 /etc/lighttpd/lighttpd.conf
-chown root:root /etc/lighttpd/lighttpd.conf
 
 ## X11 Setup
 cp -f $BIN/modconf/xautostart /home/pi/.config/lxsession/LXDE/autostart

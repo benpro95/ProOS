@@ -30,11 +30,6 @@ cp -f $BIN/modconf/asound.conf /etc/
 chmod 644 /etc/asound.conf
 chown root:root /etc/asound.conf
 
-## Light Web Server (disable redirection to port :9510)
-cp -f /etc/lighttpd/lighttpd-noredir.conf /etc/lighttpd/lighttpd.conf
-chmod 644 /etc/lighttpd/lighttpd.conf
-chown root:root /etc/lighttpd/lighttpd.conf
-
 ## AutoFS Configuration
 cp -f $BIN/modconf/auto.master /etc/
 chmod 644 /etc/auto.master
@@ -43,8 +38,5 @@ cp -f $BIN/modconf/auto.map /etc/
 chmod 644 /etc/auto.map
 chown root:root /etc/auto.map
 mkdir -p /mnt/smb
-
-## Link Main Script
-ln -sf /opt/rpi/main /usr/bin/main
 
 exit

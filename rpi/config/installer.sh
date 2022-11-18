@@ -743,9 +743,6 @@ chown root:root /etc/motion/motion.conf
 ln -sf /opt/rpi/init /usr/bin/rpi
 ln -sf /opt/rpi/leds /usr/bin/leds
 
-## Set web server default theme
-/opt/rpi/init dred
-
 ## Compile COBOL Programs
 cobc -x --free /opt/rpi/effects/colorscan.cbl -o /opt/rpi/effects/colorscan
 

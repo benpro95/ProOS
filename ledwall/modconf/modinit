@@ -29,26 +29,9 @@ touch /boot/autohotspot.off
 ########################
 mount -o remount,ro /boot
 
-## Enable LED remotes
-ln -sf /opt/rpi/effects/remotes /opt/rpi/remotes/leds
-
 ## Set LED Type
 rm -f /opt/rpi/ledtype.txt
 echo "93ring" > /opt/rpi/ledtype.txt
-
-## Stage II - Set module name to configs
-if [ ! -e $BIN/modconf/brand.txt ]; then
-echo "Skip module naming."
-else
-echo "Setting module name."
-## Module specific home page
-cp -f $BIN/modconf/client.html /opt/rpi/manager
-chmod 644 /opt/rpi/manager/client.html
-chown root:root /opt/rpi/manager/client.html
-## Set module name to unified server
-sed -i "s/RaspberryPi/$MODNAME/g" /opt/rpi/manager/client.html
-sed -i "s/raspberrypi/$HOSTNAME/g" /opt/rpi/manager/client.html
-fi
 
 ## Link RPi to global commands library
 ln -sf /opt/rpi/main /usr/bin/main
@@ -62,8 +45,5 @@ chown root:root /opt/rpi/effects/spectro/lib/SpectroGraph.jar
 #cp -f /etc/dnsmasq.routed /etc/dnsmasq.conf
 #chmod 644 /etc/dnsmasq.conf
 #chown root:root /etc/dnsmasq.conf
-
-## Change Web Server Default Theme
-/opt/rpi/init dpurple
 
 exit

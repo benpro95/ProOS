@@ -1,5 +1,5 @@
 #!/bin/sh
-## LEDwall Configuration Script v7.0
+## LEDgrid Configuration Script v7.0
 
 # Import Host name
 HOSTNAME=`cat /opt/rpi/config/hostname`
@@ -24,36 +24,13 @@ sleep 1.25
 cp -r $BIN/modconf/config.txt /boot/
 mount -o remount,ro /boot
 
-## Enable LED remotes
-ln -sf /opt/rpi/effects/remotes /opt/rpi/remotes/leds
-
 ## Set LEDgrid Type
 rm -f /opt/rpi/ledtype.txt
 echo "8x8revgrid" > /opt/rpi/ledtype.txt
-
-## Stage II - Set module name to configs
-if [ ! -e $BIN/modconf/brand.txt ]; then
-echo "Skip module naming."
-else
-echo "Setting module name."
-## Module specific home page
-cp -fv $BIN/modconf/client.home.html /opt/rpi/manager/client.html
-chmod 644 /opt/rpi/manager/client.html
-chown root:root /opt/rpi/manager/client.html
-## Set module name to unified server
-sed -i "s/RaspberryPi/$MODNAME/g" /opt/rpi/manager/client.html
-sed -i "s/raspberrypi/$HOSTNAME/g" /opt/rpi/manager/client.html
-fi
-
-## Link RPi to global commands library
-ln -sf /opt/rpi/main /usr/bin/main
 
 ## Routed Hotspot Configuration
 #cp -f /etc/dnsmasq.routed /etc/dnsmasq.conf
 #chmod 644 /etc/dnsmasq.conf
 #chown root:root /etc/dnsmasq.conf
-
-## Change Web Server Default Theme
-/opt/rpi/init dgreen
 
 exit

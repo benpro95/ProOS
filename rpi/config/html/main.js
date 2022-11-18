@@ -21,11 +21,6 @@ function sendCmd(act, arg1, arg2) {
   loadBar();
 };
 
-// back to home page 
-function GoToHomePage() {
-  window.location = 'http://automate.home/';   
-};
-
 function loadBar() {
   if (load_bar == 0) {
     load_bar = 1;

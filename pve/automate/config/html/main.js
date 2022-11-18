@@ -12,26 +12,31 @@ window.onload = function() {
   }else{
     vol_mode = 0;  
   }
+  // load relax mode support on bedroom page only
   const host2 = "http://"+location.hostname+"/room.html"
   if (window.location.href == host2) {
     relaxMode();
   }else{    
     relax_mode = 0;  
   }
+  // set loading bar text
   var elem = document.getElementById("load__bar");
   elem.textContent = "Automate";  
 };
 
 // transmit command
 function sendCmd(act, arg1, arg2) {
+  // adjust API syntax for different functions
 	if (vol_mode == 1) {  
     arg2 = "subs";
   }
   if (relax_mode == 1) {  
     arg2 = arg2+"-hifi";
-  }  
+  } 
+  // construct API string
 	let url = "http://"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
 	document.getElementById("bottom").innerHTML = url;
+  // send data
 	fetch(url, {
       method: 'GET',
     })
@@ -75,7 +80,7 @@ function loadBar() {
     var elem = document.getElementById("load__bar");
     elem.textContent = " ";  
     var width = 1;
-    var id = setInterval(frame, 0.4);
+    var id = setInterval(frame, 0.5);
     function frame() {
       if (width >= 100) {
         clearInterval(id);

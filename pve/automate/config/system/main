@@ -374,19 +374,24 @@ CMD=$1
 case "$1" in
 
 relax)
+RELAX_MODE=${CMDARG%-*}
+RELAX_HOST=${CMDARG#*-}
+CMDARG="$RELAX_MODE"
 ### Relax Sounds Playback
-if [ ! -e /var/lock/rpi/relaxrec.save ]; then
-  ## Play Audio on Apple TV
-  systemctl stop relaxloop
-  systemctl set-environment rpi_relaxmode=$CMDARG
-  systemctl start relaxloop
-else
+if [ $RELAX_HOST == "hifi" ]; then
+  echo "playing $CMDARG on HiFi"
   ## Optical Decoder Input
   XMITCMD="coaxial" ; XMIT
   ## Preamp DAC Input
   XMITCMD="dac" ; XMIT 
   ## Play Audio on System
   ESP32="no"; TARGET="hifi.home"; XMITCMD="relax"; CALLAPI
+else
+  ## Play Audio on Apple TV
+  echo "playing $CMDARG on Apple TV"
+  systemctl stop relaxloop
+  systemctl set-environment rpi_relaxmode=$CMDARG
+  systemctl start relaxloop
 fi
 exit
 ;;
@@ -406,16 +411,6 @@ fi
 exit
 ;;
 
-stoprelax-hifi)
-## Stop Audio on System
-ESP32="no"; TARGET="hifi.home"; XMITCMD="stoprelax"; CALLAPI  
-## Auto Decoder Input
-XMITCMD="inauto" ; XMIT
-## Preamp DAC Input
-XMITCMD="dac" ; XMIT
-exit
-;;
-
 vmute)
 if [ "$CMDARG" == "bedroom" ]; then
   ## Turn Off Apple TV
@@ -425,6 +420,17 @@ if [ "$CMDARG" == "bedroom" ]; then
 fi
 if [ "$CMDARG" == "subs" ]; then
   XMITCMD="subpwr" ; XMIT
+fi  
+RELAX_MODE=${CMDARG%-*}
+RELAX_HOST=${CMDARG#*-}
+CMDARG="$RELAX_HOST"
+if [ "$CMDARG" == "hifi" ]; then
+  ## Stop Audio on System
+  ESP32="no"; TARGET="hifi.home"; XMITCMD="stoprelax"; CALLAPI  
+  ## Auto Decoder Input
+  XMITCMD="inauto" ; XMIT
+  ## Preamp DAC Input
+  XMITCMD="dac" ; XMIT
 fi  
 exit
 ;;
@@ -437,6 +443,12 @@ fi
 if [ "$CMDARG" == "subs" ]; then
   XMITCMD="subup" ; XMIT
 fi   
+RELAX_MODE=${CMDARG%-*}
+RELAX_HOST=${CMDARG#*-}
+CMDARG="$RELAX_HOST"
+if [ "$CMDARG" == "hifi" ]; then
+  XMITCMD="upc" ; XMIT
+fi
 exit
 ;;
 
@@ -447,6 +459,12 @@ if [ "$CMDARG" == "bedroom" ]; then
 fi
 if [ "$CMDARG" == "subs" ]; then
   XMITCMD="subdwn" ; XMIT
+fi
+RELAX_MODE=${CMDARG%-*}
+RELAX_HOST=${CMDARG#*-}
+CMDARG="$RELAX_HOST"
+if [ "$CMDARG" == "hifi" ]; then
+  XMITCMD="dwnc" ; XMIT
 fi
 exit
 ;;

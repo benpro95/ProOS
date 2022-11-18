@@ -1,15 +1,22 @@
 // globals
 var vol_mode = 1;
+var relax_mode = 1;
 var load_bar = 0;
 
 // on-page-load
 window.onload = function() {
-  const host = "http://"+location.hostname+"/"
+  const host1 = "http://"+location.hostname+"/"
   // load volume mode support on main page only
-  if (window.location.href == host) {
+  if (window.location.href == host1) {
     volMode();
   }else{
     vol_mode = 0;  
+  }
+  const host2 = "http://"+location.hostname+"/room.html"
+  if (window.location.href == host2) {
+    relaxMode();
+  }else{    
+    relax_mode = 0;  
   }
   var elem = document.getElementById("load__bar");
   elem.textContent = "Automate";  
@@ -18,10 +25,13 @@ window.onload = function() {
 // transmit command
 function sendCmd(act, arg1, arg2) {
 	if (vol_mode == 1) {  
-      arg2 = "subs"
-    }
+    arg2 = "subs";
+  }
+  if (relax_mode == 1) {  
+    arg2 = arg2+"-hifi";
+  }  
 	let url = "http://"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
-//	document.getElementById("bottom").innerHTML = url;
+	document.getElementById("bottom").innerHTML = url;
 	fetch(url, {
       method: 'GET',
     })
@@ -41,6 +51,17 @@ function volMode() {
     } else {	
        id.textContent = "Bedroom";
        vol_mode = 0;
+    }
+};
+
+function relaxMode() {   
+  let id = document.getElementById("relax__text");
+    if (relax_mode == 0) {
+       id.textContent = "HiFi";
+       relax_mode = 1;
+    } else {  
+       id.textContent = "Bedroom";
+       relax_mode = 0;
     }
 };
 

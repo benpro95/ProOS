@@ -26,6 +26,54 @@
 
 <div>
     <p></p>
+      <button type="button" class="button" onclick="sendCmd('main','rfa3','on')">
+          <span class="button__text"><i class="fa-solid fa-tv"></i> TV</span>
+      </button> 
+      <button type="button" class="button" onclick="sendCmd('main','rfa1','on')">
+          <span class="button__text"><i class="fa-solid fa-toggle-on"></i> Macs</span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','pcon','')">
+          <span class="button__text"><i class="fa-solid fa-toggle-on"></i> Computer</span>
+      </button>       
+      <button type="button" class="button" onclick="sendCmd('main','rfa2','on')">
+          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Dresser</span>
+      </button>     
+      <button type="button" class="button" onclick="sendCmd('main','rfc1','on')">
+          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Main</span>
+      </button>     
+    <p></p>
+      <button type="button" class="button" onclick="sendCmd('main','rfa3','off')">
+          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> TV</span>
+      </button>
+       <button type="button" class="button" onclick="sendCmd('main','rfa1','off')">
+          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> Macs</span>
+      </button>     
+      <button type="button" class="button" onclick="sendCmd('main','pcoff','')">
+          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> Computer</span>
+      </button> 
+      <button type="button" class="button" onclick="sendCmd('main','rfa2','off')">
+          <span class="button__text"><i class="fa-regular fa-toggle-off"></i> Dresser</span> 
+      </button>   
+      <button type="button" class="button" onclick="sendCmd('main','rfc1','off')">
+          <span class="button__text"><i class="fa-regular fa-toggle-off"></i> Main</span>
+      </button>             
+    <p></p>
+      <button type="button" class="button" onclick="sendCmd('main','roomon','')">
+          <span class="button__text"><i class="fa-solid fa-toggle-on"></i> Apartment</span>
+      </button>  
+      <button type="button" class="button" onclick="sendCmd('main','roomoff','')">
+          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> Apartment</span>
+      </button>  
+      <button type="button" class="button" onclick="sendCmd('main','sleep','')">
+          <span class="button__text"><i class="fa-regular fa-moon"></i> Sleep</span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','alloff','')">
+          <span class="button__text"><i class="fa-regular fa-toggle-off"></i> All Lights</span>
+      </button>    
+      <button type="button" class="button" onclick="sendCmd('main','allon','')">
+          <span class="button__text"><i class="fa-solid fa-toggle-on"></i> All Lights</span>
+      </button>  
+    <p></p>
       <button type="button" class="button" onclick="sendCmd('main','dwnc','')">
           <span class="button__textlgr"></i>-5dB</span>
       </button>
@@ -74,9 +122,10 @@
           <span class="button__text"><i class="fa-solid fa-toggle-on"></i> System</span>
       </button> 
     <p></p>
-      <button type="button" class="button" onclick="sendCmd('main','','')">
-          <span class="button__text"><i class=""></i>?</span>
+      <button type="button" class="button" onclick="subLock()">
+          <span class="button__text"><i id="LockButton" class="fa fa-lock"></i> Sub</span>
       </button>
+
       <button type="button" class="button" onclick="sendCmd('main','subdwn','')">
           <span class="button__text"><i class="fa-solid fa-volume-low"></i> Sub</span>
       </button>
@@ -86,63 +135,14 @@
       <button type="button" class="button" onclick="sendCmd('main','subup','')">
           <span class="button__text"><i class="fa-solid fa-volume-high"></i> Sub</span>
       </button>  
-      <button type="button" class="button" onclick="sendCmd('main','sleep','')">
-          <span class="button__text"><i class="fa-regular fa-moon"></i> Sleep</span>
-      </button>  
-    <p></p>
-      <button type="button" class="button" onclick="sendCmd('main','roomon','')">
-          <span class="button__text"><i class="fa-solid fa-toggle-on"></i> Apartment</span>
-      </button>  
-      <button type="button" class="button" onclick="sendCmd('main','rfa3','on')">
-          <span class="button__text"><i class="fa-solid fa-tv"></i> TV</span>
-      </button> 
-      <button type="button" class="button" onclick="sendCmd('main','rfa1','on')">
-          <span class="button__text"><i class="fa-solid fa-toggle-on"></i> Macs</span>
+      <button type="button" class="button" onclick="sendCmd('main','pwrhifi','')">
+          <span class="button__text"><i class="fa-solid fa-power-off"></i> System</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','pcon','')">
-          <span class="button__text"><i class="fa-solid fa-toggle-on"></i> Computer</span>
-      </button>       
-      <button type="button" class="button" onclick="sendCmd('main','allon','')">
-          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> All Lights</span>
-      </button>        
-    <p></p>
-      <button type="button" class="button" onclick="sendCmd('main','roomoff','')">
-          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> Apartment</span>
-      </button>  
-      <button type="button" class="button" onclick="sendCmd('main','rfa3','off')">
-          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> TV</span>
-      </button>
-       <button type="button" class="button" onclick="sendCmd('main','rfa1','off')">
-          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> Macs</span>
-      </button>     
-      <button type="button" class="button" onclick="sendCmd('main','pcoff','')">
-          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> Computer</span>
-      </button> 
-      <button type="button" class="button" onclick="sendCmd('main','alloff','')">
-          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> All Lights</span>
-      </button>         
-    <p></p>
-      <button type="button" class="button" onclick="sendCmd('main','rfc1','off')">
-          <span class="button__text"><i class="fa-regular fa-toggle-off"></i> Main</span>
-      </button>
-      <button type="button" class="button" onclick="sendCmd('main','rfc1','on')">
-          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Main</span>
-      </button> 
-      <button type="button" class="button" onclick="sendCmd('main','','')">
-          <span class="button__text"><i class=""></i>?</span>
-      </button>  
-      <button type="button" class="button" onclick="sendCmd('main','rfa2','off')">
-          <span class="button__text"><i class="fa-regular fa-toggle-off"></i> Dresser</span> 
-      </button>        
-      <button type="button" class="button" onclick="sendCmd('main','rfa2','on')">
-          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Dresser</span>
-      </button>
-    <p></p>    
-    <p class="bodytext" id="bottom"></p>
+    <p class="body__text" id="bottom"></p>
 </div>
 
 <div>
-  <p class="bodytext">by Ben Provenzano III</p>
+  <p class="body__text">by Ben Provenzano III</p>
 </div>
 
 </body>

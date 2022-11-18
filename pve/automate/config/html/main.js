@@ -10,3 +10,10 @@ function GoToHomePage() {
   window.location = '/';   
 }
 
+function subLock() {
+    let id = document.getElementById("LockButton");
+    id.classList.remove("fa-lock");
+    id.classList.add("fa-user");
+}
+
+

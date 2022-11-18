@@ -97,7 +97,6 @@ body {
   color: white;
 }
 
-/* Create a right-aligned (split) link inside the navigation bar */
 .topnav a.split {
   float: right;
   color: white;
@@ -108,7 +107,7 @@ body {
   font-size: 33px;
 }	
 
-.bodytext{
+.body__text {
   color: #fff;
   padding-left: 8px;
   font-size: 18px;

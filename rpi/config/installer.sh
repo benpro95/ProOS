@@ -452,10 +452,7 @@ lighty-enable-mod fastcgi-php
 ln -sf /etc/lighttpd/conf-available/10-fastcgi.conf /etc/lighttpd/conf-enabled/
 ln -sf /etc/lighttpd/conf-available/15-fastcgi-php.conf /etc/lighttpd/conf-enabled/
 ln -sf /usr/share/lighttpd/create-mime.conf.pl /usr/share/lighttpd/create-mime.assign.pl
-cp -f $BIN/lighttpd-noredir.conf /etc/lighttpd/
-chmod 644 /etc/lighttpd/lighttpd-noredir.conf
-chown root:root /etc/lighttpd/lighttpd-noredir.conf
-cp -f $BIN/lighttpd-redirect.conf /etc/lighttpd/lighttpd.conf
+cp -f $BIN/lighttpd.conf /etc/lighttpd/
 chmod 644 /etc/lighttpd/lighttpd.conf
 chown root:root /etc/lighttpd/lighttpd.conf
 
@@ -494,18 +491,15 @@ if [ ! -e $BIN/hostname ]; then
 echo "Skipping hostname modification."
 else
 ## Set module name to light server
-sed -i "s/raspberrypi/$NEWHOST/g" /var/www/html/index.php
+sed -i "s/raspberrypi/$NEWHOST/g" /var/www/html/settings/index.php
 sed -i "s/raspberrypi/$NEWHOST/g" /var/www/html/picker.html
-## Set hostname to unified server
-sed -i "s/raspberrypi/$NEWHOST/g" /opt/rpi/manager/client.html
 fi
 if [ ! -e /opt/rpi/modconf/brand.txt ]; then
 echo "Skipping module modification."
 else
-## Set module name to light server
-sed -i "s/RaspberryPi/$MODNAME/g" /var/www/html/index.php
-## Set module name to unified server
-sed -i "s/RaspberryPi/$MODNAME/g" /opt/rpi/manager/client.html
+  ## Set module name to light server
+  sed -i "s/RaspberryPi/$MODNAME/g" /var/www/html/settings/index.php
+  sed -i "s/RaspberryPi/$MODNAME/g" /var/www/html/main.js
 fi
 
 ## WWW Permissions (Network Web UI)
@@ -829,6 +823,9 @@ chmod -R 755 /opt/rpi
 chown -R root:root /opt/rpi
 
 ## Remove Installer Files
+rm -rfv /opt/rpi/urserver*
+rm -rfv /opt/rpi/manager
+rm -rfv /opt/rpi/remotes
 rm -rf /opt/rpi/config
 rm -rf /opt/rpi/nodeopc
 rm -f /opt/rpi/pythproc 

@@ -406,54 +406,50 @@ fi
 exit
 ;;
 
-stoprelax)
-## Stop Relax Sounds
-if [ ! -e /var/lock/rpi/relaxrec.save ]; then
+stoprelax-hifi)
+## Stop Audio on System
+ESP32="no"; TARGET="hifi.home"; XMITCMD="stoprelax"; CALLAPI  
+## Auto Decoder Input
+XMITCMD="inauto" ; XMIT
+## Preamp DAC Input
+XMITCMD="dac" ; XMIT
+exit
+;;
+
+vmute)
+if [ "$CMDARG" == "bedroom" ]; then
   ## Turn Off Apple TV
   systemctl stop relaxloop
   systemctl set-environment rpi_relaxmode=off
   systemctl start relaxloop
-else
-  ## Stop Audio on System
-  ESP32="no"; TARGET="hifi.home"; XMITCMD="stoprelax"; CALLAPI  
-  ## Auto Decoder Input
-  XMITCMD="inauto" ; XMIT
-  ## Preamp DAC Input
-  XMITCMD="dac" ; XMIT
 fi
+if [ "$CMDARG" == "sub" ]; then
+  XMITCMD="subpwr" ; XMIT
+fi  
 exit
 ;;
 
 ### Relax Sounds Volume Up
-relaxvup)
-if [ ! -e /var/lock/rpi/relaxrec.save ]; then
+vup)
+if [ "$CMDARG" == "bedroom" ]; then
   XMITCMD="miniupf" ; XMIT
-else
-  XMITCMD="upc" ; XMIT
+fi
+if [ "$CMDARG" == "subs" ]; then
+  XMITCMD="subup" ; XMIT
 fi   
 exit
 ;;
 
 ### Relax Sounds Volume Down
-relaxvdwn)
-if [ ! -e /var/lock/rpi/relaxrec.save ]; then
+vdwn)
+if [ "$CMDARG" == "bedroom" ]; then
   XMITCMD="minidwnf" ; XMIT
-else
-  XMITCMD="dwnc" ; XMIT
+fi
+if [ "$CMDARG" == "subs" ]; then
+  XMITCMD="subdwn" ; XMIT
 fi
 exit
 ;;
-
-## Toggle Relax Sounds Playback Device
-relaxhost)
-if [ ! -e /var/lock/rpi/relaxrec.save ]; then
-  touch /var/lock/rpi/relaxrec.save
-else
-  rm -f /var/lock/rpi/relaxrec.save 
-fi
-exit
-;;
-
 
 ## Sleep Mode
 sleep)

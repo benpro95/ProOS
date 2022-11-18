@@ -4,7 +4,10 @@ var load_bar = 0;
 
 // on-page-load
 window.onload = function() {
-	volMode();
+  const host = "http://"+location.hostname+"/"
+  if (window.location.href == host + 'index.html') {
+    volMode();
+  }
   var elem = document.getElementById("load__bar");
   elem.textContent = "Automate";  
 };

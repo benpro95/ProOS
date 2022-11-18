@@ -1,10 +1,10 @@
 # ~/.profile: executed by Bourne-compatible login shells.
 
 ## Command Aliases
-alias rpi='/opt/rpi/init'
-alias leds='/opt/rpi/leds'
-alias main='/opt/rpi/main'
-alias xmit='/opt/rpi/main'
+alias rpi='/opt/system/init'
+alias leds='/opt/system/leds'
+alias main='/opt/system/main'
+alias xmit='/opt/system/main'
 
 # You may uncomment the following lines if you want `ls' to be colorized:
 export LS_OPTIONS='--color=auto'
@@ -17,6 +17,6 @@ mesg n || true
 
 ######## Custom login scripts below ###########
 
-echo " "
+neofetch
 echo "ProOS Automation Controller"
 echo " "

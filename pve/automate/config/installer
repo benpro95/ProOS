@@ -45,13 +45,17 @@ cp /tmp/config/sysctl.conf /etc
 chmod 644 /etc/sysctl.conf
 chown root:root /etc/sysctl.conf
 
-## Copy System Files
+## System Resources
+rm -rf /opt/rpi
+rm -rf /opt/system
 mkdir -p /opt/system
-rm -rf /opt/system/remotes
-rsync --progress --checksum -rtv /tmp/config/system/* /opt/system/
-chmod -R 755 /opt/system
+cp /tmp/config/leds.sh /opt/system/leds
+cp /tmp/config/main.sh /opt/system/main
+cp /tmp/config/relaxloop.sh /opt/system/relaxloop
+cp /tmp/config/ledsync.txt /opt/system/
+chmod -R 755 /opt/system/*
 chown -R root:root /opt/system
-ln -sf /opt/system /opt/rpi
+ln -sf /opt/system/main /opt/system/xmit
 
 ## Light Web Server
 apt-get install -y --no-upgrade lighttpd
@@ -101,10 +105,10 @@ rm -f /etc/sudoers.d/www-perms
 rm -f /etc/sudoers.d/www-nopasswd
 rm -f /etc/sudoers.d/www-mod-nopasswd
 sh -c "touch /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/main*\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/init\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/leds\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/xmit\" >> /etc/sudoers.d/www-perms"
+sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/system/main*\" >> /etc/sudoers.d/www-perms"
+sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/system/init\" >> /etc/sudoers.d/www-perms"
+sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/system/leds\" >> /etc/sudoers.d/www-perms"
+sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/system/xmit\" >> /etc/sudoers.d/www-perms"
 chown root:root /etc/sudoers.d/www-perms
 chmod u=rwx,g=rx,o=rx /etc/sudoers.d/www-perms
 chmod u=r,g=r,o= /etc/sudoers.d/www-perms
@@ -112,10 +116,10 @@ chmod u=r,g=r,o= /etc/sudoers.d/www-perms
 ## Nobody User Permissions (THD Hotkeys)
 rm -f /etc/sudoers.d/nobody-perms
 sh -c "touch /etc/sudoers.d/nobody-perms"
-sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/rpi/main*\" >> /etc/sudoers.d/nobody-perms"
-sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/rpi/init\" >> /etc/sudoers.d/nobody-perms"
-sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/rpi/leds\" >> /etc/sudoers.d/nobody-perms"
-sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/rpi/xmit\" >> /etc/sudoers.d/nobody-perms"
+sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/system/main*\" >> /etc/sudoers.d/nobody-perms"
+sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/system/init\" >> /etc/sudoers.d/nobody-perms"
+sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/system/leds\" >> /etc/sudoers.d/nobody-perms"
+sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/system/xmit\" >> /etc/sudoers.d/nobody-perms"
 chown root:root /etc/sudoers.d/nobody-perms
 chmod u=rwx,g=rx,o=rx /etc/sudoers.d/nobody-perms
 chmod u=r,g=r,o= /etc/sudoers.d/nobody-perms
@@ -154,9 +158,6 @@ chown root:root /root/.profile
 touch /root/.hushlogin
 chmod 644 /root/.hushlogin
 chown root:root /root/.hushlogin
-
-## Compatibility Link
-ln -sf /opt/system/main /opt/system/xmit
 
 ## Restart Services
 systemctl restart lighttpd

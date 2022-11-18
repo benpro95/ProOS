@@ -6,6 +6,8 @@
 ###########################################################
 ## Do not use the screen command in this script ##
 
+LOCKFOLDER=/var/lock/rpi
+
 CALLAPI(){
 #### API Call
 ## Select API Type
@@ -62,19 +64,19 @@ XMIT(){
 ## Do not use the screen command in this script ##
 ##### TOGGLE SECTION #####
 if [[ "$XMITARG" == "on" ]]; then
-  touch /var/lock/rpi/$XMITCMD.save
+  touch $LOCKFOLDER/$XMITCMD.save
   XMITCMD=$XMITCMD"on"
 fi
 if [[ "$XMITARG" == "off" ]]; then
-  rm -f /var/lock/rpi/$XMITCMD.save
+  rm -f $LOCKFOLDER/$XMITCMD.save
   XMITCMD=$XMITCMD"off"
 fi
 if [[ "$XMITARG" == "toggle" ]]; then
-  if [ ! -e /var/lock/rpi/$XMITCMD.save ]; then
-   touch /var/lock/rpi/$XMITCMD.save
+  if [ ! -e $LOCKFOLDER/$XMITCMD.save ]; then
+   touch $LOCKFOLDER/$XMITCMD.save
    XMITCMD=$XMITCMD"on"
   else
-   rm -f /var/lock/rpi/$XMITCMD.save
+   rm -f $LOCKFOLDER/$XMITCMD.save
    XMITCMD=$XMITCMD"off"
   fi
 fi
@@ -85,19 +87,19 @@ fi
 ##
 ## Power
 if [[ "$XMITCMD" == "pwrhifi" ]]; then
-   rm -f /var/lock/rpi/subs.enabled 
+   rm -f $LOCKFOLDER/subs.enabled 
    XMITCALL="irtx.nec.1270227167"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "hifioff" ]]; then
-   rm -f /var/lock/rpi/subs.enabled 
+   rm -f $LOCKFOLDER/subs.enabled 
    XMITCALL="irtx.nec.1261859214"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "hifion" ]]; then
-   rm -f /var/lock/rpi/subs.enabled 
+   rm -f $LOCKFOLDER/subs.enabled 
    XMITCALL="irtx.nec.1261869414"
    CALLAPI
    return
@@ -481,15 +483,15 @@ exit
 
 lights)
 ## Toggle Lamps
-if [ ! -e /var/lock/rpi/lights.save ]; then
-  touch /var/lock/rpi/lights.save
+if [ ! -e $LOCKFOLDER/lights.save ]; then
+  touch $LOCKFOLDER/lights.save
   ## Main Lamp
   XMITCMD="rfc1" ; XMITARG="on" ; XMIT
   ## Dresser Lamp
   XMITCMD="rfa2" ; XMITARG="on" ; XMIT
 else
   ## Turn all lights off
-  rm -f /var/lock/rpi/lights.save
+  rm -f $LOCKFOLDER/lights.save
   ## Main Lamp
   XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
   ## Dresser Lamp
@@ -500,7 +502,7 @@ exit
 
 lightson)
 ## Turn all lights on
-touch /var/lock/rpi/lights.save
+touch $LOCKFOLDER/lights.save
 ## Main Lamp
 XMITCMD="rfc1" ; XMITARG="on" ; XMIT 
 ## Dresser Lamp
@@ -510,7 +512,7 @@ exit
 
 lightsoff)
 ## Turn all lights off
-rm -f /var/lock/rpi/lights.save
+rm -f $LOCKFOLDER/lights.save
 ## Main Lamp
 XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
 ## Dresser Lamp
@@ -519,7 +521,7 @@ exit
 ;;
 
 allon)
-touch /var/lock/rpi/lights.save
+touch $LOCKFOLDER/lights.save
 ## Main Lamp
 XMITCMD="rfc1" ; XMITARG="on" ; XMIT 
 ## Dresser Lamp
@@ -527,15 +529,15 @@ XMITCMD="rfa2" ; XMITARG="on" ; XMIT
 ## Desk Light
 XMITCMD="rfb1" ; XMITARG="on" ; XMIT 
 ## LEDwalls
-/opt/rpi/leds candle
+/opt/system/leds candle
 sleep 2.5
-/opt/rpi/leds fc 60
+/opt/system/leds fc 60
 exit
 ;;
 
 alloff)
 ## Turn all lights off
-rm -f /var/lock/rpi/lights.save
+rm -f $LOCKFOLDER/lights.save
 ## Main Lamp
 XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
 ## Dresser Lamp
@@ -543,7 +545,7 @@ XMITCMD="rfa2" ; XMITARG="off" ; XMIT
 ## Desk Light
 XMITCMD="rfb1" ; XMITARG="off" ; XMIT 
 ## Blank LEDwalls
-/opt/rpi/leds stop
+/opt/system/leds stop
 exit
 ;;
 
@@ -570,7 +572,7 @@ exit
 
 autodac)
 ## Reset volume tokens
-rm -f /var/lock/rpi/subs.enabled
+rm -f $LOCKFOLDER/subs.enabled
 ## Auto Decoder Input
 XMITCMD="inauto" ; XMIT 
 ## Preamp DAC Input
@@ -580,7 +582,7 @@ exit
 
 usb)
 ## Reset volume tokens
-rm -f /var/lock/rpi/subs.enabled
+rm -f $LOCKFOLDER/subs.enabled
 ## USB Decoder Input
 XMITCMD="usb" ; XMIT 
 ## Preamp DAC Input
@@ -593,7 +595,7 @@ exit
 ## Coax Input
 coax)
 ## Reset volume tokens
-rm -f /var/lock/rpi/subs.enabled
+rm -f $LOCKFOLDER/subs.enabled
 ## Coaxial Decoder Input
 XMITCMD="coaxial" ; XMIT 
 ## Preamp DAC Input
@@ -606,7 +608,7 @@ exit
 ## Optical Input
 opt)
 ## Reset volume tokens
-rm -f /var/lock/rpi/subs.enabled
+rm -f $LOCKFOLDER/subs.enabled
 ## Optical Decoder Input
 XMITCMD="optical" ; XMIT
 ## Preamp DAC Input
@@ -629,8 +631,8 @@ else
   XMITCMD="rfb3" ; XMIT 
 fi
 ## LEDwalls
-/opt/rpi/leds abstract
-/opt/rpi/leds fc norm
+/opt/system/leds abstract
+/opt/system/leds fc norm
 exit
 ;;
 
@@ -651,7 +653,7 @@ fi
 ## Audio System Power Off
 XMITCMD="hifioff" ; XMIT 
 ## Blank LEDwalls
-/opt/rpi/leds stop
+/opt/system/leds stop
 ## Turn Off Apple TV
 systemctl stop relaxloop
 systemctl set-environment rpi_relaxmode=off
@@ -673,6 +675,53 @@ fi
 exit
 ;;
 
+active)
+echo "Active services."
+systemctl list-units --type=service --state=active
+exit
+;;
+
+running)
+echo "Running services."
+systemctl list-units --type=service --state=running
+exit
+;;
+
+timers)
+## List Active Timers
+systemctl list-timers --all
+exit
+;;
+
+loadtimes)
+## Display list of system daemons and startup times
+systemd-analyze blame
+exit
+;;
+
+update)
+### Debian System Update
+echo " "
+echo "System must be in read-write mode."
+echo " "
+df -h
+read -p "Are you sure? " -n 1 -r
+echo    # (optional) move to a new line
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+    exit 1
+fi
+apt-get -y update --allow-releaseinfo-change
+apt-get upgrade
+apt-get dist-upgrade
+apt-get autoremove -y
+apt-get clean -y
+#pip install --upgrade pip
+echo " "
+echo "Re-enable read-only mode after rebooting!"
+exit
+;;
+
 ### Examples of URL strings ###
 # http://automate:9300/exec.php?var=&arg=lightson&action=main
 # http://automate:9300/exec.php?var=&arg=lightsoff&action=main
@@ -685,3 +734,5 @@ XMITCMD="$CMD" ; XMITARG="$2" ; XMIT
 exit 0 
   ;; #############################################
 esac   
+
+

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<script src="http://raspberrypi.local:9300/jquery-1.10.1.min.js"></script>
+<script src="jquery-1.10.1.min.js"></script>
 <style type="text/css">
 
     body {
@@ -128,7 +128,8 @@
         }
 
         // Connect to a Fadecandy server running on the same computer, on the default port
-        var socket = new WebSocket('ws://raspberrypi.local:7890');
+        const host = "ws://"+location.hostname+":7890"
+        var socket = new WebSocket(host);
 
         // Put some connection status text in the corner of the screen
         $('#connectionStatus').text('Connecting to fcserver...');

@@ -5,7 +5,7 @@ var load_bar = 0;
 window.onload = function() {
   // set loading bar text
   var elem = document.getElementById("load__bar");
-  elem.textContent = "RaspberryPi";  
+  elem.textContent = "Automate";  
 };
 
 // transmit command
@@ -19,6 +19,11 @@ function sendCmd(act, arg1, arg2) {
       method: 'GET',
     })
   loadBar();
+};
+
+// back to home page 
+function GoToHomePage() {
+  window.location = 'http://automate.home/';   
 };
 
 function loadBar() {
@@ -38,7 +43,7 @@ function loadBar() {
       }
       if (width >= 100) {
         elem.style.width = 0;  
-        elem.textContent = "RaspberryPi";  
+        elem.textContent = "Automate";  
       }
     }
   }

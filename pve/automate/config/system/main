@@ -423,7 +423,7 @@ if [ "$CMDARG" == "bedroom" ]; then
   systemctl set-environment rpi_relaxmode=off
   systemctl start relaxloop
 fi
-if [ "$CMDARG" == "sub" ]; then
+if [ "$CMDARG" == "subs" ]; then
   XMITCMD="subpwr" ; XMIT
 fi  
 exit

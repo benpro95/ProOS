@@ -5,8 +5,11 @@ var load_bar = 0;
 // on-page-load
 window.onload = function() {
   const host = "http://"+location.hostname+"/"
-  if (window.location.href == host + 'index.html') {
+  // load volume mode support on main page only
+  if (window.location.href == host) {
     volMode();
+  }else{
+    vol_mode = 0;  
   }
   var elem = document.getElementById("load__bar");
   elem.textContent = "Automate";  
@@ -18,7 +21,7 @@ function sendCmd(act, arg1, arg2) {
       arg2 = "subs"
     }
 	let url = "http://"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
-	document.getElementById("bottom").innerHTML = url;
+//	document.getElementById("bottom").innerHTML = url;
 	fetch(url, {
       method: 'GET',
     })
@@ -51,7 +54,7 @@ function loadBar() {
     var elem = document.getElementById("load__bar");
     elem.textContent = " ";  
     var width = 1;
-    var id = setInterval(frame, 0.5);
+    var id = setInterval(frame, 0.4);
     function frame() {
       if (width >= 100) {
         clearInterval(id);
@@ -66,4 +69,4 @@ function loadBar() {
       }
     }
   }
-}
+};

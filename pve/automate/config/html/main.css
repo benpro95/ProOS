@@ -70,9 +70,8 @@ body {
 }
 
 .button__textlgr {
-  transition: all 0.2s;
-  line-height: 4;
-  font-size: 27px;
+  line-height: 3.5;
+  font-size: 28px;
 }
 
 .topnav {

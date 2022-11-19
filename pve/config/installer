@@ -27,7 +27,7 @@ apt-get --yes update
 ## Support Packages
 apt-get install -y --no-upgrade --ignore-missing rsync cron zip screen \
  libsasl2-modules postfix ethtool bpytop htop apt-transport-https lm-sensors \
- zfs-auto-snapshot smartmontools hddtemp apcupsd txt2html
+ zfs-auto-snapshot smartmontools hddtemp apcupsd
 
 ## Process Monitor Symlink
 ln -sf /usr/bin/bpytop /usr/bin/pytop
@@ -214,6 +214,7 @@ systemctl restart smartmontools
 systemctl restart cron
 
 ## Clean-up
+apt-get remove txt2html
 apt-get --yes autoremove
 apt-get --yes clean
 rm -r /tmp/config

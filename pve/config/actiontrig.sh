@@ -5,6 +5,9 @@
 ## VM Log File
 VMLOGFILE="/mnt/extbkps/keytmp/vmlog.txt"
 
+## Server Log Directory
+SYSLOGDIR="/mnt/datastore/.regions/WWW"  
+
 if [ -e /tmp/actiontrig.lock ]; then
   echo "process locked! exiting."
   exit
@@ -118,13 +121,10 @@ if [ -e /mnt/extbkps/keytmp/startdev.txt ]; then
   date &>> $VMLOGFILE
 fi
 
-
 ### Write Server Log ##################################   
-if [ -e /mnt/extbkps/keytmp/createlog.txt ]; then
-## Server Log Directory
-SYSLOGDIR="/mnt/datastore/.regions/WWW"  
+if [ -e /mnt/.regions/Automate/CreateLog.txt ]; then
 ###### Runs when file exists ##########################
-  rm -f /mnt/extbkps/keytmp/createlog.txt
+  rm -f /mnt/.regions/Automate/CreateLog.txt
   if [ -e $SYSLOGDIR ]; then
     if [ ! -e $SYSLOGDIR/Server.txt ]; then
       touch $SYSLOGDIR/Server.txt
@@ -133,9 +133,6 @@ SYSLOGDIR="/mnt/datastore/.regions/WWW"
     fi
     /usr/bin/sys-check > $SYSLOGDIR/Server.txt 2>&1
     chmod 777 $SYSLOGDIR/Server.txt
-    txt2html -extract --make_tables -8 -infile \
-      $SYSLOGDIR/Server.txt -outf $SYSLOGDIR/Server.html
-    chmod 777 $SYSLOGDIR/Server.html
   fi  
 fi
 

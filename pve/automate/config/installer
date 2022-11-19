@@ -69,6 +69,7 @@ ln -sf /etc/lighttpd/conf-available/10-fastcgi.conf /etc/lighttpd/conf-enabled/
 ln -sf /etc/lighttpd/conf-available/15-fastcgi-php.conf /etc/lighttpd/conf-enabled/
 ln -sf /usr/share/lighttpd/create-mime.conf.pl /usr/share/lighttpd/create-mime.assign.pl
 systemctl disable lighttpd
+systemctl restart lighttpd
 
 ## PHP Configuration
 PHP_VERSION=$(php -v | tac -r | tail -n 1 | cut -d " " -f 2 | cut -c 1-3)
@@ -158,9 +159,6 @@ chown root:root /root/.profile
 touch /root/.hushlogin
 chmod 644 /root/.hushlogin
 chown root:root /root/.hushlogin
-
-## Restart Services
-systemctl restart lighttpd
 
 ## Clean-up
 rm -f /etc/systemd/system/urserver.service

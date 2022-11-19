@@ -13,6 +13,7 @@
 <body>
 
 <div class="init"></div>
+<p id="demo"></p>
 
 <div class="topnav">
   <a onclick="GoToHomePage()" class="homelogo">
@@ -120,7 +121,7 @@
       <button type="button" class="button" onclick="sendCmd('main','togglehpf','')">
           <span class="button__text"><i class="fa-solid fa-music"></i> HPF</span>
       </button> 
-      <button type="button" class="button" onclick="serverLog()">
+      <button type="button" class="button" onclick="openLog()">
           <span class="button__text"><i class="fa-brands fa-linux"></i> Server</span>
       </button>      
     <p></p>
@@ -140,6 +141,23 @@
           <span id="sub__text" class="button__text"></i></span>
       </button>      
     <p class="body__text" id="bottom"></p>
+</div>
+
+<div class="chat-popup" id="myForm">
+  <form class="form-container">
+    <h1>Chat</h1>
+    <label for="msg"><b>Message</b></label>
+    <textarea id="textBox" name="msg" required></textarea>
+    <button type="button" class="button button__small" onclick="loadLog('http://files.home/Server.txt')">
+          <span class="button__text"></i> Load</span>
+    </button> 
+    <button type="button" class="button button__small" onclick="sendCmd('main','serverlog','')">
+          <span class="button__text"></i> New</span>
+    </button> 
+    <button type="button" class="button button__small" onclick="closeLog()">
+          <span class="button__text"></i> Close</span>
+    </button>
+  </form>
 </div>
 
 <div>

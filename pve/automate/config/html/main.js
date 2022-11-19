@@ -2,6 +2,7 @@
 var vol_mode = 1;
 var relax_mode = 1;
 var load_bar = 0;
+var console_data;
 
 // on-page-load
 window.onload = function() {
@@ -22,6 +23,31 @@ window.onload = function() {
   // set loading bar text
   var elem = document.getElementById("load__bar");
   elem.textContent = "Automate";  
+  // hide log window
+  closeLog();
+};
+
+// display server logs
+async function loadLog(url) {
+  try {
+    const response = await fetch(url);
+    console_data = await response.text(); 
+    document.getElementById("textBox").value = console_data;
+//  console.log(console_data);
+  } catch (err) {
+    console.error(err);
+  }
+}
+function openLog() {
+  document.getElementById("myForm").style.display = "block";
+}
+function closeLog() {
+  document.getElementById("myForm").style.display = "none";
+}
+
+// display server log
+function serverLog() {
+  window.location = 'http://files.home/Server.html';   
 };
 
 // transmit command
@@ -47,11 +73,6 @@ function sendCmd(act, arg1, arg2) {
 // back to home page 
 function GoToHomePage() {
   window.location = '/';   
-};
-
-// display server log
-function serverLog() {
-  window.location = 'http://files.home/Server.html';   
 };
 
 function volMode() {   

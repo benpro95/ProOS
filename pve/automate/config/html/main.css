@@ -35,7 +35,7 @@ body {
 
 .button {
     transition: all 0.2s;
-	width: 135px;
+	  width: 135px;
     border: 0;
     margin: 2px;
     padding: 0 0px;
@@ -72,6 +72,16 @@ body {
 .button__lgr {
   width: 280px;
 }
+
+.button__small {
+  padding: -100px;
+  width: 130px;
+  font-size: 20px;
+  line-height: 100%
+  margin: 0px;
+  height: 50px;
+}
+
 
 .button__textlgr {
   line-height: 3.5;
@@ -144,3 +154,46 @@ body {
     transition-property: width, background-color;
 }
  
+
+/* The popup chat - hidden by default */
+.chat-popup {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  right: 10px;
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+}
+
+/* Add styles to the form container */
+.form-container {
+  height: 80%;
+  width: 600px;  /* log window width */
+  padding: 5px;
+  background-color: white;
+}
+
+/* Full-width textarea */
+.form-container textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+  resize: none;
+  height: auto;
+  min-height: 500px;
+  font-family: sans-serif;
+  font-size: 14px; /* page default font size */
+}
+
+/* When the textarea gets focus, do something */
+.form-container textarea:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Add some hover effects to buttons */
+.form-container .btn:hover, .open-button:hover {
+  opacity: 1;
+}

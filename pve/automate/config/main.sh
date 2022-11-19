@@ -686,6 +686,12 @@ fi
 exit
 ;;
 
+serverlog)
+echo "Wait 60 seconds for a log to be created."
+touch /mnt/store/CreateLog.txt
+exit
+;;
+
 active)
 echo "Active services."
 systemctl list-units --type=service --state=active
@@ -707,29 +713,6 @@ exit
 loadtimes)
 ## Display list of system daemons and startup times
 systemd-analyze blame
-exit
-;;
-
-update)
-### Debian System Update
-echo " "
-echo "System must be in read-write mode."
-echo " "
-df -h
-read -p "Are you sure? " -n 1 -r
-echo    # (optional) move to a new line
-if [[ ! $REPLY =~ ^[Yy]$ ]]
-then
-    exit 1
-fi
-apt-get -y update --allow-releaseinfo-change
-apt-get upgrade
-apt-get dist-upgrade
-apt-get autoremove -y
-apt-get clean -y
-#pip install --upgrade pip
-echo " "
-echo "Re-enable read-only mode after rebooting!"
 exit
 ;;
 

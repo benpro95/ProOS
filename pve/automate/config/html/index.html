@@ -12,9 +12,6 @@
 </head>
 <body>
 
-<div class="init"></div>
-<p id="demo"></p>
-
 <div class="topnav">
   <a onclick="GoToHomePage()" class="homelogo">
     <i class="fa fa-home"></i>
@@ -25,6 +22,22 @@
   <div onclick="GoToHomePage()" id="load__progress">
      <div id="load__bar"></div>
   </div>
+</div>
+
+<div class="chat-popup" id="logForm">
+  <form class="form-container">
+    <textarea id="logTextBox" required></textarea>  
+    <button type="button" class="button button__small" onclick="loadLog('http://files.home/Server.txt')">
+          <span class="button__textsmall"></i> Load</span>
+    </button> 
+    <button type="button" class="button button__small" onclick="newLog()">
+          <span class="button__textsmall"></i> New</span>
+    </button> 
+    <button type="button" class="button button__small" onclick="closeLog()">
+          <span class="button__textsmall"></i> Close</span>
+    </button>
+    <div id="logFormSpinner" class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+  </form>
 </div>
 
 <div>
@@ -122,7 +135,7 @@
           <span class="button__text"><i class="fa-solid fa-music"></i> HPF</span>
       </button> 
       <button type="button" class="button" onclick="openLog()">
-          <span class="button__text"><i class="fa-brands fa-linux"></i> Server</span>
+          <span class="button__text"><i class="fa-brands fa-database"></i> Server</span>
       </button>      
     <p></p>
       <button type="button" class="button" onclick="sendCmd('main','hifioff','')">
@@ -143,26 +156,10 @@
     <p class="body__text" id="bottom"></p>
 </div>
 
-<div class="chat-popup" id="myForm">
-  <form class="form-container">
-    <h1>Chat</h1>
-    <label for="msg"><b>Message</b></label>
-    <textarea id="textBox" name="msg" required></textarea>
-    <button type="button" class="button button__small" onclick="loadLog('http://files.home/Server.txt')">
-          <span class="button__text"></i> Load</span>
-    </button> 
-    <button type="button" class="button button__small" onclick="sendCmd('main','serverlog','')">
-          <span class="button__text"></i> New</span>
-    </button> 
-    <button type="button" class="button button__small" onclick="closeLog()">
-          <span class="button__text"></i> Close</span>
-    </button>
-  </form>
-</div>
-
 <div>
   <p style="min-height: 50px" class="body__text">by Ben Provenzano III</p>
 </div>
 
 </body>
+
 </html>

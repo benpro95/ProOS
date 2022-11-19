@@ -23,8 +23,6 @@ window.onload = function() {
   // set loading bar text
   var elem = document.getElementById("load__bar");
   elem.textContent = "Automate";  
-  // hide log window
-  closeLog();
 };
 
 // display server logs
@@ -32,22 +30,34 @@ async function loadLog(url) {
   try {
     const response = await fetch(url);
     console_data = await response.text(); 
-    document.getElementById("textBox").value = console_data;
+    document.getElementById("logTextBox").value = console_data;
 //  console.log(console_data);
   } catch (err) {
     console.error(err);
   }
-}
-function openLog() {
-  document.getElementById("myForm").style.display = "block";
-}
-function closeLog() {
-  document.getElementById("myForm").style.display = "none";
-}
+  hideSpinner();
+};
 
-// display server log
-function serverLog() {
-  window.location = 'http://files.home/Server.html';   
+function newLog() {
+  document.getElementById("logTextBox").value = "Please wait one-minute, then click load.";
+  showSpinner();
+  sendCmd('main','serverlog','');
+};  
+
+function openLog() {
+  document.getElementById("logForm").style.display = "block";
+};
+
+function closeLog() {
+  document.getElementById("logForm").style.display = "none";
+};
+
+function showSpinner() {
+  document.getElementById("logFormSpinner").style.display = "inline-block";
+};
+
+function hideSpinner() {
+  document.getElementById("logFormSpinner").style.display = "none";
 };
 
 // transmit command

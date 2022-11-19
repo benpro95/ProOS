@@ -45,10 +45,13 @@ function newLog() {
 };  
 
 function openLog() {
+  hideSpinner();
+  document.getElementById("logTextBox").value = " (Load) - Display current server log\r\n (New) - Request current log data";
   document.getElementById("logForm").style.display = "block";
 };
 
 function closeLog() {
+  hideSpinner();
   document.getElementById("logForm").style.display = "none";
 };
 

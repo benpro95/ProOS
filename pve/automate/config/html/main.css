@@ -21,7 +21,7 @@ html {
     linear-gradient( 
       to bottom,  
       rgb(23, 17, 107), 
-      rgb(0, 0, 0) 80%  
+      rgb(0, 0, 0) 90%  
     ); /* top-bottom gradient colors */
     background-repeat: no-repeat; 
 }
@@ -67,6 +67,10 @@ body {
 
 .button__text {
   line-height: 4.5;
+}
+
+.button__lgr {
+  width: 280px;
 }
 
 .button__textlgr {

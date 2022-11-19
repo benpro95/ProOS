@@ -69,6 +69,10 @@ body {
   line-height: 4.5;
 }
 
+.button__lgr {
+  width: 280px;
+}
+
 .button__textlgr {
   line-height: 3.5;
   font-size: 28px;

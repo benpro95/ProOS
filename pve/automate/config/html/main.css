@@ -159,8 +159,8 @@ body {
 /* pop-up window - hidden by default */
 .chat-popup {
   bottom: 5px;
-  height: 90%;
-  min-height: 90%;
+  height: 95%;
+  min-height: 95%;
   display: none;
   position: fixed;
   right: 5px;
@@ -171,7 +171,7 @@ body {
 /* Add styles to the form container */
 .form-container {
   height: 100%;
-  width: 740px;  /* log window width */
+  width: 730px;  /* log window width */
   padding: 5px;
   padding-bottom: 90px;
   background-color: #2d353d; /* popup window frame color */

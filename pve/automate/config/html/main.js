@@ -39,27 +39,32 @@ async function loadLog(url) {
 };
 
 function newLog() {
+  // generate a new server log
   document.getElementById("logTextBox").value = "Please wait one-minute, then click load.";
   showSpinner();
   sendCmd('main','serverlog','');
 };  
 
 function openLog() {
+  // open text file on page
   hideSpinner();
-  document.getElementById("logTextBox").value = " (Load) - Display current server log\r\n (New) - Request current log data";
+  document.getElementById("logTextBox").value = " (Load) - Display server log\r\n (New) - Request current system log data";
   document.getElementById("logForm").style.display = "block";
 };
 
 function closeLog() {
+  // close log window
   hideSpinner();
   document.getElementById("logForm").style.display = "none";
 };
 
 function showSpinner() {
+  // show apple spinner
   document.getElementById("logFormSpinner").style.display = "inline-block";
 };
 
 function hideSpinner() {
+  // hide apple spinner
   document.getElementById("logFormSpinner").style.display = "none";
 };
 
@@ -88,6 +93,7 @@ function GoToHomePage() {
   window.location = '/';   
 };
 
+// switch volume controls on main page
 function volMode() {   
 	let id = document.getElementById("sub__text");
     if (vol_mode == 0) {
@@ -99,6 +105,7 @@ function volMode() {
     }
 };
 
+// switch volume controls on bedroom page
 function relaxMode() {   
   let id = document.getElementById("relax__text");
     if (relax_mode == 0) {
@@ -110,10 +117,13 @@ function relaxMode() {
     }
 };
 
+// disable a button example
 function disableButton() {
 	document.getElementById("sub__text").disabled = true;
 };	
 
+
+// loading bar animation 
 function loadBar() {
   if (load_bar == 0) {
     load_bar = 1;

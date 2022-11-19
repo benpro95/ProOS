@@ -27,7 +27,7 @@ apt-get --yes update
 ## Support Packages
 apt-get install -y --no-upgrade --ignore-missing rsync cron zip screen \
  libsasl2-modules postfix ethtool bpytop htop apt-transport-https lm-sensors \
- zfs-auto-snapshot smartmontools hddtemp apcupsd
+ zfs-auto-snapshot smartmontools hddtemp apcupsd txt2html
 
 ## Process Monitor Symlink
 ln -sf /usr/bin/bpytop /usr/bin/pytop

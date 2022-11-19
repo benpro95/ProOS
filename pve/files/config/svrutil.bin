@@ -124,8 +124,8 @@ if [[ $REPLY =~ ^[Gg]$ ]]
 then
   touch /mnt/extbkps/keytmp/createlog.txt
   echo " "
-  echo "wait one-minute, server log will be created at"
-  echo "smb://files/Downloads/Server.log"
+  echo "wait one-minute, server log will be available at"
+  echo "http://files.home/server.html"
   log_wait=3 
   temp_cnt=${log_wait}
   while [[ ${temp_cnt} -gt 0 ]];

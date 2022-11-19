@@ -49,6 +49,11 @@ function GoToHomePage() {
   window.location = '/';   
 };
 
+// display server log
+function serverLog() {
+  window.location = 'http://files.home/Server.html';   
+};
+
 function volMode() {   
 	let id = document.getElementById("sub__text");
     if (vol_mode == 0) {

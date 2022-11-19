@@ -120,12 +120,12 @@
       <button type="button" class="button" onclick="sendCmd('main','togglehpf','')">
           <span class="button__text"><i class="fa-solid fa-music"></i> HPF</span>
       </button> 
+      <button type="button" class="button" onclick="serverLog()">
+          <span class="button__text"><i class="fa-solid fa-database"></i> Server</span>
+      </button>      
+    <p></p>
       <button type="button" class="button" onclick="sendCmd('main','hifioff','')">
           <span class="button__text"><i class="fa-solid fa-toggle-off"></i> System</span>
-      </button> 
-    <p></p>
-      <button type="button" class="button" onclick="volMode()">
-          <span id="sub__text" class="button__text"></i></span>
       </button>
       <button type="button" class="button" onclick="sendCmd('main','vdwn','bedroom')">
           <span class="button__text"><i class="fa-solid fa-volume-low"></i></span>
@@ -136,9 +136,9 @@
       <button type="button" class="button" onclick="sendCmd('main','vup','bedroom')">
           <span class="button__text"><i class="fa-solid fa-volume-high"></i></span>
       </button>  
-      <button type="button" class="button" onclick="sendCmd('main','','')">
-          <span class="button__text"><i class="fa-solid fa-power-off"></i></span>
-      </button>
+      <button type="button" class="button" onclick="volMode()">
+          <span id="sub__text" class="button__text"></i></span>
+      </button>      
     <p class="body__text" id="bottom"></p>
 </div>
 

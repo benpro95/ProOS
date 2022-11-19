@@ -35,7 +35,8 @@ function sendCmd(act, arg1, arg2) {
   } 
   // construct API string
 	let url = "http://"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
-	document.getElementById("bottom").innerHTML = url;
+  // display API string on page
+	//document.getElementById("bottom").innerHTML = url;
   // send data
 	fetch(url, {
       method: 'GET',
@@ -51,7 +52,7 @@ function GoToHomePage() {
 function volMode() {   
 	let id = document.getElementById("sub__text");
     if (vol_mode == 0) {
-       id.textContent = "Subs";
+       id.textContent = "Subwoofers";
        vol_mode = 1;
     } else {	
        id.textContent = "Bedroom";

@@ -1,5 +1,4 @@
 <?php
-
 header("HTTP/1.1 200 OK");
 if (isset($_REQUEST['action'], $_REQUEST['arg'], $_REQUEST['var'])) {
     $arg = $_REQUEST['arg'];

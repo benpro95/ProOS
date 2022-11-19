@@ -473,8 +473,19 @@ exit
 
 ## Sleep Mode
 sleep)
+if [ ! -e $LOCKFOLDER/sleep.save ]; then
+  touch $LOCKFOLDER/sleep.save
   /opt/system/main relax waterfall
   /opt/system/main pcoff
+  /opt/system/main alloff
+  XMITCMD="hifioff" ; XMIT 
+else
+  rm -f $LOCKFOLDER/sleep.save
+  ## Turn Off Apple TV
+  systemctl stop relaxloop
+  systemctl set-environment rpi_relaxmode=off
+  systemctl start relaxloop
+fi
 exit
 ;;
 

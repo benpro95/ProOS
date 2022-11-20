@@ -35,7 +35,7 @@ body {
 
 .button {
     transition: all 0.2s;
-	  width: 135px;
+	width: 135px;
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;    
@@ -72,8 +72,9 @@ body {
   line-height: 4.5; /* normal button width */
 }
 
-.button__small { 
-  width: 120; /* small button width */
+.button__right { 
+  position: absolute;
+  right: 5px;
 }
 
 .button__textsmall {
@@ -159,26 +160,29 @@ body {
 /* pop-up window - hidden by default */
 .chat-popup {
   bottom: 5px;
-  height: 95%;
+  width: 95%; /* log window width */
+  height: 95%; /* log window height */
   min-height: 95%;
   display: none;
   position: fixed;
   right: 5px;
   border: 6px solid #1f252a; /* popup window border color */
-  z-index: 9;
+  z-index: 8;
 }
 
 /* Add styles to the form container */
 .form-container {
   height: 100%;
-  width: 730px;  /* log window width */
+  width: 100%;
   padding: 5px;
-  padding-bottom: 90px;
+  padding-bottom: 144px;
   background-color: #2d353d; /* popup window frame color */
 }
 
 /* Full-width textarea */
 .form-container textarea {
+  white-space: nowrap;
+  word-break: keep-all;
   height: 100%;
   width: 100%;
   color: #fff; /* textbox font color */
@@ -274,4 +278,60 @@ body {
   100% {
     opacity: 0;
   }
+};
+
+
+/* log window top menu */
+.scrollmenu {
+  background-color: #333;
+  overflow: hidden;
+  white-space: nowrap;
 }
+
+.scrollmenu a {
+  display: inline-block;
+  color: white;
+  text-align: center;
+  padding: 14px;
+  text-decoration: none;
+}
+
+.scrollmenu a:hover {
+  background-color: #000;
+}
+
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #ddd;}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {display: block;}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+

@@ -686,9 +686,9 @@ fi
 exit
 ;;
 
-serverlog)
-echo "Wait 60 seconds for a log to be created."
-touch /mnt/store/CreateLog.txt
+server)
+echo "writing server trigger file $CMDARG.txt"
+touch /mnt/store/$CMDARG.txt
 exit
 ;;
 

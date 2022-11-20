@@ -3,7 +3,15 @@
 ################################
 
 ## VM Log File
-VMLOGFILE="/mnt/extbkps/keytmp/vmlog.txt"
+TRIGGERS_DIR="/mnt/datastore/.regions/Automate"
+LOGFILE="/mnt/datastore/.regions/WWW/sysout.txt"
+
+function TRIM_LOG {
+  if [ -e $LOGFILE ]; then
+    rm -f $LOGFILE
+  fi
+  touch $LOGFILE  
+}
 
 if [ -e /tmp/actiontrig.lock ]; then
   echo "process locked! exiting."
@@ -79,60 +87,43 @@ fi
 
 ### START VMs #########################################
 #######################################################
-if [ -e /mnt/extbkps/keytmp/startxana.txt ]; then
+if [ -e $TRIGGERS_DIR/startxana.txt ]; then
 ###### Runs when file exists ##########################
-  rm -f /mnt/extbkps/keytmp/startxana.txt
-  if [ ! -e $VMLOGFILE ]; then
-    touch $VMLOGFILE
-  else
-    truncate -s 0 $VMLOGFILE
-  fi
-  echo "starting xana VM..." &>> $VMLOGFILE
-  qm start 105 &>> $VMLOGFILE
-  date &>> $VMLOGFILE
+  rm -f $TRIGGERS_DIR/startxana.txt
+  TRIM_LOG
+  echo "starting xana VM..." &>> $LOGFILE
+  qm start 105 &>> $LOGFILE
+  date &>> $LOGFILE
+  chmod 777 $LOGFILE
 fi
-if [ -e /mnt/extbkps/keytmp/restorexana.txt ]; then
+if [ -e $TRIGGERS_DIR/restorexana.txt ]; then
 ###### Runs when file exists ##########################
-  rm -f /mnt/extbkps/keytmp/restorexana.txt
-  if [ ! -e $VMLOGFILE ]; then
-    touch $VMLOGFILE
-  else
-    truncate -s 0 $VMLOGFILE
-  fi
-  echo "restoring xana VM..." &>> $VMLOGFILE
+  rm -f $TRIGGERS_DIR/restorexana.txt
+  TRIM_LOG
+  echo "restoring xana VM..." &>> $LOGFILE
   qmrestore /var/lib/vz/dump/vzdump-qemu-105-latest.vma.zst \
-    105 -force -storage scratch &>> $VMLOGFILE
-  date &>> $VMLOGFILE
+    105 -force -storage scratch &>> $LOGFILE
+  date &>> $LOGFILE
+  chmod 777 $LOGFILE
 fi
 #######################################################
-if [ -e /mnt/extbkps/keytmp/startdev.txt ]; then
+if [ -e $TRIGGERS_DIR/startdev.txt ]; then
 ###### Runs when file exists ##########################
-  rm -f /mnt/extbkps/keytmp/startdev.txt
-  if [ ! -e $VMLOGFILE ]; then
-    touch $VMLOGFILE
-  else
-    truncate -s 0 $VMLOGFILE
-  fi
-  echo "starting development VM..." &>> $VMLOGFILE
-  qm start 103 &>> $VMLOGFILE
-  date &>> $VMLOGFILE
+  rm -f $TRIGGERS_DIR/startdev.txt
+  TRIM_LOG
+  echo "starting development VM..." &>> $LOGFILE
+  qm start 103 &>> $LOGFILE
+  date &>> $LOGFILE
+  chmod 777 $LOGFILE
 fi
 
 ### Write Server Log ##################################   
-if [ -e /mnt/datastore/.regions/Automate/CreateLog.txt ]; then
+if [ -e $TRIGGERS_DIR/syslog.txt ]; then
 ###### Runs when file exists ##########################
-  rm -f /mnt/datastore/.regions/Automate/CreateLog.txt
-  ## Server Log Directory
-  SYSLOGDIR="/mnt/datastore/.regions/WWW"  
-  if [ -e $SYSLOGDIR ]; then
-    if [ ! -e $SYSLOGDIR/Server.txt ]; then
-      touch $SYSLOGDIR/Server.txt
-    else
-      truncate -s 0 $SYSLOGDIR/Server.txt
-    fi
-    /usr/bin/sys-check > $SYSLOGDIR/Server.txt 2>&1
-    chmod 777 $SYSLOGDIR/Server.txt
-  fi  
+  rm -f $TRIGGERS_DIR/syslog.txt
+  TRIM_LOG
+  /usr/bin/sys-check &>> $LOGFILE 2>&1
+  chmod 777 $LOGFILE 
 fi
 
 #######################################################

@@ -66,11 +66,8 @@ echo " "
 echo "last login:"
 lastlog -u server
 echo " "
-echo "(d) drive usage"
-echo "(n) network scan"
 echo "(b) backup utility"
 echo "(v) start/stop VM(s)"
-echo "(g) generate a log file"
 echo "(r) attach/detach region(s)"  
 echo "(p) push changes to GitHub"
 echo "(enter) exit to shell"
@@ -98,44 +95,6 @@ then
   git push
   cd -
   ENDPGRM
-fi
-
-## List drive usage
-if [[ $REPLY =~ ^[Dd]$ ]]
-then
-  echo " "
-  df -h
-  ENDPGRM
-fi
-
-## Port scan active network devices
-if [[ $REPLY =~ ^[Nn]$ ]]
-then
-  echo " "
-  echo "scanning network..."
-  nmap --unprivileged -v --open -PT 10.177.1.0/24 > /tmp/nmap.txt
-  nmap --unprivileged -v --open -sn 10.177.1.0/24 >> /tmp/nmap.txt
-  cat /tmp/nmap.txt
-  ENDPGRM
-fi
-
-## Generate log file
-if [[ $REPLY =~ ^[Gg]$ ]]
-then
-  touch /mnt/extbkps/keytmp/createlog.txt
-  echo " "
-  echo "wait one-minute, server log will be available at"
-  echo "http://files.home/server.html"
-  log_wait=3 
-  temp_cnt=${log_wait}
-  while [[ ${temp_cnt} -gt 0 ]];
-  do
-    printf "\rreturning to main menu in %1d second(s)..." ${temp_cnt}
-    sleep 1
-    ((temp_cnt--))
-  done
-  clear
-  MAINPGRM
 fi
 
 ## Regions control ####################

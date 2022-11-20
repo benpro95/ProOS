@@ -75,13 +75,15 @@ echo "** VM / LXC Status **"
 echo ""
 /usr/sbin/qm list
 
-
 echo ""
 echo "** UPS Battery Backup **"
 /sbin/apcaccess status
 
 echo ""
 echo "** Network Statistics **"
+nmap --unprivileged -v --open -PT 10.177.1.0/24
+nmap --unprivileged -v --open -sn 10.177.1.0/24
+echo ""
 ip -statistics address
 echo ""
 cat /proc/net/bonding/bond0

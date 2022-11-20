@@ -76,7 +76,7 @@ function serverSend() {
   if (servercmd_data == "") {
     document.getElementById("logTextBox").value = "Select an action.";
   } else {
-    document.getElementById("logTextBox").value = "Please wait one-minute, then click load.";
+    document.getElementById("logTextBox").value = "Please wait one-minute, transmitted the command ("+servercmd_data+")";
     showSpinner();
     // request server data
     sendCmd('main','server',servercmd_data);

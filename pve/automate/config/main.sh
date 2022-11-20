@@ -686,20 +686,10 @@ fi
 exit
 ;;
 
-#SALT_PATH="/mnt/store/"
- #NAME=`echo $SALT_PATH | cut -d'.' -f1`
-
 server)
-CMDARG=${CMDARG//$'\n'/} 
-SERVERARG=${CMDARG%-*}
-HASHED_PW=${CMDARG#*-}
-SALT="2xSQm5bw3AELazyA93iopntvt7hfKZhAo2m7vgzNUkK4PNfTWp4tnRV5VmHwTizTqrii"
-if [ $SERVERARG == "backup_pwd" ]; then
-  echo $HASHED_PW
-  node /var/www/html/decrypt.js "$HASHED_PW" "$SALT" > /mnt/store/pass.txt
-  #rm -rf /mnt/store/backup_pwd*
-else 
-  touch /mnt/store/$SERVERARG.txt
+SERVERARG=${CMDARG//$'\n'/} 
+#node /var/www/html/decrypt.js "$HASHED_PW" "$SALT" > /mnt/store/pass.txt
+touch /mnt/store/$SERVERARG.txt
 fi
 ;;
 

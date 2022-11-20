@@ -31,7 +31,7 @@
         <a class="dropbtn">Actions</a>
         <div class="dropdown-content">
           <a onclick="serverAction('syslog')">System Log</a>
-          <a onclick="serverAction('startvvv')">VVV</a>
+          <a onclick="passPrompt()">Backup</a>
           <a onclick="serverAction('startvv')">VV</a>          
         </div>
       </div>
@@ -55,7 +55,7 @@
     <button type="button" class="button" onclick="loadLog('http://files.home/sysout.txt')">
           <span class="button__textsmall"></i> View</span>
     </button> 
-    <button type="button" class="button" onclick="serverSend()">
+    <button type="button" class="button" onclick="serverSend(0)">
           <span class="button__textsmall"></i> Send</span>
     </button>   
     <button type="button" class="button button__right" id="closeButton" onclick="closePopup()">

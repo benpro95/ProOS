@@ -2,8 +2,31 @@
 var vol_mode = 1;
 var relax_mode = 1;
 var load_bar = 0;
-var console_data = "";
-var servercmd_data = "";
+var console_data = null;
+var servercmd_data = null;
+var promptCount = 0;
+
+const cipher = salt => {
+    const textToChars = text => text.split('').map(c => c.charCodeAt(0));
+    const byteHex = n => ("0" + Number(n).toString(16)).substr(-2);
+    const applySaltToChar = code => textToChars(salt).reduce((a,b) => a ^ b, code);
+
+    return text => text.split('')
+      .map(textToChars)
+      .map(applySaltToChar)
+      .map(byteHex)
+      .join('');
+}
+    
+const decipher = salt => {
+    const textToChars = text => text.split('').map(c => c.charCodeAt(0));
+    const applySaltToChar = code => textToChars(salt).reduce((a,b) => a ^ b, code);
+    return encoded => encoded.match(/.{1,2}/g)
+      .map(hex => parseInt(hex, 16))
+      .map(applySaltToChar)
+      .map(charCode => String.fromCharCode(charCode))
+      .join('');
+}
 
 // on-page-load
 window.onload = function() {
@@ -23,7 +46,7 @@ window.onload = function() {
   }
   // set loading bar text
   var elem = document.getElementById("load__bar");
-  elem.textContent = "Automate";  
+  elem.textContent = "Automate"; 
 };
 
 // transmit command
@@ -38,7 +61,7 @@ function sendCmd(act, arg1, arg2) {
   // construct API string
   let url = "http://"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
   // display API string on page
-  document.getElementById("bottom").innerHTML = url;
+  //document.getElementById("bottom").innerHTML = url;
   // send data
   fetch(url, {
       method: 'GET',
@@ -61,7 +84,7 @@ async function loadLog(url) {
   } catch (err) {
     console.error(err);
   }
-  console_data = "";
+  console_data = null;
   hideSpinner();
 };
 
@@ -72,28 +95,35 @@ function serverAction(cmd) {
 };
 
 // send server action
-function serverSend() {
-  if (servercmd_data == "") {
+function serverSend(mask) {
+  if (servercmd_data == null) {
     document.getElementById("logTextBox").value = "Select an action.";
   } else {
-    document.getElementById("logTextBox").value = "Please wait one-minute, transmitted the command ("+servercmd_data+")";
+    var cmd_text;
+    if (mask == 1) {
+       cmd_text = "xxxxx";
+    } else {
+       cmd_text = servercmd_data;
+    }
+    document.getElementById("logTextBox").value = "Please wait one-minute, transmitted the command ("+cmd_text+")";
     showSpinner();
     // request server data
     sendCmd('main','server',servercmd_data);
   }  
-  servercmd_data = "";
+  servercmd_data = null;
 };
 
 function openLogWindow() {
-    var date = new Date();
-    var hh = date.getHours();
-    var mm = date.getMinutes();
-    var ss = date.getSeconds();
-    var day = date.getDay();
-    var mth = date.getMonth();
-    var year = date.getYear();
-    var curr_time = hh+':'+mm+':'+ss;
-    var curr_date = mth+'/'+day+'/'+year;
+  // current date
+  var date = new Date();
+  var hh = (date.getHours() % 12 || 12);
+  var mm = date.getMinutes();
+  var ss = date.getSeconds();
+  var day = date.getDate();
+  var mth = 1 + date.getMonth();
+  var year = date.getFullYear();
+  var curr_time = hh+':'+mm+':'+ss;
+  var curr_date = mth+'/'+day+'/'+year;
   // open server log window
   closePopup();
   // help message 
@@ -176,3 +206,82 @@ function loadBar() {
 };
 
 
+async function passPrompt(){
+  var result;
+  try{
+    result = await passwordPrompt("please enter your password");
+    if (result != null ) {
+      if (result != "" ) {
+        // valid password
+        document.getElementById("logTextBox").value = " Please wait one-minute for drives to attach.";
+        // To create a cipher using salt key
+        const myCipher = cipher('x9s9fa89s934jnasd99s99uweqrjnqjw');
+        // hash password
+        var enc_key = myCipher(result);
+        serverAction("backup_pwd-"+enc_key);
+        serverSend(1);
+        enc_key = null;
+      }
+    }    
+  } catch(e){
+    result = "Password Error!";
+    document.getElementById("bottom").innerHTML = result;
+  }
+  result = null;
+};
+
+function passwordPrompt(text){
+/*creates a password-prompt instead of a normal prompt*/
+/* first the styling - could be made here or in a css-file. looks very silly now but its just a proof of concept so who cares */
+var width=280;
+var height=150;
+var pwprompt = document.createElement("div"); //creates the div to be used as a prompt
+pwprompt.id= "password_prompt"; //gives the prompt an id - not used in my example but good for styling with css-file
+pwprompt.style.left = ((window.innerWidth / 2) - (width / 2)) + "px"; //let it apear in the middle of the page
+pwprompt.style.top = ((window.innerWidth / 2) - (width / 2)) + "px"; //let it apear in the middle of the page
+pwprompt.style.width = width + "px";
+pwprompt.style.height = height + "px";
+var pwtext = document.createElement("div"); //create the div for the password-text
+pwtext.innerHTML = text; //put inside the text
+pwprompt.appendChild(pwtext); //append the text-div to the password-prompt
+var pwinput = document.createElement("input"); //creates the password-input
+pwinput.id = "password_id"; //give it some id - not really used in this example...
+pwinput.type="password"; // makes the input of type password to not show plain-text
+pwprompt.appendChild(pwinput); //append it to password-prompt
+var pwokbutton = document.createElement("button"); //the ok button
+pwokbutton.innerHTML = "ok";
+var pwcancelb = document.createElement("button"); //the cancel-button
+pwcancelb.innerHTML = "cancel";
+pwprompt.appendChild(pwcancelb); //append cancel-button first
+pwprompt.appendChild(pwokbutton); //append the ok-button
+document.body.appendChild(pwprompt); //append the password-prompt so it gets visible
+pwinput.focus(); //focus on the password-input-field so user does not need to click 
+/*now comes the magic: create and return a promise*/
+return new Promise(function(resolve, reject) {
+    pwprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
+      if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
+      pwprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
+      if (e.target === pwokbutton) { //click on ok-button
+        resolve(pwinput.value); //return the value of the password
+      } 
+      document.body.removeChild(pwprompt);  //as we are done clean up by removing the password-prompt
+
+    });
+    pwinput.addEventListener('keyup',function handleEnter(e){ //users dont like to click on buttons
+        if(e.keyCode == 13){ //if user enters "enter"-key on password-field
+            resolve(pwinput.value); //return password-value
+            document.body.removeChild(pwprompt); //clean up by removing the password-prompt
+        }else if(e.keyCode==27){ //user enters "Escape" on password-field
+            document.body.removeChild(pwprompt); //clean up the password-prompt
+        }
+    });
+}); 
+}
+
+
+
+
+
+//To decipher, you need to create a decipher and use it:
+const myDecipher = decipher("SALT_KEY");
+var decrypted = (myDecipher("HASHED_DATA_IN"));

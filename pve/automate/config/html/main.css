@@ -338,3 +338,17 @@ body {
 .dropdown:hover .dropbtn {background-color: #000;}
 
 
+#password_prompt {
+    position: fixed;
+    border: 20px solid #2d353d;
+    background: #2d353d; 
+    color: white; 
+    z-index: 99999;
+}
+#password_prompt label {
+    display:block; 
+    margin-bottom:5px;
+}
+#password_prompt input {
+    margin-bottom:10px;
+}

@@ -85,10 +85,19 @@ function serverSend() {
 };
 
 function openLogWindow() {
+    var date = new Date();
+    var hh = date.getHours();
+    var mm = date.getMinutes();
+    var ss = date.getSeconds();
+    var day = date.getDay();
+    var mth = date.getMonth();
+    var year = date.getYear();
+    var curr_time = hh+':'+mm+':'+ss;
+    var curr_date = mth+'/'+day+'/'+year;
   // open server log window
   closePopup();
   // help message 
-  document.getElementById("logTextBox").value = " (Load) - Display server log\r\n (New) - Request current system log data";
+  document.getElementById("logTextBox").value = " Proxmox Linux Server "+curr_time+" "+curr_date+" ";
   // show log form window
   document.getElementById("logForm").style.display = "block";
 };

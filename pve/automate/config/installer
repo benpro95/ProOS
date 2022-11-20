@@ -14,6 +14,11 @@ apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates bpytop 
  apt-transport-https wget unzip gnupg rsync curl screen parallel ethtool avahi-daemon \
  libdbus-1-dev libdbus-glib-1-dev locales aptitude sudo gnupg scrub binutils ffmpeg pip
 
+## Node Support
+curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+apt-get install -y --no-upgrade --ignore-missing nodejs
+npm install -g node-fetch
+
 ## Process Monitor Symlink
 ln -sf /usr/bin/bpytop /usr/bin/htop
 ## Remove Packages
@@ -100,6 +105,10 @@ chown -R www-data:www-data /var/www/sessions
 mkdir -p /var/www/uploads
 chmod -R g+rx /var/www/uploads
 chown -R www-data:www-data /var/www/uploads
+cd /var/www/html
+/usr/local/bin/npm install
+cd -
+
 ##
 ## WWW Permissions (Network Web UI)
 rm -f /etc/sudoers.d/www-perms

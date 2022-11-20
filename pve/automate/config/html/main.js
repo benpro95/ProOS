@@ -5,6 +5,7 @@ var load_bar = 0;
 var console_data = null;
 var servercmd_data = null;
 var promptCount = 0;
+var saltValue = null;
 
 const cipher = salt => {
     const textToChars = text => text.split('').map(c => c.charCodeAt(0));
@@ -61,7 +62,7 @@ function sendCmd(act, arg1, arg2) {
   // construct API string
   let url = "http://"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
   // display API string on page
-  //document.getElementById("bottom").innerHTML = url;
+  document.getElementById("bottom").innerHTML = url;
   // send data
   fetch(url, {
       method: 'GET',
@@ -72,20 +73,6 @@ function sendCmd(act, arg1, arg2) {
 // back to home page 
 function GoToHomePage() {
   window.location = '/';   
-};
-
-// load text file
-async function loadLog(url) {
-  try {
-    const response = await fetch(url);
-    console_data = await response.text(); 
-    document.getElementById("logTextBox").value = console_data;
-//  console.log(console_data);
-  } catch (err) {
-    console.error(err);
-  }
-  console_data = null;
-  hideSpinner();
 };
 
 // load server action 
@@ -205,8 +192,47 @@ function loadBar() {
   }
 };
 
+// load entire text file
+async function loadLog(url) {
+  try {
+    const response = await fetch(url);
+    console_data = await response.text(); 
+    document.getElementById("logTextBox").value = console_data;
+  } catch (err) {
+    console.error(err);
+  }
+  console_data = null;
+  hideSpinner();
+};
 
-async function passPrompt(){
+// load first line of text file
+async function loadSalt(url) {
+  saltValue = null;
+  try {
+    const response = await fetch(url);
+    const data = await response.text(); 
+    saltValue = data.split('\n').shift(); // first line
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+// load salt then show the password prompt
+async function passPrompt(url) {
+    let res = null;
+    try {
+        res = await Promise.all([
+            loadSalt(url),
+            passPromptWindow()
+        ]);
+        console.log(' Salt read success >>', res);
+    } catch (err) {
+        console.log('Salt read fail >>', res, err);
+    }
+  saltValue = null;
+}
+
+async function passPromptWindow(){
   var result;
   try{
     result = await passwordPrompt("please enter your password");
@@ -215,9 +241,10 @@ async function passPrompt(){
         // valid password
         document.getElementById("logTextBox").value = " Please wait one-minute for drives to attach.";
         // To create a cipher using salt key
-        const myCipher = cipher('x9s9fa89s934jnasd99s99uweqrjnqjw');
+        const cipher_data = cipher(saltValue);
         // hash password
-        var enc_key = myCipher(result);
+        var enc_key = cipher_data(result);
+        // trasnmit to server
         serverAction("backup_pwd-"+enc_key);
         serverSend(1);
         enc_key = null;
@@ -282,6 +309,3 @@ return new Promise(function(resolve, reject) {
 
 
 
-//To decipher, you need to create a decipher and use it:
-const myDecipher = decipher("SALT_KEY");
-var decrypted = (myDecipher("HASHED_DATA_IN"));

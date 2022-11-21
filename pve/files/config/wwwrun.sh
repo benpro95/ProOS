@@ -5,6 +5,6 @@
 REPLY="$1"
 ARG="$2"
 
-/usr/bin/wwwcmds.run $REPLY $ARG &>> /tmp/logfile
+/usr/bin/wwwcmds.run $REPLY $ARG &>> /mnt/.regions/WWW/SystemOutput.txt
 
 exit

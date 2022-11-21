@@ -179,7 +179,10 @@ chmod u=r,g=r,o= /etc/sudoers.d/www-perms
 rm -f /etc/sudoers.d/nobody-perms
 
 ### WWW Shell Commands
-cp -f /tmp/config/wwwcmds.sh /usr/bin/wwwcmds
+cp -f /tmp/config/wwwcmds.sh /usr/bin/wwwcmds.run
+chmod +x /usr/bin/wwwcmds.run
+chown root:root /usr/bin/wwwcmds.run
+cp -f /tmp/config/wwwrun.sh /usr/bin/wwwcmds
 chmod +x /usr/bin/wwwcmds
 chown root:root /usr/bin/wwwcmds
 

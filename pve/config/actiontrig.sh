@@ -4,7 +4,7 @@
 
 ## VM Log File
 TRIGGERS_DIR="/mnt/datastore/.regions/Automate"
-LOGFILE="/mnt/datastore/.regions/WWW/SystemOutput.txt"
+LOGFILE="/mnt/datastore/.regions/WWW/sysout.txt"
 
 function TRIM_LOG {
   if [ ! -e $LOGFILE ]; then

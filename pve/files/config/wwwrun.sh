@@ -4,7 +4,9 @@
 ## Launcher for WWW actions script
 REPLY="$1"
 ARG="$2"
+LOGFILE="/mnt/.regions/WWW/sysout.txt"
 
-/usr/bin/wwwcmds.run $REPLY $ARG &>> /mnt/.regions/WWW/SystemOutput.txt
+date &>> $LOGFILE
+/usr/bin/wwwcmds.run $REPLY $ARG &>> $LOGFILE
 
 exit

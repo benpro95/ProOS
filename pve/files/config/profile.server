@@ -2,7 +2,6 @@
 
 ## Command Aliases
 alias matrix='/usr/bin/cmatrix'
-alias svrutil='/usr/bin/svrutil.bin'
 alias svr='/usr/bin/svrutil.bin'
 
 ######## Custom login scripts below ###########
@@ -20,7 +19,6 @@ uname -m -n -s -o -r
 RANDOPT=$(( $RANDOM % 3 ))
 if [[ $RANDOPT == "0" ]]
 then
-  echo " "
   echo "    ____             ____  _____"
   echo "   / __ \_________  / __ \/ ___/"
   echo "  / /_/ / ___/ __ \/ / / /\__ \ "
@@ -30,7 +28,6 @@ then
 fi
 if [[ $RANDOPT == "1" ]]
 then
-  echo " "
   echo "  _____            ____   _____ "
   echo " |  __ \          / __ \ / ____|"
   echo " | |__) | __ ___ | |  | | (___  "
@@ -41,7 +38,6 @@ then
 fi
 if [[ $RANDOPT == "2" ]]
 then
-  echo " "
   echo " ____  ____   ___   ___   _____"
   echo "|    \|    \ /   \ /   \ / ___/"
   echo "|  o  )  D  )     |     (   \_ "
@@ -56,7 +52,6 @@ echo " "
 echo "last login:"
 lastlog -u server
 echo " "
-echo "Enter '${greentty}svr${resettty}' to return to main menu"
 cd ~/ProOS
 echo "${greentty}Server modules:${resettty}"
 ls ~/ProOS/pve --hide=network --hide=config --hide=vmbkps --hide=photos --hide=*.conf --hide=*.txt

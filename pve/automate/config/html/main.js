@@ -44,11 +44,12 @@ async function sendCmd(act, arg1, arg2) {
   // construct API string
   let url = "http://"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
   // display API string on page
-  document.getElementById("bottom").innerHTML = url;
+  //document.getElementById("bottom").innerHTML = url;
   // send data
   fetch(url, {
       method: 'GET',
     })
+  // animation
   loadBar();
 };
 
@@ -99,7 +100,7 @@ function serverSend(mask) {
     } else {
        cmd_text = servercmd_data;
     }
-    document.getElementById("logTextBox").value = "Please wait one-minute, transmitted the command ("+cmd_text+")";
+    document.getElementById("logTextBox").value = "Please wait, transmitted the command ("+cmd_text+")";
     showSpinner();
     // request server data
     sendCmd('main','server',servercmd_data);

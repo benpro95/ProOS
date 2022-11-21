@@ -14,11 +14,12 @@ REGROOT="/home/server/.regions"
 ## Detach All Regions
 if [[ $REPLY == "detach_all_regions" ]]
 then
+  echo " "	
   echo "detaching all regions..."
-  rm $REGROOT/Snapshots
-  rm $REGROOT/Private
-  rm $REGROOT/Public
-  rm $REGROOT/WWW
+  rm -f $REGROOT/Snapshots
+  rm -f $REGROOT/Private
+  rm -f $REGROOT/Public
+  rm -f $REGROOT/WWW
   exit
 fi
 ## WWW Share
@@ -76,6 +77,7 @@ fi
 
 if [[ $REPLY == "git_push" ]]
 then
+  echo ""	
   TIMESTMP=$(date '+%Y-%m-%d %H:%M')
   echo "uploading all changes to GitHub..."
   echo ""

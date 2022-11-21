@@ -58,12 +58,17 @@ async function loadLog(url) {
     const response = await fetch(url);
     console_data = await response.text(); 
     document.getElementById("logTextBox").value = console_data;
+    // scroll to bottom of page
+    var txtArea = document.getElementById("logTextBox");
+    txtArea.scrollTop = txtArea.scrollHeight;
   } catch (err) {
     console.error(err);
   }
   console_data = null;
+  // animations
   hideSpinner();
   loadBar();
+  resetAction();
 };
 
 // load server action 
@@ -71,10 +76,16 @@ function serverAction(cmd) {
   servercmd_data = cmd;
   if (cmd == "unifi") {
     document.getElementById("logTextBox").value = "Click send to request action, this will toggle the UniFi network controller";
-  } else {
-    document.getElementById("logTextBox").value = "Click send to request action.";
   }
+  // change color of send button 
+  document.getElementById("sendButton").style.background='#2c0c2c';
   hideSpinner();
+};
+
+function resetAction() {
+  // return default color of send button 
+  document.getElementById("sendButton").style.background='#1e2352';  
+  servercmd_data = null;
 };
 
 // send server action

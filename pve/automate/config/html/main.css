@@ -35,7 +35,7 @@ body {
 
 .button {
     transition: all 0.2s;
-	width: 135px;
+	  width: 135px;
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;    
@@ -166,7 +166,7 @@ body {
   display: none;
   position: fixed;
   right: 5px;
-  border: 6px solid #1f252a; /* popup window border color */
+  border: 8px solid #1f252a; /* popup window border color */
   z-index: 8;
 }
 

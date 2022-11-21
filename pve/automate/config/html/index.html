@@ -28,7 +28,7 @@
   <form class="form-container">
     <div class="scrollmenu">
       <div class="dropdown"> 
-        <a class="dropbtn">Actions</a>
+        <a class="dropbtn" onmouseover="resetAction()">Actions</a>
         <div class="dropdown-content">
           <a onclick="serverAction('syslog')">System Log</a>
           <a onclick="serverAction('backup')">Backup</a>     
@@ -37,7 +37,7 @@
         </div>
       </div>
       <div class="dropdown"> 
-        <a class="dropbtn">Regions</a>
+        <a class="dropbtn" onmouseover="resetAction()">Regions</a>
         <div class="dropdown-content">
           <a onclick="serverAction('files-www_region')">WWW</a>
           <a onclick="serverAction('files-public_region')">Public</a>
@@ -47,7 +47,7 @@
         </div>
       </div>
       <div class="dropdown"> 
-        <a class="dropbtn">Xana</a>
+        <a class="dropbtn" onmouseover="resetAction()">Xana</a>
         <div class="dropdown-content">
           <a onclick="serverAction('startxana')">Start</a>
           <a onclick="serverAction('restorexana')">Restore</a>
@@ -55,7 +55,7 @@
         </div>
       </div>
       <div class="dropdown"> 
-        <a class="dropbtn">Dev</a>
+        <a class="dropbtn" onmouseover="resetAction()">Dev</a>
         <div class="dropdown-content">
           <a onclick="serverAction('startdev')">Start</a>
           <a onclick="serverAction('stopdev')">Shutdown</a>

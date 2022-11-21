@@ -7,10 +7,10 @@ TRIGGERS_DIR="/mnt/datastore/.regions/Automate"
 LOGFILE="/mnt/datastore/.regions/WWW/SystemOutput.txt"
 
 function TRIM_LOG {
-  if [ -e $LOGFILE ]; then
-    rm -f $LOGFILE
+  if [ ! -e $LOGFILE ]; then
+    touch $LOGFILE 
+    chmod 777 $LOGFILE 
   fi
-  touch $LOGFILE  
 }
 
 if [ -e /tmp/actiontrig.lock ]; then
@@ -93,7 +93,6 @@ if [ -e $TRIGGERS_DIR/startxana.txt ]; then
   echo "starting xana VM..." &>> $LOGFILE
   qm start 105 &>> $LOGFILE
   date &>> $LOGFILE
-  chmod 777 $LOGFILE
 fi
 if [ -e $TRIGGERS_DIR/stopxana.txt ]; then
   rm -f $TRIGGERS_DIR/stopxana.txt
@@ -101,7 +100,6 @@ if [ -e $TRIGGERS_DIR/stopxana.txt ]; then
   echo "shutting down xana VM..." &>> $LOGFILE
   qm stop 105 &>> $LOGFILE
   date &>> $LOGFILE
-  chmod 777 $LOGFILE
 fi
 if [ -e $TRIGGERS_DIR/restorexana.txt ]; then
   rm -f $TRIGGERS_DIR/restorexana.txt
@@ -110,7 +108,6 @@ if [ -e $TRIGGERS_DIR/restorexana.txt ]; then
   qmrestore /var/lib/vz/dump/vzdump-qemu-105-latest.vma.zst \
     105 -force -storage scratch &>> $LOGFILE
   date &>> $LOGFILE
-  chmod 777 $LOGFILE
 fi
 #######################################################
 if [ -e $TRIGGERS_DIR/startdev.txt ]; then
@@ -127,17 +124,16 @@ if [ -e $TRIGGERS_DIR/stopdev.txt ]; then
   echo "shutting down development VM..." &>> $LOGFILE
   qm stop 103 &>> $LOGFILE
   date &>> $LOGFILE
-  chmod 777 $LOGFILE
 fi
 ### Write Server Log ##################################   
 if [ -e $TRIGGERS_DIR/syslog.txt ]; then
   rm -f $TRIGGERS_DIR/syslog.txt
   TRIM_LOG
-  /usr/bin/sys-check &>> $LOGFILE 2>&1
-  chmod 777 $LOGFILE 
+  /usr/bin/sys-check &>> $LOGFILE
 fi
 
 #######################################################
+chmod 777 $LOGFILE
 exit
 
 

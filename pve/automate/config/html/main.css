@@ -181,8 +181,6 @@ body {
 
 /* Full-width textarea */
 .form-container textarea {
-  white-space: nowrap;
-  word-break: keep-all;
   height: 100%;
   width: 100%;
   color: #fff; /* textbox font color */

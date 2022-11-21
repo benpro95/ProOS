@@ -8,16 +8,16 @@ var promptCount = 0;
 
 // on-page-load
 window.onload = function() {
-  const host1 = "http://"+location.hostname+"/"
+  const mainpg = "http://"+location.hostname+"/"
   // load volume mode support on main page only
-  if (window.location.href == host1) {
+  if (window.location.href == mainpg) {
     volMode();
   }else{
     vol_mode = 0;  
   }
   // load relax mode support on bedroom page only
-  const host2 = "http://"+location.hostname+"/room.html"
-  if (window.location.href == host2) {
+  const roompg = "http://"+location.hostname+"/room.html"
+  if (window.location.href == roompg) {
     relaxMode();
   }else{    
     relax_mode = 0;  
@@ -27,8 +27,13 @@ window.onload = function() {
   elem.textContent = "Automate"; 
 };
 
+// back to home page 
+function GoToHomePage() {
+  window.location = '/';   
+};
+
 // transmit command
-function sendCmd(act, arg1, arg2) {
+async function sendCmd(act, arg1, arg2) {
   // adjust API syntax for different functions
   if (vol_mode == 1) {  
     arg2 = "subs";
@@ -47,15 +52,29 @@ function sendCmd(act, arg1, arg2) {
   loadBar();
 };
 
-// back to home page 
-function GoToHomePage() {
-  window.location = '/';   
+// load entire text file
+async function loadLog(url) {
+  try {
+    const response = await fetch(url);
+    console_data = await response.text(); 
+    document.getElementById("logTextBox").value = console_data;
+  } catch (err) {
+    console.error(err);
+  }
+  console_data = null;
+  hideSpinner();
+  loadBar();
 };
 
 // load server action 
 function serverAction(cmd) {
   servercmd_data = cmd;
-  document.getElementById("logTextBox").value = "Click send to request action.";
+  if (cmd == "unifi") {
+    document.getElementById("logTextBox").value = "Click send to request action, this will toggle the UniFi network controller";
+  } else {
+    document.getElementById("logTextBox").value = "Click send to request action.";
+  }
+  hideSpinner();
 };
 
 // send server action
@@ -104,7 +123,7 @@ function closePopup() {
 
 function showSpinner() {
   // hide button before drawing spinner
-  document.getElementById("closeButton").style.display = "none";  
+  document.getElementById("sendButton").style.display = "none";  
   // show apple spinner
   document.getElementById("formSpinner").style.display = "inline-block";   
 };
@@ -113,8 +132,10 @@ function hideSpinner() {
   // hide apple spinner
   document.getElementById("formSpinner").style.display = "none";
   // re-enable close button
-  document.getElementById("closeButton").style.display = "inline-block";  
+  document.getElementById("sendButton").style.display = "inline-block";  
 };
+
+
 
 // switch volume controls on main page
 function volMode() {   
@@ -169,18 +190,7 @@ function loadBar() {
   }
 };
 
-// load entire text file
-async function loadLog(url) {
-  try {
-    const response = await fetch(url);
-    console_data = await response.text(); 
-    document.getElementById("logTextBox").value = console_data;
-  } catch (err) {
-    console.error(err);
-  }
-  console_data = null;
-  hideSpinner();
-};
+
 
 
 

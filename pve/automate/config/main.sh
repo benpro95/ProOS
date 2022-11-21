@@ -398,21 +398,6 @@ fi
 exit
 ;;
 
-togglerelax)
-## Toggle Sounds On/Off 
-if (systemctl is-active --quiet relaxloop.service); then
-  echo "Turning off Apple TV..."
-  systemctl stop relaxloop
-  systemctl set-environment rpi_relaxmode=off
-  systemctl start relaxloop
-else
-  echo "Starting Relax Loop..."
-  systemctl set-environment rpi_relaxmode=boot
-  systemctl start relaxloop
-fi
-exit
-;;
-
 vmute)
 if [ "$CMDARG" == "bedroom" ]; then
   ## Turn Off Apple TV
@@ -473,18 +458,18 @@ exit
 
 ## Sleep Mode
 sleep)
-if [ ! -e $LOCKFOLDER/sleep.save ]; then
-  touch $LOCKFOLDER/sleep.save
+## Toggle Sounds On/Off 
+if (systemctl is-active --quiet relaxloop.service); then
+  echo "Turning off Apple TV..."
+  systemctl stop relaxloop
+  systemctl set-environment rpi_relaxmode=off
+  systemctl start relaxloop
+else
+  echo "Service not runnning starting sleep mode..."
   /opt/system/main relax waterfall
   /opt/system/main pcoff
   /opt/system/main alloff
   XMITCMD="hifioff" ; XMIT 
-else
-  rm -f $LOCKFOLDER/sleep.save
-  ## Turn Off Apple TV
-  systemctl stop relaxloop
-  systemctl set-environment rpi_relaxmode=off
-  systemctl start relaxloop
 fi
 exit
 ;;
@@ -672,25 +657,34 @@ systemctl start relaxloop
 exit
 ;;
 
-unifi)
-## Toggle Unifi Controller
-SYSDSTAT="$(systemctl is-active unifi.service)"
-if [ "${SYSDSTAT}" = "active" ]; then
-  echo "UniFi running, stopping service..."
-  systemctl stop unifi
-else 
-  echo "UniFi not running, starting service..."  
-  systemctl start unifi
-  echo "access at 'https://automate.home:8443/' "
-fi
-exit
-;;
-
 server)
-SERVERARG=${CMDARG//$'\n'/} 
-#node /var/www/html/decrypt.js "$HASHED_PW" "$SALT" > /mnt/store/pass.txt
-touch /mnt/store/$SERVERARG.txt
+## Read argument
+_CMDARG=${CMDARG//$'\n'/} 
+SERVERARG=${_CMDARG%-*}
+FILESCMD=${_CMDARG#*-}
+## transmit action to file server
+if [ "$SERVERARG" == "files" ]; then
+  if [ "$FILESCMD" != "" ]; then
+    ESP32="no"; TARGET="files.home"; XMITCMD="$FILESCMD"; CALLAPI
+  fi  
+  exit
 fi
+if [ "$SERVERARG" == "unifi" ]; then
+  ## Toggle Unifi Controller
+  SYSDSTAT="$(systemctl is-active unifi.service)"
+  if [ "${SYSDSTAT}" = "active" ]; then
+    echo "UniFi running, stopping service..."
+    systemctl stop unifi
+  else 
+    echo "UniFi not running, starting service..."  
+    systemctl start unifi
+    echo "access at 'https://automate.home:8443/' "
+  fi
+  exit
+fi
+## Pass action file to the hypervisor
+touch /mnt/store/$SERVERARG.txt
+exit
 ;;
 
 active)

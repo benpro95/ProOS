@@ -11,7 +11,7 @@ apt-get --yes update
 apt-get install -y --no-upgrade --ignore-missing unzip wget \
  rsync curl screen scrub ethtool aptitude sudo samba sshpass \
  libdbus-1-dev libdbus-glib-1-dev bc git locales mailutils \
- neofetch apt-transport-https nmap bpytop htop binutils lighttpd
+ neofetch apt-transport-https nmap bpytop htop binutils
 
 ## Process Monitor Symlink
 ln -sf /usr/bin/bpytop /usr/bin/pytop
@@ -130,12 +130,58 @@ cp /tmp/config/smb.conf /etc/samba
 chmod 644 /etc/samba/smb.conf
 chown root:root /etc/samba/smb.conf
 
-## Light HTTP Server
-cp -f /tmp/config/lighttpd.conf /etc/lighttpd/
+## Light Web Server
+apt-get install -y --no-upgrade lighttpd
+apt-get install -y --no-upgrade php-common php-cgi php php-mysql
+## LightTPD Configuration
+cp -f /tmp/config/lighttpd.conf /etc/lighttpd
 chmod 644 /etc/lighttpd/lighttpd.conf
 chown root:root /etc/lighttpd/lighttpd.conf
+lighttpd-enable-mod fastcgi fastcgi-php; lighty-enable-mod fastcgi-php
+ln -sf /etc/lighttpd/conf-available/10-fastcgi.conf /etc/lighttpd/conf-enabled/
+ln -sf /etc/lighttpd/conf-available/15-fastcgi-php.conf
+ln -sf /usr/share/lighttpd/create-mime.conf.pl /usr/share/lighttpd/create-mime.assign.pl
 systemctl disable lighttpd
 systemctl restart lighttpd
+
+## PHP Configuration
+PHP_VERSION=$(php -v | tac -r | tail -n 1 | cut -d " " -f 2 | cut -c 1-3)
+cp -rf /tmp/config/php.cgi.ini /etc/php/$PHP_VERSION/cgi/php.ini
+chmod 644 /etc/php/$PHP_VERSION/cgi/php.ini
+chown root:root /etc/php/$PHP_VERSION/cgi/php.ini
+cp -rf /tmp/config/php.cli.ini /etc/php/$PHP_VERSION/cli/php.ini
+chmod 644 /etc/php/$PHP_VERSION/cli/php.ini
+chown root:root /etc/php/$PHP_VERSION/cli/php.ini
+chown -R www-data:www-data /var/lib/php
+chmod -R g+rx /var/lib/php
+if [ -e /lib/systemd/system/phpsessionclean.service ]; then
+  systemctl disable phpsessionclean.timer
+  systemctl disable phpsessionclean.service
+  rm -f /lib/systemd/system/phpsessionclean.timer
+  rm -f /lib/systemd/system/phpsessionclean.service
+fi
+
+## Base website files
+mkdir -p /var/www/sessions
+chmod -R g+rx /var/www/sessions
+chown -R www-data:www-data /var/www/sessions
+mkdir -p /var/www/uploads
+chmod -R g+rx /var/www/uploads
+chown -R www-data:www-data /var/www/uploads
+
+## WWW Permissions
+rm -f /etc/sudoers.d/www-perms
+sh -c "touch /etc/sudoers.d/www-perms"
+sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/usr/bin/wwwcmds\" >> /etc/sudoers.d/www-perms"
+chown root:root /etc/sudoers.d/www-perms
+chmod u=rwx,g=rx,o=rx /etc/sudoers.d/www-perms
+chmod u=r,g=r,o= /etc/sudoers.d/www-perms
+rm -f /etc/sudoers.d/nobody-perms
+
+### WWW Shell Commands
+cp -f /tmp/config/wwwcmds.sh /usr/bin/wwwcmds
+chmod +x /usr/bin/wwwcmds
+chown root:root /usr/bin/wwwcmds
 
 ## Clean-up
 systemctl daemon-reload

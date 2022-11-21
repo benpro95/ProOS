@@ -4,7 +4,7 @@
 
 ## VM Log File
 TRIGGERS_DIR="/mnt/datastore/.regions/Automate"
-LOGFILE="/mnt/datastore/.regions/WWW/sysout.txt"
+LOGFILE="/mnt/datastore/.regions/WWW/SystemOutput.txt"
 
 function TRIM_LOG {
   if [ -e $LOGFILE ]; then
@@ -88,7 +88,6 @@ fi
 ### START VMs #########################################
 #######################################################
 if [ -e $TRIGGERS_DIR/startxana.txt ]; then
-###### Runs when file exists ##########################
   rm -f $TRIGGERS_DIR/startxana.txt
   TRIM_LOG
   echo "starting xana VM..." &>> $LOGFILE
@@ -96,8 +95,15 @@ if [ -e $TRIGGERS_DIR/startxana.txt ]; then
   date &>> $LOGFILE
   chmod 777 $LOGFILE
 fi
+if [ -e $TRIGGERS_DIR/stopxana.txt ]; then
+  rm -f $TRIGGERS_DIR/stopxana.txt
+  TRIM_LOG
+  echo "shutting down xana VM..." &>> $LOGFILE
+  qm stop 105 &>> $LOGFILE
+  date &>> $LOGFILE
+  chmod 777 $LOGFILE
+fi
 if [ -e $TRIGGERS_DIR/restorexana.txt ]; then
-###### Runs when file exists ##########################
   rm -f $TRIGGERS_DIR/restorexana.txt
   TRIM_LOG
   echo "restoring xana VM..." &>> $LOGFILE
@@ -108,7 +114,6 @@ if [ -e $TRIGGERS_DIR/restorexana.txt ]; then
 fi
 #######################################################
 if [ -e $TRIGGERS_DIR/startdev.txt ]; then
-###### Runs when file exists ##########################
   rm -f $TRIGGERS_DIR/startdev.txt
   TRIM_LOG
   echo "starting development VM..." &>> $LOGFILE
@@ -116,10 +121,16 @@ if [ -e $TRIGGERS_DIR/startdev.txt ]; then
   date &>> $LOGFILE
   chmod 777 $LOGFILE
 fi
-
+if [ -e $TRIGGERS_DIR/stopdev.txt ]; then
+  rm -f $TRIGGERS_DIR/stopdev.txt
+  TRIM_LOG
+  echo "shutting down development VM..." &>> $LOGFILE
+  qm stop 103 &>> $LOGFILE
+  date &>> $LOGFILE
+  chmod 777 $LOGFILE
+fi
 ### Write Server Log ##################################   
 if [ -e $TRIGGERS_DIR/syslog.txt ]; then
-###### Runs when file exists ##########################
   rm -f $TRIGGERS_DIR/syslog.txt
   TRIM_LOG
   /usr/bin/sys-check &>> $LOGFILE 2>&1

@@ -1,6 +1,8 @@
 #!/bin/bash
 ###########################################################
 ###########################################################
+#### these are the whitelisted commands that can be called
+#### from the HTTP API, ran as the user 'server' on files.home
 REPLY="$1"
 ARG="$2"
 LOGFILE="/mnt/.regions/WWW/sysout.txt"
@@ -102,7 +104,7 @@ if [[ $REPLY == "clearlog" ]]
 then
   truncate -s 0 $LOGFILE
   date
-  neofetch --stdout
+  neofetch --ascii_distro debian | sed 's/\x1B[@A-Z\\\]^_]\|\x1B\[[0-9:;<=>?]*[-!"#$%&'"'"'()*+,.\/]*[][\\@A-Z^_`a-z{|}~]//g'
   echo "Log file cleared."
   echo ""   
   exit

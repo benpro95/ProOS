@@ -7,6 +7,6 @@ ARG="$2"
 LOGFILE="/mnt/.regions/WWW/sysout.txt"
 
 date &>> $LOGFILE
-/usr/bin/wwwcmds.run $REPLY $ARG &>> $LOGFILE
+/usr/bin/www.sh $REPLY $ARG &>> $LOGFILE
 
 exit

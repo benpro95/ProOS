@@ -164,24 +164,21 @@ chown -R www-data:www-data /var/www/uploads
 ## WWW Permissions allow running as server user
 rm -f /etc/sudoers.d/www-perms
 sh -c "touch /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(server) NOPASSWD:/usr/bin/wwwcmds\" >> /etc/sudoers.d/www-perms"
+sh -c "echo \"www-data ALL=(server) NOPASSWD:/usr/bin/wwwrun\" >> /etc/sudoers.d/www-perms"
 chown root:root /etc/sudoers.d/www-perms
 chmod u=rwx,g=rx,o=rx /etc/sudoers.d/www-perms
 chmod u=r,g=r,o= /etc/sudoers.d/www-perms
 rm -f /etc/sudoers.d/nobody-perms
 
 ### WWW Shell Commands
-cp -f /tmp/config/wwwcmds.sh /usr/bin/wwwcmds.run
-chmod +x /usr/bin/wwwcmds.run
-chown root:root /usr/bin/wwwcmds.run
-cp -f /tmp/config/wwwrun.sh /usr/bin/wwwcmds
-chmod +x /usr/bin/wwwcmds
-chown root:root /usr/bin/wwwcmds
+cp -f /tmp/config/www.sh /usr/bin/
+chmod +x /usr/bin/www.sh
+chown root:root /usr/bin/www.sh
+cp -f /tmp/config/wwwrun.sh /usr/bin/wwwrun
+chmod +x /usr/bin/wwwrun
+chown root:root /usr/bin/wwwrun
 
 ## Clean-up
-rm -f /usr/bin/svrbackup.bin
-rm -f /mnt/extbkps/drives.txt
-rm -f /usr/bin/svrutil.bin
 systemctl daemon-reload
 rm -r /tmp/config/
 apt-get autoremove -y

@@ -7,5 +7,5 @@ Wants=time-sync.target
 [Service]
 User=root
 ExecStart=/opt/system/relaxloop
-Restart=on-failure
-RestartSec=5
+Restart=always
+RuntimeMaxSec=3h

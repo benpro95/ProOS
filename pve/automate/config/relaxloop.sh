@@ -17,7 +17,7 @@ if [ "$rpi_relaxmode" = "off" ]; then
   ATVSTATE=$(/usr/local/bin/atvremote --address "$ATVIP" --id "${SETTINGS[0]%$'\n'}" \
     --airplay-credentials "${SETTINGS[2]%$'\n'}" power_state)
   ## Only turn-off if Apple TV is on  
-  if [ "$ATVSTATE" = "PowerState.On" ]; then
+  if [ "$ATVSTATE" == "PowerState.On" ]; then
     echo "turning off Apple TV..."  
     /usr/local/bin/atvremote --address "$ATVIP" --id "${SETTINGS[0]%$'\n'}" \
      --airplay-credentials "${SETTINGS[2]%$'\n'}" turn_off
@@ -26,7 +26,7 @@ if [ "$rpi_relaxmode" = "off" ]; then
 fi
 
 ## Loop on startup / time trigger
-if [ "$rpi_relaxmode" = "boot" ]; then
+if [ "$rpi_relaxmode" == "boot" ]; then
   ## Set default mode from settings
   rpi_relaxmode="${SETTINGS[4]%$'\n'}"
   ## Read system time  

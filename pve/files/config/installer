@@ -122,15 +122,13 @@ cp /tmp/config/smb.conf /etc/samba
 chmod 644 /etc/samba/smb.conf
 chown root:root /etc/samba/smb.conf
 
-## Light Web Server
+## LightTPD Web Server
 apt-get install -y --no-upgrade lighttpd php-cgi php php-common
-## LightTPD Configuration
 cp -f /tmp/config/lighttpd.conf /etc/lighttpd
 chmod 644 /etc/lighttpd/lighttpd.conf
 chown root:root /etc/lighttpd/lighttpd.conf
 lighttpd-enable-mod fastcgi fastcgi-php
 lighty-enable-mod fastcgi-php
-#ln -sf /etc/lighttpd/conf-available/10-fastcgi.conf /etc/lighttpd/conf-enabled/
 systemctl disable lighttpd
 systemctl restart lighttpd
 

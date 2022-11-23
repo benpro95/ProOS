@@ -5,7 +5,7 @@
 #### from the HTTP API, ran as the user 'server' on files.home
 REPLY="$1"
 ARG="$2"
-LOGFILE="/mnt/.regions/WWW/sysout.txt"
+LOGFILE="$3"
 
 ### Only run if server user
 if [ ! "$USER" == "server" ]; then
@@ -103,7 +103,6 @@ fi
 if [[ $REPLY == "clearlog" ]]
 then
   truncate -s 0 $LOGFILE
-  date
   neofetch --ascii_distro debian | sed 's/\x1B[@A-Z\\\]^_]\|\x1B\[[0-9:;<=>?]*[-!"#$%&'"'"'()*+,.\/]*[][\\@A-Z^_`a-z{|}~]//g'
   echo "Log file cleared."
   echo ""   
@@ -113,16 +112,16 @@ fi
 if [[ $REPLY == "backupstd" ]]
 then
   echo "" 
-  /usr/bin/svrbackup.sh 60 no &>> $LOGFILE
+  /usr/bin/svrbackup.sh 60 no
   exit
 fi
 
 if [[ $REPLY == "backupchk" ]]
 then
   echo "" 
-  /usr/bin/svrbackup.sh 60 yes &>> $LOGFILE
+  /usr/bin/svrbackup.sh 60 yes
   exit
 fi
 
-
+echo "unknown command!"
 exit

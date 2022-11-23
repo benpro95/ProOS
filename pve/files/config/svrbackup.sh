@@ -20,10 +20,6 @@ fi
 
 echo "****************** starting backup **********************"
 echo " "
-echo "*********************************************************"
-echo "run 'screen -r' on files.home to attach to this terminal"
-echo "*********************************************************"
-echo " "
 
 ## Turn on LED
 /usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 5 \
@@ -147,5 +143,5 @@ echo "wait $wait_time second(s) for drives to detach."
  --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive \
  --url "http://ledwall.home:9300/exec.php?var=&arg=whtledoff&action=main"
 
-echo "backup complete."
+echo "****************** backup complete **********************"
 exit

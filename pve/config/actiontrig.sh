@@ -15,7 +15,7 @@ function EXIT_ROUTINE {
 
 ## Lock file
 if [ -e /tmp/actiontrig.lock ]; then
-  echo "process locked! exiting. (pve.home)" &>> $LOGFILE
+  echo "process locked! exiting. (pve.home)"
   exit
 fi
 
@@ -30,36 +30,36 @@ if [ -e $TRIGGERS_DIR/attach_bkps.txt ]; then
   touch /tmp/actiontrig.lock
   rm -f $TRIGGERS_DIR/attach_bkps.txt
   if [ ! -e $WWWROOT/pwd.txt ]; then
-	echo "password file not found, exiting." &>> $LOGFILE
+	echo "password file not found, exiting."
 	EXIT_ROUTINE
   fi
   if [ ! -e $WWWROOT/drives.txt ]; then
-	echo "drives file not found, exiting." &>> $LOGFILE
+	echo "drives file not found, exiting."
 	EXIT_ROUTINE
   fi
-  echo "" &>> $LOGFILE
-  readarray -t ZFSPOOLS < $WWWROOT/drives.txt &>> $LOGFILE
+  echo ""
+  readarray -t ZFSPOOLS < $WWWROOT/drives.txt
   for _POOL in "${ZFSPOOLS[@]}"; do
     POOL=$(echo $_POOL | sed -e 's/\r//g')
     if [ ! "$POOL" == "" ]; then
       if [ "$POOL" == "tank" ] || \
          [ "$POOL" == "datastore" ] || \
          [ "$POOL" == "rpool" ] ; then
-        echo "invalid pool specified." &>> $LOGFILE
+        echo "invalid pool specified."
       else
-        echo "importing ZFS backup volume $POOL." &>> $LOGFILE
-        zpool import $POOL &>> $LOGFILE
-   	    zfs load-key -L file://$WWWROOT/pwd.txt $POOL/extbkp &>> $LOGFILE
-  	    zfs mount $POOL/extbkp &>> $LOGFILE
-  	    zpool status $POOL &>> $LOGFILE
+        echo "importing ZFS backup volume $POOL."
+        zpool import $POOL
+   	    zfs load-key -L file://$WWWROOT/pwd.txt $POOL/extbkp
+  	    zfs mount $POOL/extbkp
+  	    zpool status $POOL
       fi
-      echo "" &>> $LOGFILE
+      echo ""
     fi
   done
-  zfs list &>> $LOGFILE
-  echo "" &>> $LOGFILE
-  shred -n 2 -z -u $WWWROOT/pwd.txt &>> $LOGFILE
-  echo "imported ZFS backup volumes" &>> $LOGFILE
+  zfs list
+  echo ""
+  shred -n 2 -z -u $WWWROOT/pwd.txt
+  echo "imported ZFS backup volumes"
   EXIT_ROUTINE
 fi
 
@@ -68,33 +68,33 @@ if [ -e $TRIGGERS_DIR/detach_bkps.txt ]; then
   touch /tmp/actiontrig.lock	
   rm -f $TRIGGERS_DIR/detach_bkps.txt
   if [ ! -e $WWWROOT/drives.txt ]; then
-	echo "drives file not found, exiting." &>> $LOGFILE
+	echo "drives file not found, exiting."
 	EXIT_ROUTINE
   fi  
-  echo "" &>> $LOGFILE
-  readarray -t ZFSPOOLS < /mnt/extbkps/drives.txt &>> $LOGFILE
+  echo ""
+  readarray -t ZFSPOOLS < $WWWROOT/drives.txt
   for _POOL in "${ZFSPOOLS[@]}"; do
     POOL=$(echo $_POOL | sed -e 's/\r//g')
     if [ ! "$POOL" == "" ]; then
       if [ "$POOL" == "tank" ] || \
          [ "$POOL" == "datastore" ] || \
          [ "$POOL" == "rpool" ] ; then
-        echo "invalid pool specified." &>> $LOGFILE
+        echo "invalid pool specified."
       else
-        echo "unmounting ZFS backup volume $POOL." &>> $LOGFILE
-        zfs unmount /mnt/extbkps/$POOL &>> $LOGFILE
-        zpool export $POOL &>> $LOGFILE
+        echo "unmounting ZFS backup volume $POOL."
+        zfs unmount /mnt/extbkps/$POOL
+        zpool export $POOL
       fi
-      echo "" &>> $LOGFILE  
+      echo ""  
     fi  
   done 
-  zfs unload-key -a &>> $LOGFILE
-  zpool status &>> $LOGFILE
-  zfs list &>> $LOGFILE
-  echo "" &>> $LOGFILE
-  echo "unmounted ZFS backup volumes" &>> $LOGFILE
-  date &>> $LOGFILE
-  echo "" &>> $LOGFILE
+  zfs unload-key -a
+  zpool status
+  zfs list
+  echo ""
+  echo "unmounted ZFS backup volumes"
+  date
+  echo ""
   EXIT_ROUTINE
 fi
 
@@ -103,51 +103,51 @@ fi
 if [ -e $TRIGGERS_DIR/startxana.txt ]; then
   touch /tmp/actiontrig.lock
   rm -f $TRIGGERS_DIR/startxana.txt
-  echo "starting xana VM..." &>> $LOGFILE
-  qm start 105 &>> $LOGFILE
-  date &>> $LOGFILE
+  echo "starting xana VM..."
+  qm start 105
+  date
   EXIT_ROUTINE
 fi
 if [ -e $TRIGGERS_DIR/stopxana.txt ]; then
   touch /tmp/actiontrig.lock	
   rm -f $TRIGGERS_DIR/stopxana.txt
-  echo "shutting down xana VM..." &>> $LOGFILE
-  qm stop 105 &>> $LOGFILE
-  date &>> $LOGFILE
+  echo "shutting down xana VM..."
+  qm stop 105
+  date
   EXIT_ROUTINE
 fi
 if [ -e $TRIGGERS_DIR/restorexana.txt ]; then
   touch /tmp/actiontrig.lock	
   rm -f $TRIGGERS_DIR/restorexana.txt
-  echo "restoring xana VM..." &>> $LOGFILE
+  echo "restoring xana VM..."
   qmrestore /var/lib/vz/dump/vzdump-qemu-105-latest.vma.zst \
-    105 -force -storage scratch &>> $LOGFILE
-  date &>> $LOGFILE
+    105 -force -storage scratch
+  date
   EXIT_ROUTINE
 fi
 #######################################################
 if [ -e $TRIGGERS_DIR/startdev.txt ]; then
   touch /tmp/actiontrig.lock
   rm -f $TRIGGERS_DIR/startdev.txt
-  echo "starting development VM..." &>> $LOGFILE
-  qm start 103 &>> $LOGFILE
-  date &>> $LOGFILE
+  echo "starting development VM..."
+  qm start 103
+  date
   chmod 777 $LOGFILE
   EXIT_ROUTINE
 fi
 if [ -e $TRIGGERS_DIR/stopdev.txt ]; then
   touch /tmp/actiontrig.lock	
   rm -f $TRIGGERS_DIR/stopdev.txt
-  echo "shutting down development VM..." &>> $LOGFILE
-  qm stop 103 &>> $LOGFILE
-  date &>> $LOGFILE
+  echo "shutting down development VM..."
+  qm stop 103
+  date
   EXIT_ROUTINE
 fi
 ### Write Server Log ##################################   
 if [ -e $TRIGGERS_DIR/syslog.txt ]; then
   touch /tmp/actiontrig.lock	
   rm -f $TRIGGERS_DIR/syslog.txt
-  /usr/bin/sys-check &>> $LOGFILE
+  /usr/bin/sys-check
   EXIT_ROUTINE
 fi
 

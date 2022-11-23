@@ -26,11 +26,8 @@ apt-get --yes update
 
 ## Support Packages
 apt-get install -y --no-upgrade --ignore-missing rsync cron zip screen \
- libsasl2-modules postfix ethtool bpytop htop apt-transport-https lm-sensors \
+ libsasl2-modules postfix ethtool htop apt-transport-https lm-sensors \
  zfs-auto-snapshot smartmontools hddtemp apcupsd
-
-## Process Monitor Symlink
-ln -sf /usr/bin/bpytop /usr/bin/pytop
 
 ## Bonded Trunk 802.3ad Network Config
 cp -f /tmp/config/interfaces /etc/network/interfaces
@@ -214,7 +211,7 @@ systemctl restart smartmontools
 systemctl restart cron
 
 ## Clean-up
-apt-get remove txt2html
+apt-get --yes remove txt2html bpytop python3-distutils python3-lib2to3 python3-psutil
 apt-get --yes autoremove
 apt-get --yes clean
 rm -r /tmp/config

@@ -18,11 +18,11 @@ else
   touch /tmp/backupsvr.lock
 fi
 
-echo "****************starting backup********************"
+echo "****************** starting backup **********************"
 echo " "
-echo "***************************************************"
-echo "run 'screen -r' on pve to reattach to this terminal"
-echo "***************************************************"
+echo "*********************************************************"
+echo "run 'screen -r' on files.home to attach to this terminal"
+echo "*********************************************************"
 echo " "
 
 ## Turn on LED

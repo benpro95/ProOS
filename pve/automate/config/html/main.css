@@ -10,7 +10,7 @@
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    font-family: JosefinSans, sans-serif, system-ui,-apple-system,system-ui,"Segoe UI","Helvetica Neue";
+    font-family: JosefinSans,system-ui,-apple-system,system-ui,"Segoe UI","Helvetica Neue";
     font-size: 22px; /* page default font size */
 }  
 
@@ -186,7 +186,8 @@ body {
   color: #fff; /* textbox font color */
   background: #000; /* textbox background color */
   resize: none;
-  font-family: system-ui,-apple-system,system-ui,"Segoe UI","Helvetica Neue",sans-serif; /* log window font */
+  font-kerning: none;
+  font-family: "Consolas",system-ui,"Segoe UI","Helvetica Neue",sans-serif; /* log window font */
   font-size: 14px; /* page default font size */
 }
 

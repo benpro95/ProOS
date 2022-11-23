@@ -54,10 +54,17 @@ async function sendCmd(act, arg1, arg2) {
 };
 
 // load entire text file
-async function loadLog(url) {
+async function loadLog(file) {
   try {
+    const err = null;
+    // build url and force cache reload
+    const time = new Date();
+    const timestamp = (time.getTime());   
+    const url = "http://"+file+"?ver="+timestamp;
+    // parse incoming text file
     const response = await fetch(url);
     console_data = await response.text(); 
+    // display text on page 
     document.getElementById("logTextBox").value = console_data;
     // scroll to bottom of page
     var txtArea = document.getElementById("logTextBox");
@@ -96,7 +103,7 @@ function serverSend(mask) {
   } else {
     var cmd_text;
     if (mask == 1) {
-       cmd_text = "xxxxx";
+       cmd_text = "xxxxxxxx";
     } else {
        cmd_text = servercmd_data;
     }

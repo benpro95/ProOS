@@ -3,6 +3,7 @@
 ###########################################################
 REPLY="$1"
 ARG="$2"
+LOGFILE="/mnt/.regions/WWW/sysout.txt"
 
 ### Only run if server user
 if [ ! "$USER" == "server" ]; then
@@ -94,6 +95,30 @@ then
   git commit -m "$TIMESTMP"
   git push
   cd -
+  exit
+fi
+
+if [[ $REPLY == "clearlog" ]]
+then
+  truncate -s 0 $LOGFILE
+  date
+  neofetch --stdout
+  echo "Log file cleared."
+  echo ""   
+  exit
+fi
+
+if [[ $REPLY == "backupstd" ]]
+then
+  echo "" 
+  /usr/bin/svrbackup.sh 60 no &>> $LOGFILE
+  exit
+fi
+
+if [[ $REPLY == "backupchk" ]]
+then
+  echo "" 
+  /usr/bin/svrbackup.sh 60 yes &>> $LOGFILE
   exit
 fi
 

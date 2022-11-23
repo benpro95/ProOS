@@ -12,17 +12,16 @@ chksum=$2
 ### Lock file
 if [ -f "/tmp/backupsvr.lock" ]; then
   echo "already running!"
-  echo "run 'svrutil rmlock' to manually remove lock if program failed"
+  echo "delete '/tmp/backupsvr.lock' to remove lock if program failed"
   exit
 else
   touch /tmp/backupsvr.lock
 fi
 
-echo "starting backup..."
+echo "****************starting backup********************"
 echo " "
 echo "***************************************************"
-echo "press ctrl+a then ctrl+d to detach terminal"
-echo "run 'screen -r' to reattach to this terminal"
+echo "run 'screen -r' on pve to reattach to this terminal"
 echo "***************************************************"
 echo " "
 
@@ -39,7 +38,7 @@ then
 fi
 
 ## Read Backup Drive Names
-readarray -t ZFSPOOLS < /mnt/extbkps/drives.txt
+readarray -t ZFSPOOLS < /mnt/.regions/WWW/drives.txt
 
 #######################
 #######################
@@ -132,41 +131,21 @@ done
 
 ################################
 ## Wait for drives to settle after backup complete
-temp_cnt=${wait_time}
-while [[ ${temp_cnt} -gt 0 ]];
-do
-  printf "\rtriggering drive detach in %2d second(s)." ${temp_cnt}
-  sleep 1
-  ((temp_cnt--))
-done
+echo "triggering drive detach in $wait_time second(s)."
+
 
 ## Write drive detach trigger file
-touch /mnt/extbkps/keytmp/unmount.txt
+touch /mnt/.regions/Automate/detach_bkps.txt
 ## Unlock State File
 rm -f /tmp/backupsvr.lock
 
 ## Wait for drives to detach
-temp_cnt=${wait_time}
-while [[ ${temp_cnt} -gt 0 ]];
-do
-  printf "\rwait %2d second(s) for drives to detach." ${temp_cnt}
-  sleep 1
-  ((temp_cnt--))
-done
+echo "wait $wait_time second(s) for drives to detach."
 
 ## Turn off LED
 /usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 30 \
  --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive \
  --url "http://ledwall.home:9300/exec.php?var=&arg=whtledoff&action=main"
 
-## Print drives status
-cat /mnt/extbkps/keytmp/status.txt
-REPLY=""
-read -p "re-check drives status (s) or enter to skip: " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Ss]$ ]]
-then
-  cat /mnt/extbkps/keytmp/status.txt
-fi
-
+echo "backup complete."
 exit

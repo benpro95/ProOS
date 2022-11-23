@@ -101,24 +101,16 @@ chmod 644 /etc/cron.d/rootcron
 chown root:root /etc/cron.d/rootcron
 systemctl restart cron
 
-## Suppress Slice Log Entries
+## Supress Slice Log Entries
 cp /tmp/config/ignore-session-slice.conf /etc/rsyslog.d/
 chmod 644 /etc/rsyslog.d/ignore-session-slice.conf
 chown root:root /etc/rsyslog.d/ignore-session-slice.conf
 systemctl restart rsyslog
 
-## Main Menu Script
-cp /tmp/config/svrutil.bin /usr/bin/
-chmod 755 /usr/bin/svrutil.bin
-chown root:root /usr/bin/svrutil.bin
-
 ## Backup Script
-cp /tmp/config/svrbackup.bin /usr/bin/
-chmod 755 /usr/bin/svrbackup.bin
-chown root:root /usr/bin/svrbackup.bin
-cp /tmp/config/drives.txt /mnt/extbkps/
-chmod 644 /mnt/extbkps/drives.txt
-chown root:root /mnt/extbkps/drives.txt
+cp /tmp/config/svrbackup.sh /usr/bin/
+chmod 755 /usr/bin/svrbackup.sh
+chown root:root /usr/bin/svrbackup.sh
 
 ## Camera Cleanup Script
 cp /tmp/config/camcleanup /usr/bin/
@@ -187,6 +179,9 @@ chmod +x /usr/bin/wwwcmds
 chown root:root /usr/bin/wwwcmds
 
 ## Clean-up
+rm -f /usr/bin/svrbackup.bin
+rm -f /mnt/extbkps/drives.txt
+rm -f /usr/bin/svrutil.bin
 systemctl daemon-reload
 rm -r /tmp/config/
 apt-get autoremove -y

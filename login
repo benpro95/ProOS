@@ -152,19 +152,34 @@ if [ "$MODULE" = "files" ] || \
     ## Install files
     ssh -t -i $ROOTDIR/.ssh/$MODULE.rsa root@$HOST \
      "cd /tmp/; tar -xvf config.tar; rm -f config.tar; chmod +x /tmp/config/installer; /tmp/config/installer"
-    ## Clean-up on logout
-    ssh-add -D
-    eval $(ssh-agent -k)
+    ## Clean-up installer files
     rm -r $TMPFLDR
-    exit
+    read -p "Press 's' for a shell, 'r' to reboot server, or any other key to exit: " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Rr]$ ]]
+    then
+      echo "Rebooting server..."
+      ssh -t -i $ROOTDIR/.ssh/$MODULE.rsa root@$HOST "reboot"
+    fi
+    if [[ $REPLY =~ ^[Ss]$ ]]
+    then
+      ssh -t -i $ROOTDIR/.ssh/$MODULE.rsa root@$HOST
+    fi
+    if [[ ! $REPLY =~ ^[RrSs]$ ]]  
+    then
+      ## Exit
+      ssh-add -D
+      eval $(ssh-agent -k)   
+      exit
+    fi 
   else
-  ## Login to SSH
-  ssh -t -i $ROOTDIR/.ssh/$MODULE.rsa root@$HOST
+    ## Login to SSH
+    ssh -t -i $ROOTDIR/.ssh/$MODULE.rsa root@$HOST
+  fi
   ## Clean-up on logout
   ssh-add -D
-  eval $(ssh-agent -k)
+  eval $(ssh-agent -k)   
   exit
-  fi
 ######################################
 fi
 

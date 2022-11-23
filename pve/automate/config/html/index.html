@@ -30,10 +30,10 @@
       <div class="dropdown"> 
         <a class="dropbtn" onmouseover="resetAction()">Actions</a>
         <div class="dropdown-content">
-          <a onclick="serverAction('syslog')">System Log</a>
-          <a onclick="serverAction('backup')">Backup</a>     
-          <a onclick="serverAction('files-git_push')">Git Push</a> 
-          <a onclick="serverAction('unifi')">UniFi AP</a> 
+          <a onclick="serverAction('files-git_push')">Push Repos</a>   
+          <a onclick="serverAction('syslog')">Server Log</a>                  
+          <a onclick="serverAction('unifi')">UniFi</a>      
+          <a onclick="serverAction('files-clearlog')">Clear Log</a>  
         </div>
       </div>
       <div class="dropdown"> 
@@ -44,6 +44,15 @@
           <a onclick="serverAction('files-private_region')">Private</a>
           <a onclick="serverAction('files-snapshots_region')">Snapshots</a>
           <a onclick="serverAction('files-detach_all_regions')">Detach All</a>
+        </div>
+      </div>
+      <div class="dropdown"> 
+        <a class="dropbtn" onmouseover="resetAction()">Backup</a>
+        <div class="dropdown-content">
+          <a onclick="serverAction('files-backupstd')">Standard</a> 
+          <a onclick="serverAction('files-backupchk')">Checksum</a> 
+          <a onclick="serverAction('attach_bkps')">Attach</a>  
+          <a onclick="serverAction('detach_bkps')">Detach</a>      
         </div>
       </div>
       <div class="dropdown"> 
@@ -63,7 +72,7 @@
       </div>
     </div>
     <textarea id="logTextBox" placeholder="" required=""></textarea>  
-    <button type="button" class="button" onclick="loadLog('http://files.home/sysout.txt')">
+    <button type="button" class="button" onclick="loadLog('files.home/sysout.txt')">
           <span class="button__textsmall"></i> View</span>
     </button> 
     <button type="button" class="button" onclick="closePopup()">

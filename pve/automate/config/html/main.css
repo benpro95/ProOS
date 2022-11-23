@@ -187,7 +187,7 @@ body {
   background: #000; /* textbox background color */
   resize: none;
   font-kerning: none;
-  font-family: "Consolas",system-ui,"Segoe UI","Helvetica Neue",sans-serif; /* log window font */
+  font-family: "Consolas",monospace,system-ui,sans-serif; /* log window font */
   font-size: 14px; /* page default font size */
 }
 

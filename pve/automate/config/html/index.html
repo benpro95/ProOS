@@ -24,67 +24,6 @@
   </div>
 </div>
 
-<div class="chat-popup" id="logForm">
-  <form class="form-container">
-    <div class="scrollmenu">
-      <div class="dropdown"> 
-        <a class="dropbtn" onmouseover="resetAction()">Actions</a>
-        <div class="dropdown-content">
-          <a onclick="serverAction('files-git_push')">Push Repos</a>   
-          <a onclick="serverAction('syslog')">Server Log</a>                  
-          <a onclick="serverAction('unifi')">UniFi</a>      
-          <a onclick="serverAction('files-clearlog')">Clear Log</a>  
-        </div>
-      </div>
-      <div class="dropdown"> 
-        <a class="dropbtn" onmouseover="resetAction()">Regions</a>
-        <div class="dropdown-content">
-          <a onclick="serverAction('files-www_region')">WWW</a>
-          <a onclick="serverAction('files-public_region')">Public</a>
-          <a onclick="serverAction('files-private_region')">Private</a>
-          <a onclick="serverAction('files-snapshots_region')">Snapshots</a>
-          <a onclick="serverAction('files-detach_all_regions')">Detach All</a>
-        </div>
-      </div>
-      <div class="dropdown"> 
-        <a class="dropbtn" onmouseover="resetAction()">Backup</a>
-        <div class="dropdown-content">
-          <a onclick="serverAction('files-backupstd')">Standard</a> 
-          <a onclick="serverAction('files-backupchk')">Checksum</a> 
-          <a onclick="serverAction('attach_bkps')">Attach</a>  
-          <a onclick="serverAction('detach_bkps')">Detach</a>      
-        </div>
-      </div>
-      <div class="dropdown"> 
-        <a class="dropbtn" onmouseover="resetAction()">Xana</a>
-        <div class="dropdown-content">
-          <a onclick="serverAction('startxana')">Start</a>
-          <a onclick="serverAction('restorexana')">Restore</a>
-          <a onclick="serverAction('stopxana')">Shutdown</a>       
-        </div>
-      </div>
-      <div class="dropdown"> 
-        <a class="dropbtn" onmouseover="resetAction()">Dev</a>
-        <div class="dropdown-content">
-          <a onclick="serverAction('startdev')">Start</a>
-          <a onclick="serverAction('stopdev')">Shutdown</a>
-        </div>
-      </div>
-    </div>
-    <textarea id="logTextBox" placeholder="" required=""></textarea>  
-    <button type="button" class="button" onclick="loadLog('files.home/sysout.txt')">
-          <span class="button__textsmall"></i> View</span>
-    </button> 
-    <button type="button" class="button" onclick="closePopup()">
-          <span class="button__textsmall"></i> Close</span>
-    </button>   
-    <button type="button" class="button button__right" id="sendButton" onclick="serverSend(0)">
-          <span class="button__textsmall"></i> Send</span>
-    </button>
-    <div id="formSpinner" class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-  </form>
-</div>
-
 <div>
     <p></p>
       <button type="button" class="button" onclick="sendCmd('main','rfa3','on')">
@@ -203,6 +142,67 @@
 
 <div>
   <p style="min-height: 50px" class="body__text">by Ben Provenzano III</p>
+</div>
+
+<div class="chat-popup" id="logForm">
+  <form class="form-container">
+    <div class="scrollmenu">
+      <div class="dropdown"> 
+        <a class="dropbtn" onmouseover="resetAction()">Actions</a>
+        <div class="dropdown-content">
+          <a onclick="serverAction('files-git_push')">Push Repos</a>   
+          <a onclick="serverAction('syslog')">Server Log</a>                  
+          <a onclick="serverAction('unifi')">UniFi</a>      
+          <a onclick="serverAction('files-clearlog')">Clear Log</a>  
+        </div>
+      </div>
+      <div class="dropdown"> 
+        <a class="dropbtn" onmouseover="resetAction()">Regions</a>
+        <div class="dropdown-content">
+          <a onclick="serverAction('files-www_region')">WWW</a>
+          <a onclick="serverAction('files-public_region')">Public</a>
+          <a onclick="serverAction('files-private_region')">Private</a>
+          <a onclick="serverAction('files-snapshots_region')">Snapshots</a>
+          <a onclick="serverAction('files-detach_all_regions')">Detach All</a>
+        </div>
+      </div>
+      <div class="dropdown"> 
+        <a class="dropbtn" onmouseover="resetAction()">Backup</a>
+        <div class="dropdown-content">
+          <a onclick="serverAction('files-backupstd')">Standard</a> 
+          <a onclick="serverAction('files-backupchk')">Checksum</a> 
+          <a onclick="serverAction('attach_bkps')">Attach</a>  
+          <a onclick="serverAction('detach_bkps')">Detach</a>      
+        </div>
+      </div>
+      <div class="dropdown"> 
+        <a class="dropbtn" onmouseover="resetAction()">Xana</a>
+        <div class="dropdown-content">
+          <a onclick="serverAction('startxana')">Start</a>
+          <a onclick="serverAction('restorexana')">Restore</a>
+          <a onclick="serverAction('stopxana')">Shutdown</a>       
+        </div>
+      </div>
+      <div class="dropdown"> 
+        <a class="dropbtn" onmouseover="resetAction()">Dev</a>
+        <div class="dropdown-content">
+          <a onclick="serverAction('startdev')">Start</a>
+          <a onclick="serverAction('stopdev')">Shutdown</a>
+        </div>
+      </div>
+    </div>
+    <textarea id="logTextBox" placeholder="" required=""></textarea>  
+    <button type="button" class="button" onclick="closePopup()">
+          <span class="button__textsmall"></i> Close</span>
+    </button>       
+    <button type="button" class="button" onclick="loadLog('files.home/sysout.txt')">
+          <span class="button__textsmall"></i> View</span>
+    </button>
+    <button type="button" class="button button__right" id="sendButton" onclick="serverSend(0)">
+          <span class="button__textsmall"></i> Send</span>
+    </button>
+    <div id="formSpinner" class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+  </form>
 </div>
 
 </body>

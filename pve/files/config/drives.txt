@@ -1,0 +1,10 @@
+usb256-01
+usb256-02
+usb256-03
+usb256-04
+usb256-05
+hdd4tb-01
+hdd4tb-02
+hdd4tb-03
+hdd4tb-04
+hdd4tb-05

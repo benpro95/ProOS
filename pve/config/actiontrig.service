@@ -3,7 +3,7 @@ Description=Action Trigger Script.
 
 [Service]
 LogLevelMax=notice
-StandardOutput=append:/mnt/datastore/.regions/WWW/sysout.txt
+StandardOutput=append:/mnt/ramdisk/sysout.txt
 Type=oneshot
 RemainAfterExit=no
 ExecStart=-/usr/bin/actiontrig.sh

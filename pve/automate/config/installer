@@ -101,6 +101,9 @@ mkdir -p /var/www/uploads
 chmod -R g+rx /var/www/uploads
 chown -R www-data:www-data /var/www/uploads
 
+## Link external resources to web server
+ln -sf /mnt/ramdisk /var/www/html/ram
+
 ##
 ## WWW Permissions (Network Web UI)
 rm -f /etc/sudoers.d/www-perms

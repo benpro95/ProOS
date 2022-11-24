@@ -60,7 +60,7 @@ async function loadLog(file) {
     // build url and force cache reload
     const time = new Date();
     const timestamp = (time.getTime());   
-    const url = "http://"+file+"?ver="+timestamp;
+    const url = "http://"+location.hostname+"/ram/sysout.txt"+"?ver="+timestamp;
     // parse incoming text file
     const response = await fetch(url);
     console_data = await response.text(); 

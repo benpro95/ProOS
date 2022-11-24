@@ -4,9 +4,12 @@
 ## Launcher for WWW actions script
 REPLY="$1"
 ARG="$2"
-LOGFILE="/mnt/.regions/WWW/sysout.txt"
+LOGFILE="/mnt/ramdisk/sysout.txt"
 
-date &>> $LOGFILE
+HEADER=$(date)
+HEADER+=$(hostname)
+echo "$HEADER" &>> $LOGFILE
 /usr/bin/www.sh $REPLY $ARG $LOGFILE &>> $LOGFILE
+echo "" &>> $LOGFILE
 
 exit

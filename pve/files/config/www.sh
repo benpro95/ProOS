@@ -17,7 +17,6 @@ REGROOT="/home/server/.regions"
 ## Detach All Regions
 if [[ $REPLY == "detach_all_regions" ]]
 then
-  echo " "	
   echo "detaching all regions..."
   rm -f $REGROOT/Snapshots
   rm -f $REGROOT/Private
@@ -28,7 +27,6 @@ fi
 ## WWW Share
 if [[ $REPLY == "www_region" ]]
 then
-  echo " "
   if [ -e "$REGROOT/WWW" ]; then
     echo "detaching WWW root region..."
     rm $REGROOT/WWW
@@ -41,7 +39,6 @@ fi
 ## Private Share
 if [[ $REPLY == "private_region" ]]
 then
-  echo " "
   if [ -e "$REGROOT/Private" ]; then
     echo "detaching private region..."
     rm $REGROOT/Private
@@ -54,7 +51,6 @@ fi
 ## Public Share
 if [[ $REPLY == "public_region" ]]
 then
-  echo " "
   if [ -e "$REGROOT/Public" ]; then
     echo "detaching public region..."   
     rm $REGROOT/Public
@@ -67,7 +63,6 @@ fi
 ## Snapshot Share
 if [[ $REPLY == "snapshots_region" ]]
 then
-  echo " "
   if [ -e "$REGROOT/Snapshots" ]; then
     echo "detaching snapshots region..."
     rm $REGROOT/Snapshots
@@ -80,7 +75,6 @@ fi
 
 if [[ $REPLY == "git_push" ]]
 then
-  echo ""	
   TIMESTMP=$(date '+%Y-%m-%d %H:%M')
   echo "uploading all changes to GitHub..."
   echo ""
@@ -111,14 +105,12 @@ fi
 
 if [[ $REPLY == "backupstd" ]]
 then
-  echo "" 
   /usr/bin/svrbackup.sh 60 no
   exit
 fi
 
 if [[ $REPLY == "backupchk" ]]
 then
-  echo "" 
   /usr/bin/svrbackup.sh 60 yes
   exit
 fi

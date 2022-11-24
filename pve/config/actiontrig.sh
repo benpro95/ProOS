@@ -3,9 +3,8 @@
 ################################
 
 ## VM Log File
-TRIGGERS_DIR="/mnt/datastore/.regions/Automate"
-WWWROOT="/mnt/datastore/.regions/WWW"
-LOGFILE="/$WWWROOT/sysout.txt"
+TRIGGERS_DIR="/mnt/ramdisk"
+LOGFILE="$TRIGGERS_DIR/sysout.txt"
 
 function EXIT_ROUTINE {
   rm -f /tmp/actiontrig.lock
@@ -29,16 +28,16 @@ fi
 if [ -e $TRIGGERS_DIR/attach_bkps.txt ]; then
   touch /tmp/actiontrig.lock
   rm -f $TRIGGERS_DIR/attach_bkps.txt
-  if [ ! -e $WWWROOT/pwd.txt ]; then
+  if [ ! -e $TRIGGERS_DIR/pwd.txt ]; then
 	echo "password file not found, exiting."
 	EXIT_ROUTINE
   fi
-  if [ ! -e $WWWROOT/drives.txt ]; then
+  if [ ! -e $TRIGGERS_DIR/drives.txt ]; then
 	echo "drives file not found, exiting."
 	EXIT_ROUTINE
   fi
   echo ""
-  readarray -t ZFSPOOLS < $WWWROOT/drives.txt
+  readarray -t ZFSPOOLS < $TRIGGERS_DIR/drives.txt
   for _POOL in "${ZFSPOOLS[@]}"; do
     POOL=$(echo $_POOL | sed -e 's/\r//g')
     if [ ! "$POOL" == "" ]; then
@@ -49,7 +48,7 @@ if [ -e $TRIGGERS_DIR/attach_bkps.txt ]; then
       else
         echo "importing ZFS backup volume $POOL."
         zpool import $POOL
-   	    zfs load-key -L file://$WWWROOT/pwd.txt $POOL/extbkp
+   	    zfs load-key -L file://$TRIGGERS_DIR/pwd.txt $POOL/extbkp
   	    zfs mount $POOL/extbkp
   	    zpool status $POOL
       fi
@@ -58,7 +57,7 @@ if [ -e $TRIGGERS_DIR/attach_bkps.txt ]; then
   done
   zfs list
   echo ""
-  shred -n 2 -z -u $WWWROOT/pwd.txt
+  shred -n 2 -z -u $TRIGGERS_DIR/pwd.txt
   echo "imported ZFS backup volumes"
   EXIT_ROUTINE
 fi
@@ -67,12 +66,12 @@ fi
 if [ -e $TRIGGERS_DIR/detach_bkps.txt ]; then
   touch /tmp/actiontrig.lock	
   rm -f $TRIGGERS_DIR/detach_bkps.txt
-  if [ ! -e $WWWROOT/drives.txt ]; then
+  if [ ! -e $TRIGGERS_DIR/drives.txt ]; then
 	echo "drives file not found, exiting."
 	EXIT_ROUTINE
   fi  
   echo ""
-  readarray -t ZFSPOOLS < $WWWROOT/drives.txt
+  readarray -t ZFSPOOLS < $TRIGGERS_DIR/drives.txt
   for _POOL in "${ZFSPOOLS[@]}"; do
     POOL=$(echo $_POOL | sed -e 's/\r//g')
     if [ ! "$POOL" == "" ]; then

@@ -139,6 +139,21 @@ chown -R www-data:www-data /var/www/sessions
 mkdir -p /var/www/uploads
 chmod -R g+rx /var/www/uploads
 chown -R www-data:www-data /var/www/uploads
+mkdir -p /var/www/html
+chmod -R g+rx /var/www/html
+chown -R www-data:www-data /var/www/html
+
+## Backup Drives List
+cp -f /tmp/config/drives.txt /opt/
+chmod 644 /opt/drives.txt
+chown root:root /opt/drives.txt
+
+## Link external resources to web server
+cp -f /tmp/config/exec.php /var/www/html/
+chmod +x /var/www/html/exec.php
+chown root:root /var/www/html/exec.php
+ln -sf /mnt/ramdisk /var/www/html/ram
+ln -sf /mnt/.regions/WWW /var/www/html/www
 
 ## WWW Permissions allow running as server user
 rm -f /etc/sudoers.d/www-perms

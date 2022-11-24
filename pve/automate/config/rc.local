@@ -21,14 +21,11 @@ echo "*"
 ethtool --offload eth0 rx off tx off sg off tso off gso off gro off sg off rxvlan off txvlan off
 
 ## State Folder
-rm -rf /var/lock/rpi
-mkdir -p /var/lock/rpi
-chmod -R 777 /var/lock/rpi
+rm -rf /mnt/ramdisk/locks
+mkdir -p /mnt/ramdisk/locks
+chmod -R 777 /mnt/ramdisk/locks
 
 ## Light Web Server
 systemctl restart lighttpd
-
-## Unified Web Server
-systemctl restart urserver
 
 exit 0

@@ -131,7 +131,7 @@ echo "triggering drive detach in $wait_time second(s)."
 
 
 ## Write drive detach trigger file
-touch /mnt/.regions/Automate/detach_bkps.txt
+touch /mnt/ramdisk/detach_bkps.txt
 ## Unlock State File
 rm -f /tmp/backupsvr.lock
 

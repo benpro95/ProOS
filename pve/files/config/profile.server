@@ -2,7 +2,6 @@
 
 ## Command Aliases
 alias matrix='/usr/bin/cmatrix'
-alias svr='/usr/bin/svrutil.bin'
 
 ######## Custom login scripts below ###########
 

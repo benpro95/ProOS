@@ -39,6 +39,10 @@ iptables -A INPUT -d 10.177.1.9 -j DROP
 iptables -A OUTPUT -d 10.177.1.10 -j DROP
 iptables -A INPUT -d 10.177.1.10 -j DROP
 
+## Share Drives List
+cp -f /opt/drives.txt /mnt/ramdisk/
+chmod 777 /mnt/ramdisk/drives.txt
+
 ## Light Web Server
 systemctl start lighttpd
 

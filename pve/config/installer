@@ -72,6 +72,12 @@ chown root:root /etc/hosts
 echo "DNS settings set manually in PVE web UI."
 cat /etc/resolv.conf
 
+## Enable Intel IO-MMU (MUST BE USING ZFS RPOOL AS ROOT !!)
+cp -f /tmp/config/grub /etc/default/
+chmod +x /etc/default/grub
+chown root:root /etc/default/grub
+echo "Run update-initramfs -u; proxmox-boot-tool refresh to update GRUB"
+
 ## Enable PCI-e Passthrough / GRUB Settings
 if [ ! -e /etc/iommu.enabled ]; then
   echo "Enabling PCI-e passthrough."
@@ -79,11 +85,7 @@ if [ ! -e /etc/iommu.enabled ]; then
   cp -f /tmp/config/blacklist.conf /etc/modprobe.d/
   chmod 644 /etc/modprobe.d/blacklist.conf
   chown root:root /etc/modprobe.d/blacklist.conf
-  update-initramfs -u  
-  ## Enable Intel IO-MMU (MUST BE USING ZFS RPOOL AS ROOT !!)
-  cp -f /tmp/config/grub /etc/default/
-  chmod +x /etc/default/grub
-  chown root:root /etc/default/grub
+  update-initramfs -u
   proxmox-boot-tool refresh
   touch /etc/iommu.enabled
 fi
@@ -190,6 +192,9 @@ systemctl stop pvesr.timer
 systemctl disable pvesr.timer
 systemctl mask pvesr.timer
 rm -f /lib/systemd/system/pvesr.timer
+
+## Disable Sleep
+systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
 
 ## Reload Daemons
 systemctl daemon-reload

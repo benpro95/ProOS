@@ -51,7 +51,7 @@ touch /mnt/ramdisk/sysout.txt
 chmod -R 777 /mnt/ramdisk || :
 
 ## Power saving mode for CPU
-echo "ondemand" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor || :
+#echo "ondemand" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor || :
 
 echo "*"
 echo " Welcome to ProOS Server!"

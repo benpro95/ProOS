@@ -8,7 +8,7 @@ LOGFILE="$TRIGGERS_DIR/sysout.txt"
 
 function EXIT_ROUTINE {
   rm -f /tmp/actiontrig.lock
-  echo ""
+  echo " "
   TRAILER=$(date)
   TRAILER+=" ("
   TRAILER+=$(hostname)

@@ -7,7 +7,7 @@ ARG="$2"
 LOGFILE="/mnt/ramdisk/sysout.txt"
 
 /usr/bin/www.sh $REPLY $ARG $LOGFILE &>> $LOGFILE
-echo ""
+echo " "
 TRAILER=$(date)
 TRAILER+=" ("
 TRAILER+=$(hostname)

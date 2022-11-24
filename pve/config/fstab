@@ -1,5 +1,5 @@
 ## Filesystems
 # <file system> <mount point> <type> <options> <dump> <pass>
 proc  /proc  proc  defaults  0  0
-ramdisk0  /mnt/ramdisk  tmpfs  defaults,size=8m  0  0
+ramdisk0  /mnt/ramdisk  tmpfs  defaults,size=16m  0  0
 /dev/disk/by-id/ata-WDC_WD20EZAZ-00GGJB0_WD-WXK2A30CYK73-part1  /mnt/pve/scratch  ext4  defaults  0  0

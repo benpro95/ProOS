@@ -46,6 +46,8 @@ else
 fi
 
 ## Allow all users to R/W
+mkdir -p /mnt/ramdisk || :
+touch /mnt/ramdisk/sysout.txt
 chmod -R 777 /mnt/ramdisk || :
 
 ## Power saving mode for CPU

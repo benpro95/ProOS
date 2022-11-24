@@ -88,6 +88,11 @@ if [ ! -e /etc/iommu.enabled ]; then
   touch /etc/iommu.enabled
 fi
 
+## Non-ZFS Mountpoints
+cp -f /tmp/config/fstab /etc/
+chmod 644 /etc/fstab
+chown root:root /etc/fstab
+
 ## Move Swapfile to Scratch Drive
 if [ ! -e /dev/zvol/rpool/swap ]; then
   echo "Swap file already moved."
@@ -95,9 +100,6 @@ else
   echo "Moving Swapfile to Scratch Drive..."
   swapoff /dev/zvol/rpool/swap
   zfs destroy rpool/swap
-  cp -f /tmp/config/fstab /etc/
-  chmod 644 /etc/fstab
-  chown root:root /etc/fstab
   fallocate -l 10G /mnt/pve/scratch/swapfile
   chmod 0600 /mnt/pve/scratch/swapfile
   chown root:root /mnt/pve/scratch/swapfile
@@ -108,8 +110,6 @@ fi
 ## Backup Mountpoints
 if [ ! -e /mnt/extbkps ]; then
   mkdir -p /mnt/extbkps
-  mkdir -p /mnt/extbkps/keytmp
-  chmod -R 777 /mnt/extbkps/keytmp
 else
   echo "Backup mountpoints exist."
 fi
@@ -206,7 +206,6 @@ systemctl restart smartmontools
 systemctl restart cron
 
 ## Clean-up
-apt-get --yes remove txt2html bpytop python3-distutils python3-lib2to3 python3-psutil
 apt-get --yes autoremove
 apt-get --yes clean
 rm -r /tmp/config

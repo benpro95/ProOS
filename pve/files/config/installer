@@ -122,6 +122,11 @@ cp /tmp/config/smb.conf /etc/samba
 chmod 644 /etc/samba/smb.conf
 chown root:root /etc/samba/smb.conf
 
+## Bind Mounts
+cp -f /tmp/config/fstab /etc/fstab
+chmod 644 /etc/fstab
+chown root:root /etc/fstab
+
 ## LightTPD Web Server
 apt-get install -y --no-upgrade lighttpd php-cgi php php-common
 cp -f /tmp/config/lighttpd.conf /etc/lighttpd
@@ -152,8 +157,6 @@ chown root:root /opt/drives.txt
 cp -f /tmp/config/exec.php /var/www/html/
 chmod +x /var/www/html/exec.php
 chown root:root /var/www/html/exec.php
-ln -sf /mnt/ramdisk /var/www/html/ram
-ln -sf /mnt/.regions/WWW /var/www/html/www
 
 ## WWW Permissions allow running as server user
 rm -f /etc/sudoers.d/www-perms

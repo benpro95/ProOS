@@ -119,11 +119,6 @@ cp -f /tmp/config/sys-check.sh /usr/bin/sys-check
 chmod 755 /usr/bin/sys-check
 chown root:root /usr/bin/sys-check
 
-## Virtual Machines Backup Script
-cp -f /tmp/config/backupvms.sh /usr/bin/backupvms
-chmod +x /usr/bin/backupvms
-chown root:root /usr/bin/backupvms
-
 ## APC UPS Configuration
 cp -f /tmp/config/apcupsd.conf /etc/apcupsd/
 chmod 644 /etc/apcupsd/apcupsd.conf

@@ -32,6 +32,7 @@ fi
 
 ### IMPORT ZFS ########################################   
 if [ -e $TRIGGERS_DIR/attach_bkps.txt ]; then
+  echo " "
   touch /tmp/actiontrig.lock
   rm -f $TRIGGERS_DIR/attach_bkps.txt
   if [ ! -e $TRIGGERS_DIR/pwd.txt ]; then
@@ -70,6 +71,7 @@ fi
 
 ### EXPORT ZFS ########################################
 if [ -e $TRIGGERS_DIR/detach_bkps.txt ]; then
+  echo " "
   touch /tmp/actiontrig.lock	
   rm -f $TRIGGERS_DIR/detach_bkps.txt
   if [ ! -e $TRIGGERS_DIR/drives.txt ]; then
@@ -104,6 +106,7 @@ fi
 ### START VMs #########################################
 #######################################################
 if [ -e $TRIGGERS_DIR/startxana.txt ]; then
+  echo " "
   touch /tmp/actiontrig.lock
   rm -f $TRIGGERS_DIR/startxana.txt
   echo "starting xana VM..."
@@ -111,6 +114,7 @@ if [ -e $TRIGGERS_DIR/startxana.txt ]; then
   EXIT_ROUTINE
 fi
 if [ -e $TRIGGERS_DIR/stopxana.txt ]; then
+  echo " "
   touch /tmp/actiontrig.lock	
   rm -f $TRIGGERS_DIR/stopxana.txt
   echo "shutting down xana VM..."
@@ -118,6 +122,7 @@ if [ -e $TRIGGERS_DIR/stopxana.txt ]; then
   EXIT_ROUTINE
 fi
 if [ -e $TRIGGERS_DIR/restorexana.txt ]; then
+  echo " "
   touch /tmp/actiontrig.lock	
   rm -f $TRIGGERS_DIR/restorexana.txt
   echo "restoring xana VM..."
@@ -127,6 +132,7 @@ if [ -e $TRIGGERS_DIR/restorexana.txt ]; then
 fi
 #######################################################
 if [ -e $TRIGGERS_DIR/startdev.txt ]; then
+  echo " "
   touch /tmp/actiontrig.lock
   rm -f $TRIGGERS_DIR/startdev.txt
   echo "starting development VM..."
@@ -135,6 +141,7 @@ if [ -e $TRIGGERS_DIR/startdev.txt ]; then
   EXIT_ROUTINE
 fi
 if [ -e $TRIGGERS_DIR/stopdev.txt ]; then
+  echo " "
   touch /tmp/actiontrig.lock	
   rm -f $TRIGGERS_DIR/stopdev.txt
   echo "shutting down development VM..."
@@ -143,6 +150,7 @@ if [ -e $TRIGGERS_DIR/stopdev.txt ]; then
 fi
 ### Write Server Log ##################################   
 if [ -e $TRIGGERS_DIR/syslog.txt ]; then
+  echo " "
   touch /tmp/actiontrig.lock	
   rm -f $TRIGGERS_DIR/syslog.txt
   /usr/bin/sys-check
@@ -151,48 +159,54 @@ fi
 
   ###### Server VM Backup Script ######################
 if [ -e $TRIGGERS_DIR/pve_vmsbkp.txt ]; then
+  VM_CONFS="/mnt/datastore/Ben/ProOS/pve"
+  echo " "
+  touch /tmp/actiontrig.lock  
+  rm -f $TRIGGERS_DIR/pve_vmsbkp.txt
   ### Container Backups
   echo ""
   echo "Backing-up Files LXC 101..."
   vzdump 101 --mode snapshot --compress zstd --node pve --storage local \
-   --maxfiles 1 --remove 1 --exclude-path /mnt --exclude-path /home/server/.regions
-  cp -v /etc/pve/lxc/101.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-101.conf
-  chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-101.conf
+   --maxfiles 1 --remove 1 --exclude-path /mnt --exclude-path /home/server/.regions \
+   --exclude-path /home/ben/sftp --exclude-path /var/www/html
+  cp -v /etc/pve/lxc/101.conf $VM_CONFS/files/lxc-101.conf
+  chmod 777 $VM_CONFS/files/lxc-101.conf
   ###
   echo ""
   echo "Backing-up Plex LXC 104..."
   vzdump 104 --mode snapshot --compress zstd --node pve --storage local \
    --maxfiles 1 --remove 1 --exclude-path /mnt/transcoding
-  cp -v /etc/pve/lxc/104.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-104.conf
-  chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-104.conf
+  cp -v /etc/pve/lxc/104.conf $VM_CONFS/plex/lxc-104.conf
+  chmod 777 $VM_CONFS/plex/lxc-104.conf
   ###
   echo ""
   echo "Backing-up Automate LXC 106..."
-  vzdump 106 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1
-  cp -v /etc/pve/lxc/106.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-106.conf
-  chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-106.conf
+  vzdump 106 --mode snapshot --compress zstd --node pve --storage local \
+    --maxfiles 1 --remove 1 --exclude-path /var/www/html
+  cp -v /etc/pve/lxc/106.conf $VM_CONFS/automate/lxc-106.conf
+  chmod 777 $VM_CONFS/automate/lxc-106.conf
   ###
   ### Virtual Machine Backups
   ###
   echo ""
   echo "Backing-up Router KVM 100..."
   vzdump 100 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1
-  cp -v /etc/pve/qemu-server/100.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-100.conf
-  chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-100.conf
+  cp -v /etc/pve/qemu-server/100.conf $VM_CONFS/qemu-100.conf
+  chmod 777 $VM_CONFS/qemu-100.conf
   ###
   echo ""
   echo "Backing-up Development KVM 103..."
   echo "Only configuration is backed up."
   #vzdump 103 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1
-  cp -v /etc/pve/qemu-server/103.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-103.conf
-  chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-103.conf
+  cp -v /etc/pve/qemu-server/103.conf $VM_CONFS/dev/qemu-103.conf
+  chmod 777 $VM_CONFS/dev/qemu-103.conf
   ###
   echo ""
   echo "Backing-up Xana KVM 105..."
   echo "Only configuration is backed up."
   #vzdump 105 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1
-  cp -v /etc/pve/qemu-server/105.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-105.conf
-  chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-105.conf
+  cp -v /etc/pve/qemu-server/105.conf $VM_CONFS/xana/qemu-105.conf
+  chmod 777 $VM_CONFS/xana/qemu-105.conf
   ###
   ### Copy to ZFS Pool
   ###

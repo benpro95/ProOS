@@ -5,8 +5,10 @@
 ###########################################################
 ###########################################################
 
+WWW_URL="http://files.home/www/Relaxation"
+
 ## Load settings file into array
-mapfile -t SETTINGS < <(wget -O- -q http://files.home/Relaxation/Settings.txt)
+mapfile -t SETTINGS < <(wget -O- -q $WWW_URL/Settings.txt)
 
 ## Get IP address from hostname
 ATVIP=$(getent ahostsv4 "${SETTINGS[3]%$'\n'}" | awk '{print $1}' | head -1)
@@ -54,7 +56,7 @@ FILE="${rpi_relaxmode^}"
 
 ## Play audio in loop on Apple TV
 echo "starting $FILE sound..."
-/usr/bin/ffmpeg -re -stream_loop -1 -i http://files.home/Relaxation/$FILE.mp3 -f mp3 - \
+/usr/bin/ffmpeg -re -stream_loop -1 -i $WWW_URL/$FILE.mp3 -f mp3 - \
  | /usr/local/bin/atvremote --manual --address "$ATVIP" --port 7000 --protocol raop \
  --id "${SETTINGS[0]%$'\n'}" --raop-credentials "${SETTINGS[1]%$'\n'}" stream_file=-
 

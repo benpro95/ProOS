@@ -6,7 +6,9 @@
 ###########################################################
 ## Do not use the screen command in this script ##
 
-LOCKFOLDER=/mnt/ramdisk/locks
+RAMDISK="/mnt/ramdisk"
+LOCKFOLDER="$RAMDISK/locks"
+LOGFILE="$RAMDISK/sysout.txt"
 
 CALLAPI(){
 #### API Call
@@ -683,7 +685,7 @@ if [ "$SERVERARG" == "unifi" ]; then
   exit
 fi
 ## Pass action file to the hypervisor
-touch $LOGFILE/$SERVERARG.txt
+touch $RAMDISK/$SERVERARG.txt
 exit
 ;;
 

@@ -8,6 +8,12 @@ LOGFILE="$TRIGGERS_DIR/sysout.txt"
 
 function EXIT_ROUTINE {
   rm -f /tmp/actiontrig.lock
+  echo ""
+  TRAILER=$(date)
+  TRAILER+=" ("
+  TRAILER+=$(hostname)
+  TRAILER+=")"
+  echo "$TRAILER"
   chmod 777 $LOGFILE
   exit
 }
@@ -92,8 +98,6 @@ if [ -e $TRIGGERS_DIR/detach_bkps.txt ]; then
   zfs list
   echo ""
   echo "unmounted ZFS backup volumes"
-  date
-  echo ""
   EXIT_ROUTINE
 fi
 
@@ -104,7 +108,6 @@ if [ -e $TRIGGERS_DIR/startxana.txt ]; then
   rm -f $TRIGGERS_DIR/startxana.txt
   echo "starting xana VM..."
   qm start 105
-  date
   EXIT_ROUTINE
 fi
 if [ -e $TRIGGERS_DIR/stopxana.txt ]; then
@@ -112,7 +115,6 @@ if [ -e $TRIGGERS_DIR/stopxana.txt ]; then
   rm -f $TRIGGERS_DIR/stopxana.txt
   echo "shutting down xana VM..."
   qm stop 105
-  date
   EXIT_ROUTINE
 fi
 if [ -e $TRIGGERS_DIR/restorexana.txt ]; then
@@ -121,7 +123,6 @@ if [ -e $TRIGGERS_DIR/restorexana.txt ]; then
   echo "restoring xana VM..."
   qmrestore /var/lib/vz/dump/vzdump-qemu-105-latest.vma.zst \
     105 -force -storage scratch
-  date
   EXIT_ROUTINE
 fi
 #######################################################
@@ -130,7 +131,6 @@ if [ -e $TRIGGERS_DIR/startdev.txt ]; then
   rm -f $TRIGGERS_DIR/startdev.txt
   echo "starting development VM..."
   qm start 103
-  date
   chmod 777 $LOGFILE
   EXIT_ROUTINE
 fi
@@ -139,7 +139,6 @@ if [ -e $TRIGGERS_DIR/stopdev.txt ]; then
   rm -f $TRIGGERS_DIR/stopdev.txt
   echo "shutting down development VM..."
   qm stop 103
-  date
   EXIT_ROUTINE
 fi
 ### Write Server Log ##################################   
@@ -149,6 +148,63 @@ if [ -e $TRIGGERS_DIR/syslog.txt ]; then
   /usr/bin/sys-check
   EXIT_ROUTINE
 fi
+
+  ###### Server VM Backup Script ######################
+if [ -e $TRIGGERS_DIR/pve_vmsbkp.txt ]; then
+  ### Container Backups
+  echo ""
+  echo "Backing-up Files LXC 101..."
+  vzdump 101 --mode snapshot --compress zstd --node pve --storage local \
+   --maxfiles 1 --remove 1 --exclude-path /mnt --exclude-path /home/server/.regions
+  cp -v /etc/pve/lxc/101.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-101.conf
+  chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-101.conf
+  ###
+  echo ""
+  echo "Backing-up Plex LXC 104..."
+  vzdump 104 --mode snapshot --compress zstd --node pve --storage local \
+   --maxfiles 1 --remove 1 --exclude-path /mnt/transcoding
+  cp -v /etc/pve/lxc/104.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-104.conf
+  chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-104.conf
+  ###
+  echo ""
+  echo "Backing-up Automate LXC 106..."
+  vzdump 106 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1
+  cp -v /etc/pve/lxc/106.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-106.conf
+  chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/lxc-106.conf
+  ###
+  ### Virtual Machine Backups
+  ###
+  echo ""
+  echo "Backing-up Router KVM 100..."
+  vzdump 100 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1
+  cp -v /etc/pve/qemu-server/100.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-100.conf
+  chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-100.conf
+  ###
+  echo ""
+  echo "Backing-up Development KVM 103..."
+  echo "Only configuration is backed up."
+  #vzdump 103 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1
+  cp -v /etc/pve/qemu-server/103.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-103.conf
+  chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-103.conf
+  ###
+  echo ""
+  echo "Backing-up Xana KVM 105..."
+  echo "Only configuration is backed up."
+  #vzdump 105 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1
+  cp -v /etc/pve/qemu-server/105.conf /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-105.conf
+  chmod 777 /mnt/datastore/Ben/ProOS/pve/vmconfs/qemu-105.conf
+  ###
+  ### Copy to ZFS Pool
+  ###
+  echo ""
+  echo "Copying VM's to Datastore..."
+  chmod -R 777 /var/lib/vz/dump/vzdump-*
+  rsync --progress -a --exclude="*qemu-103*" --exclude="*qemu-105*" \
+   /var/lib/vz/dump/vzdump-* /mnt/datastore/Ben/ProOS/pve/vmbkps/
+  echo "Backup Complete."
+  EXIT_ROUTINE
+fi
+
 
 exit
 

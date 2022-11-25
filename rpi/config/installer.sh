@@ -95,7 +95,7 @@ apt-get install -y --no-upgrade --ignore-missing locales console-setup \
  uuid-runtime mpg321 mpv mplayer espeak tightvncserver iptables open-cobol \
  iw crda firmware-brcm80211 wpasupplicant dirmngr autofs triggerhappy apt-utils \
  build-essential git autoconf make libtool binutils i2c-tools cmake yasm \
- libmariadb3 texi2html socat nmap autoconf automake pkg-config \
+ libmariadb3 texi2html socat nmap autoconf automake pkg-config iperf3 \
  keyboard-configuration ncftp
  
 ## Developer Packages 

@@ -14,13 +14,9 @@ apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates bpytop 
  apt-transport-https wget unzip gnupg rsync curl screen parallel ethtool avahi-daemon \
  libdbus-1-dev libdbus-glib-1-dev locales aptitude sudo gnupg scrub binutils ffmpeg pip
 
-## Process Monitor Symlink
-ln -sf /usr/bin/bpytop /usr/bin/htop
 ## Remove Packages
-apt-get remove -y --purge cron anacron postfix apache2 apache2-data
-
-## Replace Process Monitor
-ln -sf /usr/bin/bpytop /usr/bin/htop
+apt-get remove -y --purge cron anacron postfix apache2 apache2-data bpytop htop
+apt-get install -y --no-upgrade --ignore-missing bpytop htop
 
 ## UniFi controller
 if [ ! -e /lib/systemd/system/unifi.service ] || [ "$REINIT_UNIFI" = "yes" ]; then
@@ -58,35 +54,16 @@ chown -R root:root /opt/system
 ln -sf /opt/system/main /opt/system/xmit
 
 ## Light Web Server
-apt-get install -y --no-upgrade lighttpd
-apt-get install -y --no-upgrade php-common php-cgi php php-mysql
+apt-get remove --purge lighttpd php-common php-cgi php php-mysql
 ## LightTPD Configuration
+apt-get install -y --no-upgrade lighttpd php-cgi php php-common
 cp -f /tmp/config/lighttpd.conf /etc/lighttpd
 chmod 644 /etc/lighttpd/lighttpd.conf
 chown root:root /etc/lighttpd/lighttpd.conf
-lighttpd-enable-mod fastcgi fastcgi-php; lighty-enable-mod fastcgi-php
-ln -sf /etc/lighttpd/conf-available/10-fastcgi.conf /etc/lighttpd/conf-enabled/
-ln -sf /etc/lighttpd/conf-available/15-fastcgi-php.conf /etc/lighttpd/conf-enabled/
-ln -sf /usr/share/lighttpd/create-mime.conf.pl /usr/share/lighttpd/create-mime.assign.pl
+lighttpd-enable-mod fastcgi fastcgi-php
+lighty-enable-mod fastcgi-php
 systemctl disable lighttpd
 systemctl restart lighttpd
-
-## PHP Configuration
-PHP_VERSION=$(php -v | tac -r | tail -n 1 | cut -d " " -f 2 | cut -c 1-3)
-cp -rf /tmp/config/php.cgi.ini /etc/php/$PHP_VERSION/cgi/php.ini
-chmod 644 /etc/php/$PHP_VERSION/cgi/php.ini
-chown root:root /etc/php/$PHP_VERSION/cgi/php.ini
-cp -rf /tmp/config/php.cli.ini /etc/php/$PHP_VERSION/cli/php.ini
-chmod 644 /etc/php/$PHP_VERSION/cli/php.ini
-chown root:root /etc/php/$PHP_VERSION/cli/php.ini
-chown -R www-data:www-data /var/lib/php
-chmod -R g+rx /var/lib/php
-if [ -e /lib/systemd/system/phpsessionclean.service ]; then
-  systemctl disable phpsessionclean.timer
-  systemctl disable phpsessionclean.service
-  rm -f /lib/systemd/system/phpsessionclean.timer
-  rm -f /lib/systemd/system/phpsessionclean.service
-fi
 
 ## Base website files
 rm -r /var/www/html
@@ -104,7 +81,6 @@ chown -R www-data:www-data /var/www/uploads
 ## Link external resources to web server
 ln -sf /mnt/ramdisk /var/www/html/ram
 
-##
 ## WWW Permissions (Network Web UI)
 rm -f /etc/sudoers.d/www-perms
 rm -f /etc/sudoers.d/www-nopasswd

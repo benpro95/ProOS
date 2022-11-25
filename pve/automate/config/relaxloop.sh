@@ -56,7 +56,7 @@ FILE="${rpi_relaxmode^}"
 
 ## Play audio in loop on Apple TV
 echo "starting $FILE sound..."
-/usr/bin/ffmpeg -re -stream_loop -1 -i $WWW_URL/$FILE.mp3 -f mp3 - \
+/usr/bin/ffmpeg -re -i $WWW_URL/$FILE.mp3 -f mp3 - \
  | /usr/local/bin/atvremote --manual --address "$ATVIP" --port 7000 --protocol raop \
  --id "${SETTINGS[0]%$'\n'}" --raop-credentials "${SETTINGS[1]%$'\n'}" stream_file=-
 

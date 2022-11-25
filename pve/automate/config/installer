@@ -15,9 +15,7 @@ apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates bpytop 
  libdbus-1-dev libdbus-glib-1-dev locales aptitude sudo gnupg scrub binutils ffmpeg pip
 
 ## Remove Packages
-apt-get remove -y --purge cron anacron postfix apache2 apache2-data bpytop htop
-apt-get install -y --no-upgrade --ignore-missing bpytop htop
-
+apt-get remove -y --purge cron anacron postfix apache2 apache2-data
 ## UniFi controller
 if [ ! -e /lib/systemd/system/unifi.service ] || [ "$REINIT_UNIFI" = "yes" ]; then
   wget https://get.glennr.nl/unifi/install/install_latest/unifi-latest.sh
@@ -54,8 +52,6 @@ chown -R root:root /opt/system
 ln -sf /opt/system/main /opt/system/xmit
 
 ## Light Web Server
-apt-get remove --purge lighttpd php-common php-cgi php php-mysql
-## LightTPD Configuration
 apt-get install -y --no-upgrade lighttpd php-cgi php php-common
 cp -f /tmp/config/lighttpd.conf /etc/lighttpd
 chmod 644 /etc/lighttpd/lighttpd.conf
@@ -66,20 +62,17 @@ systemctl disable lighttpd
 systemctl restart lighttpd
 
 ## Base website files
-rm -r /var/www/html
 mkdir -p /var/www/html
-mv -f /tmp/config/html/* /var/www/html
-chmod -R 775 /var/www/html
-chown -R www-data:www-data /var/www/html
+chown -R www-data:www-data /tmp/config/html
+rsync -a --progress=show /tmp/config/html/ /var/www/html/
+chmod g+rx /var/www/html
+chown www-data:www-data /var/www/html
 mkdir -p /var/www/sessions
 chmod -R g+rx /var/www/sessions
 chown -R www-data:www-data /var/www/sessions
 mkdir -p /var/www/uploads
 chmod -R g+rx /var/www/uploads
 chown -R www-data:www-data /var/www/uploads
-
-## Link external resources to web server
-ln -sf /mnt/ramdisk /var/www/html/ram
 
 ## WWW Permissions (Network Web UI)
 rm -f /etc/sudoers.d/www-perms
@@ -139,7 +132,6 @@ chmod 644 /root/.hushlogin
 chown root:root /root/.hushlogin
 
 ## Clean-up
-rm -f /etc/systemd/system/urserver.service
 systemctl daemon-reload
 rm -rf /tmp/config/
 apt-get autoremove -y

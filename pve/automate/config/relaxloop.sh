@@ -5,7 +5,7 @@
 ###########################################################
 ###########################################################
 
-WWW_URL="http://files.home/www/Relaxation"
+WWW_URL="http://files.home/WWW/Relaxation"
 
 ## Load settings file into array
 mapfile -t SETTINGS < <(wget -O- -q $WWW_URL/Settings.txt)

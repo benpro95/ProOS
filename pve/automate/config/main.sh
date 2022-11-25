@@ -6,7 +6,7 @@
 ###########################################################
 ## Do not use the screen command in this script ##
 
-RAMDISK="/mnt/ramdisk"
+RAMDISK="/var/www/html/ram"
 LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
 

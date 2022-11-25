@@ -20,6 +20,7 @@
 #                       | Ubuntu Hirsute Hippo ( 21.04 )
 #                       | Ubuntu Impish Indri ( 21.10 )
 #                       | Ubuntu Jammy Jellyfish ( 22.04 )
+#                       | Ubuntu Kinetic Kudu ( 22.10 )
 #                       | Debian Jessie ( 8 )
 #                       | Debian Stretch ( 9 )
 #                       | Debian Buster ( 10 )
@@ -30,7 +31,9 @@
 #                       | Linux Mint 18 ( Sarah | Serena | Sonya | Sylvia )
 #                       | Linux Mint 19 ( Tara | Tessa | Tina | Tricia )
 #                       | Linux Mint 20 ( Ulyana | Ulyssa | Uma | Una )
+#                       | Linux Mint 21 ( Vanessa )
 #                       | Linux Mint 4 ( Debbie )
+#                       | Linux Mint 5 ( Elsie )
 #                       | MX Linux 18 ( Continuum )
 #                       | Progress-Linux ( Engywuck )
 #                       | Parrot OS
@@ -40,8 +43,8 @@
 
 ###################################################################################################################################################################################################
 
-# Version               | 5.1.6
-# Application version   | 7.1.66-c70daa41cf
+# Version               | 5.2.2
+# Application version   | 7.3.76-4bee620529
 # Author                | Glenn Rietveld
 # Email                 | glennrietveld8@hotmail.nl
 # Website               | https://GlennR.nl
@@ -143,6 +146,11 @@ else
   eus_dir='/usr/lib/EUS'
   is_cloudkey=false
 fi
+if [[ "${is_cloudkey}" == "true" ]]; then
+  if grep -iq "UCK.mtk7623" /usr/lib/version &> /dev/null; then
+    cloudkey_generation="1"
+  fi
+fi
 
 script_logo() {
   cat << "EOF"
@@ -182,7 +190,6 @@ help_script() {
   
   Script options:
     --skip                                  Skip any kind of manual input.
-    --skip-install-haveged                  Skip installation of haveged.
     --skip-swap                             Skip swap file check/creation.
     --add-repository                        Add UniFi Repository if --skip is used.
     --local-install                         Inform script that it's a local UniFi Network installation, to open port 10001/dup ( discovery ).
@@ -229,7 +236,7 @@ help_script() {
 
 rm --force /tmp/EUS/script_options &> /dev/null
 rm --force /tmp/EUS/le_script_options &> /dev/null
-script_option_list=(-skip --skip --skip-install-haveged --skip-swap --add-repository --local --local-controller --local-install --custom-url --help --v6 --ipv6 --email --mail --fqdn --domain-name --server-ip --server-address --retry --external-dns --force-renew --renew --dns --dns-challenge)
+script_option_list=(-skip --skip --skip-swap --add-repository --local --local-controller --local-install --custom-url --help --v6 --ipv6 --email --mail --fqdn --domain-name --server-ip --server-address --retry --external-dns --force-renew --renew --dns --dns-challenge)
 
 while [ -n "$1" ]; do
   case "$1" in
@@ -237,9 +244,6 @@ while [ -n "$1" ]; do
        script_option_skip=true
        echo "--skip" &>> /tmp/EUS/script_options
        echo "--skip" &>> /tmp/EUS/le_script_options;;
-  --skip-install-haveged)
-       script_option_skip_install_haveged=true
-       echo "--skip-install-haveged" &>> /tmp/EUS/script_options;;
   --skip-swap)
        script_option_skip_swap=true
        echo "--skip-swap" &>> /tmp/EUS/script_options;;
@@ -506,9 +510,10 @@ get_distro() {
   elif [[ "${os_codename}" =~ (xenial|sarah|serena|sonya|sylvia|loki) ]]; then repo_codename=xenial; os_codename=xenial
   elif [[ "${os_codename}" =~ (bionic|tara|tessa|tina|tricia|hera|juno) ]]; then repo_codename=bionic; os_codename=bionic
   elif [[ "${os_codename}" =~ (focal|ulyana|ulyssa|uma|una) ]]; then repo_codename=focal; os_codename=focal
+  elif [[ "${os_codename}" =~ (jammy|vanessa) ]]; then repo_codename=jammy; os_codename=jammy
   elif [[ "${os_codename}" =~ (stretch|continuum) ]]; then repo_codename=stretch; os_codename=stretch
   elif [[ "${os_codename}" =~ (buster|debbie|parrot|engywuck-backports|engywuck|deepin) ]]; then repo_codename=buster; os_codename=buster
-  elif [[ "${os_codename}" =~ (bullseye|kali-rolling) ]]; then repo_codename=bullseye; os_codename=bullseye
+  elif [[ "${os_codename}" =~ (bullseye|kali-rolling|elsie) ]]; then repo_codename=bullseye; os_codename=bullseye
   else
     repo_codename="${os_codename}"
     os_codename="${os_codename}"
@@ -516,7 +521,7 @@ get_distro() {
 }
 get_distro
 
-if ! [[ "${os_codename}" =~ (precise|maya|trusty|qiana|rebecca|rafaela|rosa|xenial|sarah|serena|sonya|sylvia|bionic|tara|tessa|tina|tricia|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|jessie|stretch|continuum|buster|bullseye|bookworm) ]]; then
+if ! [[ "${os_codename}" =~ (precise|maya|trusty|qiana|rebecca|rafaela|rosa|xenial|sarah|serena|sonya|sylvia|bionic|tara|tessa|tina|tricia|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic|jessie|stretch|continuum|buster|bullseye|bookworm) ]]; then
   clear
   header_red
   echo -e "${WHITE_R}#${RESET} This script is not made for your OS.."
@@ -677,7 +682,7 @@ armhf_recommendation() {
   if [[ "${print_architecture}" == 'armhf' && "${is_cloudkey}" == "false" ]]; then
     header_red
     echo -e "${WHITE_R}#${RESET} Your installation might fail, please consider getting a Cloud Key Gen2 or go with a VPS at OVH/DO/AWS."
-    if [[ "${os_codename}" =~ (precise|trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
+    if [[ "${os_codename}" =~ (precise|trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
       echo -e "${WHITE_R}#${RESET} You could try using Debian Stretch before going with a UCK G2 ( PLUS ) or VPS"
     fi
     echo -e "\\n${WHITE_R}#${RESET} UniFi Cloud Key Gen2       | https://store.ui.com/products/unifi-cloud-key-gen2"
@@ -775,7 +780,7 @@ if ! dpkg -l sudo 2> /dev/null | awk '{print $1}' | grep -iq "^ii\\|^hi"; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu/ ${repo_codename}-security main") -eq 0 ]]; then
         echo -e "deb http://nl.archive.ubuntu.com/ubuntu/ ${repo_codename}-security main" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
-    elif [[ "${repo_codename}" =~ (bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
+    elif [[ "${repo_codename}" =~ (bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu ${repo_codename} main") -eq 0 ]]; then
         echo -e "deb http://nl.archive.ubuntu.com/ubuntu ${repo_codename} main" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
@@ -795,7 +800,7 @@ if ! dpkg -l lsb-release 2> /dev/null | awk '{print $1}' | grep -iq "^ii\\|^hi";
   echo -e "${WHITE_R}#${RESET} Installing lsb-release..."
   if ! DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install lsb-release &>> "${eus_dir}/logs/required.log"; then
     echo -e "${RED}#${RESET} Failed to install lsb-release in the first run...\\n"
-    if [[ "${repo_codename}" =~ (precise|trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
+    if [[ "${repo_codename}" =~ (precise|trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu/ ${repo_codename} main universe") -eq 0 ]]; then
         echo -e "deb http://nl.archive.ubuntu.com/ubuntu/ ${repo_codename} main universe" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
@@ -815,7 +820,7 @@ if ! dpkg -l net-tools 2> /dev/null | awk '{print $1}' | grep -iq "^ii\\|^hi"; t
   echo -e "${WHITE_R}#${RESET} Installing net-tools..."
   if ! DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install net-tools &>> "${eus_dir}/logs/required.log"; then
     echo -e "${RED}#${RESET} Failed to install net-tools in the first run...\\n"
-    if [[ "${repo_codename}" =~ (precise|trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
+    if [[ "${repo_codename}" =~ (precise|trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu ${repo_codename} main") -eq 0 ]]; then
         echo -e "deb http://nl.archive.ubuntu.com/ubuntu ${repo_codename} main" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
@@ -848,7 +853,7 @@ if dpkg -l apt 2> /dev/null | awk '{print $1}' | grep -iq "^ii\\|^hi"; then
             if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://security.ubuntu.com/ubuntu ${repo_codename}-security main universe") -eq 0 ]]; then
               echo -e "deb http://security.ubuntu.com/ubuntu ${repo_codename}-security main universe" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
             fi
-          elif [[ "${repo_codename}" =~ (disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
+          elif [[ "${repo_codename}" =~ (disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
             if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu ${repo_codename} main universe") -eq 0 ]]; then
               echo -e "deb http://nl.archive.ubuntu.com/ubuntu ${repo_codename} main universe" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
             fi
@@ -879,7 +884,7 @@ if ! dpkg -l software-properties-common 2> /dev/null | awk '{print $1}' | grep -
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://security.ubuntu.com/ubuntu ${repo_codename}-security main") -eq 0 ]]; then
         echo -e "deb http://security.ubuntu.com/ubuntu ${repo_codename}-security main" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
-    elif [[ "${repo_codename}" =~ (trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
+    elif [[ "${repo_codename}" =~ (trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu ${repo_codename} main") -eq 0 ]]; then
         echo -e "deb http://nl.archive.ubuntu.com/ubuntu ${repo_codename} main" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
@@ -903,7 +908,7 @@ if ! dpkg -l curl 2> /dev/null | awk '{print $1}' | grep -iq "^ii\\|^hi"; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://security.ubuntu.com/ubuntu ${repo_codename}-security main") -eq 0 ]]; then
         echo -e "deb http://security.ubuntu.com/ubuntu ${repo_codename}-security main" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
-    elif [[ "${repo_codename}" =~ (disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
+    elif [[ "${repo_codename}" =~ (disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu ${repo_codename} main") -eq 0 ]]; then
         echo -e "deb http://nl.archive.ubuntu.com/ubuntu ${repo_codename} main" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
@@ -927,7 +932,7 @@ if ! dpkg -l dirmngr 2> /dev/null | awk '{print $1}' | grep -iq "^ii\\|^hi"; the
   echo -e "${WHITE_R}#${RESET} Installing dirmngr..."
   if ! DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install dirmngr &>> "${eus_dir}/logs/required.log"; then
     echo -e "${RED}#${RESET} Failed to install dirmngr in the first run...\\n"
-    if [[ "${repo_codename}" =~ (precise|trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
+    if [[ "${repo_codename}" =~ (precise|trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu/ ${repo_codename} universe") -eq 0 ]]; then
         echo -e "deb http://nl.archive.ubuntu.com/ubuntu/ ${repo_codename} universe" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
@@ -954,7 +959,7 @@ if ! dpkg -l wget 2> /dev/null | awk '{print $1}' | grep -iq "^ii\\|^hi"; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://security.ubuntu.com/ubuntu ${repo_codename}-security main") -eq 0 ]]; then
         echo -e "deb http://security.ubuntu.com/ubuntu ${repo_codename}-security main" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
-    elif [[ "${repo_codename}" =~ (disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
+    elif [[ "${repo_codename}" =~ (disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu ${repo_codename} main") -eq 0 ]]; then
         echo -e "deb http://nl.archive.ubuntu.com/ubuntu ${repo_codename} main" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
@@ -978,7 +983,7 @@ if ! dpkg -l netcat netcat-traditional 2> /dev/null | awk '{print $1}' | grep -i
   echo -e "${WHITE_R}#${RESET} Installing netcat..."
   if ! DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install netcat &>> "${eus_dir}/logs/required.log"; then
     echo -e "${RED}#${RESET} Failed to install netcat in the first run...\\n"
-    if [[ "${repo_codename}" =~ (precise|trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
+    if [[ "${repo_codename}" =~ (precise|trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu/ ${repo_codename} universe") -eq 0 ]]; then
         echo -e "deb http://nl.archive.ubuntu.com/ubuntu/ ${repo_codename} universe" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
@@ -998,30 +1003,6 @@ if ! dpkg -l netcat netcat-traditional 2> /dev/null | awk '{print $1}' | grep -i
   fi
   netcat_installed=true
 fi
-if [[ "${unifi_core_system}" != 'true' && "${script_option_skip_install_haveged}" != 'true' ]]; then
-  if ! dpkg -l haveged 2> /dev/null | awk '{print $1}' | grep -iq "^ii\\|^hi"; then
-    if [[ "${installing_required_package}" != 'yes' ]]; then
-      install_required_packages
-    fi
-    echo -e "${WHITE_R}#${RESET} Installing haveged..."
-    if ! DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install haveged &>> "${eus_dir}/logs/required.log"; then
-      echo -e "${RED}#${RESET} Failed to install haveged in the first run...\\n"
-      if [[ "${repo_codename}" =~ (precise|trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
-        if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu/ ${repo_codename} universe") -eq 0 ]]; then
-          echo -e "deb http://nl.archive.ubuntu.com/ubuntu/ ${repo_codename} universe" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
-        fi
-      elif [[ "${repo_codename}" =~ (jessie|stretch|buster|bullseye|bookworm) ]]; then
-        if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://ftp.[A-Za-z0-9]*.debian.org/debian ${repo_codename} main") -eq 0 ]]; then
-          echo -e "deb http://ftp.nl.debian.org/debian ${repo_codename} main" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
-        fi
-      fi
-      required_package="haveged"
-      apt_get_install_package
-    else
-      echo -e "${GREEN}#${RESET} Successfully installed haveged! \\n" && sleep 2
-    fi
-  fi
-fi
 if ! dpkg -l psmisc 2> /dev/null | awk '{print $1}' | grep -iq "^ii\\|^hi"; then
   if [[ "${installing_required_package}" != 'yes' ]]; then install_required_packages; fi
   echo -e "${WHITE_R}#${RESET} Installing psmisc..."
@@ -1031,7 +1012,7 @@ if ! dpkg -l psmisc 2> /dev/null | awk '{print $1}' | grep -iq "^ii\\|^hi"; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu/ ${repo_codename}-updates main restricted") -eq 0 ]]; then
         echo -e "deb http://nl.archive.ubuntu.com/ubuntu/ ${repo_codename}-updates main restricted" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
-    elif [[ "${repo_codename}" =~ (trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
+    elif [[ "${repo_codename}" =~ (trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu/ ${repo_codename} universe") -eq 0 ]]; then
         echo -e "deb http://nl.archive.ubuntu.com/ubuntu/ ${repo_codename} universe" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
@@ -1059,7 +1040,7 @@ if ! dpkg -l gnupg 2> /dev/null | awk '{print $1}' | grep -iq "^ii\\|^hi"; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://security.ubuntu.com/ubuntu ${repo_codename}-security main universe") -eq 0 ]]; then
         echo -e "deb http://security.ubuntu.com/ubuntu ${repo_codename}-security main universe" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
-    elif [[ "${repo_codename}" =~ (disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
+    elif [[ "${repo_codename}" =~ (disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu/ ${repo_codename} main universe") -eq 0 ]]; then
         echo -e "deb http://nl.archive.ubuntu.com/ubuntu/ ${repo_codename} main universe" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
@@ -1085,7 +1066,7 @@ if ! dpkg -l perl 2> /dev/null | awk '{print $1}' | grep -iq "^ii\\|^hi"; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://security.ubuntu.com/ubuntu ${repo_codename}-security main") -eq 0 ]]; then
         echo -e "deb http://security.ubuntu.com/ubuntu ${repo_codename}-security main" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
-    elif [[ "${repo_codename}" =~ (disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
+    elif [[ "${repo_codename}" =~ (disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu ${repo_codename} main") -eq 0 ]]; then
         echo -e "deb http://nl.archive.ubuntu.com/ubuntu ${repo_codename} main" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
@@ -1114,7 +1095,7 @@ if [[ "${fqdn_specified}" == 'true' ]]; then
         if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://security.ubuntu.com/ubuntu ${repo_codename}-security main") -eq 0 ]]; then
           echo -e "deb http://security.ubuntu.com/ubuntu ${repo_codename}-security main" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
         fi
-      elif [[ "${repo_codename}" =~ (bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
+      elif [[ "${repo_codename}" =~ (bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
         if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu ${repo_codename} main") -eq 0 ]]; then
           echo -e "deb http://nl.archive.ubuntu.com/ubuntu ${repo_codename} main" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
         fi
@@ -1141,7 +1122,7 @@ if ! dpkg -l adduser 2> /dev/null | awk '{print $1}' | grep -iq "^ii\\|^hi"; the
   echo -e "${WHITE_R}#${RESET} Installing adduser..."
   if ! DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install adduser &>> "${eus_dir}/logs/required.log"; then
     echo -e "${RED}#${RESET} Failed to install adduser in the first run...\\n"
-    if [[ "${repo_codename}" =~ (precise|trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
+    if [[ "${repo_codename}" =~ (precise|trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu/ ${repo_codename} universe") -eq 0 ]]; then
         echo -e "deb http://nl.archive.ubuntu.com/ubuntu/ ${repo_codename} universe" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
@@ -1163,7 +1144,7 @@ if ! dpkg -l logrotate 2> /dev/null | awk '{print $1}' | grep -iq "^ii\\|^hi"; t
   echo -e "${WHITE_R}#${RESET} Installing logrotate..."
   if ! DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install logrotate &>> "${eus_dir}/logs/required.log"; then
     echo -e "${RED}#${RESET} Failed to install logrotate in the first run...\\n"
-    if [[ "${repo_codename}" =~ (precise|trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
+    if [[ "${repo_codename}" =~ (precise|trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu/ ${repo_codename} universe") -eq 0 ]]; then
         echo -e "deb http://nl.archive.ubuntu.com/ubuntu/ ${repo_codename} universe" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
@@ -1189,69 +1170,75 @@ if [[ "${curl_missing}" == 'true' ]]; then script_version_check; fi
 dpkg -l | grep "mongo-tools\\|mongodb\\|mongodb-org" | awk '{print $3}' | sed 's/.*://' | sed 's/-.*//g' &> /tmp/EUS/mongodb_versions
 mongodb_version_installed=$(sort -V /tmp/EUS/mongodb_versions | tail -n 1)
 rm --force /tmp/EUS/mongodb_versions &> /dev/null
-first_digits_mongodb_version_installed=$(echo "${mongodb_version_installed}" | cut -d'.' -f1)
-second_digits_mongodb_version_installed=$(echo "${mongodb_version_installed}" | cut -d'.' -f2)
+first_digit_mongodb_version_installed=$(echo "${mongodb_version_installed}" | cut -d'.' -f1)
+second_digit_mongodb_version_installed=$(echo "${mongodb_version_installed}" | cut -d'.' -f2)
 #
 if [[ "${custom_url_check}" == 'success' ]]; then
-  if [[ -z "${unifi_clean}" ]]; then unifi_clean=$(echo "${custom_download_url}" | grep -io "5.*\\|6.*\\|7.*\\|8.*" | cut -d'-' -f1 | cut -d'/' -f1); fi
+  if [[ -z "${unifi_clean}" ]]; then
+    unifi_clean=$(echo "${custom_download_url}" | grep -io "5.*\\|6.*\\|7.*\\|8.*" | cut -d'-' -f1 | cut -d'/' -f1)
+  fi
   unifi_secret=$(echo "${custom_download_url}" | grep -io "5.*\\|6.*\\|7.*\\|8.*" | cut -d'/' -f1)
 else
   unifi_clean=$(grep -i "# Application version" "${script_location}" | head -n 1 | awk '{print $5}' | cut -d'-' -f1)
   unifi_secret=$(grep -i "# Application version" "${script_location}" | head -n 1 | awk '{print $5}')
 fi
-first_digits_unifi=$(echo "${unifi_clean}" | cut -d'.' -f1)
-second_digits_unifi=$(echo "${unifi_clean}" | cut -d'.' -f2)
-third_digits_unifi=$(echo "${unifi_clean}" | cut -d'.' -f3)
+first_digit_unifi=$(echo "${unifi_clean}" | cut -d'.' -f1)
+second_digit_unifi=$(echo "${unifi_clean}" | cut -d'.' -f2)
+third_digit_unifi=$(echo "${unifi_clean}" | cut -d'.' -f3)
 #
-if [[ "${first_digits_unifi}" -le '5' && "${second_digits_unifi}" -le '13' ]]; then
+if [[ "${cloudkey_generation}" == "1" ]]; then
+  if [[ "${first_digit_unifi}" -gt '7' ]] || [[ "${first_digit_unifi}" == '7' && "${second_digit_unifi}" -ge '3' ]]; then
+    header_red
+    unifi_latest_72=$(curl -s "https://get.glennr.nl/unifi/latest-versions/7.2/latest.version")
+    echo -e "${WHITE_R}#${RESET} UniFi Network Application ${unifi_clean} is not supported on your Gen1 UniFi Cloudkey (UC-CK)."
+    echo -e "${WHITE_R}#${RESET} The latest supported version on your Cloudkey is ${unifi_latest_72} and older.. \\n\\n"
+    echo -e "${WHITE_R}#${RESET} Consider upgrading to a Gen2 Cloudkey:"
+    echo -e "${WHITE_R}#${RESET} UniFi Cloud Key Gen2       | https://store.ui.com/products/unifi-cloud-key-gen2"
+    echo -e "${WHITE_R}#${RESET} UniFi Cloud Key Gen2 Plus  | https://store.ui.com/products/unifi-cloudkey-gen2-plus\\n\\n"
+    author
+    exit 0
+  fi
+fi
+#
+if [[ "${first_digit_unifi}" -le '5' && "${second_digit_unifi}" -le '13' ]]; then
   mongo_version_supported="3.4.999"
-  first_digits_mongodb_version_supported="3"
-  second_digits_mongodb_version_supported="4"
+  first_digit_mongodb_version_supported="3"
+  second_digit_mongodb_version_supported="4"
   mongo_version_supported_2="3.6"
   mongo_version_supported_3="34"
-  if [[ "${first_digits_unifi}" == '5' && "${second_digits_unifi}" == '13' && "${third_digits_unifi}" -gt '10' ]]; then
+  if [[ "${first_digit_unifi}" == '5' && "${second_digit_unifi}" == '13' && "${third_digit_unifi}" -gt '10' ]]; then
     mongo_version_supported="3.6.999"
-    first_digits_mongodb_version_supported="3"
-    second_digits_mongodb_version_supported="6"
-   mongo_version_supported_2="4.0"
+    first_digit_mongodb_version_supported="3"
+    second_digit_mongodb_version_supported="6"
+    mongo_version_supported_2="4.0"
     mongo_version_supported_3="36"
   fi
 else
   mongo_version_supported="3.6.999"
-  first_digits_mongodb_version_supported="3"
-  second_digits_mongodb_version_supported="6"
+  first_digit_mongodb_version_supported="3"
+  second_digit_mongodb_version_supported="6"
   mongo_version_supported_2="4.0"
   mongo_version_supported_3="36"
 fi
 #
+if [[ "${first_digit_unifi}" -gt '7' ]] || [[ "${first_digit_unifi}" == '7' && "${second_digit_unifi}" -ge '3' ]]; then
+  required_java_version="openjdk-11"
+  required_java_version_short="11"
+else
+  required_java_version="openjdk-8"
+  required_java_version_short="8"
+fi
+#
 system_memory=$(awk '/MemTotal/ {printf( "%.0f\n", $2 / 1024 / 1024)}' /proc/meminfo)
 system_swap=$(awk '/SwapTotal/ {printf( "%.0f\n", $2 / 1024 / 1024)}' /proc/meminfo)
-#system_free_disk_space=$(df -h / | grep "/" | awk '{print $4}' | sed 's/G//')
 system_free_disk_space=$(df -k / | awk '{print $4}' | tail -n1)
 #
-#SERVER_IP=$(ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1' | head -1)
-#SERVER_IP=$(/sbin/ifconfig | grep 'inet ' | grep -v '127.0.0.1' | head -n1 | awk '{print $2}' | head -1 | sed 's/.*://')
 SERVER_IP=$(ip addr | grep -A8 -m1 MULTICAST | grep -m1 inet | cut -d' ' -f6 | cut -d'/' -f1)
 if [[ -z "${SERVER_IP}" ]]; then SERVER_IP=$(hostname -I | head -n 1 | awk '{ print $NF; }'); fi
 PUBLIC_SERVER_IP=$(curl https://ip.glennr.nl/ -s)
 architecture=$(dpkg --print-architecture)
 get_distro
 #
-#JAVA8=$(dpkg -l | grep -c "openjdk-8-jre-headless\\|oracle-java8-installer")
-#mongodb_version=$(dpkg -l | grep "mongodb-server\|mongodb-org-server" | awk '{print $3}' | sed 's/.*://' | sed 's/-.*//' | sed 's/\.//g')
-
-unsupported_java_installed=''
-openjdk_8_installed=''
-remote_installation=''
-debian_64_mongo=''
-debian_32_run_fix=''
-unifi_dependencies=''
-port_8080_in_use=''
-port_8080_pid=''
-port_8080_service=''
-port_8443_in_use=''
-port_8443_pid=''
-port_8443_service=''
 
 ###################################################################################################################################################################################################
 #                                                                                                                                                                                                 #
@@ -1275,7 +1262,7 @@ if [ "${system_free_disk_space}" -lt "5000000" ]; then
 fi
 
 # MongoDB version check.
-if [[ "${first_digits_mongodb_version_installed}" -gt "${first_digits_mongodb_version_supported}" || "${second_digits_mongodb_version_installed}" -gt "${second_digits_mongodb_version_supported}" ]]; then
+if [[ "${first_digit_mongodb_version_installed}" -gt "${first_digit_mongodb_version_supported}" || "${second_digit_mongodb_version_installed}" -gt "${second_digit_mongodb_version_supported}" ]]; then
   header_red
   echo -e "${WHITE_R}#${RESET} UniFi does not support MongoDB ${mongo_version_supported_2} or newer.."
   echo -e "${WHITE_R}#${RESET} Do you want to uninstall the unsupported MongoDB version?\\n"
@@ -1716,7 +1703,7 @@ mongodb_36_key() {
   fi
 }
 
-if [[ "${os_codename}" =~ (disco|eoan|focal|groovy|hirsute|impish|jammy) && "${architecture}" =~ (amd64|arm64) ]]; then
+if [[ "${os_codename}" =~ (disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) && "${architecture}" =~ (amd64|arm64) ]]; then
   header
   echo -e "${WHITE_R}#${RESET} Installing a required package..\\n" && sleep 2
   libssl_temp="$(mktemp --tmpdir=/tmp libssl1.0.2_XXXXX.deb)" || abort
@@ -1772,7 +1759,7 @@ if ! dpkg -l | grep "^ii\\|^hi" | grep -iq "mongodb-server\\|mongodb-org-server"
         fi
       fi
     fi
-  elif [[ "${os_codename}" =~ (bionic|tara|tessa|tina|tricia|disco|eoan|focal|groovy|hirsute|impish|jammy) && "${architecture}" == "i386" ]]; then
+  elif [[ "${os_codename}" =~ (bionic|tara|tessa|tina|tricia|disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) && "${architecture}" == "i386" ]]; then
     ubuntu_32_mongo
     libssl_temp="$(mktemp --tmpdir=/tmp libssl1.0.2_XXXXX.deb)" || abort
     libssl_url=$(curl -s http://ftp.nl.debian.org/debian/pool/main/o/openssl1.0/ | grep -io "libssl1.0.2.*i386.deb" | tail -n1)
@@ -1781,7 +1768,7 @@ if ! dpkg -l | grep "^ii\\|^hi" | grep -iq "mongodb-server\\|mongodb-org-server"
     echo -e "\\n${WHITE_R}#${RESET} Installing libssl..."
     if dpkg -i "$libssl_temp" &>> "${eus_dir}/logs/mongodb_install.log"; then echo -e "${GREEN}#${RESET} Successfully installed libssl! \\n"; else echo -e "${RED}#${RESET} Failed to install libssl! \\n"; abort; fi
     rm --force "$libssl_temp" 2> /dev/null
-    if [[ "${os_codename}" =~ (disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
+    if [[ "${os_codename}" =~ (disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -P -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu bionic main universe") -eq 0 ]]; then
         echo deb http://nl.archive.ubuntu.com/ubuntu bionic main universe >>/etc/apt/sources.list.d/glennr-install-script.list || abort
         hide_apt_update=true
@@ -1831,7 +1818,7 @@ if ! dpkg -l | grep "^ii\\|^hi" | grep -iq "mongodb-server\\|mongodb-org-server"
     run_apt_get_update
     echo -e "${WHITE_R}#${RESET} Installing mongodb-org version ${mongo_version_supported::3}..."
     if DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install mongodb-org &>> "${eus_dir}/logs/mongodb_install.log"; then echo -e "${GREEN}#${RESET} Successfully installed mongodb-org version ${mongo_version_supported::3}! \\n"; else echo -e "${RED}#${RESET} Failed to install mongodb-org version ${mongo_version_supported::3}...\\n"; abort; fi
-  elif [[ "${os_codename}" =~ (xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|sarah|serena|sonya|sylvia|tara|tessa|tina|tricia) && "${architecture}" =~ (amd64|arm64) ]]; then
+  elif [[ "${os_codename}" =~ (xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic|sarah|serena|sonya|sylvia|tara|tessa|tina|tricia) && "${architecture}" =~ (amd64|arm64) ]]; then
     if [[ "${mongo_version_supported}" == "3.6.999" ]]; then
       mongodb_36_key
     else
@@ -1916,54 +1903,54 @@ fi
 
 openjdk_version=$(dpkg -l | grep "^ii\\|^hi" | grep "openjdk-8" | awk '{print $3}' | grep "^8u" | sed 's/-.*//g' | sed 's/8u//g' | grep -o '[[:digit:]]*' | sort -V | tail -n 1)
 if dpkg -l | grep "^ii\\|^hi" | grep -iq "openjdk-8"; then
-  if [[ "${openjdk_version}" -lt '131' ]]; then
+  if [[ "${openjdk_version}" -lt '131' && "${required_java_version}" == "openjdk-8" ]]; then
     old_openjdk_version=true
   fi
 fi
-if ! dpkg -l | grep "^ii\\|^hi" | grep -iq "openjdk-8" || [[ "${old_openjdk_version}" == 'true' ]]; then
+if ! dpkg -l | grep "^ii\\|^hi" | grep -iq "${required_java_version}" || [[ "${old_openjdk_version}" == 'true' ]]; then
   if [[ "${old_openjdk_version}" == 'true' ]]; then
     header_red
-    echo -e "${RED}#${RESET} OpenJDK 8 is to old...\\n" && sleep 2
+    echo -e "${RED}#${RESET} OpenJDK ${required_java_version_short} is to old...\\n" && sleep 2
     openjdk_variable="Updating"
     openjdk_variable_2="Updated"
     openjdk_variable_3="Update"
   else
     header
-    echo -e "${GREEN}#${RESET} Preparing OpenJDK 8 installation...\\n" && sleep 2
+    echo -e "${GREEN}#${RESET} Preparing OpenJDK ${required_java_version_short} installation...\\n" && sleep 2
     openjdk_variable="Installing"
     openjdk_variable_2="Installed"
     openjdk_variable_3="Install"
   fi
   sleep 2
   if [[ "${repo_codename}" =~ (precise|trusty|xenial|bionic|cosmic) ]]; then
-    echo -e "${WHITE_R}#${RESET} ${openjdk_variable} openjdk-8-jre-headless..."
-    if ! DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install openjdk-8-jre-headless &> /dev/null || [[ "${old_openjdk_version}" == 'true' ]]; then
-      echo -e "${RED}#${RESET} Failed to ${openjdk_variable_3} openjdk-8-jre-headless in the first run...\\n"
+    echo -e "${WHITE_R}#${RESET} ${openjdk_variable} ${required_java_version}-jre-headless..."
+    if ! DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install "${required_java_version}-jre-headless" &> /dev/null || [[ "${old_openjdk_version}" == 'true' ]]; then
+      echo -e "${RED}#${RESET} Failed to ${openjdk_variable_3} ${required_java_version}-jre-headless in the first run...\\n"
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://ppa.launchpad.net/openjdk-r/ppa/ubuntu ${repo_codename} main") -eq 0 ]]; then
         echo "deb http://ppa.launchpad.net/openjdk-r/ppa/ubuntu ${repo_codename} main" >> /etc/apt/sources.list.d/glennr-install-script.list || abort
         echo "EB9B1D8886F44E2A" &>> /tmp/EUS/keys/missing_keys
       fi
-      required_package="openjdk-8-jre-headless"
+      required_package="${required_java_version}-jre-headless"
       apt_get_install_package
     else
-      echo -e "${GREEN}#${RESET} Successfully ${openjdk_variable_2} openjdk-8-jre-headless! \\n" && sleep 2
+      echo -e "${GREEN}#${RESET} Successfully ${openjdk_variable_2} ${required_java_version}-jre-headless! \\n" && sleep 2
     fi
-  elif [[ "${repo_codename}" =~ (disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
-    echo -e "${WHITE_R}#${RESET} ${openjdk_variable} openjdk-8-jre-headless..."
-    if ! DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install openjdk-8-jre-headless &> /dev/null || [[ "${old_openjdk_version}" == 'true' ]]; then
-      echo -e "${RED}#${RESET} Failed to ${openjdk_variable_3} openjdk-8-jre-headless in the first run...\\n"
+  elif [[ "${repo_codename}" =~ (disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
+    echo -e "${WHITE_R}#${RESET} ${openjdk_variable} ${required_java_version}-jre-headless..."
+    if ! DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install "${required_java_version}-jre-headless" &> /dev/null || [[ "${old_openjdk_version}" == 'true' ]]; then
+      echo -e "${RED}#${RESET} Failed to ${openjdk_variable_3} ${required_java_version}-jre-headless in the first run...\\n"
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://security.ubuntu.com/ubuntu bionic-security main universe") -eq 0 ]]; then
         echo "deb http://security.ubuntu.com/ubuntu bionic-security main universe" >> /etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
-      required_package="openjdk-8-jre-headless"
+      required_package="${required_java_version}-jre-headless"
       apt_get_install_package
     else
-      echo -e "${GREEN}#${RESET} Successfully ${openjdk_variable_2} openjdk-8-jre-headless! \\n" && sleep 2
+      echo -e "${GREEN}#${RESET} Successfully ${openjdk_variable_2} ${required_java_version}-jre-headless! \\n" && sleep 2
     fi
   elif [[ "${os_codename}" == "jessie" ]]; then
-    echo -e "${WHITE_R}#${RESET} ${openjdk_variable} openjdk-8-jre-headless..."
-    if ! DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install -t jessie-backports openjdk-8-jre-headless &> /dev/null || [[ "${old_openjdk_version}" == 'true' ]]; then
-      echo -e "${RED}#${RESET} Failed to ${openjdk_variable_3} openjdk-8-jre-headless in the first run...\\n"
+    echo -e "${WHITE_R}#${RESET} ${openjdk_variable} ${required_java_version}-jre-headless..."
+    if ! DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install -t jessie-backports "${required_java_version}-jre-headless" &> /dev/null || [[ "${old_openjdk_version}" == 'true' ]]; then
+      echo -e "${RED}#${RESET} Failed to ${openjdk_variable_3} ${required_java_version}-jre-headless in the first run...\\n"
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -P -c "^deb http[s]*://archive.debian.org/debian jessie-backports main") -eq 0 ]]; then
         echo deb http://archive.debian.org/debian jessie-backports main >>/etc/apt/sources.list.d/glennr-install-script.list || abort
         http_proxy=$(env | grep -i "http.*Proxy" | cut -d'=' -f2 | sed 's/[";]//g')
@@ -1978,61 +1965,61 @@ if ! dpkg -l | grep "^ii\\|^hi" | grep -iq "openjdk-8" || [[ "${old_openjdk_vers
           apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 8B48AD6246925553 7638D0442B90D010 || abort
         fi
         echo -e "${WHITE_R}#${RESET} Running apt-get update..."
-        required_package="openjdk-8-jre-headless"
+        required_package="${required_java_version}-jre-headless"
         if apt-get update -o Acquire::Check-Valid-Until=false &> /dev/null; then echo -e "${GREEN}#${RESET} Successfully ran apt-get update! \\n"; else echo -e "${RED}#${RESET} Failed to ran apt-get update! \\n"; abort; fi
         echo -e "\\n------- ${required_package} installation ------- $(date +%F-%R) -------\\n" &>> "${eus_dir}/logs/apt.log"
-        if DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install -t jessie-backports openjdk-8-jre-headless &>> "${eus_dir}/logs/apt.log"; then echo -e "${GREEN}#${RESET} Successfully installed ${required_package}! \\n" && sleep 2; else echo -e "${RED}#${RESET} Failed to install ${required_package}! \\n"; abort; fi
+        if DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install -t jessie-backports "${required_java_version}-jre-headless" &>> "${eus_dir}/logs/apt.log"; then echo -e "${GREEN}#${RESET} Successfully installed ${required_package}! \\n" && sleep 2; else echo -e "${RED}#${RESET} Failed to install ${required_package}! \\n"; abort; fi
         sed -i '/jessie-backports/d' /etc/apt/sources.list.d/glennr-install-script.list
         unset required_package
       fi
     fi
   elif [[ "${os_codename}" =~ (stretch|continuum) ]]; then
-    echo -e "${WHITE_R}#${RESET} ${openjdk_variable} openjdk-8-jre-headless..."
-    if ! DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install openjdk-8-jre-headless &> /dev/null || [[ "${old_openjdk_version}" == 'true' ]]; then
-      echo -e "${RED}#${RESET} Failed to ${openjdk_variable_3} openjdk-8-jre-headless in the first run...\\n"
+    echo -e "${WHITE_R}#${RESET} ${openjdk_variable} ${required_java_version}-jre-headless..."
+    if ! DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install "${required_java_version}-jre-headless" &> /dev/null || [[ "${old_openjdk_version}" == 'true' ]]; then
+      echo -e "${RED}#${RESET} Failed to ${openjdk_variable_3} ${required_java_version}-jre-headless in the first run...\\n"
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://ppa.launchpad.net/openjdk-r/ppa/ubuntu xenial main") -eq 0 ]]; then
         echo "deb http://ppa.launchpad.net/openjdk-r/ppa/ubuntu xenial main" >> /etc/apt/sources.list.d/glennr-install-script.list || abort
         echo "EB9B1D8886F44E2A" &>> /tmp/EUS/keys/missing_keys
       fi
-      required_package="openjdk-8-jre-headless"
+      required_package="${required_java_version}-jre-headless"
       apt_get_install_package
     else
-      echo -e "${GREEN}#${RESET} Successfully ${openjdk_variable_2} openjdk-8-jre-headless! \\n" && sleep 2
+      echo -e "${GREEN}#${RESET} Successfully ${openjdk_variable_2} ${required_java_version}-jre-headless! \\n" && sleep 2
     fi
   elif [[ "${repo_codename}" =~ (buster|bullseye|bookworm) ]]; then
-    echo -e "${WHITE_R}#${RESET} ${openjdk_variable} openjdk-8-jre-headless..."
-    if ! DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install openjdk-8-jre-headless &> /dev/null || [[ "${old_openjdk_version}" == 'true' ]]; then
-      echo -e "${RED}#${RESET} Failed to ${openjdk_variable_3} openjdk-8-jre-headless in the first run...\\n"
+    echo -e "${WHITE_R}#${RESET} ${openjdk_variable} ${required_java_version}-jre-headless..."
+    if ! DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install "${required_java_version}-jre-headless" &> /dev/null || [[ "${old_openjdk_version}" == 'true' ]]; then
+      echo -e "${RED}#${RESET} Failed to ${openjdk_variable_3} ${required_java_version}-jre-headless in the first run...\\n"
       if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -c "^deb http[s]*://ftp.nl.debian.org/debian stretch main") -eq 0 ]]; then
         echo "deb http://ftp.nl.debian.org/debian stretch main" >> /etc/apt/sources.list.d/glennr-install-script.list || abort
       fi
-      required_package="openjdk-8-jre-headless"
+      required_package="${required_java_version}-jre-headless"
       apt_get_install_package
     else
-      echo -e "${GREEN}#${RESET} Successfully ${openjdk_variable_2} openjdk-8-jre-headless! \\n" && sleep 2
+      echo -e "${GREEN}#${RESET} Successfully ${openjdk_variable_2} ${required_java_version}-jre-headless! \\n" && sleep 2
     fi
   else
     header_red
-    echo -e "${RED}Please manually install JAVA 8 on your system!${RESET}\\n"
+    echo -e "${RED}Please manually install JAVA ${required_java_version_short} on your system!${RESET}\\n"
     echo -e "${RED}OS Details:${RESET}\\n"
     echo -e "${RED}$(lsb_release -a)${RESET}\\n"
     exit 0
   fi
 else
   header
-  echo -e "${GREEN}#${RESET} Preparing OpenJDK 8 installation..."
-  echo -e "${WHITE_R}#${RESET} OpenJDK 8 is already installed! \\n"
+  echo -e "${GREEN}#${RESET} Preparing OpenJDK ${required_java_version_short} installation..."
+  echo -e "${WHITE_R}#${RESET} OpenJDK ${required_java_version_short} is already installed! \\n"
 fi
 sleep 3
 
-if dpkg -l | grep "^ii\\|^hi" | grep -iq "openjdk-8"; then
-  openjdk_8_installed=true
+if dpkg -l | grep "^ii\\|^hi" | grep -iq "openjdk-${required_java_version_short}"; then
+  required_java_version_installed=true
 fi
-if dpkg -l | grep "^ii\\|^hi" | grep -i "openjdk-.*-\\|oracle-java.*" | grep -vq "openjdk-8\\|oracle-java8"; then
-  unsupported_java_installed=true
+if dpkg -l | grep "^ii\\|^hi" | grep -i "openjdk-.*-\\|oracle-java.*" | grep -vq "openjdk-8\\|oracle-java8\\|openjdk-11"; then
+  unsupported_java_version_installed=true
 fi
 
-if [[ "${openjdk_8_installed}" == 'true' && "${unsupported_java_installed}" == 'true' && "${script_option_skip}" != 'true' ]]; then
+if [[ "${required_java_version_installed}" == 'true' && "${unsupported_java_version_installed}" == 'true' && "${script_option_skip}" != 'true' && "${unifi_core_system}" != 'true' ]]; then
   header_red
   echo -e "${WHITE_R}#${RESET} Unsupported JAVA version(s) are detected, do you want to uninstall them?"
   echo -e "${WHITE_R}#${RESET} This may remove packages that depend on these java versions."
@@ -2046,7 +2033,7 @@ if [[ "${openjdk_8_installed}" == 'true' && "${unsupported_java_installed}" == '
           echo -e "${WHITE_R}#${RESET} Uninstalling unsupported JAVA versions..."
           echo -e "\\n${WHITE_R}----${RESET}\\n"
           sleep 3
-          dpkg -l | grep "^ii\\|^hi" | awk '/openjdk-.*/{print $2}' | cut -d':' -f1 | grep -v "openjdk-8" &>> /tmp/EUS/java/unsupported_java_list_tmp
+          dpkg -l | grep "^ii\\|^hi" | awk '/openjdk-.*/{print $2}' | cut -d':' -f1 | grep -v "openjdk-8\\|openjdk-11" &>> /tmp/EUS/java/unsupported_java_list_tmp
           dpkg -l | grep "^ii\\|^hi" | awk '/oracle-java.*/{print $2}' | cut -d':' -f1 | grep -v "oracle-java8" &>> /tmp/EUS/java/unsupported_java_list_tmp
           awk '!a[$0]++' /tmp/EUS/java/unsupported_java_list_tmp >> /tmp/EUS/java/unsupported_java_list; rm --force /tmp/EUS/java/unsupported_java_list_tmp 2> /dev/null
           echo -e "\\n------- $(date +%F-%R) -------\\n" &>> "${eus_dir}/logs/java_uninstall.log"
@@ -2059,12 +2046,12 @@ if [[ "${openjdk_8_installed}" == 'true' && "${unsupported_java_installed}" == '
   esac
 fi
 
-if dpkg -l | grep "^ii\\|^hi" | grep -iq "openjdk-8"; then
-  update_java_alternatives=$(update-java-alternatives --list | grep "^java-1.8.*openjdk" | awk '{print $1}' | head -n1)
+if dpkg -l | grep "^ii\\|^hi" | grep -iq "openjdk-${required_java_version_short}"; then
+  update_java_alternatives=$(update-java-alternatives --list | grep "^java-1.${required_java_version_short}.*openjdk" | awk '{print $1}' | head -n1)
   if [[ -n "${update_java_alternatives}" ]]; then
     update-java-alternatives --set "${update_java_alternatives}" &> /dev/null
   fi
-  update_alternatives=$(update-alternatives --list java | grep "java-8-openjdk" | awk '{print $1}' | head -n1)
+  update_alternatives=$(update-alternatives --list java | grep "java-${required_java_version_short}-openjdk" | awk '{print $1}' | head -n1)
   if [[ -n "${update_alternatives}" ]]; then
     update-alternatives --set java "${update_alternatives}" &> /dev/null
   fi
@@ -2074,7 +2061,7 @@ if dpkg -l | grep "^ii\\|^hi" | grep -iq "openjdk-8"; then
   update-ca-certificates -f &> /dev/null && echo -e "${GREEN}#${RESET} Successfully updated the ca-certificates\\n" && sleep 2
 fi
 
-if dpkg -l | grep "^ii\\|^hi" | grep -iq "openjdk-8"; then
+if dpkg -l | grep "^ii\\|^hi" | grep -iq "openjdk-${required_java_version_short}"; then
   java_home_readlink="JAVA_HOME=$( readlink -f "$( command -v java )" | sed "s:bin/.*$::" )"
   if [[ -f /etc/default/unifi ]]; then
     current_java_home=$(grep "^JAVA_HOME" /etc/default/unifi)
@@ -2101,19 +2088,23 @@ header
 echo -e "${WHITE_R}#${RESET} Preparing installation of the UniFi Network Application dependencies...\\n"
 sleep 2
 echo -e "\\n------- dependency installation ------- $(date +%F-%R) -------\\n" &>> "${eus_dir}/logs/apt.log"
-if [[ "${os_codename}" =~ (precise|maya|trusty|qiana|rebecca|rafaela|rosa|xenial|sarah|serena|sonya|sylvia|bionic|tara|tessa|tina|tricia|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|stretch|continuum|buster|bullseye|bookworm) ]]; then
+if [[ "${os_codename}" =~ (precise|maya|trusty|qiana|rebecca|rafaela|rosa|xenial|sarah|serena|sonya|sylvia|bionic|tara|tessa|tina|tricia|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic|stretch|continuum|buster|bullseye|bookworm) ]]; then
   echo -e "${WHITE_R}#${RESET} Installing binutils, ca-certificates-java and java-common..."
   if DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install binutils ca-certificates-java java-common &>> "${eus_dir}/logs/apt.log"; then echo -e "${GREEN}#${RESET} Successfully installed binutils, ca-certificates-java and java-common! \\n"; else echo -e "${RED}#${RESET} Failed to install binutils, ca-certificates-java and java-common in the first run...\\n"; unifi_dependencies=fail; fi
-  echo -e "${WHITE_R}#${RESET} Installing jsvc and libcommons-daemon-java..."
-  if DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install jsvc libcommons-daemon-java &>> "${eus_dir}/logs/apt.log"; then echo -e "${GREEN}#${RESET} Successfully installed jsvc and libcommons-daemon-java! \\n"; else echo -e "${RED}#${RESET} Failed to install jsvc and libcommons-daemon-java in the first run...\\n"; unifi_dependencies=fail; fi
+  if [[ "${required_java_version}" == "openjdk-8" ]]; then
+    echo -e "${WHITE_R}#${RESET} Installing jsvc and libcommons-daemon-java..."
+    if DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install jsvc libcommons-daemon-java &>> "${eus_dir}/logs/apt.log"; then echo -e "${GREEN}#${RESET} Successfully installed jsvc and libcommons-daemon-java! \\n"; else echo -e "${RED}#${RESET} Failed to install jsvc and libcommons-daemon-java in the first run...\\n"; unifi_dependencies=fail; fi
+  fi
 elif [[ "${os_codename}" == 'jessie' ]]; then
   echo -e "${WHITE_R}#${RESET} Installing binutils, ca-certificates-java and java-common..."
   if DEBIAN_FRONTEND='noninteractive' apt-get -y --force-yes -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install binutils ca-certificates-java java-common &>> "${eus_dir}/logs/apt.log"; then echo -e "${GREEN}#${RESET} Successfully installed binutils, ca-certificates-java and java-common! \\n"; else echo -e "${RED}#${RESET} Failed to install binutils, ca-certificates-java and java-common in the first run...\\n"; unifi_dependencies=fail; fi
-  echo -e "${WHITE_R}#${RESET} Installing jsvc and libcommons-daemon-java..."
-  if DEBIAN_FRONTEND='noninteractive' apt-get -y --force-yes -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install jsvc libcommons-daemon-java &>> "${eus_dir}/logs/apt.log"; then echo -e "${GREEN}#${RESET} Successfully installed jsvc and libcommons-daemon-java! \\n"; else echo -e "${RED}#${RESET} Failed to install jsvc and libcommons-daemon-java in the first run...\\n"; unifi_dependencies=fail; fi
+  if [[ "${required_java_version}" == "openjdk-8" ]]; then
+    echo -e "${WHITE_R}#${RESET} Installing jsvc and libcommons-daemon-java..."
+    if DEBIAN_FRONTEND='noninteractive' apt-get -y --force-yes -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install jsvc libcommons-daemon-java &>> "${eus_dir}/logs/apt.log"; then echo -e "${GREEN}#${RESET} Successfully installed jsvc and libcommons-daemon-java! \\n"; else echo -e "${RED}#${RESET} Failed to install jsvc and libcommons-daemon-java in the first run...\\n"; unifi_dependencies=fail; fi
+  fi
 fi
 if [[ "${unifi_dependencies}" == 'fail' ]]; then
-  if [[ "${repo_codename}" =~ (precise|trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy) ]]; then
+  if [[ "${repo_codename}" =~ (precise|trusty|xenial|bionic|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic) ]]; then
     if [[ $(find /etc/apt/ -name "*.list" -type f -print0 | xargs -0 cat | grep -P -c "^deb http[s]*://[A-Za-z0-9]*.archive.ubuntu.com/ubuntu ${repo_codename} main universe") -eq 0 ]]; then
       echo "deb http://nl.archive.ubuntu.com/ubuntu ${repo_codename} main universe" >>/etc/apt/sources.list.d/glennr-install-script.list || abort
     fi
@@ -2124,19 +2115,35 @@ if [[ "${unifi_dependencies}" == 'fail' ]]; then
   fi
   hide_apt_update=true
   run_apt_get_update
-  if [[ "${os_codename}" =~ (precise|maya|trusty|qiana|rebecca|rafaela|rosa|xenial|sarah|serena|sonya|sylvia|bionic|tara|tessa|tina|tricia|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|stretch|continuum|buster|bullseye|bookworm) ]]; then
-  echo -e "${WHITE_R}#${RESET} Installing binutils, ca-certificates-java and java-common..."
+  if [[ "${os_codename}" =~ (precise|maya|trusty|qiana|rebecca|rafaela|rosa|xenial|sarah|serena|sonya|sylvia|bionic|tara|tessa|tina|tricia|cosmic|disco|eoan|focal|groovy|hirsute|impish|jammy|kinetic|stretch|continuum|buster|bullseye|bookworm) ]]; then
+    echo -e "${WHITE_R}#${RESET} Installing binutils, ca-certificates-java and java-common..."
     if DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install binutils ca-certificates-java java-common &>> "${eus_dir}/logs/apt.log"; then echo -e "${GREEN}#${RESET} Successfully installed binutils, ca-certificates-java and java-common! \\n"; else echo -e "${RED}#${RESET} Failed to install binutils, ca-certificates-java and java-common in the first run...\\n"; abort; fi
-  echo -e "${WHITE_R}#${RESET} Installing jsvc and libcommons-daemon-java..."
-    if DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install jsvc libcommons-daemon-java &>> "${eus_dir}/logs/apt.log"; then echo -e "${GREEN}#${RESET} Successfully installed jsvc and libcommons-daemon-java! \\n"; else echo -e "${RED}#${RESET} Failed to install jsvc and libcommons-daemon-java in the first run...\\n"; abort; fi
+    if [[ "${required_java_version}" == "openjdk-8" ]]; then
+      echo -e "${WHITE_R}#${RESET} Installing jsvc and libcommons-daemon-java..."
+      if DEBIAN_FRONTEND='noninteractive' apt-get -y -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install jsvc libcommons-daemon-java &>> "${eus_dir}/logs/apt.log"; then echo -e "${GREEN}#${RESET} Successfully installed jsvc and libcommons-daemon-java! \\n"; else echo -e "${RED}#${RESET} Failed to install jsvc and libcommons-daemon-java in the first run...\\n"; abort; fi
+    fi
   elif [[ "${os_codename}" == 'jessie' ]]; then
-  echo -e "${WHITE_R}#${RESET} Installing binutils, ca-certificates-java and java-common..."
+    echo -e "${WHITE_R}#${RESET} Installing binutils, ca-certificates-java and java-common..."
     if DEBIAN_FRONTEND='noninteractive' apt-get -y --force-yes -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install binutils ca-certificates-java java-common &>> "${eus_dir}/logs/apt.log"; then echo -e "${GREEN}#${RESET} Successfully installed binutils, ca-certificates-java and java-common! \\n"; else echo -e "${RED}#${RESET} Failed to install binutils, ca-certificates-java and java-common in the first run...\\n"; abort; fi
-  echo -e "${WHITE_R}#${RESET} Installing jsvc and libcommons-daemon-java..."
-    if DEBIAN_FRONTEND='noninteractive' apt-get -y --force-yes -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install jsvc libcommons-daemon-java &>> "${eus_dir}/logs/apt.log"; then echo -e "${GREEN}#${RESET} Successfully installed jsvc and libcommons-daemon-java! \\n"; else echo -e "${RED}#${RESET} Failed to install jsvc and libcommons-daemon-java in the first run...\\n"; abort; fi
+    if [[ "${required_java_version}" == "openjdk-8" ]]; then
+      echo -e "${WHITE_R}#${RESET} Installing jsvc and libcommons-daemon-java..."
+      if DEBIAN_FRONTEND='noninteractive' apt-get -y --force-yes -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install jsvc libcommons-daemon-java &>> "${eus_dir}/logs/apt.log"; then echo -e "${GREEN}#${RESET} Successfully installed jsvc and libcommons-daemon-java! \\n"; else echo -e "${RED}#${RESET} Failed to install jsvc and libcommons-daemon-java in the first run...\\n"; abort; fi
+    fi
   fi
 fi
 sleep 3
+
+# Quick workaround for 7.2.91 and older 7.2 versions.
+if [[ "${first_digit_unifi}" == "7" && "${second_digit_unifi}" == "2" && "${third_digit_unifi}" -le "91" ]]; then
+  NAME="unifi"
+  UNIFI_USER="${UNIFI_USER:-unifi}"
+  DATADIR="${UNIFI_DATA_DIR:-/var/lib/$NAME}"
+  if ! id "${UNIFI_USER}" >/dev/null 2>&1; then
+    adduser --system --home "${DATADIR}" --no-create-home --group --disabled-password --quiet "${UNIFI_USER}"
+  fi
+  if ! [[ -d "/usr/lib/unifi/" ]]; then mkdir -p /usr/lib/unifi/ && chown -R unifi:unifi /usr/lib/unifi/; fi
+  if ! [[ -d "/var/lib/unifi/" ]]; then mkdir -p /var/lib/unifi/ && chown -R unifi:unifi /var/lib/unifi/; fi
+fi
 
 header
 echo -e "${WHITE_R}#${RESET} Installing your UniFi Network Application ( ${WHITE_R}${unifi_clean}${RESET} )...\\n"
@@ -2147,7 +2154,7 @@ if [[ "${script_option_custom_url}" != 'true' ]]; then
   echo -e "\\n------- $(date +%F-%R) -------\\n" &>> "${eus_dir}/logs/unifi_download.log"
   if wget "${wget_progress[@]}" -O "$unifi_temp" "https://dl.ui.com/unifi/${unifi_secret}/unifi_sysvinit_all.deb" &>> "${eus_dir}/logs/unifi_download.log"; then echo -e "${GREEN}#${RESET} Successfully downloaded application version ${unifi_clean}! \\n"; elif wget "${wget_progress[@]}" -O "$unifi_temp" "https://dl.ui.com/unifi/${unifi_clean}/unifi_sysvinit_all.deb" &>> "${eus_dir}/logs/unifi_download.log"; then echo -e "${GREEN}#${RESET} Successfully downloaded application version ${unifi_clean}! \\n"; else echo -e "${RED}#${RESET} Failed to download application version ${unifi_clean}...\\n"; abort; fi
 else
-  echo -e "${GREEN}#${RESET} UniFi Network Application version ${WHITE_R}${unifi_clean}${RESET} has already been downloaded!"
+  echo -e "${GREEN}#${RESET} UniFi Network Application version ${WHITE_R}${unifi_clean}${RESET} has already been downloaded! \n"
 fi
 echo -e "${WHITE_R}#${RESET} Installing the UniFi Network Application..."
 echo "unifi unifi/has_backup boolean true" 2> /dev/null | debconf-set-selections
@@ -2163,7 +2170,7 @@ else
   fi
 fi
 rm --force "$unifi_temp" 2> /dev/null
-service unifi start || abort
+systemctl start unifi || abort
 sleep 3
 
 dash_port=$(grep "unifi.https.port" /usr/lib/unifi/data/system.properties 2> /dev/null | cut -d'=' -f2 | tail -n1)
@@ -2198,9 +2205,14 @@ fi
 
 # Check if service is enabled
 if ! [[ "${os_codename}" =~ (precise|maya|trusty|qiana|rebecca|rafaela|rosa) ]]; then
-  if service --status-all | grep -ioq unifi; then
+  if systemctl list-units --full -all | grep -Fioq "unifi.service"; then
     SERVICE_UNIFI=$(systemctl is-enabled unifi)
-    if [[ "$SERVICE_UNIFI" = 'disabled' ]]; then systemctl enable unifi 2>/dev/null || { echo -e "${RED}#${RESET} Failed to enable service | UniFi"; sleep 3; }; fi
+    if [[ "$SERVICE_UNIFI" = 'disabled' ]]; then
+      if ! systemctl enable unifi 2>/dev/null; then
+        echo -e "${RED}#${RESET} Failed to enable service | UniFi"
+        sleep 3
+      fi
+    fi
   fi
 fi
 
@@ -2216,11 +2228,11 @@ if [[ "${script_option_skip}" != 'true' || "${script_option_add_repository}" == 
         sed -i '/unifi/d' /etc/apt/sources.list
         rm --force /etc/apt/sources.list.d/100-ubnt-unifi.list 2> /dev/null
         if ! wget -qO /etc/apt/trusted.gpg.d/unifi-repo.gpg https://dl.ui.com/unifi/unifi-repo.gpg; then echo "06E85760C0A52C50" &>> /tmp/EUS/keys/missing_keys; fi
-        echo "deb https://www.ui.com/downloads/unifi/debian unifi-${first_digits_unifi}.${second_digits_unifi} ubiquiti" &> /etc/apt/sources.list.d/100-ubnt-unifi.list && repository_added=true && echo -e "${GREEN}#${RESET} Successfully added UniFi Network Application source list! \\n"
+        echo "deb https://www.ui.com/downloads/unifi/debian unifi-${first_digit_unifi}.${second_digit_unifi} ubiquiti" &> /etc/apt/sources.list.d/100-ubnt-unifi.list && repository_added=true && echo -e "${GREEN}#${RESET} Successfully added UniFi Network Application source list! \\n"
         hide_apt_update=true
         run_apt_get_update
         echo -ne "\\r${WHITE_R}#${RESET} Checking if repository is valid..." && sleep 1
-        if grep -ioq "unifi-${first_digits_unifi}.${second_digits_unifi} Release' does not" /tmp/EUS/keys/apt_update; then if [[ "${repository_added}" == 'true' ]]; then rm -f /etc/apt/sources.list.d/100-ubnt-unifi.list &> /dev/null && repository_removed=true; fi; fi
+        if grep -ioq "unifi-${first_digit_unifi}.${second_digit_unifi} Release' does not" /tmp/EUS/keys/apt_update; then if [[ "${repository_added}" == 'true' ]]; then rm -f /etc/apt/sources.list.d/100-ubnt-unifi.list &> /dev/null && repository_removed=true; fi; fi
         if [[ "${repository_removed}" == 'true' ]]; then echo -ne "\\r${RED}#${RESET} The added UniFi Repository is not valid/used, the repository list will be removed."; else echo -ne "\\r${GREEN}#${RESET} The added UniFi Repository is valid!"; fi
         sleep 3;;
       [Nn]*) ;;
@@ -2366,8 +2378,9 @@ if [[ "${remote_installation}" == 'true' ]] && [[ "${script_option_skip}" != 'tr
   if [[ "${script_option_skip}" != 'true' ]]; then read -rp $'\033[39m#\033[0m Do you want to download and execute my UniFi Easy Encrypt Script? (Y/n) ' yes_no; fi
   case "$yes_no" in
       [Yy]*|"")
+          rm --force unifi-easy-encrypt.sh &> /dev/null
           # shellcheck disable=SC2068
-          rm --force unifi-easy-encrypt.sh &> /dev/null; wget "${wget_progress[@]}" -q https://get.glennr.nl/unifi/extra/unifi-easy-encrypt.sh && bash unifi-easy-encrypt.sh ${le_script_options[@]};;
+          wget "${wget_progress[@]}" -q https://get.glennr.nl/unifi/extra/unifi-easy-encrypt.sh && bash unifi-easy-encrypt.sh ${le_script_options[@]};;
       [Nn]*) ;;
   esac
 fi
@@ -2412,9 +2425,9 @@ if dpkg -l | grep "unifi " | grep -q "^ii\\|^hi"; then
   fi
   echo -e "\\n"
   if [[ "${os_codename}" =~ (precise|maya|trusty|qiana|rebecca|rafaela|rosa) ]]; then
-    service unifi status | grep -q running && echo -e "${GREEN}#${RESET} UniFi is active ( running )" || echo -e "${RED}#${RESET} UniFi failed to start... Please contact Glenn R. (AmazedMender16) on the Community Forums!"
+    if systemctl status unifi | grep -iq running; then echo -e "${GREEN}#${RESET} UniFi is active ( running )"; else echo -e "${RED}#${RESET} UniFi failed to start... Please contact Glenn R. (AmazedMender16) on the Community Forums!"; fi
   else
-    systemctl is-active -q unifi && echo -e "${GREEN}#${RESET} UniFi is active ( running )" || echo -e "${RED}#${RESET} UniFi failed to start... Please contact Glenn R. (AmazedMender16) on the Community Forums!"
+    if systemctl is-active -q unifi; then echo -e "${GREEN}#${RESET} UniFi is active ( running )"; else echo -e "${RED}#${RESET} UniFi failed to start... Please contact Glenn R. (AmazedMender16) on the Community Forums!"; fi
   fi
   if [[ "${change_unifi_ports}" == 'true' ]]; then
     echo -e "\\n${WHITE_R}---- ${RED}NOTE${WHITE_R} ----${RESET}\\n\\n${WHITE_R}#${RESET} Your default application port(s) have changed!\\n"

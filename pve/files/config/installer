@@ -46,7 +46,7 @@ chown server:server /home/server/.hushlogin
 if [ ! -e /home/server/.regions ]; then
   mkdir -p /home/server/.regions
   chown server:server /home/server/.regions
-  chmod 755 /home/server/.regions
+  chmod g+rx /home/server/.regions
 fi
 
 ## User Symlinks
@@ -56,6 +56,52 @@ fi
 if [ ! -e "/home/server/Downloads" ]; then
   ln -s /mnt/scratch/downloads /home/server/Downloads
 fi
+
+## LightTPD Web Server
+apt-get install -y --no-upgrade lighttpd php-cgi php php-common
+cp -f /tmp/config/lighttpd.conf /etc/lighttpd
+chmod 644 /etc/lighttpd/lighttpd.conf
+chown root:root /etc/lighttpd/lighttpd.conf
+lighttpd-enable-mod fastcgi fastcgi-php
+lighty-enable-mod fastcgi-php
+systemctl disable lighttpd
+systemctl restart lighttpd
+
+## Base website files
+rm -rvf /var/www/html
+mkdir -p /var/www/sessions
+chmod -R g+rx /var/www/sessions
+chown -R www-data:www-data /var/www/sessions
+mkdir -p /var/www/uploads
+chmod -R g+rx /var/www/uploads
+chown -R www-data:www-data /var/www/uploads
+if [ ! -e /home/server/.html ]; then
+  mkdir -p /home/server/.html
+  chown www-data:www-data /home/server/.html
+  chmod g+rx /home/server/.html
+fi
+
+## Link external resources to web server
+cp -f /tmp/config/exec.php /home/server/.html/
+chmod +x /home/server/.html/exec.php
+chown root:root /home/server/.html/exec.php
+
+## WWW Permissions allow running as server user
+rm -f /etc/sudoers.d/www-perms
+sh -c "touch /etc/sudoers.d/www-perms"
+sh -c "echo \"www-data ALL=(server) NOPASSWD:/usr/bin/wwwrun\" >> /etc/sudoers.d/www-perms"
+chown root:root /etc/sudoers.d/www-perms
+chmod u=rwx,g=rx,o=rx /etc/sudoers.d/www-perms
+chmod u=r,g=r,o= /etc/sudoers.d/www-perms
+rm -f /etc/sudoers.d/nobody-perms
+
+### WWW Shell Commands
+cp -f /tmp/config/www.sh /usr/bin/
+chmod +x /usr/bin/www.sh
+chown root:root /usr/bin/www.sh
+cp -f /tmp/config/wwwrun.sh /usr/bin/wwwrun
+chmod +x /usr/bin/wwwrun
+chown root:root /usr/bin/wwwrun
 
 ## Server Login Script
 cp /tmp/config/profile.server /home/server/.profile
@@ -127,53 +173,10 @@ cp -f /tmp/config/fstab /etc/fstab
 chmod 644 /etc/fstab
 chown root:root /etc/fstab
 
-## LightTPD Web Server
-apt-get install -y --no-upgrade lighttpd php-cgi php php-common
-cp -f /tmp/config/lighttpd.conf /etc/lighttpd
-chmod 644 /etc/lighttpd/lighttpd.conf
-chown root:root /etc/lighttpd/lighttpd.conf
-lighttpd-enable-mod fastcgi fastcgi-php
-lighty-enable-mod fastcgi-php
-systemctl disable lighttpd
-systemctl restart lighttpd
-
-## Base website files
-mkdir -p /var/www/sessions
-chmod -R g+rx /var/www/sessions
-chown -R www-data:www-data /var/www/sessions
-mkdir -p /var/www/uploads
-chmod -R g+rx /var/www/uploads
-chown -R www-data:www-data /var/www/uploads
-mkdir -p /var/www/html
-chmod -R g+rx /var/www/html
-chown -R www-data:www-data /var/www/html
-
 ## Backup Drives List
 cp -f /tmp/config/drives.txt /opt/
 chmod 644 /opt/drives.txt
 chown root:root /opt/drives.txt
-
-## Link external resources to web server
-cp -f /tmp/config/exec.php /var/www/html/
-chmod +x /var/www/html/exec.php
-chown root:root /var/www/html/exec.php
-
-## WWW Permissions allow running as server user
-rm -f /etc/sudoers.d/www-perms
-sh -c "touch /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(server) NOPASSWD:/usr/bin/wwwrun\" >> /etc/sudoers.d/www-perms"
-chown root:root /etc/sudoers.d/www-perms
-chmod u=rwx,g=rx,o=rx /etc/sudoers.d/www-perms
-chmod u=r,g=r,o= /etc/sudoers.d/www-perms
-rm -f /etc/sudoers.d/nobody-perms
-
-### WWW Shell Commands
-cp -f /tmp/config/www.sh /usr/bin/
-chmod +x /usr/bin/www.sh
-chown root:root /usr/bin/www.sh
-cp -f /tmp/config/wwwrun.sh /usr/bin/wwwrun
-chmod +x /usr/bin/wwwrun
-chown root:root /usr/bin/wwwrun
 
 ## Clean-up
 systemctl daemon-reload

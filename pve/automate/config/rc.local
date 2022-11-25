@@ -21,11 +21,12 @@ echo "*"
 ethtool --offload eth0 rx off tx off sg off tso off gso off gro off sg off rxvlan off txvlan off
 
 ## Temporary Files
-rm -rf /mnt/ramdisk/locks
-mkdir -p /mnt/ramdisk/locks
-chmod -R 777 /mnt/ramdisk/locks
-touch /mnt/ramdisk/sysout.txt
-chmod 777 /mnt/ramdisk/sysout.txt
+RAMDISK="/var/www/html/ram"
+rm -rf $RAMDISK/locks
+mkdir -p $RAMDISK/locks
+chmod 777 $RAMDISK/locks
+touch $RAMDISK/sysout.txt
+chmod 777 $RAMDISK/sysout.txt
 
 ## Light Web Server
 systemctl restart lighttpd

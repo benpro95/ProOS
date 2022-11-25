@@ -21,18 +21,18 @@ then
   rm -f $REGROOT/Snapshots
   rm -f $REGROOT/Private
   rm -f $REGROOT/Public
-  rm -f $REGROOT/WWW
+  rm -f $REGROOT/HTML
   exit
 fi
-## WWW Share
-if [[ $REPLY == "www_region" ]]
+## HTML Share
+if [[ $REPLY == "html_region" ]]
 then
-  if [ -e "$REGROOT/WWW" ]; then
-    echo "detaching WWW root region..."
-    rm $REGROOT/WWW
+  if [ -e "$REGROOT/HTML" ]; then
+    echo "detaching HTML root region..."
+    rm $REGROOT/HTML
   else
-    echo "attaching WWW root region..."
-    ln -s /mnt/.regions/WWW $REGROOT/WWW
+    echo "attaching HTML root region..."
+    ln -s /mnt/server/.html $REGROOT/HTML
   fi
   exit
 fi

@@ -7,6 +7,7 @@ rpi/sources
 pve/vmbkps
 pve/photos
 pve/xana
+xana
 *authorized_keys*
 *Thumbs.db*
 .ssh

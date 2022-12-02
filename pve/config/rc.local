@@ -14,13 +14,6 @@
 #sysctl -w net.ipv6.conf.all.disable_ipv6=1
 #sysctl -w net.ipv6.conf.default.disable_ipv6=1
 
-## Enable Jumbo Frames
-#ip link set enp5s0f0 mtu 9000
-#ip link set enp5s0f1 mtu 9000
-#ip link set enp4s0f0 mtu 9000
-#ip link set enp4s0f1 mtu 9000
-#ip link set bond0 mtu 9000
-
 ## Disable firewall on boot
 #pve-firewall stop || :
 
@@ -36,7 +29,7 @@ iptables -A OUTPUT -d 10.177.1.3 -j DROP || :
 iptables -A INPUT -d 10.177.1.5 -j DROP || :
 
 ## Enable Swapfile
-sleep 3.25
+sleep 5.25
 if [ ! -e /mnt/pve/scratch/swapfile ]; then
   echo "Swap file not found."
 else
@@ -46,12 +39,12 @@ else
 fi
 
 ## Allow all users to R/W
-mkdir -p /mnt/ramdisk || :
+mkdir -p /mnt/ramdisk
 touch /mnt/ramdisk/sysout.txt
-chmod -R 777 /mnt/ramdisk || :
+chmod -R 777 /mnt/ramdisk
 
 ## Power saving mode for CPU
-#echo "ondemand" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor || :
+echo "ondemand" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 
 echo "*"
 echo " Welcome to ProOS Server!"

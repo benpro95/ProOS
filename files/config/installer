@@ -153,11 +153,6 @@ chmod 644 /etc/rsyslog.d/ignore-session-slice.conf
 chown root:root /etc/rsyslog.d/ignore-session-slice.conf
 systemctl restart rsyslog
 
-## Backup Script
-cp /tmp/config/svrbackup.sh /usr/bin/
-chmod 755 /usr/bin/svrbackup.sh
-chown root:root /usr/bin/svrbackup.sh
-
 ## Camera Cleanup Script
 cp /tmp/config/camcleanup /usr/bin/
 chmod 755 /usr/bin/camcleanup

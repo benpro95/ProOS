@@ -573,6 +573,7 @@ autodac)
 rm -f $LOCKFOLDER/subs.enabled
 ## Auto Decoder Input
 XMITCMD="inauto" ; XMIT 
+sleep 0.75
 ## Preamp DAC Input
 XMITCMD="dac" ; XMIT 
 exit
@@ -582,9 +583,11 @@ usb)
 ## Reset volume tokens
 rm -f $LOCKFOLDER/subs.enabled
 ## USB Decoder Input
-XMITCMD="usb" ; XMIT 
+XMITCMD="usb" ; XMIT
+sleep 0.75
 ## Preamp DAC Input
-XMITCMD="dac" ; XMIT 
+XMITCMD="dac" ; XMIT
+sleep 0.75
 ## Preamp PC Mode
 XMITCMD="pcmode" ; XMIT 
 exit
@@ -596,8 +599,10 @@ coax)
 rm -f $LOCKFOLDER/subs.enabled
 ## Coaxial Decoder Input
 XMITCMD="coaxial" ; XMIT 
+sleep 0.75
 ## Preamp DAC Input
 XMITCMD="dac" ; XMIT 
+sleep 0.75
 ## Preamp AirPlay Mode
 XMITCMD="airplay" ; XMIT 
 exit
@@ -609,6 +614,7 @@ opt)
 rm -f $LOCKFOLDER/subs.enabled
 ## Optical Decoder Input
 XMITCMD="optical" ; XMIT
+sleep 0.75
 ## Preamp DAC Input
 XMITCMD="dac" ; XMIT
 exit

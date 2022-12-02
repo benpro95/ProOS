@@ -15,6 +15,36 @@ else
 fi
 }
 
+
+## Deploy server configuration
+DEPLOY_SERVER(){
+echo "Deploying server $MODULE..."
+## Create work folder
+if [ -e /mnt/scratch/downloads ]; then
+  mkdir -p /mnt/scratch/downloads/.ptmp
+  TMPFLDR=$(mktemp -d /mnt/scratch/downloads/.ptmp/XXXXXXXXX)
+else
+  echo "Scratch drive not connected using /tmp" 	
+  TMPFLDR=$(mktemp -d /tmp/protmp.XXXXXXXXX)
+fi
+echo "created work directory $TMPFLDR"
+## Copying files to work folder
+cp -r $ROOTDIR/$MODULE/config $TMPFLDR/
+## Compressing files
+cd $TMPFLDR
+export COPYFILE_DISABLE=true
+tar -cvf config.tar config
+cd -
+## Downloading host bundle
+scp -i $ROOTDIR/.ssh/$MODULE.rsa -p $TMPFLDR/config.tar root@$HOST:/tmp/
+## Install files
+ssh -t -i $ROOTDIR/.ssh/$MODULE.rsa root@$HOST \
+ "cd /tmp/; tar -xvf config.tar; rm -f config.tar; chmod +x /tmp/config/installer; /tmp/config/installer"
+## Clean-up installer files
+rm -r $TMPFLDR
+}
+
+
 ## Local domain name
 #DOMAIN=".local"
 #DOMAIN=".home"
@@ -29,7 +59,7 @@ ARG2=$2
 HOST=$3
 
 ### ProServer Help Menu
-if [ "$MODULE" = "" ]; then
+if [ "$MODULE" == "" ]; then
 printf \
 '* Pi / Server Configuration and Login Script
 by Ben Provenzano III
@@ -62,12 +92,12 @@ exit
 fi
 
 ### Exit if matches this hosts
-if [ "$MODULE" = "router" ] || \
-   [ "$MODULE" = "login" ] || \
-   [ "$MODULE" = ".ssh" ] || \
-   [ "$MODULE" = "rpi" ] || \
-   [ "$MODULE" = "wkst" ] || \
-   [ "$MODULE" = "sources" ]; then
+if [ "$MODULE" == "router" ] || \
+   [ "$MODULE" == "login" ] || \
+   [ "$MODULE" == ".ssh" ] || \
+   [ "$MODULE" == "rpi" ] || \
+   [ "$MODULE" == "wkst" ] || \
+   [ "$MODULE" == "sources" ]; then
 echo "Hostname not allowed."
 exit
 fi
@@ -93,7 +123,7 @@ exit
 fi
 
 ### Remove temp files argument
-if [ "$MODULE" = "rmtmp" ]; then
+if [ "$MODULE" == "rmtmp" ]; then
 echo "Removing temporary files..."
 pkill ssh-agent
  if [ -e /mnt/scratch/downloads ]; then
@@ -105,56 +135,29 @@ exit
 fi
 
 ### ProServer Configurator (only these hosts)
-if [ "$MODULE" = "files" ] || \
-   [ "$MODULE" = "plex" ] || \
-   [ "$MODULE" = "pve" ] || \
-   [ "$MODULE" = "unifi" ] || \
-   [ "$MODULE" = "xana" ] || \
-   [ "$MODULE" = "dev" ] || \
-   [ "$MODULE" = "automate" ]; then
+if [ -e $MODULE/qemu.conf ] || [ -e $MODULE/lxc.conf ] ; then
 ######################################
   ## Set hostname
   HOST="$MODULE$DOMAIN"
   ## Translate hostname to IP
-  if [ "$MODULE" = "pve" ]; then
+  if [ "$MODULE" == "pve" ]; then
     HOST="10.177.1.8" 
   fi 
-  if [ "$MODULE" = "files" ]; then
+  if [ "$MODULE" == "files" ]; then
     HOST="10.177.1.4" 
   fi
   ## SSH key prompt
   eval `ssh-agent -s`
   ssh-add $ROOTDIR/.ssh/$MODULE.rsa 2>/dev/null
   ### AutoSync
-  if [ "$ARG2" = "sync" ]; then
-    echo "ProOS NetInstall for Server"
-    ## Create work folder
-    if [ -e /mnt/scratch/downloads ]; then
-      mkdir -p /mnt/scratch/downloads/.ptmp
-      TMPFLDR=$(mktemp -d /mnt/scratch/downloads/.ptmp/XXXXXXXXX)
-    else
-      echo "Scratch drive not connected using /tmp" 	
-      TMPFLDR=$(mktemp -d /tmp/protmp.XXXXXXXXX)
-    fi
-    ## Copying files to work folder
-    if [ "$MODULE" = "pve" ]; then
-      cp -r $ROOTDIR/$MODULE/config $TMPFLDR/
-    else
-      cp -r $ROOTDIR/pve/$MODULE/config $TMPFLDR/
-    fi
-    ## Compressing files
-    cd $TMPFLDR
-    export COPYFILE_DISABLE=true
-    tar -cvf config.tar config
-    cd -
-    ## Downloading host bundle
-    scp -i $ROOTDIR/.ssh/$MODULE.rsa -p $TMPFLDR/config.tar root@$HOST:/tmp/
-    ## Install files
-    ssh -t -i $ROOTDIR/.ssh/$MODULE.rsa root@$HOST \
-     "cd /tmp/; tar -xvf config.tar; rm -f config.tar; chmod +x /tmp/config/installer; /tmp/config/installer"
-    ## Clean-up installer files
-    rm -r $TMPFLDR
-    read -p "Press 's' for a shell, 'r' to reboot server, or any other key to exit: " -n 1 -r
+  if [ "$ARG2" == "sync" ]; then
+    DEPLOY_SERVER
+    echo "'d' to re-deploy server $HOST"    
+    echo "'u' to update server $HOST"   
+    echo "'r' to reboot server $HOST"
+    echo "'s' for a shell on server $HOST"    
+    echo "any other key to exit"
+    read -p "enter option: " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Rr]$ ]]
     then
@@ -165,6 +168,15 @@ if [ "$MODULE" = "files" ] || \
     then
       ssh -t -i $ROOTDIR/.ssh/$MODULE.rsa root@$HOST
     fi
+    if [[ $REPLY =~ ^[Dd]$ ]]
+    then
+      DEPLOY_SERVER
+    fi    
+    if [[ $REPLY =~ ^[Uu]$ ]]
+    then
+      echo "Running update program..."
+      ssh -t -i $ROOTDIR/.ssh/$MODULE.rsa root@$HOST "apt-get update; apt-get upgrade"
+    fi       
     if [[ ! $REPLY =~ ^[RrSs]$ ]]  
     then
       ## Exit
@@ -188,17 +200,17 @@ fi
 SYNCSTATE="no"
 
 ## Determine script operation
-if [ "$ARG2" = "init" ]; then
+if [ "$ARG2" == "init" ]; then
   ## Init function
   HOST="$HOST$DOMAIN"
   SYNCSTATE="start"
 else
   ## Sync and reset functions	
   HOST="$MODULE$DOMAIN"
-  if [ "$ARG2" = "sync" ] || \
-     [ "$ARG2" = "clean" ] || \
-     [ "$ARG2" = "reinstall" ] || \
-     [ "$ARG2" = "reset" ] ; then
+  if [ "$ARG2" == "sync" ] || \
+     [ "$ARG2" == "clean" ] || \
+     [ "$ARG2" == "reinstall" ] || \
+     [ "$ARG2" == "reset" ] ; then
     SYNCSTATE="start"
   else
   ## Other argument specified	
@@ -211,7 +223,7 @@ else
 fi
 
 ######### START AUTOSYNC ##########
-if [ "$SYNCSTATE" = "start" ]; then
+if [ "$SYNCSTATE" == "start" ]; then
   HOSTCHK
   echo ""
   STRIN=$(ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $ROOTDIR/.ssh/rpi.rsa root@$HOST "df -h")
@@ -253,11 +265,11 @@ if [ "$SYNCSTATE" = "start" ]; then
   echo ""
 
   ## Check for reset
-  if [ "$ARG2" = "reset" ] || \
-  	 [ "$ARG2" = "restore" ] || \
-     [ "$ARG2" = "reinstall" ] || \
-     [ "$ARG2" = "clean" ] || \
-     [ "$ARG2" = "init" ] ; then
+  if [ "$ARG2" == "reset" ] || \
+  	 [ "$ARG2" == "restore" ] || \
+     [ "$ARG2" == "reinstall" ] || \
+     [ "$ARG2" == "clean" ] || \
+     [ "$ARG2" == "init" ] ; then
     ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
     $ROOTDIR/.ssh/rpi.rsa root@$HOST "rm -fv /etc/rpi-conf.done"
     if [ "$ARG2" = "reinstall" ] ; then
@@ -267,7 +279,7 @@ if [ "$SYNCSTATE" = "start" ]; then
   fi
 
   ## Check for restore
-  if [ "$ARG2" = "restore" ] || [ "$ARG2" = "clean" ] ; then
+  if [ "$ARG2" == "restore" ] || [ "$ARG2" == "clean" ] ; then
     echo "Erasing software..."
     ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
      $ROOTDIR/.ssh/rpi.rsa root@$HOST "rm -rfv /opt/rpi"

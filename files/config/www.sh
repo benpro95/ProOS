@@ -270,6 +270,13 @@ then
   exit
 fi
 
+if [[ $REPLY == "lastlog" ]]
+then
+  lastlog
+  echo ""   
+  exit
+fi
+
 if [[ $REPLY == "clearlog" ]]
 then
   truncate -s 0 $LOGFILE

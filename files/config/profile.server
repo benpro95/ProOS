@@ -11,10 +11,14 @@ eval "`dircolors`"
 alias ls='ls $LS_OPTIONS'
 alias ll='ls $LS_OPTIONS -l'
 alias l='ls $LS_OPTIONS -lA'
-greentty=`tput setaf 2`
+
+# Set text colors
+ambertty=`tput setaf 3`
+bluetty=`tput setaf 4`
 resettty=`tput sgr0`
 
 uname -m -n -s -o -r
+echo "${ambertty}"
 RANDOPT=$(( $RANDOM % 3 ))
 if [[ $RANDOPT == "0" ]]
 then
@@ -23,7 +27,6 @@ then
   echo "  / /_/ / ___/ __ \/ / / /\__ \ "
   echo " / ____/ /  / /_/ / /_/ /___/ / "
   echo "/_/   /_/   \____/\____//____/  "
-  echo " "
 fi
 if [[ $RANDOPT == "1" ]]
 then
@@ -33,7 +36,6 @@ then
   echo " |  ___/ '__/ _ \| |  | |\___ \ "
   echo " | |   | | | (_) | |__| |____) |"
   echo " |_|   |_|  \___/ \____/|_____/ "
-  echo " "
 fi
 if [[ $RANDOPT == "2" ]]
 then
@@ -44,16 +46,8 @@ then
   echo "|  |  |    \|     |     |/  \ |"
   echo "|  |  |  .  \     |     |\    |"
   echo "|__|  |__|\_|\___/ \___/  \___|"
-  echo " "
 fi
+echo "${bluetty}"
 echo "by Ben Provenzano III"
-echo " "
-echo "last login:"
-lastlog -u server
-echo " "
+echo "${resettty}"
 cd ~/ProOS
-echo "${greentty}Server modules:${resettty}"
-ls ~/ProOS/pve --hide=network --hide=config --hide=vmbkps --hide=photos --hide=*.conf --hide=*.txt
-echo "${greentty}Pi modules:${resettty}"
-ls --hide=pve --hide=login --hide=rpi --hide=sources --hide=*.md --hide=*.txt
-echo " "

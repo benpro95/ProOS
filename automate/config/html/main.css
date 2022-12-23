@@ -72,6 +72,10 @@ body {
   line-height: 4.0; /* normal button width */
 }
 
+.button__lgr {
+  width: 280px;
+}
+
 .button__right { 
   position: absolute;
   right: 5px;
@@ -87,7 +91,7 @@ body {
 }
 
 .topnav {
-  line-height: 3;
+  line-height: 2.65;
   overflow: hidden;
   background-color: #2d353d; /* nav background color */
 }
@@ -95,6 +99,7 @@ body {
 .topnav a {
   float: left;
   padding: 0px 12px;
+  padding-top: 4px;
   text-decoration: none;
   text-align: center;
   color: #fff; /* nav font color */
@@ -103,7 +108,6 @@ body {
 
 .topnav a:hover {
   background-color: #000;
-  transform: scale(1.05);
   color: white;
 }
 
@@ -115,9 +119,11 @@ body {
 .body__text {
   color: #fff; /* header font color */
   padding-left: 8px;
-  font-size: 18px;
+  font-size: 20px;
   text-align: left
 }
+
+
 
 #load__progress {
   float: right;

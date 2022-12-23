@@ -11,7 +11,7 @@
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     font-family: JosefinSans,system-ui,-apple-system,system-ui,"Segoe UI","Helvetica Neue";
-    font-size: 22px; /* page default font size */
+    font-size: 24px; /* page default font size */
 }  
 
 html {
@@ -35,7 +35,7 @@ body {
 
 .button {
     transition: all 0.2s;
-	  width: 135px;
+	width: 135px;
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;    
@@ -69,7 +69,7 @@ body {
 }
 
 .button__text {
-  line-height: 4.5; /* normal button width */
+  line-height: 4.0; /* normal button width */
 }
 
 .button__right { 
@@ -84,11 +84,6 @@ body {
 
 .button__lgr {
   width: 280px; /* large button width */
-}
-
-.button__textlgr {
-  line-height: 3.5;
-  font-size: 28px;
 }
 
 .topnav {

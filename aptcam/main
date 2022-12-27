@@ -137,8 +137,6 @@ systemctl start rpi-motion.service
 systemctl start rpi-camcleanup.timer
 ## Automatic Infrared LED
 systemctl start rpi-ldr.service
-## Auto Hotspot (on boot only)
-systemctl start rpi-netdetect.service
 ## Disable HDMI (saves 30mA)
 /usr/bin/tvservice -o
 exit

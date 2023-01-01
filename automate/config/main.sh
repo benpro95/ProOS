@@ -12,48 +12,21 @@ LOGFILE="$RAMDISK/sysout.txt"
 
 CALLAPI(){
 #### API Call
-## Select API Type
+CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 30 --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive"
+## API Type
 if [[ "$ESP32" == "no" ]]; then
-  APIDATA="--data var=$CMDARG&arg=$XMITCMD&action=main http://$TARGET/exec.php"
+  /usr/bin/curl $CURLARGS --data "var=$CMDARG&arg=$XMITCMD&action=main" http://$TARGET/exec.php
   CMDARG=""
-else
-  ## ESP32 Xmit URL
-  TARGET="10.177.1.17"
-  APIDATA="--url http://$TARGET:80/xmit/$XMITCALL"
+else ## ESP32 Xmit URL
+  /usr/bin/curl $CURLARGS http://10.177.1.17:80 -H "Accept: ####?|$XMITCALL"
 fi
-## Transmit to API
-/usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 30 \
- --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive $APIDATA
-## Clear Data 
+## Clear Data
 TARGET=""
 XMITCMD=""
 XMITCALL=""
 XMITARG=""
 APIDATA=""
 ESP32=""
-return
-}
-
-CALL232(){
-### Transmit to RS-232 serial
-/usr/bin/python2 - <<END
-import serial
-import termios
-port = '/dev/ttyACM0'
-f = open(port)
-attrs = termios.tcgetattr(f)
-attrs[2] = attrs[2] & ~termios.HUPCL
-termios.tcsetattr(f, termios.TCSAFLUSH, attrs)
-f.close()
-se = serial.Serial()
-se.baudrate = 9600
-se.port = port
-se.open()
-se.write(str.encode('$XMITCALL'))
-END
-XMITCMD=""
-XMITCALL=""
-XMITARG=""
 return
 }
 
@@ -90,91 +63,91 @@ fi
 ## Power
 if [[ "$XMITCMD" == "pwrhifi" ]]; then
    rm -f $LOCKFOLDER/subs.enabled 
-   XMITCALL="irtx.nec.1270227167"
+   XMITCALL="0|0|1270227167"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "hifioff" ]]; then
    rm -f $LOCKFOLDER/subs.enabled 
-   XMITCALL="irtx.nec.1261859214"
+   XMITCALL="0|0|1261859214"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "hifion" ]]; then
    rm -f $LOCKFOLDER/subs.enabled 
-   XMITCALL="irtx.nec.1261869414"
+   XMITCALL="0|0|1261869414"
    CALLAPI
    return
 fi
 ## DAC
 if [[ "$XMITCMD" == "dac" ]]; then
-   XMITCALL="irtx.nec.1261793423"
+   XMITCALL="0|0|1261793423"
    CALLAPI
    return   
 fi
 ## Aux
 if [[ "$XMITCMD" == "aux" ]]; then
-   XMITCALL="irtx.nec.1261826063"
+   XMITCALL="0|0|1261826063"
    CALLAPI
    return
 fi
 ## Phono
 if [[ "$XMITCMD" == "phono" ]]; then 
-   XMITCALL="irtx.nec.1261766903"
+   XMITCALL="0|0|1261766903"
    CALLAPI
    return
 fi
 ## Airplay
 if [[ "$XMITCMD" == "airplay" ]]; then
-   XMITCALL="irtx.nec.1261799543"
+   XMITCALL="0|0|1261799543"
    CALLAPI
    return
 fi   
 ## PC Mode
 if [[ "$XMITCMD" == "pcmode" ]]; then
-   XMITCALL="irtx.nec.1261783223"
+   XMITCALL="0|0|1261783223"
    CALLAPI
    return   
 fi   
 ## Key Mute / Toggle
 if [[ "$XMITCMD" == "mute" ]]; then
-   XMITCALL="irtx.nec.1270259807"
+   XMITCALL="0|0|1270259807"
    CALLAPI
    return
 fi
 ## Key Force Mute 
 if [[ "$XMITCMD" == "forcemute" ]]; then
-   XMITCALL="irtx.nec.1261824023"
+   XMITCALL="0|0|1261824023"
    CALLAPI
    return
 fi
 ## Key Toggle Hi-Pass Filter
 if [[ "$XMITCMD" == "togglehpf" ]]; then
-   XMITCALL="irtx.nec.1261875534"
+   XMITCALL="0|0|1261875534"
    CALLAPI
    return
 fi
 ## Key Down
 if [[ "$XMITCMD" == "dwnf" ]]; then
-   XMITCALL="irtx.nec.1261885734"
+   XMITCALL="0|0|1261885734"
    CALLAPI
    return
 fi
 ## Key Up
 if [[ "$XMITCMD" == "upf" ]]; then
-   XMITCALL="irtx.nec.1261853094"
+   XMITCALL="0|0|1261853094"
    CALLAPI
    return
 fi
 ## Key Vol-
 if [[ "$XMITCMD" == "dwnc" ]]; then
-   XMITCALL="irtx.nec.1270267967"
+   XMITCALL="0|0|1270267967"
    CALLAPI
    return
 fi
 ## Key Vol+
 if [[ "$XMITCMD" == "upc" ]]; then
-   XMITCALL="irtx.nec.1270235327"
+   XMITCALL="0|0|1270235327"
    CALLAPI
    return
 fi
@@ -183,35 +156,35 @@ fi
 ##
 ## Mute Key
 if [[ "$XMITCMD" == "subpwr" ]]; then
-   XMITCALL="irtx.nec.551506095"
+   XMITCALL="0|0|551506095"
    CALLAPI
    return
 fi
 ##
 ## (0) Key
 if [[ "$XMITCMD" == "subon" ]]; then
-   XMITCALL="irtx.nec.551504055"
+   XMITCALL="0|0|551504055"
    CALLAPI
    return
 fi
 ##
 ## (1) Key
 if [[ "$XMITCMD" == "suboff" ]]; then
-   XMITCALL="irtx.nec.551520375"
+   XMITCALL="0|0|551520375"
    CALLAPI
    return
 fi
 ##
 ## Vol (+) Key
 if [[ "$XMITCMD" == "subup" ]]; then
-   XMITCALL="irtx.nec.551502015"
+   XMITCALL="0|0|551502015"
    CALLAPI
    return
 fi
 ##
 ## Vol (-) Key
 if [[ "$XMITCMD" == "subdwn" ]]; then
-   XMITCALL="irtx.nec.551534655"
+   XMITCALL="0|0|551534655"
    CALLAPI
    return
 fi
@@ -220,25 +193,25 @@ fi
 ##
 ## USB Input (Music Button)
 if [[ "$XMITCMD" == "usb" ]]; then
-   XMITCALL="irtx.nec.-300872971"
+   XMITCALL="0|0|-300872971"
    CALLAPI
    return
 fi
 ## Coaxial Input (Aux Button)
 if [[ "$XMITCMD" == "coaxial" ]]; then
-   XMITCALL="irtx.nec.-300816361"
+   XMITCALL="0|0|-300816361"
    CALLAPI
    return
 fi
 ## Optical Input (TV Button)
 if [[ "$XMITCMD" == "optical" ]]; then
-   XMITCALL="irtx.nec.-300813811"
+   XMITCALL="0|0|-300813811"
    CALLAPI
    return
 fi
 ## Auto Input (Play Button)
 if [[ "$XMITCMD" == "inauto" ]]; then
-   XMITCALL="irtx.nec.-300833701"
+   XMITCALL="0|0|-300833701"
    CALLAPI
    return
 fi
@@ -247,34 +220,34 @@ fi
 ##
 ## Vintage Macs
 if [[ "$XMITCMD" == "rfa1on" ]]; then
-   XMITCALL="rftx.734733"
+   XMITCALL="1|0|734733"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "rfa1off" ]]; then
-   XMITCALL="rftx.734734"
+   XMITCALL="1|0|734734"
    CALLAPI
    return
 fi
 ## Dresser Lamp
 if [[ "$XMITCMD" == "rfa2on" ]]; then
-   XMITCALL="rftx.734731"
+   XMITCALL="1|0|734731"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "rfa2off" ]]; then
-   XMITCALL="rftx.734732"
+   XMITCALL="1|0|734732"
    CALLAPI
    return
 fi
 ## RetroPi
 if [[ "$XMITCMD" == "rfa3on" ]]; then
-   XMITCALL="rftx.734735"
+   XMITCALL="1|0|734735"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "rfa3off" ]]; then
-   XMITCALL="rftx.734736"
+   XMITCALL="1|0|734736"
    CALLAPI
    return
 fi
@@ -282,7 +255,7 @@ fi
 ## ESP32 Toggle PC Power
 ##
 if [[ "$XMITCMD" == "rfb3" ]]; then
-   XMITCALL="fet.tgl.32"
+   XMITCALL="2|2|32"
    CALLAPI
    return
 fi
@@ -290,43 +263,43 @@ fi
 ## RF Relay Controller Board 
 ##
 if [[ "$XMITCMD" == "rfb1on" ]]; then
-   XMITCALL="rftx.864341"
+   XMITCALL="1|0|864341"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "rfb1off" ]]; then
-   XMITCALL="rftx.864342"
+   XMITCALL="1|0|864342"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "rfb2on" ]]; then
-   XMITCALL="rftx.864343"
+   XMITCALL="1|0|864343"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "rfb2off" ]]; then
-   XMITCALL="rftx.864344"
+   XMITCALL="1|0|864344"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "rfb3on" ]]; then
-   XMITCALL="rftx.864345"
+   XMITCALL="1|0|864345"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "rfb3off" ]]; then
-   XMITCALL="rftx.864346"
+   XMITCALL="1|0|864346"
    CALLAPI
    return
 fi
 ## Main Lamp Controller
 if [[ "$XMITCMD" == "rfc1on" ]]; then
-   XMITCALL="rftx.834511"
+   XMITCALL="1|0|834511"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "rfc1off" ]]; then
-   XMITCALL="rftx.834512"
+   XMITCALL="1|0|834512"
    CALLAPI
    return
 fi
@@ -334,32 +307,32 @@ fi
 ## HiFi mini
 ##
 if [[ "$XMITCMD" == "miniupf" ]]; then
-   XMITCALL="rftx.696912"
+   XMITCALL="1|0|696912"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "minidwnf" ]]; then
-   XMITCALL="rftx.696913"
+   XMITCALL="1|0|696913"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "miniupc" ]]; then
-   XMITCALL="rftx.696922"
+   XMITCALL="1|0|696922"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "minidwnc" ]]; then
-   XMITCALL="rftx.696923"
+   XMITCALL="1|0|696923"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "minimute" ]]; then
-   XMITCALL="rftx.696944"
+   XMITCALL="1|0|696944"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "minidefv" ]]; then
-   XMITCALL="rftx.696930"
+   XMITCALL="1|0|696930"
    CALLAPI
    return
 fi
@@ -538,10 +511,13 @@ alloff)
 rm -f $LOCKFOLDER/lights.save
 ## Main Lamp
 XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
+sleep 1
 ## Dresser Lamp
 XMITCMD="rfa2" ; XMITARG="off" ; XMIT 
+sleep 1
 ## Desk Light
 XMITCMD="rfb1" ; XMITARG="off" ; XMIT 
+sleep 1
 ## Blank LEDwalls
 /opt/system/leds stop
 exit

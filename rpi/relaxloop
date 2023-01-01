@@ -36,6 +36,6 @@ FILE="${rpi_relaxmode^}"
 
 ## Play Audio in Loop
 echo "starting $FILE sound..."
-/usr/bin/omxplayer -o alsa --loop http://files.home/Relaxation/$FILE.mp3
+/usr/bin/omxplayer -o alsa --loop http://files.home/WWW/Relaxation/$FILE.mp3
 
 exit

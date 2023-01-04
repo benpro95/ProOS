@@ -226,10 +226,7 @@ if [ ! -e /usr/bin/lan951x-led-ctl ]; then
   cd $BIN
 fi
 
-## AirPlay 1 Support
-#apt-get install -y --no-upgrade --ignore-missing shairport-sync
-
-## AirPlay 2 Support
+## AirPlay Support
 if [ "$REINSTALL" = "yes" ]; then
   rm -f /usr/local/bin/shairport-sync
 fi
@@ -243,13 +240,11 @@ if [ ! -e /usr/local/bin/shairport-sync ]; then
   make
   make install
   cd -
-  #systemctl start nqptp
   git clone https://github.com/mikebrady/shairport-sync.git
   cd shairport-sync
-  git checkout development
   autoreconf -fi
-  ./configure --sysconfdir=/etc --with-alsa \
-    --with-soxr --with-avahi --with-ssl=openssl --with-systemd --with-airplay-2
+  ./configure --sysconfdir=/etc --with-alsa --with-soxr \
+    --with-avahi --with-ssl=openssl --with-systemd --with-airplay-2
   make -j
   make install
   cd -

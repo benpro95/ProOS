@@ -18,7 +18,7 @@ if [[ "$ESP32" == "no" ]]; then
   /usr/bin/curl $CURLARGS --data "var=$CMDARG&arg=$XMITCMD&action=main" http://$TARGET/exec.php
   CMDARG=""
 else ## ESP32 Xmit URL
-  /usr/bin/curl $CURLARGS http://10.177.1.17:80 -H "Accept: ####?|$XMITCALL"
+  /usr/bin/curl $CURLARGS http://xmit.home -H "Accept: ####?|$XMITCALL"
 fi
 ## Clear Data
 TARGET=""

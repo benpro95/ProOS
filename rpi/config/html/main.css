@@ -143,10 +143,9 @@ body {
   width: 0%;
   height: 60px;
   line-height: 2.65;
-  text-indent: 16px;
   background-color: #2c0c2c; /* loading bar color */
   color: #fff; /* bar font color */
-  text-align: center;  
+  text-indent: 12px;
   text-shadow: 1px 1px 1px #000;  
   text-decoration: none;
   background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));

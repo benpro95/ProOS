@@ -7,3 +7,4 @@ xana
 *authorized_keys*
 *Thumbs.db*
 .ssh
+server/keys

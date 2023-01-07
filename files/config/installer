@@ -32,29 +32,14 @@ chmod 644 /root/.ssh/authorized_keys
 if [ ! -e /home/server ]; then
   echo "Creating Server Home Directory..."
   mkdir -p /home/server
-  mkdir -p /home/server/.ssh
   chown -R server:server /home/server
 fi
-cp /tmp/config/authorized_keys.server /home/server/.ssh/authorized_keys
-chmod 644 /home/server/.ssh/authorized_keys
-chown server:server /home/server/.ssh/authorized_keys
-touch /home/server/.hushlogin
-chmod 644 /home/server/.hushlogin
-chown server:server /home/server/.hushlogin
 
 ## Regions Shared Folder
 if [ ! -e /home/server/.regions ]; then
   mkdir -p /home/server/.regions
   chown server:server /home/server/.regions
   chmod g+rx /home/server/.regions
-fi
-
-## User Symlinks
-if [ ! -e "/home/server/ProOS" ]; then
-  ln -s /mnt/ben/ProOS /home/server/ProOS
-fi
-if [ ! -e "/home/server/Downloads" ]; then
-  ln -s /mnt/scratch/downloads /home/server/Downloads
 fi
 
 ## LightTPD Web Server
@@ -103,12 +88,7 @@ cp -f /tmp/config/wwwrun.sh /usr/bin/wwwrun
 chmod +x /usr/bin/wwwrun
 chown root:root /usr/bin/wwwrun
 
-## Server Login Script
-cp /tmp/config/profile.server /home/server/.profile
-chown server:server /home/server/.profile
-chmod +x /home/server/.profile
-
-## Server Login Script
+## Server Git Configuration 
 cp /tmp/config/git.config /home/server/.gitconfig
 chown server:server /home/server/.gitconfig
 chmod 600 /home/server/.gitconfig
@@ -121,6 +101,16 @@ passwd -d server
 cp /tmp/config/sshd_config /etc/ssh
 chmod 644 /etc/ssh/sshd_config
 chown root:root /etc/ssh/sshd_config
+
+## Quiet Login 
+touch /root/.hushlogin
+chmod 644 /root/.hushlogin
+chown root:root /root/.hushlogin
+
+## Login Script
+cp /tmp/config/profile /root/.profile
+chown root:root /root/.profile
+chmod +x /root/.profile
 
 ## System Configuration
 cp /tmp/config/sysctl.conf /etc

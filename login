@@ -36,9 +36,9 @@ export COPYFILE_DISABLE=true
 tar -cvf config.tar config
 cd -
 ## Downloading host bundle
-scp -i $ROOTDIR/.ssh/$MODULE.rsa -p $TMPFLDR/config.tar root@$HOST:/tmp/
+scp -i $KEYS/$MODULE.rsa -p $TMPFLDR/config.tar root@$HOST:/tmp/
 ## Install files
-ssh -t -i $ROOTDIR/.ssh/$MODULE.rsa root@$HOST \
+ssh -t -i $KEYS/$MODULE.rsa root@$HOST \
  "cd /tmp/; tar -xvf config.tar; rm -f config.tar; chmod +x /tmp/config/installer; /tmp/config/installer"
 ## Clean-up installer files
 rm -r $TMPFLDR
@@ -52,6 +52,9 @@ DOMAIN=""
 
 ## Set to current directory
 ROOTDIR=.
+
+## SSH keys folder
+KEYS="/root/.ssh"
 
 ## Read variables
 MODULE=$1
@@ -148,7 +151,7 @@ if [ -e $MODULE/qemu.conf ] || [ -e $MODULE/lxc.conf ] ; then
   fi
   ## SSH key prompt
   eval `ssh-agent -s`
-  ssh-add $ROOTDIR/.ssh/$MODULE.rsa 2>/dev/null
+  ssh-add $KEYS/$MODULE.rsa 2>/dev/null
   ### AutoSync
   if [ "$ARG2" == "sync" ]; then
     DEPLOY_SERVER
@@ -162,11 +165,11 @@ if [ -e $MODULE/qemu.conf ] || [ -e $MODULE/lxc.conf ] ; then
     if [[ $REPLY =~ ^[Rr]$ ]]
     then
       echo "Rebooting server..."
-      ssh -t -i $ROOTDIR/.ssh/$MODULE.rsa root@$HOST "reboot"
+      ssh -t -i $KEYS/$MODULE.rsa root@$HOST "reboot"
     fi
     if [[ $REPLY =~ ^[Ss]$ ]]
     then
-      ssh -t -i $ROOTDIR/.ssh/$MODULE.rsa root@$HOST
+      ssh -t -i $KEYS/$MODULE.rsa root@$HOST
     fi
     if [[ $REPLY =~ ^[Dd]$ ]]
     then
@@ -175,7 +178,7 @@ if [ -e $MODULE/qemu.conf ] || [ -e $MODULE/lxc.conf ] ; then
     if [[ $REPLY =~ ^[Uu]$ ]]
     then
       echo "Running update program..."
-      ssh -t -i $ROOTDIR/.ssh/$MODULE.rsa root@$HOST "apt-get update; apt-get upgrade"
+      ssh -t -i $KEYS/$MODULE.rsa root@$HOST "apt-get update; apt-get upgrade"
     fi       
     if [[ ! $REPLY =~ ^[RrSs]$ ]]  
     then
@@ -186,7 +189,7 @@ if [ -e $MODULE/qemu.conf ] || [ -e $MODULE/lxc.conf ] ; then
     fi 
   else
     ## Login to SSH
-    ssh -t -i $ROOTDIR/.ssh/$MODULE.rsa root@$HOST
+    ssh -t -i $KEYS/$MODULE.rsa root@$HOST
   fi
   ## Clean-up on logout
   ssh-add -D
@@ -216,7 +219,7 @@ else
   ## Other argument specified	
     if ! [ "$ARG2" = "" ] ; then
     ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-     $ROOTDIR/.ssh/rpi.rsa root@$HOST "/opt/rpi/init $ARG2"
+     $KEYS/rpi.rsa root@$HOST "/opt/rpi/init $ARG2"
     exit
     fi
   fi
@@ -226,12 +229,12 @@ fi
 if [ "$SYNCSTATE" == "start" ]; then
   HOSTCHK
   echo ""
-  STRIN=$(ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $ROOTDIR/.ssh/rpi.rsa root@$HOST "df -h")
+  STRIN=$(ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $KEYS/rpi.rsa root@$HOST "df -h")
   SUBSTR="overlay"
   if [[ "$STRIN" == *"$SUBSTR"* ]]; then
   	 echo "Read/only root filesystem detected."
      ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-      $ROOTDIR/.ssh/rpi.rsa root@$HOST "/opt/rpi/init rw"
+      $KEYS/rpi.rsa root@$HOST "/opt/rpi/init rw"
      echo "Waiting 30 seconds..."
      sleep 30
      if ping -c 1 $HOST &> /dev/null ; then
@@ -271,10 +274,10 @@ if [ "$SYNCSTATE" == "start" ]; then
      [ "$ARG2" == "clean" ] || \
      [ "$ARG2" == "init" ] ; then
     ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-    $ROOTDIR/.ssh/rpi.rsa root@$HOST "rm -fv /etc/rpi-conf.done"
+    $KEYS/rpi.rsa root@$HOST "rm -fv /etc/rpi-conf.done"
     if [ "$ARG2" = "reinstall" ] ; then
       ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-      $ROOTDIR/.ssh/rpi.rsa root@$HOST "touch /etc/rpi-reinitsource.done"
+      $KEYS/rpi.rsa root@$HOST "touch /etc/rpi-reinitsource.done"
     fi   
   fi
 
@@ -282,26 +285,26 @@ if [ "$SYNCSTATE" == "start" ]; then
   if [ "$ARG2" == "restore" ] || [ "$ARG2" == "clean" ] ; then
     echo "Erasing software..."
     ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-     $ROOTDIR/.ssh/rpi.rsa root@$HOST "rm -rfv /opt/rpi"
+     $KEYS/rpi.rsa root@$HOST "rm -rfv /opt/rpi"
     echo "Downloading software..."
   else 
     echo "Syncing software..."
   fi
 
   ## Sync software
-  rsync -e "ssh -i $ROOTDIR/.ssh/rpi.rsa" --progress --checksum -rtv \
+  rsync -e "ssh -i $KEYS/rpi.rsa" --progress --checksum -rtv \
    --exclude=photos --exclude=sources $ROOTDIR/rpi root@$HOST:/opt/
-  rsync -e "ssh -i $ROOTDIR/.ssh/rpi.rsa" --progress --checksum -rtv \
+  rsync -e "ssh -i $KEYS/rpi.rsa" --progress --checksum -rtv \
    --exclude=photos --exclude=sources $ROOTDIR/$MODULE/* root@$HOST:/opt/rpi/
 
   ## Write hostname to Pi
   ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-   $ROOTDIR/.ssh/rpi.rsa root@$HOST "echo $MODULE > /opt/rpi/config/hostname"
+   $KEYS/rpi.rsa root@$HOST "echo $MODULE > /opt/rpi/config/hostname"
 
   ## Installing on Pi
   echo "Installing software..."
   ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-   $ROOTDIR/.ssh/rpi.rsa root@$HOST "cd /opt/rpi/config; chmod +x installer.sh; ./installer.sh"
+   $KEYS/rpi.rsa root@$HOST "cd /opt/rpi/config; chmod +x installer.sh; ./installer.sh"
 
   ## Reboot in read-only mode
   read -p "Do you want to reboot in read-only mode? " -n 1 -r
@@ -311,7 +314,7 @@ if [ "$SYNCSTATE" == "start" ]; then
     exit 1
   fi
   ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-   $ROOTDIR/.ssh/rpi.rsa root@$HOST "/opt/rpi/init ro"
+   $KEYS/rpi.rsa root@$HOST "/opt/rpi/init ro"
   exit
 
 ######### END AUTOSYNC ##########
@@ -321,5 +324,5 @@ fi
 HOSTCHK
 ## Login to SSH
 ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
- $ROOTDIR/.ssh/rpi.rsa root@$HOST
+ $KEYS/rpi.rsa root@$HOST
 exit

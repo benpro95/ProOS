@@ -46,6 +46,16 @@ cp -r /tmp/config/sshd_config /etc/ssh
 chmod 644 /etc/ssh/sshd_config
 chown root:root /etc/ssh/sshd_config
 
+## Quiet Login 
+touch /root/.hushlogin
+chmod 644 /root/.hushlogin
+chown root:root /root/.hushlogin
+
+## Login Script
+cp /tmp/config/profile /root/.profile
+chown root:root /root/.profile
+chmod +x /root/.profile
+
 ## System Configuration
 cp -r /tmp/config/sysctl.conf /etc
 chmod 644 /etc/sysctl.conf

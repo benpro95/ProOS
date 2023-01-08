@@ -10,18 +10,36 @@ REINIT_UNIFI="no"
 apt-get --yes update
 
 ## Install Packages
-apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates bpytop htop \
+apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates bpytop \
  apt-transport-https wget unzip gnupg rsync curl screen parallel ethtool avahi-daemon \
  libdbus-1-dev libdbus-glib-1-dev locales aptitude sudo gnupg scrub binutils ffmpeg pip
 
 ## Remove Packages
-apt-get remove -y --purge cron anacron postfix apache2 apache2-data
+apt-get remove -y --purge cron anacron postfix apache2 apache2-data htop
 ## UniFi controller
 if [ ! -e /lib/systemd/system/unifi.service ] || [ "$REINIT_UNIFI" = "yes" ]; then
   wget https://get.glennr.nl/unifi/install/install_latest/unifi-latest.sh
   bash unifi-latest.sh
   systemctl disable unifi
 fi
+
+## Process Monitor
+if [ ! -e /usr/local/bin/htop ]; then
+  apt-get remove -y htop
+  apt-get install -y --no-upgrade --ignore-missing libncursesw5-dev autotools-dev \
+   autoconf automake build-essential
+  cd /tmp/config/
+  wget https://github.com/htop-dev/htop/releases/download/3.2.1/htop-3.2.1.tar.xz
+  tar -xf htop-3.2.1.tar.xz
+  cd htop-3.2.1
+  ./autogen.sh
+  ./configure
+  make
+  make install
+  cd -
+  ln -sf /usr/local/bin/htop /usr/bin/htop	
+fi
+ln -sf /usr/bin/bpytop /usr/bin/pytop
 
 ## Apple TV Control
 pip install pyatv

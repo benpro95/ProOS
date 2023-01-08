@@ -21,7 +21,22 @@ apt-get install -y --no-upgrade --ignore-missing unzip wget rsync curl screen \
 ## Remove Packages
 apt-get remove -y --purge shellinabox nginx-full nginx nginx-common
 
-## Replace Process Monitor
+## Process Monitor
+if [ ! -e /usr/local/bin/htop ]; then
+  apt-get remove -y htop
+  apt-get install -y --no-upgrade --ignore-missing libncursesw5-dev autotools-dev \
+   autoconf automake build-essential
+  cd /tmp/config/
+  wget https://github.com/htop-dev/htop/releases/download/3.2.1/htop-3.2.1.tar.xz
+  tar -xf htop-3.2.1.tar.xz
+  cd htop-3.2.1
+  ./autogen.sh
+  ./configure
+  make
+  make install
+  cd -
+  ln -sf /usr/local/bin/htop /usr/bin/htop	
+fi
 ln -sf /usr/bin/bpytop /usr/bin/pytop
 
 ## Set Locale

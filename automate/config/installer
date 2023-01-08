@@ -63,7 +63,6 @@ rm -rf /opt/system
 mkdir -p /opt/system
 cp /tmp/config/leds.sh /opt/system/leds
 cp /tmp/config/main.sh /opt/system/main
-cp /tmp/config/lcdmsg.sh /opt/system/lcdmsg
 cp /tmp/config/relaxloop.sh /opt/system/relaxloop
 cp /tmp/config/ledsync.txt /opt/system/
 chmod -R 755 /opt/system/*

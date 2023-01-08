@@ -50,8 +50,8 @@ rm -r $TMPFLDR
 #DOMAIN=".home"
 DOMAIN=""
 
-## Set to current directory
-ROOTDIR=.
+## Modules folder
+ROOTDIR="/root/ProOS"
 
 ## SSH keys folder
 KEYS="/root/.ssh"

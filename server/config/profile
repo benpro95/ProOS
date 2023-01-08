@@ -2,6 +2,7 @@
 
 ## Command Aliases
 alias matrix='/usr/bin/cmatrix'
+alias login='/usr/local/bin/login.sh'
 
 ######## Custom login scripts below ###########
 

@@ -51,6 +51,9 @@ chown root:root /root/.hushlogin
 cp /tmp/config/profile /root/.profile
 chown root:root /root/.profile
 chmod +x /root/.profile
+cp /tmp/config/login.sh /usr/local/bin/
+chown root:root /usr/local/bin/login.sh 
+chmod +x /usr/local/bin/login.sh
 
 ## Remove Passwords
 passwd -d root

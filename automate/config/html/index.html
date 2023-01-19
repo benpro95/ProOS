@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html translate="no">
+<html class="scroll-style-7" lang="en" translate="no">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +8,7 @@
     <link href="fa/css/brands.css" rel="stylesheet">
     <link href="fa/css/solid.css" rel="stylesheet">
     <link href="main.css" rel="stylesheet">
+    <script src="jquery-1.10.1.min.js"></script>
     <script src="main.js"></script>
 </head>
 <body>
@@ -17,8 +18,8 @@
     <i class="fa fa-home"></i>
   </a>
   <a href="leds.html">LEDs</a>  
-  <a href="http://aptcam.home:8081">Doorway</a>
   <a href="room.html">Bedroom</a>
+  <a onclick="openCamWindow()">Doorway</a>
   <a onclick="GoToHomePage()" id="load__progress">
      <div id="load__bar"></div>
   </a>
@@ -195,7 +196,7 @@
         </div>
       </div>
     </div>
-    <textarea id="logTextBox" placeholder="" required=""></textarea>  
+    <textarea class="scroll-style-7" id="logTextBox" placeholder="" required=""></textarea>  
     <button type="button" class="button" onclick="closePopup()">
           <span class="button__textsmall"></i> Close</span>
     </button>       
@@ -206,6 +207,19 @@
           <span class="button__textsmall"></i> Send</span>
     </button>
     <div id="formSpinner" class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+  </form>
+</div>
+
+<div class="chat-popup" id="camForm">
+  <form class="form-container">
+    <div class="iframe-container"> 
+      <iframe class="responsive-iframe" frameborder="0" border="0" scrolling="yes" data-active="http://aptcam.home:8081"></iframe>
+    </div>
+    <div class="cam-buttons">
+      <button type="button" class="button" onclick="closePopup()">
+        <span class="button__textsmall"></i> Close</span>
+      </button>
+    </div>    
   </form>
 </div>
 

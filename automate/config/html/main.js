@@ -134,10 +134,33 @@ function openLogWindow() {
   document.getElementById("logForm").style.display = "block";
 };
 
+function openCamWindow() {
+  closePopup();
+  // show camera form window
+  document.getElementById("camForm").style.display = "block";
+  // Show our element, then call our callback
+  $(".iframe-container").show(function(){
+      // Find the iframes within our newly-visible element
+      $(this).find("iframe").prop("src", function(){
+          // Set their src attribute to data-active
+          return $(this).data('active');
+      });
+  });
+};
+
 function closePopup() {
   // close all popup windows
   hideSpinner();
   document.getElementById("logForm").style.display = "none";
+  document.getElementById("camForm").style.display = "none";
+  // Show our element, then call our callback
+  $(".iframe-container").show(function(){
+      // Find the iframes within our newly-visible element
+      $(this).find("iframe").prop("src", function(){
+          // Set their src attribute to data-inactive
+          return $(this).data('inactive');
+      });
+  });
 };
 
 function showSpinner() {

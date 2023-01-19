@@ -173,8 +173,7 @@ body {
 .form-container {
   height: 100%;
   width: 100%;
-  padding: 5px;
-  padding-bottom: 144px;
+  padding-bottom: 148px;
   background-color: #2d353d; /* popup window frame color */
 }
 
@@ -335,18 +334,68 @@ body {
 /* Change the background color of the dropdown button when hovering */
 .dropdown:hover .dropbtn {background-color: #000;}
 
+/*
+ *  Scrollbar Style
+ */
 
-#password_prompt {
-    position: fixed;
-    border: 20px solid #2d353d;
-    background: #2d353d; 
-    color: white; 
-    z-index: 99999;
+.scroll-style-7::-webkit-scrollbar-track
+{
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  background-color: #414040;
+  border-radius: 6px;
 }
-#password_prompt label {
-    display:block; 
-    margin-bottom:5px;
+
+.scroll-style-7::-webkit-scrollbar
+{
+  width: 6px;
+  background-color: #414040;
 }
-#password_prompt input {
-    margin-bottom:10px;
+
+.scroll-style-7::-webkit-scrollbar-thumb
+{
+  border-radius: 6px;
+  background-image: -webkit-gradient(linear,
+                     left bottom,
+                     left top,
+                     color-stop(0.44, rgb(36,67,128)),
+                     color-stop(0.86, rgb(24,41,75)));
+}
+
+/*
+ *  Camera Window Style
+ */
+
+ #camForm{
+  min-height: unset;
+  min-width: unset;
+  max-height: 95%;
+  max-width: 95%;
+  width: 652px;  
+  height: 452px;
+} 
+
+.cam-buttons {
+  position: absolute;
+  bottom: 1px;
+}  
+
+.iframe-container {
+  width: 1280px;
+  height: 720px;
+  resize: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.responsive-iframe {
+  overflow: scroll;
+  width: 100%;
+  height: 100%;
+  zoom: 0.50;
+  -moz-transform: scale(0.50);
+  -moz-transform-origin: 0 0;
+  -o-transform: scale(0.50);
+  -o-transform-origin: 0 0;
+  -webkit-transform: scale(0.50);
+  -webkit-transform-origin: 0 0;
 }

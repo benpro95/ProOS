@@ -374,8 +374,15 @@ body {
   height: 452px;
 } 
 
-.cam-buttons {
+.cam__btnleft {
   position: absolute;
+  left: 5px;
+  bottom: 1px;
+}  
+
+.cam__btnright {
+  position: absolute;
+  right: 5px;
   bottom: 1px;
 }  
 

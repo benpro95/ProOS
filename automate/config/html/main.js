@@ -32,6 +32,12 @@ function GoToHomePage() {
   window.location = '/';   
 };
 
+
+function GoToCamera() {
+  closePopup();
+  window.location = 'http://aptcam.home:8081';
+};
+
 // transmit command
 async function sendCmd(act, arg1, arg2) {
   // adjust API syntax for different functions

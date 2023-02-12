@@ -138,7 +138,7 @@ done
 ################################
 ## Wait for drives to settle after backup complete
 echo "triggering drive detach in $WAIT_TIME second(s)."
-
+sleep $WAIT_TIME
 
 ## Write drive detach trigger file
 touch $RAMDISK/detach_bkps.txt

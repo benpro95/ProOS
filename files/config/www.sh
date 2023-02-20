@@ -255,6 +255,7 @@ then
   echo "uploading all changes to GitHub..."
   echo ""
   echo "*** ProOS repository ***"  
+  git config --global --add safe.directory /mnt/ben/ProOS
   cd /mnt/ben/ProOS
   git add .
   git commit -m "$TIMESTMP"
@@ -262,6 +263,7 @@ then
   cd -
   echo ""
   echo "*** EE-Projects repository ***"  
+  git config --global --add safe.directory /mnt/ben/Projects
   cd /mnt/ben/Projects
   git add .
   git commit -m "$TIMESTMP"

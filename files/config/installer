@@ -11,7 +11,7 @@ apt-get --yes update
 apt-get install -y --no-upgrade --ignore-missing unzip wget \
  rsync curl screen scrub ethtool aptitude sudo samba sshpass \
  libdbus-1-dev libdbus-glib-1-dev bc git locales mailutils \
- neofetch apt-transport-https nmap bpytop binutils iperf3
+ neofetch apt-transport-https nmap bpytop binutils iperf3 podget
 
 ## Process Monitor
 if [ ! -e /usr/local/bin/htop ]; then
@@ -177,6 +177,13 @@ chown root:root /etc/fstab
 cp -f /tmp/config/drives.txt /opt/
 chmod 644 /opt/drives.txt
 chown root:root /opt/drives.txt
+
+## Media User
+mkdir -p /home/media
+mkdir -p /home/media/.podget
+cp -f /tmp/config/podgetrc /home/media/.podget/podgetrc
+cp -f /tmp/config/podcasts.conf /home/media/.podget/serverlist
+chown media:shared -R /home/media
 
 ## Clean-up
 systemctl daemon-reload

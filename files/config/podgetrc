@@ -23,8 +23,8 @@ DIR_LIBRARY=/mnt/media/Podcasts
 DIR_LOG=/mnt/media/Podcasts/Logs
 
 # Set logging file names
-LOG_FAIL=errors
-LOG_COMPLETE=done
+LOG_FAIL=errors.txt
+LOG_COMPLETE=done.txt
 
 # ----------------------------------------------------------------------------------------------------------------------------------
 # Download Options:
@@ -87,8 +87,8 @@ CLEANUP=0
 CLEANUP_DAYS=7
 
 # Stop downloading if available space on the partition drops below value (in KB)
-# default:  614400 (600MB)
-MIN_SPACE=614400
+# default:  6144000 (6000MB)
+MIN_SPACE=6144000
 
 # ----------------------------------------------------------------------------------------------------------------------------------
 # Playlist Options:
@@ -96,7 +96,7 @@ MIN_SPACE=614400
 # Disable playlist creation [ No need to comment out other playlist variables ]
 # 0 == create
 # 1 == do not create
-NO_PLAYLIST=0
+NO_PLAYLIST=1
 
 # Build playlists (comment out or set to a blank string to accept default format: New-).
 PLAYLIST_NAMEBASE=New-

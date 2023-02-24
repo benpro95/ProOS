@@ -160,8 +160,10 @@ echo "****************** backup complete **********************"
 
 
 ### Only run if server user
-if [ ! "$USER" == "server" ]; then
-  echo "this script should only be ran by server user, aborting."
+if [ "$USER" == "server" ] || [ "$USER" == "media" ]; then
+  echo "running WWW script..."
+else	
+  echo "this script should only be ran by 'server' or 'media' user, aborting."
   exit
 fi
 
@@ -302,6 +304,15 @@ then
   BACKUPSVR
   exit
 fi
+
+if [[ $REPLY == "podget" ]]
+then
+  cd /home/media
+  /usr/bin/podget --silent
+  chown -R media:shared /mnt/media/Podcasts
+  chmod -R 2775 /mnt/media/Podcasts
+  exit
+fi 
 
 echo "unknown command!"
 exit

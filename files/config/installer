@@ -45,7 +45,7 @@ chmod 644 /root/.ssh/authorized_keys
 
 ## SSH key for server user
 if [ ! -e /home/server ]; then
-  echo "Creating Server Home Directory..."
+  echo "Creating server home directory..."
   mkdir -p /home/server
   chown -R server:server /home/server
 fi

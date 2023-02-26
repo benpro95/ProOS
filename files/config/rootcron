@@ -7,5 +7,5 @@
 
 0 11 1 * *      cameras    /usr/bin/camcleanup
 
-30 8 * * *      media      /usr/bin/www.sh podget
+30 10 * * *      media     /usr/bin/podget.sh
 

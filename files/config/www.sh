@@ -81,14 +81,6 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           rsync $CHECKSUM -aP --exclude="Public/Movies/" \
           /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
         fi
-        #### Media Share ####
-        if [ ! -e /mnt/media/Music ]; then
-          echo "media folder not found!"
-        else
-          echo "syncing 'Media' share to $POOL drive..."
-          rsync -aP --exclude="Movies/" --exclude="Music/" --exclude="TV Shows/" \
-          /mnt/media/ /mnt/extbkps/$POOL/Media/ -delete --delete-excluded
-        fi
         ##### END BACKUP #####
         touch /mnt/extbkps/$POOL/Ben/LastSynced.txt
       fi  
@@ -156,14 +148,11 @@ echo "wait $WAIT_TIME second(s) for drives to detach."
 echo "****************** backup complete **********************"
 }
 
-
-
-
 ### Only run if server user
-if [ "$USER" == "server" ] || [ "$USER" == "media" ]; then
+if [ "$USER" == "server" ]; then
   echo "running WWW script..."
 else	
-  echo "this script should only be ran by 'server' or 'media' user, aborting."
+  echo "this script should only be ran by 'server' user, exiting..."
   exit
 fi
 
@@ -307,12 +296,10 @@ fi
 
 if [[ $REPLY == "podget" ]]
 then
-  cd /home/media
-  /usr/bin/podget --silent
-  chown -R media:shared /mnt/media/Podcasts
-  chmod -R 2775 /mnt/media/Podcasts
+  echo "Syncing podcasts..."
+  /usr/bin/sudo -u media /usr/bin/podget.sh &&
   exit
-fi 
+fi
 
 echo "unknown command!"
 exit

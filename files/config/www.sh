@@ -149,9 +149,7 @@ echo "****************** backup complete **********************"
 }
 
 ### Only run if server user
-if [ "$USER" == "server" ]; then
-  echo "running WWW script..."
-else	
+if [ "$USER" != "server" ]; then
   echo "this script should only be ran by 'server' user, exiting..."
   exit
 fi
@@ -296,7 +294,7 @@ fi
 
 if [[ $REPLY == "podget" ]]
 then
-  echo "Syncing podcasts..."
+  echo "syncing podcasts..."
   /usr/bin/sudo -u media /usr/bin/podget.sh &&
   exit
 fi

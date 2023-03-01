@@ -295,7 +295,7 @@ fi
 if [[ $REPLY == "podget" ]]
 then
   echo "syncing podcasts..."
-  /usr/bin/sudo -u media /usr/bin/podget.sh &&
+  nohup sudo -u media '/usr/bin/podget.sh' &
   exit
 fi
 

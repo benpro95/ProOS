@@ -7,6 +7,16 @@ ARG="$2"
 RAMDISK="/home/server/.html/RAM"
 LOGFILE="$RAMDISK/sysout.txt"
 
+if [[ "$REPLY" == "" ]]
+then
+  echo "no argument."
+fi
+
+if [[ "$ARG" == "" ]]
+then
+  ARG="placeholder"
+fi
+
 /usr/bin/www.sh $REPLY $ARG $RAMDISK $LOGFILE &>> $LOGFILE
 TRAILER=$(date)
 TRAILER+=" ("

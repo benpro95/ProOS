@@ -100,7 +100,7 @@ rm -f /etc/sudoers.d/nobody-perms
 cp -f /tmp/config/www.sh /usr/bin/
 chmod +x /usr/bin/www.sh
 chown root:root /usr/bin/www.sh
-cp -f /tmp/config/wwwrun.sh /usr/bin/wwwrun
+cp -f /tmp/config/wwwrun /usr/bin/
 chmod +x /usr/bin/wwwrun
 chown root:root /usr/bin/wwwrun
 

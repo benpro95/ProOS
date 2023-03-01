@@ -44,7 +44,7 @@ cp -f /opt/drives.txt /mnt/ramdisk/
 chmod 777 /mnt/ramdisk/drives.txt
 
 ## Clear Log File
-/usr/bin/sudo -u server /usr/bin/wwwrun clearlog 0
+/usr/bin/sudo -u server /usr/bin/wwwrun clearlog
 
 ## Light Web Server
 systemctl start lighttpd

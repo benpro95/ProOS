@@ -17,12 +17,6 @@ echo ""
 cat /proc/net/bonding/bond0
 
 echo ""
-echo "** External Network **"
-nmap --unprivileged -v --open -PT 10.177.1.0/24
-nmap --unprivileged -v --open -sn 10.177.1.0/24
-echo ""
-
-echo ""
 echo "** Top Processes **"
 top -b -n 1  | head -n 15
 

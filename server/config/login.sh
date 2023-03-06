@@ -39,7 +39,7 @@ cd -
 scp -i $KEYS/$MODULE.rsa -p $TMPFLDR/config.tar root@$HOST:/tmp/
 ## Install files
 ssh -t -i $KEYS/$MODULE.rsa root@$HOST \
- "cd /tmp/; tar -xvf config.tar; rm -f config.tar; chmod +x /tmp/config/installer; /tmp/config/installer"
+ "cd /tmp/; tar -xvf config.tar; rm -f config.tar; chmod +x /tmp/config/installer.sh; /tmp/config/installer.sh"
 ## Clean-up installer files
 rm -r $TMPFLDR
 }

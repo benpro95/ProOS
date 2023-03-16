@@ -153,7 +153,6 @@
         <div class="dropdown-content">
           <a onclick="serverAction('files-git_push')">Sync Git</a>   
           <a onclick="serverAction('syslog')">Server Log</a>                  
-          <a onclick="serverAction('unifi')">UniFi AP</a>
           <a onclick="serverAction('files-podget')">Podget</a>
           <a onclick="serverAction('files-netscan_d')">IP Scan (D)</a>      
           <a onclick="serverAction('files-netscan_s')">IP Scan (S)</a>       
@@ -184,18 +183,25 @@
         </div>
       </div>
       <div class="dropdown"> 
+        <a class="dropbtn" onmouseover="resetAction()">Unifi</a>
+        <div class="dropdown-content">
+          <a onclick="serverAction('startunifi')">Start LXC</a>
+          <a onclick="serverAction('stopunifi')">Stop LXC</a>
+        </div>
+      </div>
+      <div class="dropdown"> 
         <a class="dropbtn" onmouseover="resetAction()">Xana</a>
         <div class="dropdown-content">
-          <a onclick="serverAction('startxana')">Start</a>
-          <a onclick="serverAction('restorexana')">Restore</a>
-          <a onclick="serverAction('stopxana')">Shutdown</a>       
+          <a onclick="serverAction('startxana')">Start VM</a>
+          <a onclick="serverAction('restorexana')">Restore VM</a>
+          <a onclick="serverAction('stopxana')">Stop VM</a>       
         </div>
       </div>
       <div class="dropdown"> 
         <a class="dropbtn" onmouseover="resetAction()">Dev</a>
         <div class="dropdown-content">
-          <a onclick="serverAction('startdev')">Start</a>
-          <a onclick="serverAction('stopdev')">Shutdown</a>
+          <a onclick="serverAction('startdev')">Start LXC</a>
+          <a onclick="serverAction('stopdev')">Stop LXC</a>
         </div>
       </div>
     </div>

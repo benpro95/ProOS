@@ -148,6 +148,24 @@ if [ -e $TRIGGERS_DIR/stopdev.txt ]; then
   qm stop 103
   EXIT_ROUTINE
 fi
+#######################################################
+if [ -e $TRIGGERS_DIR/startunifi.txt ]; then
+  echo " "
+  touch /tmp/actiontrig.lock
+  rm -f $TRIGGERS_DIR/startunifi.txt
+  echo "starting unifi AP LXC..."
+  pct start 107
+  chmod 777 $LOGFILE
+  EXIT_ROUTINE
+fi
+if [ -e $TRIGGERS_DIR/stopunifi.txt ]; then
+  echo " "
+  touch /tmp/actiontrig.lock  
+  rm -f $TRIGGERS_DIR/stopunifi.txt
+  echo "shutting down unifi AP LXC..."
+  pct stop 107
+  EXIT_ROUTINE
+fi
 ### Write Server Log ##################################   
 if [ -e $TRIGGERS_DIR/syslog.txt ]; then
   echo " "
@@ -215,6 +233,12 @@ if [ -e $TRIGGERS_DIR/pve_vmsbkp.txt ]; then
   cp -v /etc/pve/qemu-server/105.conf $VM_CONFS/xana/qemu.conf
   chmod 777 $VM_CONFS/xana/qemu.conf
   ###
+  echo ""
+  echo "Backing-up Unifi LXC 107..."
+  vzdump 107 --mode snapshot --compress zstd --node pve --storage local \
+    --maxfiles 1 --remove 1
+  cp -v /etc/pve/lxc/107.conf $VM_CONFS/unifi/lxc.conf
+  chmod 777 $VM_CONFS/unifi/lxc.conf
   ### Copy to ZFS Pool
   ###
   echo ""

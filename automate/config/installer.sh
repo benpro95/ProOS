@@ -3,8 +3,6 @@
 ### AutoConfig - ProOS for Automate VM
 ### by Ben Provenzano III
 
-## Reinstall / Upgrade Unifi Controller
-REINIT_UNIFI="no"
 
 ## Update Sources
 apt-get --yes update
@@ -16,12 +14,6 @@ apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates bpytop 
 
 ## Remove Packages
 apt-get remove -y --purge cron anacron postfix apache2 apache2-data htop
-## UniFi controller
-if [ ! -e /lib/systemd/system/unifi.service ] || [ "$REINIT_UNIFI" = "yes" ]; then
-  wget https://get.glennr.nl/unifi/install/install_latest/unifi-latest.sh
-  bash unifi-latest.sh
-  systemctl disable unifi
-fi
 
 ## Process Monitor
 if [ ! -e /usr/local/bin/htop ]; then

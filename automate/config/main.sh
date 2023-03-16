@@ -653,19 +653,19 @@ if [ "$SERVERARG" == "files" ]; then
   fi  
   exit
 fi
-if [ "$SERVERARG" == "unifi" ]; then
-  ## Toggle Unifi Controller
-  SYSDSTAT="$(systemctl is-active unifi.service)"
-  if [ "${SYSDSTAT}" = "active" ]; then
-    echo "UniFi running, stopping service..." &>> $LOGFILE
-    systemctl stop unifi &>> $LOGFILE
-  else 
-    echo "UniFi not running, starting service..." &>> $LOGFILE 
-    systemctl start unifi &>> $LOGFILE
-    echo "access at 'https://automate.home:8443/' " &>> $LOGFILE
-  fi
-  exit
-fi
+#if [ "$SERVERARG" == "unifi" ]; then
+#  ## Toggle Unifi Controller
+#  SYSDSTAT="$(systemctl is-active unifi.service)"
+#  if [ "${SYSDSTAT}" = "active" ]; then
+#    echo "UniFi running, stopping service..." &>> $LOGFILE
+#    systemctl stop unifi &>> $LOGFILE
+#  else 
+#    echo "UniFi not running, starting service..." &>> $LOGFILE 
+#    systemctl start unifi &>> $LOGFILE
+#    echo "access at 'https://automate.home:8443/' " &>> $LOGFILE
+#  fi
+#  exit
+#fi
 ## Pass action file to the hypervisor
 touch $RAMDISK/$SERVERARG.txt
 exit

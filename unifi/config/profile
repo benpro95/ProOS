@@ -1,11 +1,5 @@
 # ~/.profile: executed by Bourne-compatible login shells.
 
-## Command Aliases
-alias rpi='/opt/system/init'
-alias leds='/opt/system/leds'
-alias main='/opt/system/main'
-alias xmit='/opt/system/main'
-
 # You may uncomment the following lines if you want `ls' to be colorized:
 export LS_OPTIONS='--color=auto'
 eval "`dircolors`"
@@ -17,6 +11,5 @@ mesg n || true
 
 ######## Custom login scripts below ###########
 
-neofetch
-echo "ProOS Automation Controller"
+echo "UniFi AP Controller LXC"
 echo " "

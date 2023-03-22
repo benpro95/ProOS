@@ -28,7 +28,7 @@ window.onload = function() {
 };
 
 // timer
-async function sleep(ms) {
+function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
@@ -119,7 +119,7 @@ async function serverSend(mask) {
     // send data
     sendCmd('main','server',servercmd_data);
     // delay
-    await sleep(250);
+    await sleep(400);
     // refresh log
     loadLog();
   }  

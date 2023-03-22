@@ -27,6 +27,11 @@ window.onload = function() {
   elem.textContent = "Automate"; 
 };
 
+// timer
+async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
+
 // back to home page 
 function GoToHomePage() {
   window.location = '/';   
@@ -100,7 +105,7 @@ function resetAction() {
 };
 
 // send server action
-function serverSend(mask) {
+async function serverSend(mask) {
   if (servercmd_data == null) {
     document.getElementById("logTextBox").value = "Select an action.";
   } else {
@@ -110,10 +115,13 @@ function serverSend(mask) {
     } else {
        cmd_text = servercmd_data;
     }
-    //document.getElementById("logTextBox").value = "Please wait, transmitted the command ("+cmd_text+")";
     showSpinner();
     // send data
     sendCmd('main','server',servercmd_data);
+    // delay
+    await sleep(250);
+    // refresh log
+    loadLog();
   }  
   servercmd_data = null;
 };

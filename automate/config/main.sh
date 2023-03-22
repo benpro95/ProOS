@@ -667,6 +667,7 @@ fi
 #  exit
 #fi
 ## Pass action file to the hypervisor
+echo "action $SERVERARG submitted." &>> $LOGFILE
 touch $RAMDISK/$SERVERARG.txt
 exit
 ;;

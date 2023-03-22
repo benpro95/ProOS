@@ -88,9 +88,6 @@ async function loadLog(file) {
 // load server action 
 function serverAction(cmd) {
   servercmd_data = cmd;
-  if (cmd == "unifi") {
-    document.getElementById("logTextBox").value = "Click send to request action, this will toggle the UniFi network controller";
-  }
   // change color of send button 
   document.getElementById("sendButton").style.background='#2c0c2c';
   hideSpinner();
@@ -113,9 +110,9 @@ function serverSend(mask) {
     } else {
        cmd_text = servercmd_data;
     }
-    document.getElementById("logTextBox").value = "Please wait, transmitted the command ("+cmd_text+")";
+    //document.getElementById("logTextBox").value = "Please wait, transmitted the command ("+cmd_text+")";
     showSpinner();
-    // request server data
+    // send data
     sendCmd('main','server',servercmd_data);
   }  
   servercmd_data = null;

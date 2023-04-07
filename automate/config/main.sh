@@ -103,8 +103,8 @@ if [[ "$XMITCMD" == "airplay" ]]; then
    CALLAPI
    return
 fi   
-## PC Mode
-if [[ "$XMITCMD" == "pcmode" ]]; then
+## Volume Limit Mode
+if [[ "$XMITCMD" == "vlimit" ]]; then
    XMITCALL="0|0|1261783223"
    CALLAPI
    return   
@@ -563,9 +563,6 @@ XMITCMD="usb" ; XMIT
 sleep 0.75
 ## Preamp DAC Input
 XMITCMD="dac" ; XMIT
-sleep 0.75
-## Preamp PC Mode
-XMITCMD="pcmode" ; XMIT 
 exit
 ;;
 

@@ -50,6 +50,7 @@ readarray -t ZFSPOOLS < $RAMDISK/drives.txt
 #######################
 ## Backup #############
 for _POOL in "${ZFSPOOLS[@]}"; do
+  ## Remove Invalid Characters
   POOL=$(echo $_POOL | sed -e 's/\r//g')
   if [ ! "$POOL" == "" ]; then
     ## USB Flash Drives
@@ -65,7 +66,7 @@ for _POOL in "${ZFSPOOLS[@]}"; do
         fi  
         #### Ben Share ####
         if [ ! -e /mnt/ben/ProOS ]; then
-          echo "ben folder not found!"
+          echo "Ben' share not found!"
         else
           echo "syncing 'Ben' share to $POOL drive..."
           rsync $CHECKSUM -aP \
@@ -75,7 +76,7 @@ for _POOL in "${ZFSPOOLS[@]}"; do
         fi
         #### Regions Share ####
         if [ ! -e /mnt/.regions/Private ]; then
-          echo "regions folder not found!"
+          echo "'Regions' share not found!"
         else
           echo "syncing 'Regions' share to $POOL drive..."
           rsync $CHECKSUM -aP --exclude="Public/Movies/" \
@@ -98,7 +99,7 @@ for _POOL in "${ZFSPOOLS[@]}"; do
         fi        
         #### Ben Share ####
         if [ ! -e /mnt/ben/ProOS ]; then
-          echo "ben folder not found!"
+          echo "Ben' share not found!"
         else
           echo "syncing 'Ben' share to $POOL drive..."
           rsync $CHECKSUM -aP \
@@ -106,7 +107,7 @@ for _POOL in "${ZFSPOOLS[@]}"; do
         fi
         #### Regions Share ####
         if [ ! -e /mnt/.regions/Private ]; then
-          echo "regions folder not found!"
+          echo "'Regions' share not found!"
         else
           echo "syncing 'Regions' share to $POOL drive..."
           rsync $CHECKSUM -aP \
@@ -114,7 +115,7 @@ for _POOL in "${ZFSPOOLS[@]}"; do
         fi
         #### Media Share ####
         if [ ! -e /mnt/media/Music ]; then
-          echo "media folder not found!"
+          echo "'Media' share not found!"
         else
           echo "syncing 'Media' share to $POOL drive..."
           rsync -aP /mnt/media/ /mnt/extbkps/$POOL/Media/ -delete --delete-excluded

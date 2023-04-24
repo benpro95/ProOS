@@ -98,7 +98,7 @@ if [[ "$XMITCMD" == "phono" ]]; then
    return
 fi
 ## Airplay
-if [[ "$XMITCMD" == "airplay" ]]; then
+if [[ "$XMITCMD" == "airplay-preamp" ]]; then
    XMITCALL="0|0|1261799543"
    CALLAPI
    return
@@ -115,8 +115,8 @@ if [[ "$XMITCMD" == "mute" ]]; then
    CALLAPI
    return
 fi
-## Key Force Mute 
-if [[ "$XMITCMD" == "forcemute" ]]; then
+## Optical Mode
+if [[ "$XMITCMD" == "optical-preamp" ]]; then
    XMITCALL="0|0|1261824023"
    CALLAPI
    return
@@ -573,11 +573,8 @@ rm -f $LOCKFOLDER/subs.enabled
 ## Coaxial Decoder Input
 XMITCMD="coaxial" ; XMIT 
 sleep 0.75
-## Preamp DAC Input
-XMITCMD="dac" ; XMIT 
-sleep 0.75
 ## Preamp AirPlay Mode
-XMITCMD="airplay" ; XMIT 
+XMITCMD="airplay-preamp" ; XMIT 
 exit
 ;;
 
@@ -589,7 +586,7 @@ rm -f $LOCKFOLDER/subs.enabled
 XMITCMD="optical" ; XMIT
 sleep 0.75
 ## Preamp DAC Input
-XMITCMD="dac" ; XMIT
+XMITCMD="optical-preamp" ; XMIT
 exit
 ;;
 

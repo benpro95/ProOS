@@ -207,6 +207,7 @@ ls -la
 (Format the NEW_DISK using the above command)
 
 (Replace the word GOOD-DISK in the next command with name found in 'zpool status')
+** GOOD-DISK can be any drive in the mirror pool
 
 zpool attach POOL-NAME GOOD-DISK /dev/disk/by-id/NEW_DISK
 

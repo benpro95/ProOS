@@ -43,7 +43,7 @@ DISK_DRIVE="/dev/disk/by-id/ata-WDC_WD40EFZX-68AWUN0_WD-WXA2D81NA45F"
 /usr/sbin/hddtemp --unit=F $DISK_DRIVE | grep -oP "($DISK_DRIVE: )\K.*" 
 /usr/sbin/smartctl --all --quietmode=errorsonly $DISK_DRIVE
 ##
-DISK_DRIVE="/dev/disk/by-id/ata-WDC_WD40EFRX-68N32N0_WD-WCC7K6XY9HTC"
+DISK_DRIVE="/dev/disk/by-id/ata-WDC_WD40EFZX-68AWUN0_WD-WX32D52LE3EX"
 /usr/sbin/hddtemp --unit=F $DISK_DRIVE | grep -oP "($DISK_DRIVE: )\K.*"
 /usr/sbin/smartctl --all --quietmode=errorsonly $DISK_DRIVE
 ##

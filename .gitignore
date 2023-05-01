@@ -9,5 +9,6 @@ xana
 *.pem*
 *.crt*
 *.key*
+*.rsa*
 .ssh
 server/config/keys

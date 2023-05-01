@@ -6,5 +6,8 @@ pve/photos
 xana
 *authorized_keys*
 *Thumbs.db*
+*.pem*
+*.crt*
+*.key*
 .ssh
 server/config/keys

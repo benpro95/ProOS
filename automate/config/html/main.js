@@ -8,7 +8,7 @@ var promptCount = 0;
 
 // on-page-load
 window.onload = function() {
-  const mainpg = "http://"+location.hostname+"/"
+  const mainpg = "https://"+location.hostname+"/"
   // load volume mode support on main page only
   if (window.location.href == mainpg) {
     volMode();
@@ -16,11 +16,11 @@ window.onload = function() {
     vol_mode = 0;  
   }
   // load relax mode support on bedroom page only
-  const roompg = "http://"+location.hostname+"/room.html"
+  const roompg = "https://"+location.hostname+"/room.html"
   if (window.location.href == roompg) {
     relaxMode();
-  }else{    
-    relax_mode = 0;  
+  }else{
+    relax_mode = 0;
   }
   // set loading bar text
   var elem = document.getElementById("load__bar");
@@ -40,7 +40,7 @@ function GoToHomePage() {
 
 function GoToCamera() {
   closePopup();
-  window.location = 'http://aptcam.home:8081';
+  window.location = "https://"+location.hostname+"/cam1";
 };
 
 // transmit command
@@ -53,7 +53,7 @@ async function sendCmd(act, arg1, arg2) {
     arg2 = arg2+"-hifi";
   } 
   // construct API string
-  let url = "http://"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
+  let url = "https://"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
   // display API string on page
   //document.getElementById("bottom").innerHTML = url;
   // send data
@@ -71,7 +71,7 @@ async function loadLog(file) {
     // build url and force cache reload
     const time = new Date();
     const timestamp = (time.getTime());   
-    const url = "http://"+location.hostname+"/ram/sysout.txt"+"?ver="+timestamp;
+    const url = "https://"+location.hostname+"/ram/sysout.txt"+"?ver="+timestamp;
     // parse incoming text file
     const response = await fetch(url);
     console_data = await response.text(); 

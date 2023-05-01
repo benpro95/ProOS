@@ -43,6 +43,33 @@ function GoToCamera() {
   window.location = "https://"+location.hostname+"/cam1";
 };
 
+function getPassword()
+{
+    var pwd = prompt('Please enter your password:', '');
+    
+    if(pwd != null)
+    {
+        if(pwd != '')
+        {
+            document.getElementById('hidPassword').value = pwd;
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+function savePOST(data) {
+  fetch("https://"+location.hostname+"/upload.php", {
+      method: 'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      body: data
+  })
+};
+
 // transmit command
 async function sendCmd(act, arg1, arg2) {
   // adjust API syntax for different functions

@@ -27,7 +27,7 @@
 
 <div>
     <p></p>
-      <button type="button" class="button" onclick="sendCmd('main','rfa3','on')">
+      <button type="button" class="button" onclick="savePOST('489348')">
           <span class="button__text"><i class="fa-solid fa-tv"></i> TV</span>
       </button> 
       <button type="button" class="button" onclick="sendCmd('main','rfa1','on')">
@@ -178,7 +178,7 @@
           <a onclick="serverAction('pve_vmsbkp')">PVE VMs</a> 
           <a onclick="serverAction('files-backupstd')">Standard</a> 
           <a onclick="serverAction('files-backupchk')">Checksum</a> 
-          <a onclick="serverAction('attach_bkps')">Attach</a>  
+          <a onclick="getPassword()">Attach</a>  
           <a onclick="serverAction('detach_bkps')">Detach</a>      
         </div>
       </div>

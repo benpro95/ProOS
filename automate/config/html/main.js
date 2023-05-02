@@ -120,11 +120,16 @@ async function getPassword(){
   var result;
   try{
     result = await passwordPrompt("Enter password:");
-    savePOST(result);
-    serverAction('attach_bkps');
-    serverSend(0);
+    if (result != null) {  
+      if (result != '') {  
+        savePOST(result);
+        serverAction('attach_bkps');
+        serverSend(0);
+      }
+    } 
+    result = "";
   } catch(e){
-    alert("Canceled");
+    result = "";
   }
 }
 

@@ -44,4 +44,4 @@ class DumpHTTPRequestToFile {
 }
 
 // write output file
-(new DumpHTTPRequestToFile)->execute('/var/www/html/ram/pass.txt');
+(new DumpHTTPRequestToFile)->execute('/var/www/html/ram/pwd.txt');

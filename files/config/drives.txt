@@ -9,3 +9,4 @@ hdd4tb-02
 hdd4tb-03
 hdd4tb-04
 hdd4tb-05
+hdd4tb-06

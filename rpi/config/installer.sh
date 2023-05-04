@@ -96,7 +96,7 @@ apt-get install -y --no-upgrade --ignore-missing locales console-setup \
  iw crda firmware-brcm80211 wpasupplicant dirmngr autofs triggerhappy apt-utils \
  build-essential git autoconf make libtool binutils i2c-tools cmake yasm \
  libmariadb3 texi2html socat nmap autoconf automake pkg-config iperf3 \
- keyboard-configuration ncftp
+ keyboard-configuration ncftp libnss3-tools
  
 ## Developer Packages 
 apt-get install -y --no-upgrade --ignore-missing libgtk2.0-dev libbluetooth3 libbluetooth-dev \

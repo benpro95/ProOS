@@ -14,7 +14,7 @@ systemctl start rpi-netdetect.service
 ## Disable HDMI (saves 30mA)
 /usr/bin/tvservice -o
 ## Turn-off Power LED (boot complete)
-echo none | tee /sys/class/leds/led0/trigger
+echo none | tee /sys/class/leds/ACT/trigger
 exit
 ;;
 

@@ -33,4 +33,16 @@ cp -f $BIN/modconf/xautostart /home/pi/.config/lxsession/LXDE/autostart
 chmod 755 /home/pi/.config/lxsession/LXDE/autostart
 chown pi:pi /home/pi/.config/lxsession/LXDE/autostart
 
+## Local Root SSL Certificate
+mkdir -p /usr/share/ca-certificates/local
+cp -f $BIN/modconf/root_ca.crt /usr/share/ca-certificates/local/
+chmod 644 /usr/share/ca-certificates/local/root_ca.crt
+chown root:root /usr/share/ca-certificates/local/root_ca.crt
+cp -f $BIN/modconf/intr_ca.crt /usr/share/ca-certificates/local/
+chmod 644 /usr/share/ca-certificates/local/intr_ca.crt
+chown root:root /usr/share/ca-certificates/local/intr_ca.crt
+certutil -d sql:/home/pi/.pki/nssdb -A -t "CP,CP," -n pro_root_ca -i /usr/share/ca-certificates/local/root_ca.crt
+certutil -d sql:/home/pi/.pki/nssdb -A -t "CP,CP," -n pro_intr_ca -i /usr/share/ca-certificates/local/intr_ca.crt
+#dpkg-reconfigure ca-certificates
+
 exit

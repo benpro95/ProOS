@@ -23,7 +23,7 @@ function sendCmd(act, arg1, arg2) {
 
 // back to home page 
 function GoToHomePage() {
-  window.location = 'http://automate.home/';   
+  window.location = 'https://automate.home/';   
 };
 
 function loadBar() {

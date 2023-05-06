@@ -85,36 +85,40 @@ zfs create -o mountpoint=/mnt/MNT-POINT POOL-NAME/MNT-POINT
 cd /dev/disk/by-id/
 ls -la
 (Select the drive name without -part* on the end)
-(Use that name for BACKUP-DRIVE)
+(Use that name for BACKUP_DRIVE)
 
 (Erase entire drive, randomize UUID and create new GPT table)
-wipefs -a /dev/disk/by-id/BACKUP-DRIVE
-sgdisk -G /dev/disk/by-id/BACKUP-DRIVE
-sgdisk -og /dev/disk/by-id/BACKUP-DRIVE
+wipefs -a /dev/disk/by-id/BACKUP_DRIVE
+sgdisk -G /dev/disk/by-id/BACKUP_DRIVE
+sgdisk -og /dev/disk/by-id/BACKUP_DRIVE
 
 (Create a new pool and dataset on the drive)
-(BKP-VOL=BKP-POOL volume and pool name should be the same) 
-zpool create -o ashift=12 -o feature@log_spacemap=disabled -O mountpoint=none BKP-POOL /dev/disk/by-id/BACKUP-DRIVE
-zfs create -o canmount=noauto -o encryption=aes-256-gcm -o keyformat=passphrase -o mountpoint=/mnt/extbkps/BKP-VOL BKP-POOL/extbkp
+(BKP_VOL=BKP_POOL volume and pool name should be the same) 
+zpool create -o ashift=12 -o feature@log_spacemap=disabled -O mountpoint=none BKP_POOL /dev/disk/by-id/BACKUP_DRIVE
+zfs create -o canmount=noauto -o encryption=aes-256-gcm -o keyformat=passphrase -o mountpoint=/mnt/extbkps/BKP_VOL BKP_POOL/extbkp
 
 (Attach backup ZFS)
-zpool import BKP-POOL
-zfs load-key BKP-POOL/extbkp
-zfs mount BKP-POOL/extbkp
+zpool import BKP_POOL
+zfs load-key BKP_POOL/extbkp
+zfs mount BKP_POOL/extbkp
 
 (Disable auto snapshots)
-zfs set com.sun:auto-snapshot=false BKP-POOL
-zfs set com.sun:auto-snapshot=false BKP-POOL/extbkp
+zfs set com.sun:auto-snapshot=false BKP_POOL
+zfs set com.sun:auto-snapshot=false BKP_POOL/extbkp
+
+(Create directories)
+mkdir -p /mnt/extbkps/BKP_VOL/Ben
+mkdir -p /mnt/extbkps/BKP_VOL/Media
+mkdir -p /mnt/extbkps/BKP_VOL/.Regions
 
 (Run these in files VM as root)
-mkdir -p /mnt/extbkps/BKP-VOL/Ben
-mkdir -p /mnt/extbkps/BKP-VOL/Media
-mkdir -p /mnt/extbkps/BKP-VOL/.Regions
-chown -R server:server /mnt/extbkps/BKP-VOL/*
+chown -R server:server /mnt/extbkps/BKP_VOL/Ben
+chown -R server:server /mnt/extbkps/BKP_VOL/Media
+chown -R server:server /mnt/extbkps/BKP_VOL/.Regions
 
 (Detach backup ZFS)
-zfs unmount /mnt/extbkps/BKP-VOL
-zpool export BKP-POOL
+zfs unmount /mnt/extbkps/BKP_VOL
+zpool export BKP_POOL
 zfs unload-key -a
 
 ####################################################################
@@ -126,17 +130,17 @@ zfs unload-key -a
 cd /dev/disk/by-id/
 ls -la
 (Select the drive name without -part* on the end)
-(Use that name for NEW-DRIVE)
+(Use that name for NEW_DRIVE)
 
-(Format the NEW-DRIVE using the above command)
+(Format the NEW_DRIVE using the above command)
 
 (Find the NAME of the bad drive should be to the left of the word FAULTED)
-(Replace the word 'BAD-DISK' in the next command with name found)
+(Replace the word 'BAD_DISK' in the next command with name found)
 zpool status
 
 (Add the new disk to the rpool ZFS mirror)
 (replace the word tank with the name of ZFS pool)
-zpool replace POOL-NAME 'BAD-DISK' /dev/disk/by-id/NEW-DRIVE
+zpool replace POOL-NAME 'BAD_DISK' /dev/disk/by-id/NEW_DRIVE
 
 (Drive will resilver and be added to the mirror, check with the command below)
 (This may take a few hours DO NOT TURN OFF OR REBOOT)
@@ -152,41 +156,41 @@ cd /dev/disk/by-id/
 ls -la
 (Select the drive name without -part* on the end)
 (Some of the commands below require you to specify the -part*)
-(Use that name for NEW-DRIVE)
+(Use that name for NEW_DRIVE)
 
-(Format the NEW-DRIVE using the above command)
+(Format the NEW_DRIVE using the above command)
 
 (Create bootloader partition)
-sgdisk -n 1:2048:6140 -c 1:"BIOS Boot Partition" -t 1:ef02 /dev/disk/by-id/NEW-DRIVE
+sgdisk -n 1:2048:6140 -c 1:"BIOS Boot Partition" -t 1:ef02 /dev/disk/by-id/NEW_DRIVE
 
 (Create kernel partition)
-sgdisk -n 2:6144:1054719 -c 2:"EFI Partition" -t 2:ef00 /dev/disk/by-id/NEW-DRIVE
+sgdisk -n 2:6144:1054719 -c 2:"EFI Partition" -t 2:ef00 /dev/disk/by-id/NEW_DRIVE
 
 (Install bootloader to new disk)
-proxmox-boot-tool format /dev/disk/by-id/NEW-DRIVE-part2
-proxmox-boot-tool init /dev/disk/by-id/NEW-DRIVE-part2
+proxmox-boot-tool format /dev/disk/by-id/NEW_DRIVE-part2
+proxmox-boot-tool init /dev/disk/by-id/NEW_DRIVE-part2
 
 (Check if both drives are listed here)
 proxmox-boot-tool status
 
 (Show to last sector of the new drive)
-sgdisk -E /dev/disk/by-id/NEW-DRIVE
+sgdisk -E /dev/disk/by-id/NEW_DRIVE
 
 (Subtract 20184 from the last sector number)
 Use that number to replace the word LAST-SECTOR in the next command
 
-(Create ZFS main partiton on the new drive)
-sgdisk -n 3:1054720:LAST-SECTOR -c 3:"zfs" -t 3:bf01 /dev/disk/by-id/NEW-DRIVE
+(Create ZFS main partition on the new drive)
+sgdisk -n 3:1054720:LAST-SECTOR -c 3:"zfs" -t 3:bf01 /dev/disk/by-id/NEW_DRIVE
 
 (Check the new drives partition layout is 1-BIOS Boot, 2-EFI and 3-zfs)
-sgdisk -p /dev/disk/by-id/NEW-DRIVE
+sgdisk -p /dev/disk/by-id/NEW_DRIVE
 
 (Find the NAME of the bad drive should be to the left of the word FAULTED)
 zpool status
 
 (Add the new disk to the rpool ZFS mirror with a FAULTED disk)
-(replace the word BAD-DISK with name found in the last command)
-zpool replace rpool BAD-DISK /dev/disk/by-id/NEW-DRIVE-part3
+(replace the word BAD_DISK with name found in the last command)
+zpool replace rpool BAD_DISK /dev/disk/by-id/NEW_DRIVE-part3
 
 (Drive will resilver and be added to the mirror, check with the command below)
 zpool status
@@ -206,10 +210,10 @@ ls -la
 
 (Format the NEW_DISK using the above command)
 
-(Replace the word GOOD-DISK in the next command with name found in 'zpool status')
-** GOOD-DISK can be any drive in the mirror pool
+(Replace the word GOOD_DISK in the next command with name found in 'zpool status')
+** GOOD_DISK can be any drive in the mirror pool
 
-zpool attach POOL-NAME GOOD-DISK /dev/disk/by-id/NEW_DISK
+zpool attach POOL-NAME GOOD_DISK /dev/disk/by-id/NEW_DISK
 
 ####################################################################
 ## Remove a drive from pool in mirror (DON'T USE TO REPLACE A BAD DRIVE)

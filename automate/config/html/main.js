@@ -8,16 +8,14 @@ var promptCount = 0;
 
 // on-page-load
 window.onload = function() {
-  const mainpg = "https://"+location.hostname+"/"
   // load volume mode support on main page only
-  if (window.location.href == mainpg) {
+  if (window.location.href == "https://"+location.hostname+"/") {
     volMode();
   }else{
     vol_mode = 0;  
   }
   // load relax mode support on bedroom page only
-  const roompg = "https://"+location.hostname+"/room.html"
-  if (window.location.href == roompg) {
+  if (window.location.href == "https://"+location.hostname+"/ambiance.html") {
     relaxMode();
   }else{
     relax_mode = 0;
@@ -41,24 +39,6 @@ function GoToCamera() {
   closePopup();
   window.location = "https://"+location.hostname+"/cam1";
 };
-
-// password prompt
-function getPasswordB()
-{
-    var pwd = prompt('Enter password:', '');
-    if(pwd != null)
-    {
-        if(pwd != '')
-        {
-            savePOST(pwd);
-            serverAction('attach_bkps');
-            pwd = "";
-            return true;
-        }
-    }
-    return false;
-}
-
 
 function passwordPrompt(text){
 /*creates a password-prompt instead of a normal prompt*/
@@ -284,13 +264,13 @@ function showSpinner() {
   document.getElementById("formSpinner").style.display = "inline-block";   
 };
 
+
 function hideSpinner() {
   // hide apple spinner
   document.getElementById("formSpinner").style.display = "none";
   // re-enable close button
   document.getElementById("sendButton").style.display = "inline-block";  
 };
-
 
 
 // switch volume controls on main page

@@ -19,7 +19,8 @@ class DumpHTTPRequestToFile {
 
 		file_put_contents(
 			$targetFile,
-			$data . file_get_contents('php://input') . "\n"
+//			$data . file_get_contents('php://input') . "\n"
+		    file_get_contents('php://input') . "\n"
 		);
 
 //		echo("Done!\n\n");

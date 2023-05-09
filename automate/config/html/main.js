@@ -41,20 +41,8 @@ function GoToCamera() {
 };
 
 function passwordPrompt(text){
-/*creates a password-prompt instead of a normal prompt*/
-/* first the styling - could be made here or in a css-file.*/
-var width=200;
-var height=120;
 var pwprompt = document.createElement("div"); //creates the div to be used as a prompt
-pwprompt.id= "password_prompt"; //gives the prompt an id - not used in my example but good for styling with css-file
-pwprompt.style.position = "fixed"; //make it fixed as we do not want to move it around
-pwprompt.style.left = ((window.innerWidth / 2) - (width / 2)) + "px"; //let it apear in the middle of the page
-pwprompt.style.top = ((window.innerWidth / 2) - (width / 2)) + "px"; //let it apear in the middle of the page
-pwprompt.style.border = "1px solid black"; //give it a border
-pwprompt.style.padding = "16px"; //give it some space
-pwprompt.style.background = "white"; //give it some background so its not transparent
-pwprompt.style.zIndex = 99999; //put it above everything else - just in case
-
+pwprompt.id= "pass__prompt"; //gives the prompt an id - not used in my example but good for styling with css-file
 var pwtext = document.createElement("div"); //create the div for the password-text
 pwtext.innerHTML = text; //put inside the text
 pwprompt.appendChild(pwtext); //append the text-div to the password-prompt
@@ -70,7 +58,6 @@ pwprompt.appendChild(pwcancelb); //append cancel-button first
 pwprompt.appendChild(pwokbutton); //append the ok-button
 document.body.appendChild(pwprompt); //append the password-prompt so it gets visible
 pwinput.focus(); //focus on the password-input-field so user does not need to click 
-
 /*now comes the magic: create and return a promise*/
 return new Promise(function(resolve, reject) {
     pwprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons

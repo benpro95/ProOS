@@ -32,11 +32,9 @@ df -h --type=zfs --type=ext4
 echo ""
 echo "** Drive Status**"
 DISK_DRIVE="/dev/disk/by-id/ata-INTEL_SSDSC2KB480G8_PHYF00540242480BGN"
-/usr/sbin/hddtemp --unit=F $DISK_DRIVE | grep -oP "($DISK_DRIVE: )\K.*"
 /usr/sbin/smartctl --all --quietmode=errorsonly $DISK_DRIVE
 ##
-DISK_DRIVE="/dev/disk/by-id/ata-Samsung_SSD_850_EVO_M.2_250GB_S33CNX0J314914T"
-/usr/sbin/hddtemp --unit=F $DISK_DRIVE | grep -oP "($DISK_DRIVE: )\K.*"
+DISK_DRIVE="/dev/disk/by-id/ata-Samsung_SSD_870_EVO_500GB_S6PXNM0TB49117Y"
 /usr/sbin/smartctl --all --quietmode=errorsonly $DISK_DRIVE
 ##
 DISK_DRIVE="/dev/disk/by-id/ata-WDC_WD40EFZX-68AWUN0_WD-WXA2D81NA45F"

@@ -70,7 +70,7 @@ for _POOL in "${ZFSPOOLS[@]}"; do
         else
           echo "syncing 'Ben' share to $POOL drive..."
           rsync $CHECKSUM -aP --exclude="tmp" \
-          --exclude="Software/Workstation/**.adi" --exclude="Software/Playstation" \
+          --exclude="Software/Workstation/**.adi" --exclude="Software/Playstation" --exclude="Software/**VM.7z" \
           --exclude="Software/**VM.zip" --exclude="Software/**HD.zip" --exclude="Software/**HD.7z" \
           /mnt/ben/ /mnt/extbkps/$POOL/Ben/ -delete --delete-excluded
         fi

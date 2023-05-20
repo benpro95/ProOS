@@ -161,36 +161,37 @@ ls -la
 (Format the NEW_DRIVE using the above command)
 
 (Create bootloader partition)
-sgdisk -n 1:2048:6140 -c 1:"BIOS Boot Partition" -t 1:ef02 /dev/disk/by-id/NEW_DRIVE
+sgdisk -n 1:2048:6140 -c 1:"BIOS Boot Partition" -t 1:ef02 /dev/disk/by-id/$NEW_DRIVE$
 
 (Create kernel partition)
-sgdisk -n 2:6144:1054719 -c 2:"EFI Partition" -t 2:ef00 /dev/disk/by-id/NEW_DRIVE
+sgdisk -n 2:6144:1054719 -c 2:"EFI Partition" -t 2:ef00 /dev/disk/by-id/$NEW_DRIVE$
 
 (Install bootloader to new disk)
-proxmox-boot-tool format /dev/disk/by-id/NEW_DRIVE-part2
-proxmox-boot-tool init /dev/disk/by-id/NEW_DRIVE-part2
+proxmox-boot-tool format /dev/disk/by-id/$NEW_DRIVE$-part2
+proxmox-boot-tool init /dev/disk/by-id/$NEW_DRIVE$-part2
+proxmox-boot-tool clean
 
 (Check if both drives are listed here)
 proxmox-boot-tool status
 
 (Show to last sector of the new drive)
-sgdisk -E /dev/disk/by-id/NEW_DRIVE
+sgdisk -E /dev/disk/by-id/$NEW_DRIVE$
 
-(Subtract 20184 from the last sector number)
-Use that number to replace the word LAST-SECTOR in the next command
+(!! Subtract 20184 from the last sector number)
+Use that new number to replace the word LAST_SECTOR in the next command
 
 (Create ZFS main partition on the new drive)
-sgdisk -n 3:1054720:LAST-SECTOR -c 3:"zfs" -t 3:bf01 /dev/disk/by-id/NEW_DRIVE
+sgdisk -n 3:1054720:$LAST_SECTOR$ -c 3:"zfs" -t 3:bf01 /dev/disk/by-id/$NEW_DRIVE$
 
 (Check the new drives partition layout is 1-BIOS Boot, 2-EFI and 3-zfs)
-sgdisk -p /dev/disk/by-id/NEW_DRIVE
+sgdisk -p /dev/disk/by-id/$NEW_DRIVE$
 
 (Find the NAME of the bad drive should be to the left of the word FAULTED)
 zpool status
 
 (Add the new disk to the rpool ZFS mirror with a FAULTED disk)
 (replace the word BAD_DISK with name found in the last command)
-zpool replace rpool BAD_DISK /dev/disk/by-id/NEW_DRIVE-part3
+zpool replace rpool $BAD_DISK$ /dev/disk/by-id/$NEW_DRIVE$-part3
 
 (Drive will resilver and be added to the mirror, check with the command below)
 zpool status

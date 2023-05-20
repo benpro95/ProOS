@@ -437,8 +437,8 @@ sleep)
 if (systemctl is-active --quiet relaxloop.service); then
   echo "Turning off Apple TV..."
   systemctl stop relaxloop
-  systemctl set-environment rpi_relaxmode=off
-  systemctl start relaxloop
+  ##systemctl set-environment rpi_relaxmode=off
+  ##systemctl start relaxloop
 else
   echo "Service not runnning starting sleep mode..."
   /opt/system/main relax waterfall

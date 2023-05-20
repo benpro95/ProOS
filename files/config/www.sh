@@ -32,7 +32,7 @@ echo " "
 ## Turn on LED
 /usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 5 \
  --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive \
- --url "http://ledwall.home:9300/exec.php?var=&arg=whtledon&action=main"
+ --url "http://ledwall.home/exec.php?var=&arg=whtledon&action=main"
 
 if [[ "$CHECKSUM" == "yes" ]]
 then
@@ -144,7 +144,7 @@ echo "wait $WAIT_TIME second(s) for drives to detach."
 ## Turn off LED
 /usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 30 \
  --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive \
- --url "http://ledwall.home:9300/exec.php?var=&arg=whtledoff&action=main"
+ --url "http://ledwall.home/exec.php?var=&arg=whtledoff&action=main"
 
 echo "****************** backup complete **********************"
 }

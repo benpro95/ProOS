@@ -52,6 +52,15 @@ chmod 644 /etc/systemd/system/plexmediaserver.service.d/override.conf
 chown root:root /etc/systemd/system/plexmediaserver.service.d/override.conf
 systemctl disable plexmediaserver.service
 
+## Plex SSL Certificate
+cat /tmp/config/plex.crt /tmp/config/root_ca.crt > /tmp/config/fullchain.crt
+openssl pkcs12 -export -out /tmp/config/plex.pfx -inkey /tmp/config/plex.key \
+ -in /tmp/config/fullchain.crt -name plex.home -passout pass:"" \
+ -certpbe AES-256-CBC -keypbe AES-256-CBC -macalg SHA256
+cp /tmp/config/plex.pfx /home/
+chown plex:plex /home/plex.pfx
+chmod 644 /home/plex.pfx
+
 ## Auto SSH Login Key for root
 mkdir -p /root/.ssh
 cp -r /tmp/config/authorized_keys /root/.ssh/

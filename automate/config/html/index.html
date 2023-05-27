@@ -175,33 +175,33 @@
       <div class="dropdown"> 
         <a class="dropbtn" onmouseover="resetAction()">Backup</a>
         <div class="dropdown-content">
-          <a onclick="serverAction('pve_vmsbkp')">PVE VMs</a> 
+          <a onclick="getPassword()">Unlock</a>  
+          <a onclick="serverAction('detach_bkps')">Detach</a>    
+          <a onclick="serverAction('pve_vmsbkp')">Proxmox</a> 
+          <a onclick="serverAction('files-backupchk')">Checksum</a>   
           <a onclick="serverAction('files-backupstd')">Standard</a> 
-          <a onclick="serverAction('files-backupchk')">Checksum</a> 
-          <a onclick="getPassword()">Attach</a>  
-          <a onclick="serverAction('detach_bkps')">Detach</a>      
         </div>
       </div>
       <div class="dropdown"> 
         <a class="dropbtn" onmouseover="resetAction()">Unifi</a>
         <div class="dropdown-content">
-          <a onclick="serverAction('startunifi')">Start LXC</a>
-          <a onclick="serverAction('stopunifi')">Stop LXC</a>
+          <a onclick="serverAction('startunifi')">Start</a>
+          <a onclick="serverAction('stopunifi')">Stop</a>
         </div>
       </div>
       <div class="dropdown"> 
         <a class="dropbtn" onmouseover="resetAction()">Xana</a>
         <div class="dropdown-content">
-          <a onclick="serverAction('startxana')">Start VM</a>
-          <a onclick="serverAction('restorexana')">Restore VM</a>
-          <a onclick="serverAction('stopxana')">Stop VM</a>       
+          <a onclick="serverAction('startxana')">Start</a>
+          <a onclick="serverAction('restorexana')">Restore</a>
+          <a onclick="serverAction('stopxana')">Stop</a>       
         </div>
       </div>
       <div class="dropdown"> 
         <a class="dropbtn" onmouseover="resetAction()">Dev</a>
         <div class="dropdown-content">
-          <a onclick="serverAction('startdev')">Start VM</a>
-          <a onclick="serverAction('stopdev')">Stop VM</a>
+          <a onclick="serverAction('startdev')">Start</a>
+          <a onclick="serverAction('stopdev')">Stop</a>
         </div>
       </div>
     </div>

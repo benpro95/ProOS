@@ -1,7 +1,7 @@
-## LXDE Desktop (disabled)
-##@lxpanel --profile LXDE
-##@pcmanfm --desktop --profile LXDE
-##@xscreensaver -no-splash
+## LXDE Desktop (enabled)
+@lxpanel --profile LXDE
+@pcmanfm --desktop --profile LXDE
+@xscreensaver -no-splash
 
 ## Disable Blanking
 @xset s off
@@ -23,4 +23,4 @@
 @/opt/rpi/lcdsleep.sh
 
 ## Start Browser 
-@chromium-browser --kiosk --no-first-run --disable-plugins --disable-extensions --disk-cache-size=32000 --media-cache-size=32000 --enable-features=OverlayScrollbar,OverlayScrollbarFlashAfterAnyScrollUpdate,OverlayScrollbarFlashWhenMouseEnter --incognito --disable-restore-session-state --disable-session-crashed-bubble --disable-seccomp-filter-sandbox --disable-software-rasterizer --noerrdialogs --disable-infobars https://automate.home
+#@chromium-browser --kiosk --no-first-run --disable-plugins --disable-extensions --disk-cache-size=32000 --media-cache-size=32000 --enable-features=OverlayScrollbar,OverlayScrollbarFlashAfterAnyScrollUpdate,OverlayScrollbarFlashWhenMouseEnter --incognito --disable-restore-session-state --disable-session-crashed-bubble --disable-seccomp-filter-sandbox --disable-software-rasterizer --noerrdialogs --disable-infobars https://automate.home

@@ -1,0 +1,80 @@
+#!/bin/bash
+###########################################################
+## LEDstrips main script by Ben Provenzano III ##############
+###########################################################
+###########################################################
+
+case "$1" in
+
+boot)
+/opt/rpi/leds fc norm
+## Auto Hotspot (on boot only)
+systemctl restart rpi-netdetect
+## Disable HDMI (saves 30mA)
+/usr/bin/tvservice -o
+exit
+;;
+
+lcdon)
+## LCD on
+sudo sh -c 'echo 0 > /sys/class/backlight/rpi_backlight/bl_power'
+exit
+;;
+
+lcdoff)
+## LCD off
+sudo sh -c 'echo 1 > /sys/class/backlight/rpi_backlight/bl_power'
+exit
+;;
+
+lcdstd)
+## Standard LCD Brightness
+sudo sh -c 'echo "110" > /sys/class/backlight/rpi_backlight/brightness'
+exit
+;;
+
+lcdlow)
+## Low LCD Brightness
+sudo sh -c 'echo "50" > /sys/class/backlight/rpi_backlight/brightness'
+exit
+;;
+
+lcd50)
+## 50% LCD Brightness
+sudo sh -c 'echo "100" > /sys/class/backlight/rpi_backlight/brightness'
+exit
+;;
+
+lcd75)
+## 75% LCD Brightness
+sudo sh -c 'echo "170" > /sys/class/backlight/rpi_backlight/brightness'
+exit
+;;
+
+lcd100)
+## Full LCD Brightness
+sudo sh -c 'echo "255" > /sys/class/backlight/rpi_backlight/brightness'
+exit
+;;
+
+usbplug)
+## This script is ran after USB drive attached
+echo "no function assigned"
+exit
+;;
+
+	    
+    *)
+      echo "TouchPi"
+	  echo "  by Ben Provenzano III"
+	  echo " "
+	  echo "Enter a valid command line argument."
+	  echo "lcdoff - Turn off display"
+	  echo "lcdon - Turn on display"
+	  echo "lcdlow - Low display brightness"
+	  echo "lcd50 - 50% display brightness"
+	  echo "lcd75 - 75% display brightness"
+	  echo "lcd100 - 100% display brightness"
+      exit 1
+      ;;
+    esac

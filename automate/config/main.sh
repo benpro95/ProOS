@@ -375,10 +375,11 @@ exit
 
 vmute)
 if [ "$CMDARG" == "bedroom" ]; then
-  ## Turn Off Apple TV
+  ## Stop playback on Apple TV
   systemctl stop relaxloop
-  systemctl set-environment rpi_relaxmode=off
-  systemctl start relaxloop
+  ## Turn off Apple TV
+  ##systemctl set-environment rpi_relaxmode=off
+  ##systemctl start relaxloop
 fi
 if [ "$CMDARG" == "subs" ]; then
   XMITCMD="subpwr" ; XMIT
@@ -435,8 +436,9 @@ exit
 sleep)
 ## Toggle Sounds On/Off 
 if (systemctl is-active --quiet relaxloop.service); then
-  echo "Turning off Apple TV..."
+  echo "Stopping playback on Apple TV..."
   systemctl stop relaxloop
+  ## Turn off Apple TV
   ##systemctl set-environment rpi_relaxmode=off
   ##systemctl start relaxloop
 else
@@ -628,10 +630,11 @@ fi
 XMITCMD="hifioff" ; XMIT 
 ## Blank LEDwalls
 /opt/system/leds stop
-## Turn Off Apple TV
+## Stop playback on Apple TV
 systemctl stop relaxloop
-systemctl set-environment rpi_relaxmode=off
-systemctl start relaxloop
+## Turn off Apple TV
+##systemctl set-environment rpi_relaxmode=off
+##systemctl start relaxloop
 exit
 ;;
 

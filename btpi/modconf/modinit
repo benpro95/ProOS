@@ -37,7 +37,4 @@ ln -sf /opt/rpi/main /usr/bin/main
 #chmod 644 /etc/dnsmasq.conf
 #chown root:root /etc/dnsmasq.conf
 
-## Change Web Server Default Theme
-/opt/rpi/init dpurple
-
 exit

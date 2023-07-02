@@ -27,6 +27,10 @@ Protocol-> tcp
 Dest. port-> 8006
 
 ####################################################################
+List Memory Information:
+dmidecode --type 17 | more
+
+####################################################################
 DNS configuration, set in Proxmox web interface
 
 search home

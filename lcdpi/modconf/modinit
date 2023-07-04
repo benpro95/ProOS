@@ -1,0 +1,42 @@
+#!/bin/bash
+##
+
+## Module Path
+BIN=/opt/rpi
+# Import Module Name
+MODNAME=`cat $BIN/modconf/brand.txt`
+
+if [ ! -e /opt/rpi/init ]; then
+echo "Core components missing or corrupted."
+echo "Exiting..."
+sleep 1
+exit
+else
+echo "Components integrity verified."
+fi
+
+echo "Starting $MODNAME configuration..."
+
+## Copy Boot Config
+mount -o remount,rw /boot
+sleep 1.25
+cp -r $BIN/modconf/config.txt /boot/
+mount -o remount,ro /boot
+
+## Terminal Service
+cp -f $BIN/modconf/ztermcom.service /etc/systemd/system/
+chmod -f 644 /etc/systemd/system/ztermcom.service
+chown -f root:root /etc/systemd/system/ztermcom.service
+cp -f $BIN/modconf/ztermcom.socket /etc/systemd/system/
+chmod -f 644 /etc/systemd/system/ztermcom.socket
+chown -f root:root /etc/systemd/system/ztermcom.socket
+
+## Compile Terminal Service (C)
+/usr/bin/gcc /opt/rpi/ztermcom.c -o /usr/bin/ztermcom
+chmod +x /usr/bin/ztermcom 
+chown root:root /usr/bin/ztermcom 
+
+## Link RPi to global commands library
+ln -sf /opt/rpi/main /usr/bin/main
+
+exit

@@ -1,0 +1,18 @@
+#!/bin/bash
+##
+case "$1" in
+
+boot)
+## Start Z-Terminal Service
+systemctl start ztermcom.socket
+systemctl start ztermcom.service
+## Disable HDMI (saves 30mA)
+tvservice -o
+exit
+;;
+
+    
+        *)
+        exit 1
+        ;;
+    esac   

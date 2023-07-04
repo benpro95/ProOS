@@ -1,0 +1,6 @@
+Unit]
+Description=Z-Terminal Communication Socket
+
+[Socket]
+ListenFIFO=/dev/zterm
+Service=ztermcom.service

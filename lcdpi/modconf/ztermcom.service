@@ -1,0 +1,15 @@
+[Unit]
+Description=Z-Terminal Communication Service
+Conflicts=shutdown.target
+
+[Service]
+User=root
+ExecStart=/usr/bin/ztermcom -
+Sockets=ztermcom.socket
+StandardInput=socket
+KillSignal=SIGKILL
+Restart=always
+RestartSec=5
+
+[Install]
+#WantedBy=multi-user.target

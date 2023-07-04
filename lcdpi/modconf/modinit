@@ -1,6 +1,8 @@
 #!/bin/bash
 ##
 
+# Import Host name
+HOSTNAME=`cat /opt/rpi/config/hostname`
 ## Module Path
 BIN=/opt/rpi
 # Import Module Name

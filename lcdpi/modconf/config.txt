@@ -6,10 +6,6 @@ gpu_mem=16
 #-------Max USB Current-------
 max_usb_current=1
 
-#------Disable Wi-Fi and Bluetooth-----
-dtoverlay=disable-wifi
-dtoverlay=disable-bt
-
 #-------Disable Ram temp refresh every 500ms---------
 disable_pvt=1
 

@@ -29,14 +29,12 @@ mount -o remount,ro /boot
 cp -f $BIN/modconf/ztermcom.service /etc/systemd/system/
 chmod -f 644 /etc/systemd/system/ztermcom.service
 chown -f root:root /etc/systemd/system/ztermcom.service
-cp -f $BIN/modconf/ztermcom.socket /etc/systemd/system/
-chmod -f 644 /etc/systemd/system/ztermcom.socket
-chown -f root:root /etc/systemd/system/ztermcom.socket
-
-## Compile Terminal Service (C)
+rm -f /etc/systemd/system/ztermcom.socket
 /usr/bin/gcc /opt/rpi/ztermcom.c -o /usr/bin/ztermcom
 chmod +x /usr/bin/ztermcom 
 chown root:root /usr/bin/ztermcom 
+systemctl daemon-reload
+systemctl restart ztermcom.service
 
 ## Link RPi to global commands library
 ln -sf /opt/rpi/main /usr/bin/main

@@ -2,5 +2,7 @@ Unit]
 Description=Z-Terminal Communication Socket
 
 [Socket]
-ListenFIFO=/dev/zterm
+Backlog=4
+MaxConnections=1
+ListenFIFO=/tmp/zterm
 Service=ztermcom.service

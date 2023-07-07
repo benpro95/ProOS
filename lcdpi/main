@@ -4,7 +4,9 @@ case "$1" in
 
 boot)
 ## Start Z-Terminal Service
-systemctl start ztermcom.socket
+rm -f /dev/zterm
+mkfifo /dev/zterm
+chmod 666 /dev/zterm
 systemctl start ztermcom.service
 ## Disable HDMI (saves 30mA)
 tvservice -o

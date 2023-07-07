@@ -1,0 +1,3 @@
+
+echo '$?-|c3' > /dev/zterm
+cat text.txt > /dev/zterm

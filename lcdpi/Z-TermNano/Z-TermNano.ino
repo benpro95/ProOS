@@ -1,5 +1,5 @@
  /////////////////////////////////////////////////////////////////////////
-// Z-Terminal Firmware v2.1
+// Z-Terminal Firmware v2.1 for Arduino Nano Every
 // by Ben Provenzano III
 //////////////////////////////////////////////////////////////////////////
 
@@ -23,7 +23,7 @@ bool clearButton = 0;
 bool lastclearButton = 0;
 unsigned long clearButtonMillis = 0;
 uint8_t debounceDelay = 50; // button debounce delay in ms
-uint8_t startDelay = 5; // delay on initial start in seconds
+uint8_t startDelay = 35; // delay on initial start in seconds
 
 // 16x2 LCD Display
 #define lcdAddr 0x27 // I2C address
@@ -94,7 +94,7 @@ void setup() {
   lcd.print("Z-Terminal");   
   lcd.setCursor(0,1);
   lcd.print("v1.2");
-  delay(2000);
+  delay(1500);
   lcd.clear();
   lcd.setCursor(0,0);
   // built-in LED

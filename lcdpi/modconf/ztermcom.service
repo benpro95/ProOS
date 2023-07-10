@@ -4,6 +4,7 @@ Conflicts=shutdown.target
 
 [Service]
 User=root
+ExecStartPre=/bin/bash -c 'rm -f /dev/zterm; mkfifo /dev/zterm; chmod 666 /dev/zterm'
 ExecStart=/usr/bin/ztermcom
 StandardOutput=journal
 StandardError=journal

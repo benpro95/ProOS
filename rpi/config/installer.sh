@@ -754,7 +754,9 @@ systemctl disable hostapd dhcpcd networking wpa_supplicant keyboard-setup \
 plymouth sysstat lightdm apache2 lighttpd dnsmasq apt-daily.service wifiswitch plymouth-log \
 apt-daily.timer apt-daily-upgrade.service apt-daily-upgrade.timer sysstat-collect.timer motion \
 sysstat-summary.timer man-db.service man-db.timer hciuart bluetooth usbplug nmbd smbd autofs \
-shairport-sync nqptp triggerhappy.service triggerhappy.socket e2scrub_all.service e2scrub_all.timer
+shairport-sync nqptp triggerhappy.service triggerhappy.socket e2scrub_all.service e2scrub_all.timer \
+serial-getty@ttyS0.service serial-getty@ttyAMA0.service
+
 echo "Initial setup (phase II) complete."
 touch /etc/rpi-conf.done
 else

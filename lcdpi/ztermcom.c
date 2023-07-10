@@ -25,9 +25,9 @@ char *line = NULL;
 const char *fifo_path = "/dev/zterm";
 // serial device
 int serial_port;
-const char device[] = "/dev/ttyACM0"; 
+const char device[] = "/dev/serial0"; 
 // max serial data chunk bytes
-const size_t maxCmdLength = 32;
+const size_t maxCmdLength = 60;
 // signature matching
 const char sigChars[] = {"$?-|"}; // control mode
 size_t sigMatches = 0;
@@ -64,6 +64,7 @@ void pauseExec() {
 void controlParser() {
   size_t _dataint = 0;
   bool _notdigit = 0;
+  char _datstr[5];
   // read 1st position then replace with zero
   char _ctlchar = controlDat[0];
   controlDat[0] = '0';
@@ -83,8 +84,7 @@ void controlParser() {
   }
   // clear display
   if(_ctlchar == 'c'){
-  	char _datstr[3];
-  	// convert clear int to char
+  	// cast integer to char
   	sprintf(_datstr, "%zu", _dataint);
   	// build output string
   	rawData[0]='<';
@@ -250,23 +250,17 @@ int serialWrite() {
   size_t startpos = 0;
   // write max-char segments
   for (i = 1; i <= writeLoops; ++i) {
-    char delaystr[8];
-    // read / convert delay data
-    sprintf(delaystr, "%zu", delayTime);
     // build output string
     rawData[0]='<';
-    strcat(rawData, "0,"); 
-    strcat(rawData, delaystr);    
-    strcat(rawData, ",");
+    strcat(rawData, "0,0,"); 
     if (writeLoops > 1) {
       strncpy(chunkBuf, line + (startpos), maxCmdLength);
       startpos = startpos + maxCmdLength;
       strcat(rawData, chunkBuf); 
-      strcat(rawData, ">"); 
     } else {
       strcat(rawData, line);  
-      strcat(rawData, ">"); 
     }
+    strcat(rawData, ">"); 
     printf("Serial Data: %s\n", rawData);
     // write to the serial port
     write(serial_port, rawData, sizeof(rawData)); 
@@ -323,8 +317,6 @@ int main() {
   // program status 
   int status = 0;
   printf("Z-Terminal Xmit v1.0\n");
-  // wait for boot response
-  status = serialRead();
   // main loop
   while(1) {
     // read FIFO (not-blocking)

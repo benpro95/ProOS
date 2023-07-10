@@ -1,7 +1,10 @@
 ## Created by Ben Provenzano III
 
-#-------GPU memory-------
+#-------GPU Memory-------
 gpu_mem=16
+
+#-------Enable Serial-------
+enable_uart=1
 
 #-------Max USB Current-------
 max_usb_current=1

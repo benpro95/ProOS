@@ -33,9 +33,9 @@ rm -f /etc/systemd/system/ztermcom.socket
 /usr/bin/gcc /opt/rpi/ztermcom.c -o /usr/bin/ztermcom
 chmod +x /usr/bin/ztermcom 
 chown root:root /usr/bin/ztermcom 
-systemctl daemon-reload
-systemctl disable ztermcom.service
-systemctl restart ztermcom.service
+#systemctl daemon-reload
+#systemctl disable ztermcom.service
+#systemctl restart ztermcom.service
 
 ## Link RPi to global commands library
 ln -sf /opt/rpi/main /usr/bin/main

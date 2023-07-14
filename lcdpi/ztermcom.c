@@ -27,7 +27,7 @@ const char *fifo_path = "/dev/zterm";
 int serial_port;
 const char device[] = "/dev/serial0"; 
 // max serial data chunk bytes
-const size_t maxCmdLength = 60;
+const size_t maxCmdLength = 48;
 // signature matching
 const char sigChars[] = {"$?-|"}; // control mode
 size_t sigMatches = 0;
@@ -38,15 +38,11 @@ size_t controlCount = 0;
 size_t controlLen = 0;
 bool controlMode = 0;
 // line output data
-int writeLoops = 0;
+size_t writeLoops = 0;
 size_t lineSize = 0;
-size_t serCharBufSize = buffLen;
 char serCharBuf[buffLen];
-char rawData[buffLen];
-char chunkBuf[buffLen];
-size_t delayTime = 0; 
 // flags
-bool enableSend = 0;
+size_t enableSend = 0;
 bool readMode = 0;
 
   
@@ -62,9 +58,11 @@ void pauseExec() {
 
 
 void controlParser() {
-  size_t _dataint = 0;
+  char _rawData[buffLen];
+  size_t _datint = 0;
+  size_t _cmdint = 0;
   bool _notdigit = 0;
-  char _datstr[5];
+  bool _write = 0;
   // read 1st position then replace with zero
   char _ctlchar = controlDat[0];
   controlDat[0] = '0';
@@ -75,31 +73,48 @@ void controlParser() {
     }
   } // cast to integer
   if(_notdigit == 0){
-    _dataint = atoi(controlDat);
+    _datint = atoi(controlDat);
   }  
   // character delay
   if(_ctlchar == 'd'){
-    printf("Setting delay: %zu\n", _dataint);
-    delayTime = _dataint;
+    // delay register
+    _cmdint = 4; 
+    // send command
+    _write = 1; 
   }
   // clear display
   if(_ctlchar == 'c'){
-  	// cast integer to char
-  	sprintf(_datstr, "%zu", _dataint);
-  	// build output string
-  	rawData[0]='<';
-  	strcat(rawData, _datstr);   
-  	strcat(rawData, ",0,0>"); 
-  	printf("Control data: %s\n", rawData);
-  	size_t _size = sizeof(rawData);
-  	write(serial_port, rawData, _size);
-  	memset(rawData, 0, _size);
-  	// clear line data
-  	enableSend = 0;
-  	writeLoops = 0;
-  	line = realloc(line,1);
-  	line[0] = '\0';
-  	lineSize = 0;
+    // erase display register
+    if(_datint < 4 && _datint > 0){
+      _cmdint = _datint;
+      // clear line data
+      enableSend = 0;
+      writeLoops = 0;
+      line = realloc(line,1);
+      line[0] = '\0';
+      lineSize = 0;
+      // send command
+      _write = 1;
+    } // no data sent
+    _datint = 0;
+  } // write serial port
+  if(_write == 1){
+    char _cmdstr[10];
+    char _datstr[10];
+    // cast integers to chars
+    sprintf(_cmdstr, "%zu", _cmdint);
+    sprintf(_datstr, "%zu", _datint);
+    // build output string
+    _rawData[0]='<';
+    _rawData[1]='\0';
+    strcat(_rawData, _cmdstr);   
+    strcat(_rawData, ","); 
+    strcat(_rawData, _datstr);  
+    strcat(_rawData, ",0>"); 
+    printf("Control data: %s\n", _rawData);
+    write(serial_port, _rawData, buffLen);
+    memset(_rawData, 0, buffLen);
+    _write = 0;
   }
 }
 
@@ -128,18 +143,21 @@ void readIn() {
       }
       //// newline is sent ////
       if (input == '\n') { 
-        if (controlMode == 0) {
-          if (enableSend == 0) {
-            // calcuate transmission rounds
-            if (lineSize <= 0) {
-              lineSize = 1;
-            } 
-            writeLoops = 
-              (ROUND_DIVIDE(lineSize,maxCmdLength) + 1);
-            // enable transmit
-            enableSend = 1;
+        if (controlMode == 0) { // not in control mode
+          if (enableSend == 0) { // not currently sending
+            if (lineSize > 0) { // one character or more
+              // calcuate transmission rounds
+              writeLoops = 
+                (ROUND_DIVIDE(lineSize,maxCmdLength) + 1);
+              // enable transmit
+              if (lineSize == 1){
+                enableSend = 2; // single character (no delay)
+              } else {
+                enableSend = 1;
+              } 
+            }
             // terminate line
-            line[lineSize] = '\0';
+            line[lineSize] = '\0';  
           }  
         } else { // control mode 
           controlParser();
@@ -208,7 +226,7 @@ int serialRead() {
       return 1;
     }
     // read serial port
-    ssize_t num_bytes = read(serial_port, serCharBuf, serCharBufSize);
+    ssize_t num_bytes = read(serial_port, serCharBuf, buffLen);
     // check if the serial port is available
     if (access(device, F_OK) != 0) {
       printf("Serial port not available\n");
@@ -220,7 +238,7 @@ int serialRead() {
       for (i = 0; i < num_bytes; i++) {
         // check for input
         if (serCharBuf[i] == target_char) {
-          printf("Received acknowledge '%c'\n", target_char);
+          printf("Received acknowledge '%c'\n", target_char); 
           return 0;
         }
       }
@@ -246,27 +264,40 @@ int serialWrite() {
     printf("Serial port not available\n");
     return 1;
   }
-  int i;
-  size_t startpos = 0;
+  size_t _loops = 0;
+  size_t _delay = 1;
+  size_t _startpos = 0;
+  printf("LOOPS '%zu'\n", writeLoops); 
   // write max-char segments
-  for (i = 1; i <= writeLoops; ++i) {
-    // build output string
-    rawData[0]='<';
-    strcat(rawData, "0,0,"); 
-    if (writeLoops > 1) {
-      strncpy(chunkBuf, line + (startpos), maxCmdLength);
-      startpos = startpos + maxCmdLength;
-      strcat(rawData, chunkBuf); 
-    } else {
-      strcat(rawData, line);  
+  for (_loops = 1; _loops <= writeLoops; ++_loops) {
+    char _rawData[buffLen];
+    char _chunkBuf[buffLen];
+    _rawData[0] = '\0';
+    _chunkBuf[0] = '\0';
+    // no delay mode
+    if (enableSend == 2) {
+      _delay = 0; 
     }
-    strcat(rawData, ">"); 
-    printf("Serial Data: %s\n", rawData);
+    // convert delay data
+    char _delaystr[10];
+    sprintf(_delaystr, "%zu", _delay);
+    // build output string
+    strcat(_rawData, "<0,"); 
+    strcat(_rawData, _delaystr); 
+    strcat(_rawData, ",");
+    if (_loops > 1) {
+      strncpy(_chunkBuf, (line + _startpos), maxCmdLength);
+      _startpos = _startpos + maxCmdLength;
+    } else {
+      strncpy(_chunkBuf, line, maxCmdLength);
+      _startpos = maxCmdLength;
+      printf("less than 32\n");
+    }
+    strcat(_rawData, _chunkBuf); 
+    strcat(_rawData, ">");
+    printf("Serial Data: %s\n", _rawData);
     // write to the serial port
-    write(serial_port, rawData, sizeof(rawData)); 
-    // deallocate buffers
-    memset(rawData, 0, sizeof(rawData));
-    memset(chunkBuf, 0, sizeof(chunkBuf));
+    write(serial_port, _rawData, buffLen); 
     // wait for response
     status = serialRead();
     // exit loop if reset
@@ -294,7 +325,7 @@ int main() {
     perror("Error configuring serial port");
     return 1;
   }
-  // set the baud rate (for example, 9600)
+  // set the baud rate 
   cfsetospeed(&tty, B9600);
   cfsetispeed(&tty, B9600);
   // set other settings (8N1)
@@ -322,7 +353,7 @@ int main() {
     // read FIFO (not-blocking)
     readIn();
     // transmit to serial
-    if (enableSend == 1) {
+    if (enableSend > 0) {
        status = serialWrite();
        enableSend = 0;
     }

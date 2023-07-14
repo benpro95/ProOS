@@ -50,13 +50,14 @@ uint8_t rowCount1 = 0; // collumn count (row 1)
 
 // Shared resources
 bool eventlcdMessage = 0;
-const uint8_t maxMessage = 64;
+const uint8_t maxMessage = 128;
 char serialMessage[maxMessage];
 char lcdMessage[maxMessage];
 uint8_t serialMessageEnd = 0;
 uint8_t lcdMessageEnd = 0;
 uint32_t lcdDelay = 0;
 uint8_t lcdReset = 0;  
+bool lcdNoDelay = 0;
 bool newData = 0;
 
 //////////////////////////////////////////////////////////////////////////
@@ -271,11 +272,15 @@ void charDelay(uint32_t _delay) {
   // prevent dimming while drawing
   lcdDimmer.reset();
   lcdDimmer.start(); 
-  // set default speed if not in range
-  if ((_delay > 4096)) {
+  // delay not in range
+  if (_delay > 4096) {
+    _delay = 5;
+  } // no delay enabled
+  if (lcdNoDelay == 1) {
     _delay = 0;
-  }  
-  // restart character delay timer
+    debugln("no delay mode.");
+    lcdNoDelay = 0;
+  } // restart character delay timer
   lcdDelayTimer.set(_delay);
   lcdDelayTimer.start();
   // keep checking for events during delay
@@ -458,6 +463,10 @@ void decodeMessage() {
     for(uint8_t _idx = _cmd2pos + 1; _idx < _end; _idx++) { 
       lcdMessage[_lcdidx] = serialMessage[_idx]; 
       _lcdidx++; // increment index
+    }
+    // enable no delay mode (single character)
+    if (_cmd2 == 0) {
+      lcdNoDelay = 1;
     }
     // trigger event
     eventlcdMessage = 1;

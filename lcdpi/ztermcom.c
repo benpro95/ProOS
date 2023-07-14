@@ -27,7 +27,7 @@ const char *fifo_path = "/dev/zterm";
 int serial_port;
 const char device[] = "/dev/serial0"; 
 // max serial data chunk bytes
-const size_t maxCmdLength = 48;
+const size_t maxCmdLength = 80;
 // signature matching
 const char sigChars[] = {"$?-|"}; // control mode
 size_t sigMatches = 0;
@@ -267,7 +267,7 @@ int serialWrite() {
   size_t _loops = 0;
   size_t _delay = 1;
   size_t _startpos = 0;
-  printf("LOOPS '%zu'\n", writeLoops); 
+  printf("# of transmissions: '%zu'\n", writeLoops); 
   // write max-char segments
   for (_loops = 1; _loops <= writeLoops; ++_loops) {
     char _rawData[buffLen];
@@ -291,7 +291,6 @@ int serialWrite() {
     } else {
       strncpy(_chunkBuf, line, maxCmdLength);
       _startpos = maxCmdLength;
-      printf("less than 32\n");
     }
     strcat(_rawData, _chunkBuf); 
     strcat(_rawData, ">");

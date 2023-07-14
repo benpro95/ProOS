@@ -43,14 +43,13 @@ size_t lineSize = 0;
 char serCharBuf[buffLen];
 // flags
 size_t enableSend = 0;
-bool readMode = 0;
 bool eofTrigger = 0;
 
   
 void pauseExec() {
   // reading pause
   size_t _time = 5;
-  if (readMode == 0) {
+  if (eofTrigger == 0) {
     // idle pause
      _time = 5000;
   }
@@ -140,14 +139,14 @@ void eofAction() {
         line[lineSize] = '\0';  
       }  
     } else { // control mode 
+      printf("CTLDAT: %s\n", controlDat);
       controlParser();
     } 
     // reset control mode
     controlMode = 0;
     controlCount = 0;
     sigMatches = 0;
-    lineSize = 0; 
-    readMode = 0;     
+    lineSize = 0;    
     // reset trigger
     eofTrigger = 0;
   }
@@ -173,13 +172,8 @@ void readIn() {
     // when a character is detected
     if (bytesRead > 0) {
       // ignore these chraracters //
-      if ((input != '\r') && (input != '\0')) {
-        readMode = 1; // enable read
-        eofTrigger = 1; // set EOF trigger
-        // newline becomes a space
-        if (input == '\n') {
-          input = ' ';
-        }
+      if (input != '\r' && input != '\n') {
+        eofTrigger = 1; // EOF trigger
         // when not in send mode
         if (enableSend == 0) {
           // allocate memory

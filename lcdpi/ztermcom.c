@@ -44,6 +44,7 @@ char serCharBuf[buffLen];
 // flags
 size_t enableSend = 0;
 bool readMode = 0;
+bool eofTrigger = 0;
 
   
 void pauseExec() {
@@ -119,6 +120,40 @@ void controlParser() {
 }
 
 
+void eofAction() {
+  if (eofTrigger == 1) {
+/// action runs when EOF is detected    
+    if (controlMode == 0) { // not in control mode
+      if (enableSend == 0) { // not currently sending
+        if (lineSize > 0) { // one character or more
+          // calcuate transmission rounds
+          writeLoops = 
+            (ROUND_DIVIDE(lineSize,maxCmdLength) + 1);
+          // enable transmit
+          if (lineSize == 1){
+            enableSend = 2; // single character (no delay)
+          } else {
+            enableSend = 1;
+          } 
+        }
+        // terminate line
+        line[lineSize] = '\0';  
+      }  
+    } else { // control mode 
+      controlParser();
+    } 
+    // reset control mode
+    controlMode = 0;
+    controlCount = 0;
+    sigMatches = 0;
+    lineSize = 0; 
+    readMode = 0;     
+    // reset trigger
+    eofTrigger = 0;
+  }
+}  
+
+
 void readIn() {
   // increase dead time when not reading (reduce CPU load)
   pauseExec();
@@ -137,41 +172,18 @@ void readIn() {
     ssize_t bytesRead = read(fifo_fd, &input, sizeof(input));
     // when a character is detected
     if (bytesRead > 0) {
-      if (enableSend == 0) {
-        // allocate memory
-        line = realloc(line, (lineSize + 1));
-      }
-      //// newline is sent ////
-      if (input == '\n') { 
-        if (controlMode == 0) { // not in control mode
-          if (enableSend == 0) { // not currently sending
-            if (lineSize > 0) { // one character or more
-              // calcuate transmission rounds
-              writeLoops = 
-                (ROUND_DIVIDE(lineSize,maxCmdLength) + 1);
-              // enable transmit
-              if (lineSize == 1){
-                enableSend = 2; // single character (no delay)
-              } else {
-                enableSend = 1;
-              } 
-            }
-            // terminate line
-            line[lineSize] = '\0';  
-          }  
-        } else { // control mode 
-          controlParser();
-        } 
-        // reset control mode
-        controlMode = 0;
-        controlCount = 0;
-        sigMatches = 0;
-        lineSize = 0; 
-        readMode = 0;     
-      } else {
-      //// any other chararacter is sent ////
-        readMode = 1;
+      // ignore these chraracters //
+      if ((input != '\r') && (input != '\0')) {
+        readMode = 1; // enable read
+        eofTrigger = 1; // set EOF trigger
+        // newline becomes a space
+        if (input == '\n') {
+          input = ' ';
+        }
+        // when not in send mode
         if (enableSend == 0) {
+          // allocate memory
+          line = realloc(line, (lineSize + 1));
           // write to line data array
           line[lineSize] = input; 
         }
@@ -181,7 +193,7 @@ void readIn() {
           if (input == sigChars[sigMatches]) {
             sigMatches = sigMatches + 1; 
             if (sigMatches >= sigLen){
-              // all characters matched
+              // all characters matched enable
               controlMode = 1;
             } 
           }  
@@ -200,9 +212,13 @@ void readIn() {
         //printf("Read: %c\n", input);
         lineSize++; 
       }
+    } else {
+      // EOF detected
+      eofAction();
     }
   }
 }
+
 
 
 int setSerialNonBlock(int fd) {

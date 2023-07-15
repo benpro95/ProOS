@@ -8,8 +8,6 @@
 #include <neotimer.h>
 #include "LiquidCrystal_I2C.h" // custom for MCP23008-E/P, button support
 
-//////////////////////////////////////////////////////////////////////////
-
 // LCD Valid Characters
 const char lcdChars[]=
 	{" 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&:',.*|-+=_#@%/[]()<>?{};"};
@@ -41,7 +39,7 @@ uint8_t bar5[8] = {0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F,0x1F};
 #define brightnessLow 128  // dimmed LCD backlight brightness
 Neotimer lcdDelayTimer = Neotimer();
 Neotimer lcdDimmer = Neotimer(80000); // ms before dimming display backlight
-const uint8_t lcdClearCharSpeed = 50; // ms delay between drawing each character (clearing display)
+const uint8_t lcdClearCharSpeed = 50; // clearing display scroll speed
 uint8_t charBuffer0[20]; // trailing character buffer (row 0)
 uint8_t charBuffer1[20]; // trailing character buffer (row 1)
 uint8_t chrarSize = 0; // character array size
@@ -506,7 +504,7 @@ void loop() {
     // send ack to computer
 	Serial1.println('*');
   }
-  // clear display event (main only!)
+  // clear display event
   if( lcdReset > 0) {
     drawChar(0,lcdReset);
     // send ack to computer

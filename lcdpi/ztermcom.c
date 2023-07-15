@@ -1,7 +1,10 @@
+/////////////////////////////////////////////////////////////////////////
 /// Z-Terminal Serial Communication v1.0
 /// for GNU/Linux kernel versions 5.0+  
 /// by Ben Provenzano III - 07/01/2023
+/////////////////////////////////////////////////////////////////////////
 
+// Libraries //
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -11,7 +14,6 @@
 #include <stdbool.h>
 #include <errno.h>
 #include <ctype.h>
-#include <sys/select.h>
 
 // divide to whole number macro
 #define ROUND_DIVIDE(numer, denom) (((numer) + (denom) / 2) / (denom))

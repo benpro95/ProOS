@@ -112,7 +112,10 @@ void controlParser() {
     strcat(_rawData, _datstr);  
     strcat(_rawData, ",0>"); 
     printf("Control data: %s\n", _rawData);
-    write(serial_port, _rawData, buffLen);
+    for (size_t i = 0; i < 3; i++) {
+      write(serial_port, _rawData, buffLen);
+      usleep(5000);
+    }  
     memset(_rawData, 0, buffLen);
     _write = 0;
   }
@@ -139,7 +142,6 @@ void eofAction() {
         line[lineSize] = '\0';  
       }  
     } else { // control mode 
-      printf("CTLDAT: %s\n", controlDat);
       controlParser();
     } 
     // reset control mode

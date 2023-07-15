@@ -43,15 +43,15 @@ size_t lineSize = 0;
 char serCharBuf[buffLen];
 // flags
 size_t enableSend = 0;
-bool eofTrigger = 0;
+bool readMode = 0;
 
   
 void pauseExec() {
   // reading pause
   size_t _time = 5;
-  if (eofTrigger == 0) {
+  if (readMode == 0) {
     // idle pause
-     _time = 5000;
+     _time = 2500;
   }
   usleep(_time);
 }
@@ -112,6 +112,7 @@ void controlParser() {
     strcat(_rawData, _datstr);  
     strcat(_rawData, ",0>"); 
     printf("Control data: %s\n", _rawData);
+    // transmit
     for (size_t i = 0; i < 3; i++) {
       write(serial_port, _rawData, buffLen);
       usleep(5000);
@@ -121,9 +122,33 @@ void controlParser() {
   }
 }
 
+void controlDetect() {
+// detect control mode signature
+  if (lineSize < sigLen) {
+    // count matched characters
+    if (input == sigChars[sigMatches]) {
+      sigMatches = sigMatches + 1; 
+      if (sigMatches >= sigLen){
+        // all characters matched enable
+        controlMode = 1;
+      } 
+    }  
+  } // store control data after signature
+  if (controlMode == 1) { 
+    if (lineSize >= sigLen) { // skip over last signature char
+      if (lineSize < (sigLen + controlLen)) { // do not allow overflow 
+        // write each character to array
+        controlDat[controlCount] = input;
+        controlDat[controlCount + 1] = '\0';
+        controlCount++;
+      }
+    }
+  }
+}
+
 
 void eofAction() {
-  if (eofTrigger == 1) {
+  if (readMode == 1) {
 /// action runs when EOF is detected    
     if (controlMode == 0) { // not in control mode
       if (enableSend == 0) { // not currently sending
@@ -150,7 +175,7 @@ void eofAction() {
     sigMatches = 0;
     lineSize = 0;    
     // reset trigger
-    eofTrigger = 0;
+    readMode = 0;
   }
 }  
 
@@ -173,48 +198,32 @@ void readIn() {
     ssize_t bytesRead = read(fifo_fd, &input, sizeof(input));
     // when a character is detected
     if (bytesRead > 0) {
-      // ignore these chraracters //
-      if (input != '\r' && input != '\n') {
-        eofTrigger = 1; // EOF trigger
+        // detect control mode (1st)
+        if (input != '\r' && input != '\n') {
+          controlDetect();
+        }      
         // when not in send mode
-        if (enableSend == 0) {
+        if (enableSend == 0) { // (2nd)
+          // replace newline with space
+          if (input == '\r' || input == '\n') {
+            input = ' ';
+          }
           // allocate memory
           line = realloc(line, (lineSize + 1));
           // write to line data array
-          line[lineSize] = input; 
+          line[lineSize] = input;
+          // increment index
+          lineSize++;     
         }
-        // detect control mode signature
-        if (lineSize < sigLen) {
-          // count matched characters
-          if (input == sigChars[sigMatches]) {
-            sigMatches = sigMatches + 1; 
-            if (sigMatches >= sigLen){
-              // all characters matched enable
-              controlMode = 1;
-            } 
-          }  
-        } // store control data after signature
-        if (controlMode == 1) { 
-          if (lineSize >= sigLen) { // skip over last signature char
-            if (lineSize < (sigLen + controlLen)) { // do not allow overflow 
-              // write each character to array
-              controlDat[controlCount] = input;
-              controlDat[controlCount + 1] = '\0';
-              controlCount++;
-            }
-          }
-        }
-        // increment index
         //printf("Read: %c\n", input);
-        lineSize++; 
-      }
+        // active read
+        readMode = 1; 
     } else {
       // EOF detected
       eofAction();
     }
   }
 }
-
 
 
 int setSerialNonBlock(int fd) {

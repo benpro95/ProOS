@@ -44,6 +44,7 @@ char serCharBuf[buffLen];
 // flags
 size_t enableSend = 0;
 bool readMode = 0;
+//////////////////
 
   
 void pauseExec() {
@@ -51,7 +52,7 @@ void pauseExec() {
   size_t _time = 5;
   if (readMode == 0) {
     // idle pause
-     _time = 2500;
+     _time = 3000;
   }
   usleep(_time);
 }
@@ -122,6 +123,7 @@ void controlParser() {
   }
 }
 
+
 void controlDetect() {
 // detect control mode signature
   if (lineSize < sigLen) {
@@ -181,8 +183,6 @@ void eofAction() {
 
 
 void readIn() {
-  // increase dead time when not reading (reduce CPU load)
-  pauseExec();
   // set a zero timeout for non-blocking check 
   fd_set rfds;
   FD_ZERO(&rfds);
@@ -196,33 +196,36 @@ void readIn() {
   if (result > 0) {
     // read command line (stdin)
     ssize_t bytesRead = read(fifo_fd, &input, sizeof(input));
-    // when a character is detected
-    if (bytesRead > 0) {
-        // detect control mode (1st)
-        if (input != '\r' && input != '\n') {
-          controlDetect();
-        }      
-        // when not in send mode
-        if (enableSend == 0) { // (2nd)
-          // replace newline with space
-          if (input == '\r' || input == '\n') {
-            input = ' ';
-          }
-          // allocate memory
-          line = realloc(line, (lineSize + 1));
-          // write to line data array
-          line[lineSize] = input;
-          // increment index
-          lineSize++;     
-        }
-        //printf("Read: %c\n", input);
-        // active read
-        readMode = 1; 
-    } else {
-      // EOF detected
+    // EOF detected
+    if (bytesRead <= 0) {
       eofAction();
     }
+    // when a character is detected
+    if (bytesRead > 0) {
+      // detect control mode (1st)
+      if (input != '\r' && input != '\n') {
+        controlDetect();
+      }      
+      // when not in send mode
+      if (enableSend == 0) { // (2nd)
+        // replace newline with space
+        if (input == '\r' || input == '\n') {
+          input = ' ';
+        }
+        // allocate memory
+        line = realloc(line, (lineSize + 1));
+        // write to line data array
+        line[lineSize] = input;
+      }
+      //printf("Read: %c\n", input);
+      // increment index
+      lineSize++;
+      // active read
+      readMode = 1; 
+    }  
   }
+  // increase dead time when not reading (reduce CPU load)
+  pauseExec();
 }
 
 

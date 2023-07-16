@@ -116,10 +116,8 @@ void controlParser() {
     strcat(_rawData, ",0>"); 
     printf("Control data: %s\n", _rawData);
     // transmit
-    for (size_t i = 0; i < 3; i++) {
-      write(serial_port, _rawData, buffLen);
-      usleep(5000);
-    }  
+    write(serial_port, _rawData, buffLen);
+    usleep(5000);
     memset(_rawData, 0, buffLen);
     _write = 0;
   }
@@ -258,6 +256,10 @@ int serialRead() {
       printf("Serial port not available\n");
       return 1;
     }
+    // exit when sending disabled
+    if (enableSend == 0) {
+      return 0;
+    }  
     if (num_bytes > 0) {
       // Check if the target character is received
       size_t i;
@@ -325,10 +327,6 @@ int serialWrite() {
     write(serial_port, _rawData, buffLen); 
     // wait for response
     status = serialRead();
-    // exit loop if reset
-    if (enableSend == 0) {
-      break;
-    }      
   }
   return status;
 }

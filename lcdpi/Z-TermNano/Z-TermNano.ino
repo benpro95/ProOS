@@ -502,7 +502,7 @@ void loop() {
     // reset buffers
     eventlcdMessage = 0;
     // send ack to computer
-	Serial1.println('*');
+	  Serial1.println('*');
   }
   // clear display event
   if( lcdReset > 0) {

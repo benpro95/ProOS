@@ -88,16 +88,18 @@ void controlParser() {
   // clear display
   if(_ctlchar == 'c'){
     // erase display register
-    if(_datint < 4 && _datint > 0){
-      _cmdint = _datint;
+    if(_datint < 4){
       // clear line data
       enableSend = 0;
       writeLoops = 0;
       line = realloc(line,1);
       line[0] = '\0';
       lineSize = 0;
-      // send command
-      _write = 1;
+      if(_datint != 0){
+        _cmdint = _datint;
+        // send command
+        _write = 1;
+      }  
     } // no data sent
     _datint = 0;
   } // write serial port
@@ -205,23 +207,19 @@ void readIn() {
       // detect control mode (1st)
       if (input != '\r' && input != '\n') {
         controlDetect();
-      }      
-      // when not in send mode
-      if (enableSend == 0) { // (2nd)
-        // replace newline with space
-        if (input == '\r' || input == '\n') {
-          input = ' ';
+        // when not in send mode
+        if (enableSend == 0) { // (2nd)
+          // allocate memory
+          line = realloc(line, (lineSize + 1));
+          // write to line data array
+          line[lineSize] = input;
         }
-        // allocate memory
-        line = realloc(line, (lineSize + 1));
-        // write to line data array
-        line[lineSize] = input;
-      }
-      //printf("Read: %c\n", input);
-      // increment index
-      lineSize++;
-      // active read
-      readMode = 1; 
+        //printf("Read: %c\n", input);
+        // increment index
+        lineSize++;
+        // active read
+        readMode = 1;
+      }  
     }  
   }
   // increase dead time when not reading (reduce CPU load)

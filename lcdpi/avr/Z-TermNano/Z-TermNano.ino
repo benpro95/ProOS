@@ -51,6 +51,7 @@ bool eventlcdMessage = 0;
 const uint8_t maxMessage = 128;
 char serialMessage[maxMessage];
 char lcdMessage[maxMessage];
+uint8_t lcdAutoBacklight = 0;
 uint8_t serialMessageEnd = 0;
 uint8_t lcdMessageEnd = 0;
 uint32_t lcdDelay = 0;
@@ -76,6 +77,15 @@ bool newData = 0;
 //////////////////////////////////////////////////////////////////////////
 // initialization
 void setup() {
+  // built-in LED
+  pinMode(LED_BUILTIN, OUTPUT);  
+  digitalWrite(LED_BUILTIN, HIGH);    
+  // display backlight (low)
+  pinMode(lcdBacklight, OUTPUT);  
+  analogWrite(lcdBacklight, brightnessHigh);
+  // start serial ports
+  Serial.begin(CONFIG_SERIAL);
+  Serial1.begin(CONFIG_SERIAL);
   // calculate number of characters
   chrarSize = sizeof(lcdChars);  
   // 16x2 display (calls Wire.begin)
@@ -85,35 +95,30 @@ void setup() {
   lcd.createChar(3, bar3);
   lcd.createChar(4, bar4);
   lcd.createChar(5, bar5);
-  lcd.clear();
-  // loading bar
-  lcdTimedBar(startDelay);
+  // startup sequence
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("Z-Terminal");   
   lcd.setCursor(0,1);
-  lcd.print("v1.2");
-  delay(1500);
+  lcd.print("Starting up...");
+  delay(2000);
+  lcd.clear();
+  lcdTimedBar(startDelay);
   lcd.clear();
   lcd.setCursor(0,0);
-  // built-in LED
-  pinMode(LED_BUILTIN, OUTPUT);  
-  digitalWrite(LED_BUILTIN, HIGH);    
-  // display backlight (low)
-  pinMode(lcdBacklight, OUTPUT);  
+  lcd.print("Ready:");
+  // startup complete
+  digitalWrite(LED_BUILTIN, LOW);   
   analogWrite(lcdBacklight, brightnessLow);
-  // start serial ports
-  Serial.begin(CONFIG_SERIAL);
-  Serial1.begin(CONFIG_SERIAL);
 }
 
 // convert message into character stream 
 void lcdMessageEvent() { // (run only from event timer)
+  uint8_t _charidx;
   uint8_t _end = lcdMessageEnd;
   uint32_t _delay = 0;
   uint8_t _reset = 0;
   lcdMessageEnd = 0;
-  uint8_t _charidx;
   debugln("character stream: ");
   // loop through each character in the request array (message only)
   for(uint8_t _idx = 0; _idx < _end; _idx++) { 
@@ -152,7 +157,9 @@ void drawChar(uint8_t _char, uint8_t _reset) {
   // clear LCD routine
   if( _reset > 0){
     // disable dimming then reset timer
-    lcdDim(); 
+    if (lcdAutoBacklight == 0) {
+      lcdDim();
+    }
     // loop through all display characters
     for(uint8_t _count = 0; _count < lcdCols; _count++) { 
       // draw spaces
@@ -268,8 +275,10 @@ void drawChar(uint8_t _char, uint8_t _reset) {
 // character delay 
 void charDelay(uint32_t _delay) {  
   // prevent dimming while drawing
-  lcdDimmer.reset();
-  lcdDimmer.start(); 
+  if (lcdAutoBacklight == 0) {
+    lcdDimmer.reset();
+    lcdDimmer.start();
+  }
   // delay not in range
   if (_delay > 4096) {
     _delay = 5;
@@ -366,6 +375,7 @@ void readSerial() {
     }
   }
   if (newData == 1) {
+    // End-of-data action
     decodeMessage();
     serialMessageEnd = 0;
     newData = 0;
@@ -373,7 +383,7 @@ void readSerial() {
 }
 
 // decode LCD message and trigger display event
-void decodeMessage() { 
+void decodeMessage() {
   uint8_t _end = serialMessageEnd;
   // count delimiters
   char _delimiter = ',';
@@ -440,7 +450,14 @@ void decodeMessage() {
   } // add null character to end
   _cmd2buffer[_cmd2count] = '\0';
   // convert to integer, store second command value
-  uint32_t _cmd2 = atoi(_cmd2buffer); 
+  uint32_t _cmd2 = atoi(_cmd2buffer);
+  // auto or manual brightness
+  if (_cmd1 == 5) { 
+    if (_cmd2 < 3) { 
+      lcdAutoBacklight = _cmd2;
+    }
+    return;
+  }
   // delay between drawing characters in (ms)
   if (_cmd1 == 4) { 
     lcdDelay = _cmd2;
@@ -480,36 +497,56 @@ void lcdDim(){
   lcdDimmer.start();
 }
 
-// runs in main loop and during character delay
 void mainEvents() {
   // read GPIO button
   readClearButton();
   // read serial port data
   readSerial();
   // display dim event
-  if(lcdDimmer.done()){
-  	debugln("dimming backlight...");
-    analogWrite(lcdBacklight, brightnessLow);
-    lcdDimmer.reset();
+  if (lcdAutoBacklight == 0) {
+    if(lcdDimmer.done()){
+    	debugln("dimming backlight...");
+      analogWrite(lcdBacklight, brightnessLow);
+      lcdDimmer.reset();
+    }
   }
+  if (lcdAutoBacklight == 1) {
+    analogWrite(lcdBacklight, brightnessLow);
+  }
+  if (lcdAutoBacklight == 2) {
+    analogWrite(lcdBacklight, brightnessHigh);
+  } 
 }
 
 void loop() {
   // main LCD message event
-  if (eventlcdMessage == 1) { 
-    lcdDim();
+  if (eventlcdMessage == 1) {
+    digitalWrite(LED_BUILTIN, HIGH);
+    // LCD backlight dimming
+    if (lcdAutoBacklight == 0) {
+      lcdDim();
+    }
     lcdMessageEvent();
-    // reset buffers
     eventlcdMessage = 0;
     // send ack to computer
 	  Serial1.println('*');
+    digitalWrite(LED_BUILTIN, LOW);
   }
   // clear display event
   if( lcdReset > 0) {
+    digitalWrite(LED_BUILTIN, HIGH);
     drawChar(0,lcdReset);
     // send ack to computer
     Serial1.println('*');
+    digitalWrite(LED_BUILTIN, LOW);
   }
   // ran in main and during delay loop 
   mainEvents();
 }
+
+
+
+
+
+
+

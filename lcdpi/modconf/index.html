@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html class="scroll-style-7" lang="en" translate="no">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LCD-Pi</title>
+    <link href="fa/css/fontawesome.css" rel="stylesheet">
+    <link href="fa/css/brands.css" rel="stylesheet">
+    <link href="fa/css/solid.css" rel="stylesheet">
+    <link href="main.css" rel="stylesheet">
+    <script src="main.js"></script>
+</head>
+<body>
+
+<div class="init"></div>
+
+<div class="topnav">
+  <a onclick="GoToHomePage()" class="homelogo">
+    <i class="fa fa-home"></i>
+  </a>
+  <a href="settings/index.php">Settings</a>
+  <div onclick="GoToHomePage()" id="load__progress">
+     <div id="load__bar"></div>
+  </div>
+</div>
+
+<div>      
+  <p></p>   
+    <button type="button" class="button" onclick="sendCmd('main','delay','800')">
+        <span class="button__text"></i> Delay Slow</span>
+    </button> 
+    <button type="button" class="button" onclick="sendCmd('main','delay','300')">
+        <span class="button__text"></i> Delay Med</span>
+    </button>   
+    <button type="button" class="button" onclick="sendCmd('main','delay','90')">
+        <span class="button__text"></i> Delay Fast</span>
+    </button> 
+    <button type="button" class="button" onclick="sendCmd('main','lorem','')">
+        <span class="button__text"></i> Lorem</span>
+    </button> 
+    <button type="button" class="button" onclick="sendCmd('main','backlight','0')">
+        <span class="button__text"></i> BL Auto</span>
+    </button>  
+    <button type="button" class="button" onclick="sendCmd('main','backlight','1')">
+        <span class="button__text"></i> BL Low</span>
+    </button>
+    <button type="button" class="button" onclick="sendCmd('main','backlight','2')">
+        <span class="button__text"></i> BL Hi</span>
+    </button>
+    <button type="button" class="button" onclick="sendCmd('main','stop','')">
+        <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
+    </button>
+    <button type="button" class="button button__lgr" onclick="sendCmd('main','clear','')">
+        <span class="button__text"><i class="fa-solid fa-stop"></i> Clear</span>
+    </button>
+  <p></p> 
+  <p class="body__text" id="bottom"></p>
+</div>
+
+<div>
+  <p style="min-height: 50px" class="body__text">by Ben Provenzano III</p>
+</div>
+
+</body>
+</html>

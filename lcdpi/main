@@ -1,17 +1,77 @@
 #!/bin/bash
-##
+## Main Parser
+
+DELAYSET(){ 
+echo "${SIG}d${ARG}" > /dev/zterm
+}
+
+CLEARLCD(){ 
+echo "${SIG}c3" > /dev/zterm
+}
+
+SIG='$?-|'
+
+ARG="$2"
+
 case "$1" in
 
 boot)
 ## Start Z-Terminal Service
-systemctl start ztermcom.service
+systemctl start ztermcom
+## Turn off power LED
+echo 0 > /sys/class/leds/ACT/brightness
 ## Disable HDMI (saves 30mA)
 tvservice -o
+## Set Default Character Delay
+ARG="300"
+DELAYSET
+sleep 2.5
+## Clear Display
+CLEARLCD
 exit
 ;;
 
+restart)
+systemctl restart ztermcom
+exit
+;;
+
+delay)
+DELAYSET
+exit
+;;
+
+backlight)
+echo "${SIG}b${ARG}" > /dev/zterm
+exit
+;;
+
+clear)
+CLEARLCD
+exit
+;;
+
+clear-btm)
+echo "${SIG}c2" > /dev/zterm
+exit
+;;
+
+clear-top)
+echo "${SIG}c1" > /dev/zterm
+exit
+;;
+
+lorem)
+cat /opt/rpi/lorem_ipsum.txt > /dev/zterm
+exit
+;;
+
+stop)
+echo "${SIG}c0" > /dev/zterm
+exit
+;;
     
-        *)
-        exit 1
-        ;;
-    esac   
+*)
+  exit 1
+;;
+esac   

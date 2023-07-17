@@ -1,5 +1,0 @@
-
-echo '$?-|c3' > /dev/zterm
-echo '$?-|d220' > /dev/zterm
-cat text.txt > /dev/zterm
-echo 'ben' > /dev/zterm

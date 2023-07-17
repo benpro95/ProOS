@@ -13,7 +13,7 @@ function sendCmd(act, arg1, arg2) {
   // adjust API syntax for different functions
   // construct API string
 	let url = "http://"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
-	document.getElementById("bottom").innerHTML = url;
+	//document.getElementById("bottom").innerHTML = url;
   // send data
 	fetch(url, {
       method: 'GET',

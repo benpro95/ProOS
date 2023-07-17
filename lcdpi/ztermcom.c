@@ -80,11 +80,18 @@ void controlParser() {
   }  
   // character delay
   if(_ctlchar == 'd'){
-    // delay register
+    // register select
     _cmdint = 4; 
     // send command
     _write = 1; 
   }
+  // backlight mode
+  if(_ctlchar == 'b'){
+    // register select
+    _cmdint = 5; 
+    // send command
+    _write = 1; 
+  }  
   // clear display
   if(_ctlchar == 'c'){
     // erase display register

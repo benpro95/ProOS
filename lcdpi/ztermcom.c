@@ -51,10 +51,10 @@ bool readMode = 0;
   
 void pauseExec() {
   // reading pause
-  size_t _time = 5;
+  size_t _time = 50;
   if (readMode == 0) {
     // idle pause
-     _time = 3000;
+     _time = 5000;
   }
   usleep(_time);
 }
@@ -125,8 +125,9 @@ void controlParser() {
     strcat(_rawData, ",0>"); 
     printf("Control data: %s\n", _rawData);
     // transmit
+    usleep(10000);
     write(serial_port, _rawData, buffLen);
-    usleep(5000);
+    usleep(10000);
     memset(_rawData, 0, buffLen);
     _write = 0;
   }

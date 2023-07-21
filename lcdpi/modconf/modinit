@@ -40,6 +40,12 @@ systemctl restart ztermcom.service
 cp -rv $BIN/modconf/index.html /var/www/html/
 chmod 777 /var/www/html/index.html
 chown www-data:www-data /var/www/html/index.html
+cp -rv $BIN/modconf/upload.php /var/www/html/
+chmod 777 /var/www/html/upload.php
+chown www-data:www-data /var/www/html/upload.php
+cp -rv $BIN/modconf/send.html /var/www/html/
+chmod 777 /var/www/html/send.html
+chown www-data:www-data /var/www/html/send.html
 
 ## Link RPi to global commands library
 ln -sf /opt/rpi/main /usr/bin/main

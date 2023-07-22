@@ -18,7 +18,7 @@
 // divide to whole number macro
 #define ROUND_DIVIDE(numer, denom) (((numer) + (denom) / 2) / (denom))
 // max buffer length
-#define buffLen 128
+#define buffLen 32
 
 // FIFO device
 char input;
@@ -29,7 +29,7 @@ const char *fifo_path = "/dev/zterm";
 int serial_port;
 const char device[] = "/dev/serial0"; 
 // max serial data chunk bytes
-const size_t maxCmdLength = 80;
+const size_t maxCmdLength = 16;
 // signature matching
 const char sigChars[] = {"$?-|"}; // control mode
 size_t sigMatches = 0;
@@ -40,8 +40,8 @@ size_t controlCount = 0;
 size_t controlLen = 0;
 bool controlMode = 0;
 // line output data
-size_t writeLoops = 0;
 size_t lineSize = 0;
+size_t writeLoops = 0;
 char serCharBuf[buffLen];
 // flags
 size_t enableSend = 0;
@@ -51,12 +51,21 @@ bool readMode = 0;
   
 void pauseExec() {
   // reading pause
-  size_t _time = 50;
+  size_t _time = 10;
   if (readMode == 0) {
     // idle pause
      _time = 5000;
   }
   usleep(_time);
+}
+
+
+// reset line array
+void clearLine() {
+  enableSend = 0;
+  writeLoops = 0;
+  lineSize = 0;
+  memset(line, '\0', 1);
 }
 
 
@@ -97,11 +106,7 @@ void controlParser() {
     // erase display register
     if(_datint < 4){
       // clear line data
-      enableSend = 0;
-      writeLoops = 0;
-      line = realloc(line,1);
-      line[0] = '\0';
-      lineSize = 0;
+      clearLine();
       if(_datint != 0){
         _cmdint = _datint;
         // send command
@@ -235,15 +240,6 @@ void readIn() {
 }
 
 
-int setSerialNonBlock(int fd) {
-  int flags = fcntl(fd, F_GETFL, 0);
-  if (flags == -1) {
-      return -1;
-  }
-  return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
-}
-
-
 int serialRead() {
  // Read from the serial port in a loop
  char target_char = '*';
@@ -251,9 +247,12 @@ int serialRead() {
  printf("Waiting for acknowledge...\n");
  while(1) {
     // set serial port to non-blocking mode
-    if (setSerialNonBlock(serial_port) == -1) {
+    int _serflags = fcntl(serial_port, F_GETFL, 0);   
+    if (_serflags == -1) {
       perror("Failed to set serial port to non-blocking mode");
       return 1;
+    } else {
+      fcntl(serial_port, F_SETFL, _serflags | O_NONBLOCK);
     }
     // read serial port
     ssize_t num_bytes = read(serial_port, serCharBuf, buffLen);
@@ -384,7 +383,7 @@ int main() {
     // transmit to serial
     if (enableSend > 0) {
        status = serialWrite();
-       enableSend = 0;
+       clearLine();
     }
     // error occured
     if (status == 1) {

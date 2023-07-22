@@ -10,7 +10,7 @@
 
 // LCD Valid Characters
 const char lcdChars[]=
-	{" 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&:',.*|-+=_#@%/[]()<>?{};"};
+	{" 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&:',.*|-+=_#@%/[]()<>?{};!"};
 
 // RS-232 Baud Rate
 const int CONFIG_SERIAL = 9600;
@@ -48,7 +48,7 @@ uint8_t rowCount1 = 0; // collumn count (row 1)
 
 // Shared resources
 bool eventlcdMessage = 0;
-const uint8_t maxMessage = 128;
+const uint8_t maxMessage = 32;
 char serialMessage[maxMessage];
 char lcdMessage[maxMessage];
 uint8_t lcdAutoBacklight = 0;
@@ -87,7 +87,7 @@ void setup() {
   Serial.begin(CONFIG_SERIAL);
   Serial1.begin(CONFIG_SERIAL);
   // calculate number of characters
-  chrarSize = sizeof(lcdChars);  
+  chrarSize = (sizeof(lcdChars)) - 1;  
   // 16x2 display (calls Wire.begin)
   lcd.begin(lcdCols,lcdRows);   
   lcd.createChar(1, bar1);
@@ -140,7 +140,7 @@ void lcdMessageEvent() { // (run only from event timer)
   debugln(' ');
 }
 
-// character search
+// character translate
 int charLookup(char _char) {
   int _index;
   for (_index=0; _index <= chrarSize; _index++){
@@ -191,7 +191,7 @@ void drawChar(uint8_t _char, uint8_t _reset) {
     return; 
   }
   // invalid characters
-  if( _char > chrarSize - 3){ 
+  if( _char >= chrarSize){ 
     return;  
   }
    ///////////////////////////////////////////////////////////////////// line 0

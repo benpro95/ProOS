@@ -171,6 +171,7 @@ function serverAction(cmd) {
 function resetAction() {
   // return default color of send button 
   document.getElementById("sendButton").style.background='#1e2352';  
+  // clear command data
   servercmd_data = null;
 };
 

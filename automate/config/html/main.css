@@ -35,7 +35,7 @@ body {
 
 .button {
     transition: all 0.2s;
-	width: 135px;
+	  width: 135px;
     -webkit-user-select: none;
     user-select: none;
     touch-action: manipulation;    

@@ -35,9 +35,9 @@ body {
 
 .button {
     transition: all 0.2s;
-	  width: 135px;
-    user-select: none;
+    width: 135px;
     -webkit-user-select: none;
+    user-select: none;
     touch-action: manipulation;    
     border: 0;
     margin: 2px;
@@ -114,7 +114,7 @@ body {
 .topnav a.homelogo {
   position:relative; left:1px; top:2px
   font-size: 33px;
-}	
+} 
 
 .body__text {
   color: #fff; /* header font color */
@@ -362,10 +362,26 @@ body {
 }
 
 /*
+ *  Password Prompt Style
+ */
+#pass__prompt {
+  background-color: black;
+  position: fixed;
+  top: 25%;
+  left: 8%;
+  width: auto;  
+  height: auto;
+  border: 1px solid white;
+  padding: 16px; 
+  color: #fff;
+  z-index: 99999; 
+} 
+
+/*
  *  Camera Window Style
  */
 
- #camForm{
+#camForm {
   min-height: unset;
   min-width: unset;
   max-height: 95%;

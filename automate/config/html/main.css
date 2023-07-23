@@ -35,8 +35,8 @@ body {
 
 .parstd {
 	border: 0px;
-	margin-bottom: 0px;
-	margin-top: 0px;
+	margin-bottom: 1px;
+	margin-top: 1px;
 	margin-left: 0px;
 	margin-right: 0px;
 	line-height: 0;
@@ -99,7 +99,7 @@ body {
 }
 
 .button__lgr {
-  width: 280px; /* large button width */
+  width: 312px; /* large button width */
 }
 
 .topnav {
@@ -185,7 +185,7 @@ body {
 .form-container {
   height: 100%;
   width: 100%;
-  padding-bottom: 150px; /* buttons position */
+  padding-bottom: 155px; /* buttons position */
   background-color: #2d353d; /* popup window frame color */
 }
 
@@ -198,7 +198,7 @@ body {
   resize: none;
   font-kerning: none;
   font-family: "Consolas",monospace,system-ui,sans-serif; /* log window font */
-  font-size: 14px; /* page default font size */
+  font-size: 15px; /* page default font size */
 }
 
 /* When the textarea gets focus, do something */
@@ -396,15 +396,14 @@ body {
 #camForm {
   min-height: unset;
   min-width: unset;
-  max-height: 95%;
-  max-width: 95%;
-  width: 652px;  
-  height: 455px;
+  max-height: 98%;
+  max-width: 98%;
+  width: 486px;  
+  height: 366px;
 } 
 
 .cam__btnleft {
   position: absolute;
-  left: 5px;
   bottom: 1px;
 }  
 
@@ -426,11 +425,11 @@ body {
   overflow: scroll;
   width: 100%;
   height: 100%;
-  zoom: 0.50;
-  -moz-transform: scale(0.50);
+  zoom: 0.37;
+  -moz-transform: scale(0.37);
   -moz-transform-origin: 0 0;
-  -o-transform: scale(0.50);
+  -o-transform: scale(0.37);
   -o-transform-origin: 0 0;
-  -webkit-transform: scale(0.50);
+  -webkit-transform: scale(0.37);
   -webkit-transform-origin: 0 0;
 }

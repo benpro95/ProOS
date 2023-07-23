@@ -2,7 +2,7 @@
 <html lang="en-US" class="notranslate" translate="no">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1">
   <title>LEDs</title>
     <link href="fa/css/fontawesome.css" rel="stylesheet">
     <link href="fa/css/brands.css" rel="stylesheet">
@@ -43,10 +43,10 @@
     <button type="button" class="button" onclick="sendCmd('leds','fc','50')">
         <span class="button__text"><i class=""></i>50%</span>
     </button>      
-  <p></p>
     <button type="button" class="button" onclick="sendCmd('leds','fc','60')">
         <span class="button__text"><i class=""></i>60%</span>
     </button>
+  <p class="parstd"></p>    
     <button type="button" class="button" onclick="sendCmd('leds','fc','70')">
         <span class="button__text"><i class=""></i>70%</span>
     </button>
@@ -58,37 +58,36 @@
     </button>   
     <button type="button" class="button" onclick="sendCmd('leds','fc','100')">   
         <span class="button__text"><i class=""></i>100%</span>
-    </button>  
-  <p></p>    
+    </button>      
     <button type="button" class="button" onclick="sendCmd('leds','randcolor','')">
         <span class="button__text"><i class="fa-solid fa-palette"></i> Random</span>
     </button>
     <button type="button" class="button" onclick="sendCmd('leds','shuffle','')">
         <span class="button__text"><i class="fa-solid fa-shuffle"></i> Shuffle</span>
     </button>
+  <p class="parstd"></p> 
     <button type="button" class="button" onclick="sendCmd('leds','stop','')">
         <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
     </button>
     <button type="button" class="button button__lgr" onclick="sendCmd('leds','pause','')">
         <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
     </button>
-  <p></p>      
+    <button type="button" class="button" onclick="sendCmd('leds','abstract','')">
+        <span class="button__text"><i class=""></i>Abstract</span>
+    </button>     
     <button type="button" class="button" onclick="sendCmd('leds','flames','')">
         <span class="button__text"><i class=""></i>Flames</span>
     </button>
     <button type="button" class="button" onclick="sendCmd('leds','tunnel','')">
         <span class="button__text"><i class=""></i>Tunnel</span>
     </button>
-    <button type="button" class="button" onclick="sendCmd('leds','8bit','')">
-        <span class="button__text"><i class=""></i>8-Bit</span>
-    </button>
+  <p class="parstd"></p>   
     <button type="button" class="button" onclick="sendCmd('leds','ink','')">
         <span class="button__text"><i class=""></i>Ink</span>
     </button>
     <button type="button" class="button" onclick="sendCmd('leds','plasma','')">
         <span class="button__text"><i class=""></i>Plasma</span>
     </button>
-  <p></p> 
     <button type="button" class="button" onclick="sendCmd('leds','prism','')">
         <span class="button__text"><i class=""></i>Prism</span>
     </button>
@@ -101,10 +100,7 @@
     <button type="button" class="button" onclick="sendCmd('leds','blur','')">
         <span class="button__text"><i class=""></i>Blur</span>
     </button>
-    <button type="button" class="button" onclick="sendCmd('leds','rings','')">
-        <span class="button__text"><i class=""></i>Rings</span>
-    </button>
-  <p></p> 
+  <p class="parstd"></p> 
     <button type="button" class="button" onclick="sendCmd('leds','gas','')">
         <span class="button__text"><i class=""></i>Gas</span>
     </button>
@@ -114,16 +110,16 @@
     <button type="button" class="button" onclick="sendCmd('leds','voltage','')">
         <span class="button__text"><i class=""></i>Voltage</span>
     </button>
-    <button type="button" class="button" onclick="sendCmd('leds','abstract','')">
-        <span class="button__text"><i class=""></i>Abstract</span>
+    <button type="button" class="button" onclick="sendCmd('leds','8bit','')">
+        <span class="button__text"><i class=""></i>8-Bit</span>
     </button>
-    <button type="button" class="button" onclick="sendCmd('leds','gold','')">
-        <span class="button__text"><i class=""></i>Gold</span>
-    </button>
-  <p></p> 
+    <button type="button" class="button" onclick="sendCmd('leds','rings','')">
+        <span class="button__text"><i class=""></i>Rings</span>
+    </button>    
     <button type="button" class="button" onclick="sendCmd('leds','bubbles','')">
         <span class="button__text"><i class=""></i>Bubbles</span>
-    </button>
+    </button>    
+  <p class="parstd"></p> 
     <button type="button" class="button" onclick="sendCmd('leds','ripple','')">
         <span class="button__text"><i class=""></i>Ripple</span>
     </button>
@@ -136,13 +132,13 @@
     <button type="button" class="button" onclick="sendCmd('leds','lumin','')">
         <span class="button__text"><i class=""></i>Lumin</span>
     </button>
-  <p></p> 
     <button type="button" class="button" onclick="sendCmd('leds','pixel','')">
         <span class="button__text"><i class=""></i>Pixel</span>
     </button>
     <button type="button" class="button" onclick="sendCmd('leds','fireworks','')">
         <span class="button__text"><i class=""></i>Fireworks</span>
-    </button>
+    </button>    
+  <p class="parstd"></p> 
     <button type="button" class="button" onclick="sendCmd('leds','rays','')">
         <span class="button__text"><i class=""></i>Rays</span>
     </button>
@@ -151,8 +147,7 @@
     </button>
     <button type="button" class="button" onclick="sendCmd('leds','warp','')">
         <span class="button__text"><i class=""></i>Warp</span>
-    </button>
-  <p></p>      
+    </button>     
     <button type="button" class="button" onclick="sendCmd('leds','gold','')">
         <span class="button__text"><i class=""></i>Flames</span>
     </button>
@@ -162,13 +157,13 @@
     <button type="button" class="button" onclick="sendCmd('leds','noise2','')">
         <span class="button__text"><i class=""></i>8-Bit</span>
     </button>
+  <p class="parstd"></p>     
     <button type="button" class="button" onclick="sendCmd('leds','noise3','')">
         <span class="button__text"><i class=""></i>Ink</span>
     </button>
     <button type="button" class="button" onclick="sendCmd('leds','spotlight','')">
         <span class="button__text"><i class=""></i>Spotlight</span>
     </button>
-  <p></p> 
     <button type="button" class="button" onclick="sendCmd('leds','lava','')">
         <span class="button__text"><i class=""></i>Lava</span>
     </button>
@@ -181,10 +176,10 @@
     <button type="button" class="button" onclick="sendCmd('leds','miami','')">
         <span class="button__text"><i class=""></i>Miami</span>
     </button>
+  <p class="parstd"></p>     
     <button type="button" class="button" onclick="sendCmd('leds','spark','')">
         <span class="button__text"><i class=""></i>Spark</span>
     </button>
-  <p></p> 
     <button type="button" class="button" onclick="sendCmd('leds','particle','')">
         <span class="button__text"><i class=""></i>Particle</span>
     </button>
@@ -196,11 +191,11 @@
     </button>
     <button type="button" class="button" onclick="sendCmd('leds','orbits','')">
         <span class="button__text"><i class=""></i>Orbits</span>
-    </button>
+    </button>  
     <button type="button" class="button" onclick="sendCmd('leds','clouds','')">
         <span class="button__text"><i class=""></i>Clouds</span>
     </button>
-  <p></p> 
+  <p class="parstd"></p> 
     <button type="button" class="button" onclick="sendCmd('leds','water','')">
         <span class="button__text"><i class=""></i>Water</span>
     </button>
@@ -216,7 +211,10 @@
     <button type="button" class="button" onclick="sendCmd('leds','spectro','')">
         <span class="button__text"><i class=""></i>Spectro</span>
     </button>
-  <p></p>     
+    <button type="button" class="button" onclick="sendCmd('leds','gold','')">
+        <span class="button__text"><i class=""></i>Gold</span>
+    </button>  
+  <p class="parstd"></p>     
     <button type="button" class="button" onclick="sendCmd('leds','candle','')">
         <span class="button__text"><i class=""></i>Candle</span>
     </button>
@@ -232,13 +230,13 @@
     <button type="button" class="button" onclick="sendCmd('leds','overcast','')">
         <span class="button__text"><i class=""></i>Overcast</span>
     </button>  
-  <p></p> 
     <button type="button" class="button" onclick="sendCmd('leds','sky','')">
         <span class="button__text"><i class=""></i>Sky</span>
     </button>
+  <p class="parstd"></p> 
     <button type="button" class="button" onclick="sendCmd('leds','purple','')">
         <span class="button__text"><i class=""></i>Purple</span>
-    </button>
+    </button>   
     <button type="button" class="button" onclick="sendCmd('leds','violet','')">
         <span class="button__text"><i class=""></i>Violet</span>
     </button>
@@ -248,23 +246,19 @@
     <button type="button" class="button" onclick="sendCmd('leds','red','')">
         <span class="button__text"><i class=""></i>Red</span>
     </button> 
-  <p></p> 
     <button type="button" class="button" onclick="sendCmd('leds','pink','')">
         <span class="button__text"><i class=""></i>Pink</span>
     </button>
     <button type="button" class="button" onclick="sendCmd('leds','lavender','')">
         <span class="button__text"><i class=""></i>Lavender</span>
     </button>
-    <button type="button" class="button" onclick="sendCmd('leds','maroon','')">
-        <span class="button__text"><i class=""></i>Maroon</span>
-    </button>
+  <p class="parstd"></p>     
     <button type="button" class="button" onclick="sendCmd('leds','forest','')">
         <span class="button__text"><i class=""></i>Forest</span>
     </button>
     <button type="button" class="button" onclick="sendCmd('leds','green','')">
         <span class="button__text"><i class=""></i>Green</span>
     </button>         
-  <p></p> 
     <button type="button" class="button" onclick="sendCmd('leds','plum','')">
         <span class="button__text"><i class=""></i>Plum</span>
     </button>
@@ -277,10 +271,10 @@
     <button type="button" class="button" onclick="sendCmd('leds','orange','')">
         <span class="button__text"><i class=""></i>Orange</span>
     </button>
+  <p class="parstd"></p>     
     <button type="button" class="button" onclick="sendCmd('leds','blue','')">
         <span class="button__text"><i class=""></i>Blue</span>
     </button>    
-  <p></p> 
     <button type="button" class="button" onclick="sendCmd('leds','orchid1','')">
         <span class="button__text"><i class=""></i>Orchid</span>
     </button>
@@ -290,16 +284,13 @@
     <button type="button" class="button" onclick="sendCmd('leds','tomato1','')">
         <span class="button__text"><i class=""></i>Tomato</span>
     </button>
-    <button type="button" class="button" onclick="sendCmd('leds','khaki1','')">
-        <span class="button__text"><i class=""></i>Khaki</span>
-    </button>
     <button type="button" class="button" onclick="sendCmd('leds','tan1','')">
         <span class="button__text"><i class=""></i>Violet</span>
     </button>  
-  <p></p> 
     <button type="button" class="button" onclick="sendCmd('leds','olivedrab1','')">
         <span class="button__text"><i class=""></i>Olive</span>
-    </button>
+    </button>    
+  <p class="parstd"></p> 
     <button type="button" class="button" onclick="sendCmd('leds','aquamarine2','')">
         <span class="button__text"><i class=""></i>Aquamarine</span>
     </button>
@@ -312,6 +303,12 @@
     <button type="button" class="button" onclick="sendCmd('leds','azure2','')">
         <span class="button__text"><i class=""></i>Azure</span>
     </button> 
+    <button type="button" class="button" onclick="sendCmd('leds','gray','')">
+        <span class="button__text"><i class=""></i>Gray</span>
+    </button>
+    <button type="button" class="button" onclick="sendCmd('leds','cyan3','')">
+        <span class="button__text"><i class=""></i>Cyan</span>
+    </button>        
   <p class="body__text" id="bottom"></p>
 </div>
 

@@ -2,7 +2,7 @@
 <html class="scroll-style-7" lang="en" translate="no">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1">
   <title>LCD-Pi</title>
     <link href="fa/css/fontawesome.css" rel="stylesheet">
     <link href="fa/css/brands.css" rel="stylesheet">
@@ -57,7 +57,6 @@
     <button type="button" class="button" onclick="openSendWindow()">
         <span class="button__text"></i> Xmit</span>
     </button>
-  <p></p>
     <button type="button" class="button" onclick="sendPicmd('main','stop','')">
         <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
     </button>
@@ -76,17 +75,17 @@
   <form class="form-container">
     <div class="scrollmenu">
       <div class="dropdown"> 
-        <a>Z-Terminal Xmit</a>
+        <a class="dropbtn">Z-Terminal Xmit</a>
       </div>  
     </div>    
     <textarea class="scroll-style-7" id="logTextBox" placeholder="" required=""></textarea>  
-    <button type="button" class="button" onclick="closeSendbox()">
+    <button type="button" class="button button_left_txtwin" onclick="closeSendbox()">
           <span class="button__textsmall"></i> Close</span>
     </button>   
-    <button type="button" class="button" onclick="clearText()">
+    <button type="button" class="button button_left_txtwin" onclick="clearText()">
           <span class="button__textsmall"></i> Clear</span>
     </button>     
-    <button type="button" class="button button__right" id="sendButton" onclick="sendText()">
+    <button type="button" class="button button_right_txtwin" id="sendButton" onclick="sendText()">
           <span class="button__textsmall"></i> Send</span>
     </button>
     <div id="formSpinner" class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>

@@ -2,7 +2,7 @@
 <html lang="en-US" class="notranslate" translate="no">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1">
   <title>Ambiance</title>
     <link href="fa/css/fontawesome.css" rel="stylesheet">
     <link href="fa/css/brands.css" rel="stylesheet">
@@ -26,9 +26,6 @@
 
 <div>      
   <p></p>
-      <button type="button" class="button" onclick="relaxMode()">
-          <span id="relax__text" class="button__text"></i></span>
-      </button>
       <button type="button" class="button" onclick="sendCmd('main','vdwn','bedroom')">
           <span class="button__text"><i class="fa-solid fa-volume-low"></i></span>
       </button>
@@ -37,14 +34,17 @@
       </button>
       <button type="button" class="button" onclick="sendCmd('main','vup','bedroom')">
           <span class="button__text"><i class="fa-solid fa-volume-high"></i></span>
-      </button>  
+      </button>
+      <button type="button" class="button" onclick="relaxMode()">
+          <span id="relax__text" class="button__text"></i></span>
+      </button>      
       <button type="button" class="button" onclick="sendCmd('main','relax','waterfall')">
           <span class="button__text"></i>Waterfall</span>
       </button>
-  <p></p>
       <button type="button" class="button" onclick="sendCmd('main','relax','amazon')">
           <span class="button__text"></i>Amazon</span>
       </button>
+    <p class="parstd"></p>      
       <button type="button" class="button" onclick="sendCmd('main','relax','campfire')">
           <span class="button__text"></i>Campfire</span>
       </button>
@@ -57,13 +57,13 @@
       <button type="button" class="button" onclick="sendCmd('main','relax','wind')">
           <span class="button__text"></i>Wind</span>
       </button>
-  <p></p>
       <button type="button" class="button" onclick="sendCmd('main','relax','jungle')">
           <span class="button__text"></i>Jungle</span>
       </button>
       <button type="button" class="button" onclick="sendCmd('main','relax','meadow')">
           <span class="button__text"></i>Meadow</span>
       </button>
+    <p class="parstd"></p>      
       <button type="button" class="button" onclick="sendCmd('main','relax','stream')">
           <span class="button__text"></i>Stream</span>
       </button>  
@@ -73,7 +73,6 @@
       <button type="button" class="button" onclick="sendCmd('main','relax','river')">
           <span class="button__text"></i>River</span>
       </button>
-  <p></p>
       <button type="button" class="button" onclick="sendCmd('main','relax','rain')">
           <span class="button__text"></i>Rain</span>
       </button>
@@ -83,13 +82,13 @@
       <button type="button" class="button" onclick="sendCmd('main','relax','storm')">
           <span class="button__text"></i>Storm</span>
       </button>  
+    <p class="parstd"></p>
       <button type="button" class="button" onclick="sendCmd('main','relax','thunder')">
           <span class="button__text"></i>Thunder</span>
       </button>
       <button type="button" class="button" onclick="sendCmd('main','relax','traffic')">
           <span class="button__text"></i>Traffic</span>
       </button>
-  <p></p>
       <button type="button" class="button" onclick="sendCmd('main','relax','beach')">
           <span class="button__text"></i>Beach</span>
       </button>
@@ -102,10 +101,10 @@
       <button type="button" class="button" onclick="sendCmd('main','relax','ambient2')">
           <span class="button__text"></i>Ambient II</span>
       </button>
+    <p class="parstd"></p>      
       <button type="button" class="button" onclick="sendCmd('main','relax','ambient3')">
           <span class="button__text"></i>Ambient III</span>
       </button>
-  <p></p>
       <button type="button" class="button" onclick="sendCmd('main','relax','classical')">
           <span class="button__text"></i>Classical</span>
       </button>

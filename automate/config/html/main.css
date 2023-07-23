@@ -33,15 +33,26 @@ body {
     background-color: black; 
 }  
 
+.parstd {
+	border: 0px;
+	margin-bottom: 0px;
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
+	line-height: 0;
+}
+
 .button {
     transition: all 0.2s;
-	  width: 135px;
+	width: 150px; /*width: 135px;*/
     -webkit-user-select: none;
     user-select: none;
-    touch-action: manipulation;    
-    border: 0;
-    margin: 2px;
-    padding: 0 0px;
+    touch-action: manipulation;
+    border: 0; 
+    margin-bottom: 5px;
+    margin-top: 5px;
+    margin-left: 5px;
+    padding: 0px;
     text-align: center;
     color: #fff; /* buttons font color */
     text-shadow: 1px 1px 1px #000;
@@ -72,13 +83,14 @@ body {
   line-height: 4.0; /* normal button width */
 }
 
-.button__lgr {
-  width: 280px;
+.button_right_txtwin { 
+  position: absolute;
+  width: 130px;
+  right: 5px;
 }
 
-.button__right { 
-  position: absolute;
-  right: 5px;
+.button_left_txtwin {
+  width: 130px;
 }
 
 .button__textsmall {
@@ -173,7 +185,7 @@ body {
 .form-container {
   height: 100%;
   width: 100%;
-  padding-bottom: 148px;
+  padding-bottom: 150px; /* buttons position */
   background-color: #2d353d; /* popup window frame color */
 }
 

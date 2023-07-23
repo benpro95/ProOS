@@ -2,7 +2,7 @@
 <html lang="en-US" class="notranslate" translate="no">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1">
   <title>Automate</title>
     <link href="fa/css/fontawesome.css" rel="stylesheet">
     <link href="fa/css/brands.css" rel="stylesheet">
@@ -19,7 +19,6 @@
   </a>
   <a href="leds.html">LEDs</a>  
   <a href="ambiance.html">Ambiance</a>
-  <a onclick="openCamWindow()">Doorway</a>
   <a onclick="GoToHomePage()" id="load__progress">
      <div id="load__bar"></div>
   </a>
@@ -27,57 +26,66 @@
 
 <div>
     <p></p>
-      <button type="button" class="button" onclick="sendCmd('main','rfa3','on')">
-          <span class="button__text"><i class="fa-solid fa-tv"></i> TV</span>
-      </button> 
-      <button type="button" class="button" onclick="sendCmd('main','rfa1','on')">
-          <span class="button__text"><i class="fa-solid fa-microchip"></i> Macs</span>
+      <button type="button" class="button" onclick="sendCmd('main','pcon','')">
+          <span class="button__text"><i class="fa-solid fa-computer"></i> PC</span>
       </button>
       <button type="button" class="button" onclick="sendCmd('main','roomon','')">
           <span class="button__text"><i class="fa-solid fa-toggle-on"></i> All</span>
-      </button>      
-      <button type="button" class="button" onclick="sendCmd('main','pcon','')">
-          <span class="button__text"><i class="fa-solid fa-computer"></i> PC</span>
-      </button>       
+      </button>   
       <button type="button" class="button" onclick="sendCmd('main','allon','')">
           <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Lights</span>
       </button>
-    <p></p>
-      <button type="button" class="button" onclick="sendCmd('main','rfa3','off')">
-          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> TV</span>
-      </button>
-       <button type="button" class="button" onclick="sendCmd('main','rfa1','off')">
-          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> Macs</span>
-      </button>     
-      <button type="button" class="button" onclick="sendCmd('main','roomoff','')">
-          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> All</span>
-      </button>       
+
       <button type="button" class="button" onclick="sendCmd('main','pcoff','')">
           <span class="button__text"><i class="fa-solid fa-toggle-off"></i> PC</span>
       </button> 
+      <button type="button" class="button" onclick="sendCmd('main','roomoff','')">
+          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> All</span>
+      </button>       
       <button type="button" class="button" onclick="sendCmd('main','alloff','')">
           <span class="button__text"><i class="fa-regular fa-toggle-off"></i> Lights</span>
       </button> 
-    <p></p>
+    <p class="parstd"></p>
+      <button type="button" class="button" onclick="sendCmd('main','rfa3','on')">
+        <span class="button__text"><i class="fa-solid fa-tv"></i> TV</span>
+      </button> 
       <button type="button" class="button" onclick="sendCmd('main','rfa2','on')">
           <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Dresser</span>
       </button> 
-      <button type="button" class="button" onclick="sendCmd('main','dwnc','')">
-          <span class="button__text"></i>-5dB</span>
+      <button type="button" class="button" onclick="sendCmd('main','rfc1','on')">
+          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Main</span>
+      </button>        
+
+      <button type="button" class="button" onclick="sendCmd('main','rfa3','off')">
+        <span class="button__text"><i class="fa-solid fa-toggle-off"></i> TV</span>
+      </button>    
+      <button type="button" class="button" onclick="sendCmd('main','rfa2','off')">
+          <span class="button__text"><i class="fa-regular fa-toggle-off"></i> Dresser</span> 
+      </button>   
+       <button type="button" class="button" onclick="sendCmd('main','rfc1','off')">
+          <span class="button__text"><i class="fa-regular fa-toggle-off"></i> Main</span>
+      </button>  
+    <p class="parstd"></p>
+      <button type="button" class="button" onclick="sendCmd('main','rfa1','on')">
+        <span class="button__text"><i class="fa-solid fa-microchip"></i> Macs</span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','hifion','')">
+          <span class="button__text"><i class="fa-solid fa-toggle-on"></i> System</span>
       </button>
       <button type="button" class="button" onclick="sendCmd('main','sleep','')">
           <span class="button__text"><i class="fa-regular fa-moon"></i> Sleep</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','upc','')">   
-          <span class="button__text"></i>+5dB</span>
-      </button>      
-      <button type="button" class="button" onclick="sendCmd('main','rfc1','on')">
-          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Main</span>
-      </button>        
-    <p></p>
-      <button type="button" class="button" onclick="sendCmd('main','rfa2','off')">
-          <span class="button__text"><i class="fa-regular fa-toggle-off"></i> Dresser</span> 
+
+      <button type="button" class="button" onclick="sendCmd('main','rfa1','off')">
+        <span class="button__text"><i class="fa-solid fa-toggle-off"></i> Macs</span>
       </button>   
+      <button type="button" class="button" onclick="sendCmd('main','hifioff','')">
+          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> System</span>
+      </button>
+      <button type="button" class="button" onclick="openLogWindow()">
+          <span class="button__text"><i class="fa-solid fa-gear"></i> Server</span>
+      </button>
+    <p class="parstd"></p>
       <button type="button" class="button" onclick="sendCmd('main','dwnf','')">
           <span class="button__text"><i class="fa-solid fa-volume-low"></i></span>
       </button>
@@ -87,45 +95,47 @@
       <button type="button" class="button" onclick="sendCmd('main','upf','')">
           <span class="button__text"><i class="fa-solid fa-volume-high"></i></span>
       </button>
-       <button type="button" class="button" onclick="sendCmd('main','rfc1','off')">
-          <span class="button__text"><i class="fa-regular fa-toggle-off"></i> Main</span>
-      </button>  
-    <p></p>
+
+      <button type="button" class="button" onclick="sendCmd('main','dwnc','')">
+          <span class="button__text"></i>-5dB</span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','togglehpf','')">
+          <span class="button__text"><i class="fa-solid fa-music"></i> HPF</span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','upc','')">   
+          <span class="button__text"></i>+5dB</span>
+      </button> 
+    <p class="parstd"></p>
       <button type="button" class="button" onclick="sendCmd('main','phono','')">
           <span class="button__text"><i class="fa-solid fa-compact-disc"></i> Phono</span>
       </button>
-            <button type="button" class="button" onclick="sendCmd('main','aux','')">
+      <button type="button" class="button" onclick="sendCmd('main','aux','')">
           <span class="button__text"><i class="fa-solid fa-microphone"></i> Aux</span> 
       </button>
       <button type="button" class="button" onclick="sendCmd('main','usb','')">
           <span class="button__text"><i class="fa-brands fa-usb"></i> USB</span>
       </button>
+
       <button type="button" class="button" onclick="sendCmd('main','opt','')">
           <span class="button__text"><i class="fa-solid fa-wave-square"></i> Optical</span>
       </button>
       <button type="button" class="button" onclick="sendCmd('main','coax','')">   
           <span class="button__text"><i class="fa-brands fa-apple"></i> AirPlay</span>
-      </button>      
-    <p></p>
-      <button type="button" class="button" onclick="sendCmd('main','hifion','')">
-          <span class="button__text"><i class="fa-solid fa-toggle-on"></i> System</span>
       </button>
+      <button type="button" class="button" onclick="sendCmd('main','autodac','')">
+          <span class="button__text"><i class="fa-solid fa-arrows-rotate"></i> Auto In</span>
+      </button>        
+    <p class="parstd"></p>
       <button type="button" class="button" onclick="sendCmd('main','vlimit','')">
           <span class="button__text"><i class="fa-solid fa-volume-off"></i> vLimit</span>
-      </button>    
-      <button type="button" class="button" onclick="sendCmd('main','autodac','')">
-          <span class="button__text"><i class="fa-solid fa-arrows-rotate"></i> Auto</span>
-      </button>   
-      <button type="button" class="button" onclick="sendCmd('main','togglehpf','')">
-          <span class="button__text"><i class="fa-solid fa-music"></i> HPF</span>
-      </button> 
-      <button type="button" class="button" onclick="openLogWindow()">
-          <span class="button__text"><i class="fa-solid fa-gear"></i> Server</span>
-      </button>      
-    <p></p>
-      <button type="button" class="button" onclick="sendCmd('main','hifioff','')">
-          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> System</span>
       </button>
+      <button type="button" class="button" onclick="openCamWindow()">
+          <span class="button__text"><i class="fa-regular fa-camera"></i> Doorway</span>
+      </button>
+      <button type="button" class="button" onclick="volMode()">
+          <span id="sub__text" class="button__text"></i></span>
+      </button>           
+
       <button type="button" class="button" onclick="sendCmd('main','vdwn','bedroom')">
           <span class="button__text"><i class="fa-solid fa-volume-low"></i></span>
       </button>
@@ -134,10 +144,7 @@
       </button>
       <button type="button" class="button" onclick="sendCmd('main','vup','bedroom')">
           <span class="button__text"><i class="fa-solid fa-volume-high"></i></span>
-      </button>  
-      <button type="button" class="button" onclick="volMode()">
-          <span id="sub__text" class="button__text"></i></span>
-      </button>      
+      </button>
     <p class="body__text" id="bottom"></p>
 </div>
 
@@ -183,36 +190,26 @@
         </div>
       </div>
       <div class="dropdown"> 
-        <a class="dropbtn" onclick="showMenu('unifimenu')" onmouseover="resetAction()">Unifi</a>
-        <div class="dropdown-content" id="unifimenu">
-          <a onclick="serverAction('startunifi')">Start</a>
-          <a onclick="serverAction('stopunifi')">Stop</a>
-        </div>
-      </div>
-      <div class="dropdown"> 
-        <a class="dropbtn" onclick="showMenu('xanamenu')" onmouseover="resetAction()">Xana</a>
-        <div class="dropdown-content" id="xanamenu">
-          <a onclick="serverAction('startxana')">Start</a>
-          <a onclick="serverAction('restorexana')">Restore</a>
-          <a onclick="serverAction('stopxana')">Stop</a>       
-        </div>
-      </div>
-      <div class="dropdown"> 
-        <a class="dropbtn" onclick="showMenu('devmenu')" onmouseover="resetAction()">Dev</a>
-        <div class="dropdown-content" id="devmenu">
-          <a onclick="serverAction('startdev')">Start</a>
-          <a onclick="serverAction('stopdev')">Stop</a>
+        <a class="dropbtn" onclick="showMenu('vmmenu')" onmouseover="resetAction()">VMs</a>
+        <div class="dropdown-content" id="vmmenu">
+          <a onclick="serverAction('startdev')">Start Dev</a>
+          <a onclick="serverAction('stopdev')">Stop Dev</a>
+          <a onclick="serverAction('startxana')">Start Xana</a>
+          <a onclick="serverAction('restorexana')">Erase Xana</a>
+          <a onclick="serverAction('stopxana')">Stop Xana</a>
+          <a onclick="serverAction('startunifi')">Start Unifi</a>
+          <a onclick="serverAction('stopunifi')">Stop Unifi</a>          
         </div>
       </div>
     </div>
     <textarea class="scroll-style-7" id="logTextBox" placeholder="" required=""></textarea>  
-    <button type="button" class="button" onclick="closePopup()">
+    <button type="button" class="button button_left_txtwin" onclick="closePopup()">
           <span class="button__textsmall"></i> Close</span>
     </button>       
-    <button type="button" class="button" onclick="loadLog()">
+    <button type="button" class="button button_left_txtwin" onclick="loadLog()">
           <span class="button__textsmall"></i> View</span>
     </button>
-    <button type="button" class="button button__right" id="sendButton" onclick="serverSend(0)">
+    <button type="button" class="button button_right_txtwin" id="sendButton" onclick="serverSend(0)">
           <span class="button__textsmall"></i> Send</span>
     </button>
     <div id="formSpinner" class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>

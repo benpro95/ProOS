@@ -50,7 +50,6 @@ chmod 644 /etc/sysctl.conf
 chown root:root /etc/sysctl.conf
 
 ## System Resources
-rm -rf /opt/rpi
 rm -rf /opt/system
 mkdir -p /opt/system
 cp /tmp/config/leds.sh /opt/system/leds
@@ -60,6 +59,7 @@ cp /tmp/config/ledsync.txt /opt/system/
 chmod -R 755 /opt/system/*
 chown -R root:root /opt/system
 ln -sf /opt/system/main /opt/system/xmit
+ln -sf /opt/system /opt/rpi
 
 ## Light Web Server
 apt-get install -y --no-upgrade lighttpd php-cgi php php-common
@@ -95,7 +95,7 @@ rm -f /etc/sudoers.d/www-perms
 rm -f /etc/sudoers.d/www-nopasswd
 rm -f /etc/sudoers.d/www-mod-nopasswd
 sh -c "touch /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/system/main*\" >> /etc/sudoers.d/www-perms"
+sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/system/main\" >> /etc/sudoers.d/www-perms"
 sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/system/leds\" >> /etc/sudoers.d/www-perms"
 sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/system/xmit\" >> /etc/sudoers.d/www-perms"
 sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/system/lcdmsg\" >> /etc/sudoers.d/www-perms"
@@ -106,7 +106,7 @@ chmod u=r,g=r,o= /etc/sudoers.d/www-perms
 ## Nobody User Permissions (THD Hotkeys)
 rm -f /etc/sudoers.d/nobody-perms
 sh -c "touch /etc/sudoers.d/nobody-perms"
-sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/system/main*\" >> /etc/sudoers.d/nobody-perms"
+sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/system/main\" >> /etc/sudoers.d/nobody-perms"
 sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/system/leds\" >> /etc/sudoers.d/nobody-perms"
 sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/system/xmit\" >> /etc/sudoers.d/nobody-perms"
 sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/system/lcdmsg\" >> /etc/sudoers.d/nobody-perms"

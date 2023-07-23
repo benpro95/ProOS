@@ -329,7 +329,7 @@ body {
 .dropdown-content a:active {background-color: #000; color: #fff;}
 
 /* Show the dropdown menu on hover */
-.dropdown:hover .dropdown-content {display: block;}
+/*/.dropdown:hover .dropdown-content {display: block;}
 
 /* Change the background color of the dropdown button when hovering */
 .dropdown:hover .dropbtn {background-color: #000;}

@@ -25,6 +25,26 @@ window.onload = function() {
   elem.textContent = "Automate"; 
 };
 
+// hide all drop down menus
+function hideDropdowns() {
+  var _itr;
+  var _class = document.getElementsByClassName("dropdown-content");
+  for (_itr = 0; _itr < _class.length; _itr++) {
+      _class[_itr].style.display = 'none';
+  }
+};
+
+// toggle dropdown menu's
+function showMenu(_menu) {
+  var _elem = document.getElementById(_menu);
+  if (_elem.style.display == 'block') {
+    _elem.style.display = 'none';
+  } else {
+    hideDropdowns();
+    _elem.style.display = 'block';
+  }
+};
+
 // timer
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -33,6 +53,11 @@ function sleep(ms) {
 // back to home page 
 function GoToHomePage() {
   window.location = '/';   
+};
+
+// back to home page ****
+function GoToAutomate() {
+  window.location = 'https://automate.home/';   
 };
 
 function GoToCamera() {
@@ -113,8 +138,9 @@ function savePOST(data) {
   data = "";
 };
 
-// transmit command
+// transmit command for server
 async function sendCmd(act, arg1, arg2) {
+  hideDropdowns();
   // adjust API syntax for different functions
   if (vol_mode == 1) {  
     arg2 = "subs";
@@ -133,6 +159,20 @@ async function sendCmd(act, arg1, arg2) {
   // animation
   loadBar();
 };
+
+// transmit command for Raspberry Pi's
+function sendPicmd(act, arg1, arg2) {
+  hideDropdowns();
+  // construct API string
+  let url = "http://"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
+  //document.getElementById("bottom").innerHTML = url;
+  // send data
+  fetch(url, {
+      method: 'GET',
+    })
+  loadBar();
+};
+
 
 // load entire text file
 async function loadLog(file) {
@@ -156,7 +196,6 @@ async function loadLog(file) {
   console_data = null;
   // animations
   hideSpinner();
-  loadBar();
   resetAction();
 };
 
@@ -169,6 +208,7 @@ function serverAction(cmd) {
 };
 
 function resetAction() {
+  hideDropdowns();
   // return default color of send button 
   document.getElementById("sendButton").style.background='#1e2352';  
   // clear command data
@@ -233,6 +273,7 @@ function openCamWindow() {
 function closePopup() {
   // close all popup windows
   hideSpinner();
+  hideDropdowns();
   document.getElementById("logForm").style.display = "none";
   document.getElementById("camForm").style.display = "none";
   // Show our element, then call our callback
@@ -252,7 +293,6 @@ function showSpinner() {
   document.getElementById("formSpinner").style.display = "inline-block";   
 };
 
-
 function hideSpinner() {
   // hide apple spinner
   document.getElementById("formSpinner").style.display = "none";
@@ -260,38 +300,78 @@ function hideSpinner() {
   document.getElementById("sendButton").style.display = "inline-block";  
 };
 
+function closeSendbox() {
+  // close all popup windows
+  document.getElementById("sendForm").style.display = "none";
+};
+
+function openSendWindow() {
+  // open send text window
+  closeSendbox();
+  document.getElementById("sendForm").style.display = "block";
+};
+
+function sendText() {
+  const data = document.getElementById("logTextBox").value;
+  if (data.trim() === "") {
+    document.getElementById("logTextBox").value = "enter a message before sending.";
+  } else {
+  // Create the HTTP POST request
+    const xhr = new XMLHttpRequest();
+    const url = "http://"+location.hostname+"/upload.php";
+    xhr.open("POST", url);
+    xhr.setRequestHeader("Content-Type", "text/plain");
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status === 200) {
+          // message sent
+          document.getElementById("logTextBox").value = "";
+        } else {
+          document.getElementById("logTextBox").value = "failed to transmit message.";
+        }
+      }
+    }
+    xhr.send(data);
+  }
+  loadBar();
+};
+
+function clearText() {
+  // celar text window
+  document.getElementById("logTextBox").value = "";
+};
 
 // switch volume controls on main page
 function volMode() {   
 	let id = document.getElementById("sub__text");
-    if (vol_mode == 0) {
-       id.textContent = "Subwoofers";
-       vol_mode = 1;
-    } else {	
-       id.textContent = "Bedroom";
-       vol_mode = 0;
-    }
+  if (vol_mode == 0) {
+     id.textContent = "Subwoofers";
+     vol_mode = 1;
+  } else {	
+     id.textContent = "Bedroom";
+     vol_mode = 0;
+  }
 };
 
 // switch volume controls on bedroom page
 function relaxMode() {   
   let id = document.getElementById("relax__text");
-    if (relax_mode == 0) {
-       id.textContent = "HiFi";
-       relax_mode = 1;
-    } else {  
-       id.textContent = "Bedroom";
-       relax_mode = 0;
-    }
+  if (relax_mode == 0) {
+     id.textContent = "HiFi";
+     relax_mode = 1;
+  } else {  
+     id.textContent = "Bedroom";
+     relax_mode = 0;
+  }
 };
 
-// disable a button example
+// disable a button
 function disableButton() {
 	document.getElementById("sub__text").disabled = true;
 };	
 
 // loading bar animation 
-function loadBar() {
+async function loadBar() {
   if (load_bar == 0) {
     load_bar = 1;
     var elem = document.getElementById("load__bar");

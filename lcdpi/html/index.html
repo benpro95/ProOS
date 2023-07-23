@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html class="scroll-style-7" lang="en" translate="no">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LCD-Pi</title>
+    <link href="fa/css/fontawesome.css" rel="stylesheet">
+    <link href="fa/css/brands.css" rel="stylesheet">
+    <link href="fa/css/solid.css" rel="stylesheet">
+    <link href="main.css" rel="stylesheet">
+    <script src="main.js"></script>
+</head>
+<body>
+
+<div class="init"></div>
+
+<div class="topnav">
+  <a onclick="GoToAutomate()" class="homelogo">
+    <i class="fa fa-home"></i>
+  </a>
+  <a href="settings/index.php">Settings</a>
+  <div onclick="GoToAutomate()" id="load__progress">
+     <div id="load__bar"></div>
+  </div>
+</div>
+
+<div>      
+  <p></p>   
+    <div class="dropdown">
+      <button type="button" class="button" onclick="showMenu('delaymenu')">
+        <span class="button__text"><i class="fa-solid fa-forward-fast"></i> Speed</span>
+      </button>  
+      <div class="dropdown-content" id="delaymenu">
+        <a onclick="sendPicmd('main','delay','2000')">2000 ms</a>
+        <a onclick="sendPicmd('main','delay','1000')">1000 ms</a>
+        <a onclick="sendPicmd('main','delay','700')">700 ms</a>
+        <a onclick="sendPicmd('main','delay','500')">500 ms</a>
+        <a onclick="sendPicmd('main','delay','350')">350 ms</a>
+        <a onclick="sendPicmd('main','delay','200')">200 ms</a>
+        <a onclick="sendPicmd('main','delay','150')">150 ms</a>
+        <a onclick="sendPicmd('main','delay','90')">90 ms</a>
+        <a onclick="sendPicmd('main','delay','50')">50 ms</a>
+        <a onclick="sendPicmd('main','delay','20')">20 ms</a>
+        <a onclick="sendPicmd('main','delay','5')">5 ms</a>
+      </div>
+    </div>
+    <div class="dropdown">
+      <button type="button" class="button" onclick="showMenu('blmenu')">
+        <span class="button__text"><i class="fa-solid fa-lightbulb"></i> Backlight</span>
+      </button>  
+      <div class="dropdown-content" id="blmenu">
+        <a onclick="sendPicmd('main','backlight','0')">Auto</a>
+        <a onclick="sendPicmd('main','backlight','2')">High</a>
+        <a onclick="sendPicmd('main','backlight','1')">Low</a>
+      </div>
+    </div>
+    <button type="button" class="button" onclick="openSendWindow()">
+        <span class="button__text"></i> Xmit</span>
+    </button>
+  <p></p>
+    <button type="button" class="button" onclick="sendPicmd('main','stop','')">
+        <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
+    </button>
+    <button type="button" class="button button__lgr" onclick="sendPicmd('main','clear','')">
+        <span class="button__text"><i class="fa-solid fa-stop"></i> Clear</span>
+    </button>
+  <p class="body__text" id="bottom"></p>
+</div>
+
+<div>
+  <p style="min-height: 50px" class="body__text">by Ben Provenzano III</p>
+</div>
+
+
+<div class="chat-popup" id="sendForm">
+  <form class="form-container">
+    <div class="scrollmenu">
+      <div class="dropdown"> 
+        <a>Z-Terminal Xmit</a>
+      </div>  
+    </div>    
+    <textarea class="scroll-style-7" id="logTextBox" placeholder="" required=""></textarea>  
+    <button type="button" class="button" onclick="closeSendbox()">
+          <span class="button__textsmall"></i> Close</span>
+    </button>   
+    <button type="button" class="button" onclick="clearText()">
+          <span class="button__textsmall"></i> Clear</span>
+    </button>     
+    <button type="button" class="button button__right" id="sendButton" onclick="sendText()">
+          <span class="button__textsmall"></i> Send</span>
+    </button>
+    <div id="formSpinner" class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+  </form>
+</div>
+
+</body>
+</html>

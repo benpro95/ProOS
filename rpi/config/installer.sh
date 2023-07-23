@@ -471,6 +471,7 @@ fi
 ## LightTPD base website files
 rm -r /var/www/html
 mkdir -p /var/www/html
+mv -f $BIN/html-base/* /var/www/html
 mv -f $BIN/html/* /var/www/html
 chmod -R 775 /var/www/html
 chown -R www-data:www-data /var/www/html

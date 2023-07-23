@@ -291,9 +291,12 @@ if [ "$SYNCSTATE" == "start" ]; then
     echo "Syncing software..."
   fi
 
-  ## Sync software
+  ## Install base software
   rsync -e "ssh -i $KEYS/rpi.rsa" --progress --checksum -rtv \
    --exclude=photos --exclude=sources $ROOTDIR/rpi root@$HOST:/opt/
+  rsync -e "ssh -i $KEYS/rpi.rsa" --progress --checksum -rtv \
+   --mkpath $ROOTDIR/automate/config/html/* root@$HOST:/opt/rpi/config/html-base/ 
+  ## Install module-specific software
   rsync -e "ssh -i $KEYS/rpi.rsa" --progress --checksum -rtv \
    --exclude=photos --exclude=sources $ROOTDIR/$MODULE/* root@$HOST:/opt/rpi/
 

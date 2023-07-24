@@ -2,8 +2,8 @@
 <html class="scroll-style-7" lang="en" translate="no">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1">
-  <title>LCD-Pi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=0.75">
+  <title>LCDpi</title>
     <link href="fa/css/fontawesome.css" rel="stylesheet">
     <link href="fa/css/brands.css" rel="stylesheet">
     <link href="fa/css/solid.css" rel="stylesheet">
@@ -12,15 +12,19 @@
 </head>
 <body>
 
-<div class="init"></div>
-
 <div class="topnav">
-  <a onclick="GoToAutomate()" class="homelogo">
-    <i class="fa fa-home"></i>
+  <a onclick="showMenu('mainmenu')" class="mainmenu__anchor">
+    <i class="fa-solid fa-list"></i>
   </a>
-  <a href="settings/index.php">Settings</a>
-  <div onclick="GoToAutomate()" id="load__progress">
+  <a onclick="GoToHomePage()" id="load__progress">
      <div id="load__bar"></div>
+  </a>
+</div>
+
+<div class="main_dropdown">
+  <div class="dropdown-content" id="mainmenu">
+    <a onclick="GoToAutomate()"><i class="fa fa-home"></i>  Home</a>
+    <a href="settings/index.php">Settings</a>
   </div>
 </div>
 

@@ -2,7 +2,7 @@
 <html lang="en-US" class="notranslate" translate="no">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=0.75">
   <title>LEDs</title>
     <link href="fa/css/fontawesome.css" rel="stylesheet">
     <link href="fa/css/brands.css" rel="stylesheet">
@@ -12,17 +12,22 @@
 </head>
 <body class="scroll-style-7">
 
-<div class="init"></div>
-
 <div class="topnav">
-  <a onclick="GoToHomePage()" class="homelogo">
-    <i class="fa fa-home"></i>
+  <a onclick="showMenu('mainmenu')" class="mainmenu__anchor">
+    <i class="fa-solid fa-list"></i>
   </a>
-  <a href="http://touchpi.home">TouchPi</a>
-  <a href="http://ledwall.home">LEDwall</a>
-  <a href="http://ledgrid.home">LEDgrid</a>
-  <div onclick="GoToHomePage()" id="load__progress">
+  <a onclick="GoToHomePage()" id="load__progress">
      <div id="load__bar"></div>
+  </a>
+</div>
+
+<div class="main_dropdown">
+  <div class="dropdown-content" id="mainmenu">
+    <a onclick="GoToAutomate()"><i class="fa fa-home"></i>  Home</a>
+    <a href="ambiance.html">Ambiance</a>
+    <a href="http://ledwall.home">LEDwall</a>
+    <a href="http://ledgrid.home">LEDgrid</a>    
+    <a href="http://lcdpi.home">LCDpi</a>
   </div>
 </div>
 

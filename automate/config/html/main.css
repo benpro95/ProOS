@@ -123,7 +123,7 @@ body {
   color: white;
 }
 
-.topnav a.homelogo {
+.topnav a.mainmenu__anchor {
   position:relative; left:1px; top:2px
   font-size: 33px;
 }	
@@ -313,6 +313,13 @@ body {
 /* The container <div> - needed to position the dropdown content */
 .dropdown {
   position: relative;
+  display: inline-block;
+}
+
+.main_dropdown {
+  top: 65px;
+  left: 5px;
+  position: fixed;
   display: inline-block;
 }
 

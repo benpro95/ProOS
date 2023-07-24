@@ -111,6 +111,7 @@ return new Promise(function(resolve, reject) {
 async function getPassword(){
   var result;
   try{
+    hideDropdowns();
     result = await passwordPrompt("Enter password:");
     if (result != null) {  
       if (result != '') {  

@@ -35,7 +35,7 @@ const char sigChars[] = {"$?-|"}; // control mode
 size_t sigMatches = 0;
 size_t sigLen = 0;
 // control data
-char controlDat[6];
+char controlDat[buffLen];
 size_t controlCount = 0;
 size_t controlLen = 0;
 bool controlMode = 0;
@@ -65,7 +65,9 @@ void clearLine() {
   enableSend = 0;
   writeLoops = 0;
   lineSize = 0;
-  memset(line, '\0', 1);
+  free(line);
+  line = (char*) malloc(1 * sizeof(char));
+  line[0] = '\0';
 }
 
 
@@ -172,7 +174,10 @@ void eofAction() {
         if (lineSize > 0) { // one character or more
           // calcuate transmission rounds
           writeLoops = 
-            (ROUND_DIVIDE(lineSize,maxCmdLength) + 1);
+            (ROUND_DIVIDE(lineSize,maxCmdLength));
+          if (lineSize <= maxCmdLength){
+            writeLoops = 1;
+          }  
           // enable transmit
           if (lineSize == 1){
             enableSend = 2; // single character (no delay)
@@ -180,8 +185,12 @@ void eofAction() {
             enableSend = 1;
           } 
         }
-        // terminate line
-        line[lineSize] = '\0';  
+        // terminate line (add extra nulls, bug fix)
+        for (size_t i = 0; i < buffLen * 2; i++) {
+          line = realloc(line, (lineSize + 1));
+          line[lineSize] = '\0';
+          lineSize++;
+        }
       }  
     } else { // control mode 
       controlParser();

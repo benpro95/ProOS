@@ -174,7 +174,7 @@ void eofAction() {
         if (lineSize > 0) { // one character or more
           // calcuate transmission rounds
           writeLoops = 
-            (ROUND_DIVIDE(lineSize,maxCmdLength));
+            (ROUND_DIVIDE(lineSize,maxCmdLength) + 1);
           if (lineSize <= maxCmdLength){
             writeLoops = 1;
           }  
@@ -195,12 +195,11 @@ void eofAction() {
     } else { // control mode 
       controlParser();
     } 
-    // reset control mode
+    // reset counters
     controlMode = 0;
     controlCount = 0;
     sigMatches = 0;
     lineSize = 0;    
-    // reset trigger
     readMode = 0;
   }
 }  

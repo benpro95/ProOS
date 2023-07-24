@@ -8,6 +8,7 @@
     <link href="fa/css/brands.css" rel="stylesheet">
     <link href="fa/css/solid.css" rel="stylesheet">
     <link href="main.css" rel="stylesheet">
+    <script src="jquery-1.10.1.min.js"></script>
     <script src="main.js"></script>
 </head>
 <body class="scroll-style-7">
@@ -23,8 +24,9 @@
 
 <div class="main_dropdown">
   <div class="dropdown-content" id="mainmenu">
-    <a onclick="GoToAutomate()"><i class="fa fa-home"></i> Home</a>
+    <a onclick="GoToHomePage()"><i class="fa fa-home"></i> Home</a>
     <a href="ambiance.html"><i class="fa-regular fa-moon"></i> Ambiance</a>
+    <a onclick="openCamWindow()"><i class="fa-regular fa-camera"></i> Doorway</a>
     <a href="http://ledwall.home"><i class="fa-regular fa-lightbulb"></i> LEDwall</a>
     <a href="http://ledgrid.home"><i class="fa-regular fa-lightbulb"></i> LEDgrid</a>    
     <a href="http://lcdpi.home"><i class="fa-solid fa-pager"></i> LCDpi</a>
@@ -71,7 +73,7 @@
         <span class="button__text"><i class="fa-solid fa-shuffle"></i> Shuffle</span>
     </button>
   <p class="parstd"></p> 
-    <button type="button" class="button" onclick="sendCmd('leds','stop','')">
+    <button type="button" class="button button__off" onclick="sendCmd('leds','stop','')">
         <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
     </button>
     <button type="button" class="button button__lgr" onclick="sendCmd('leds','pause','')">
@@ -319,6 +321,34 @@
 
 <div>
   <p style="min-height: 50px" class="body__text">by Ben Provenzano III</p>
+</div>
+
+<div class="chat-popup" id="logForm">
+  <form class="form-container">
+    <div class="scrollmenu">
+      <div class="dropdown"> 
+        <a class="dropbtn"></a>          
+      </div>
+    </div> 
+    <button type="button" class="button button_right_txtwin" id="sendButton" onclick="serverSend(0)">
+          <span class="button__textsmall"></i> Send</span>
+    </button>    
+    <div id="formSpinner" class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+  </form>
+</div>
+
+<div class="chat-popup" id="camForm">
+  <form class="form-container">
+    <div class="iframe-container"> 
+      <iframe class="responsive-iframe" frameborder="0" border="0" scrolling="yes" data-active="/cam1"></iframe>
+    </div>
+    <button type="button" class="button cam__btnleft" onclick="closePopup()">
+      <span class="button__textsmall"></i> Close</span>
+    </button>     
+    <button type="button" class="button cam__btnright" onclick="GoToCamera()">
+      <span class="button__textsmall"></i> Fullscreen</span>
+    </button>   
+  </form>
 </div>
 
 </body>

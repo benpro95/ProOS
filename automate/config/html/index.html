@@ -26,6 +26,7 @@
 <div class="main_dropdown">
   <div class="dropdown-content" id="mainmenu">
     <a href="ambiance.html"><i class="fa-regular fa-moon"></i> Ambiance</a>
+    <a onclick="openCamWindow()"><i class="fa-regular fa-camera"></i> Doorway</a>
     <a href="http://ledwall.home"><i class="fa-regular fa-lightbulb"></i> LEDwall</a>
     <a href="http://ledgrid.home"><i class="fa-regular fa-lightbulb"></i> LEDgrid</a>    
     <a href="http://lcdpi.home"><i class="fa-solid fa-pager"></i> LCDpi</a>
@@ -43,13 +44,13 @@
       <button type="button" class="button" onclick="sendCmd('main','allon','')">
           <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Lights</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','pcoff','')">
+      <button type="button" class="button button__off" onclick="sendCmd('main','pcoff','')">
           <span class="button__text"><i class="fa-solid fa-toggle-off"></i> PC</span>
       </button> 
-      <button type="button" class="button" onclick="sendCmd('main','roomoff','')">
+      <button type="button" class="button button__off" onclick="sendCmd('main','roomoff','')">
           <span class="button__text"><i class="fa-solid fa-toggle-off"></i> All</span>
       </button>       
-      <button type="button" class="button" onclick="sendCmd('main','alloff','')">
+      <button type="button" class="button button__off" onclick="sendCmd('main','alloff','')">
           <span class="button__text"><i class="fa-regular fa-toggle-off"></i> Lights</span>
       </button> 
     <p class="parstd"></p>
@@ -62,34 +63,34 @@
       <button type="button" class="button" onclick="sendCmd('main','rfc1','on')">
           <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Main</span>
       </button>           
-      <button type="button" class="button" onclick="sendCmd('main','rfa1','off')">
+      <button type="button" class="button button__off" onclick="sendCmd('main','rfa1','off')">
         <span class="button__text"><i class="fa-solid fa-toggle-off"></i> Macs</span>
       </button>        
-      <button type="button" class="button" onclick="sendCmd('main','rfa2','off')">
+      <button type="button" class="button button__off" onclick="sendCmd('main','rfa2','off')">
           <span class="button__text"><i class="fa-regular fa-toggle-off"></i> Dresser</span> 
       </button>   
-       <button type="button" class="button" onclick="sendCmd('main','rfc1','off')">
+       <button type="button" class="button button__off" onclick="sendCmd('main','rfc1','off')">
           <span class="button__text"><i class="fa-regular fa-toggle-off"></i> Main</span>
       </button>  
     <p class="parstd"></p>
       <button type="button" class="button" onclick="sendCmd('main','hifion','')">
-          <span class="button__text"><i class="fa-solid fa-play"></i> System</span>
-      </button>    
+          <span class="button__text"><i class="fa-solid fa-play"></i> HiFi</span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','sleep','')">
+          <span class="button__text"><i class="fa-regular fa-moon"></i> Sleep</span>
+      </button>         
       <button type="button" class="button" onclick="sendCmd('main','rfa3','on')">
         <span class="button__text"><i class="fa-solid fa-tv"></i> TV</span>
       </button> 
-      <button type="button" class="button" onclick="sendCmd('main','sleep','')">
-          <span class="button__text"><i class="fa-regular fa-moon"></i> Sleep</span>
+      <button type="button" class="button button__off" onclick="sendCmd('main','hifioff','')">
+          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> HiFi</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','hifioff','')">
-          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> System</span>
-      </button>
-       <button type="button" class="button" onclick="sendCmd('main','rfa3','off')">
-        <span class="button__text"><i class="fa-solid fa-toggle-off"></i> TV</span>
-      </button> 
       <button type="button" class="button" onclick="openLogWindow()">
           <span class="button__text"><i class="fa-solid fa-microchip"></i> Server</span>
       </button>
+      <button type="button" class="button button__off" onclick="sendCmd('main','rfa3','off')">
+        <span class="button__text"><i class="fa-solid fa-toggle-off"></i> TV</span>
+      </button> 
     <p class="parstd"></p>
       <button type="button" class="button" onclick="sendCmd('main','dwnf','')">
           <span class="button__text"><i class="fa-solid fa-volume-low"></i></span>
@@ -132,8 +133,8 @@
       <button type="button" class="button" onclick="sendCmd('main','vlimit','')">
           <span class="button__text"><i class="fa-solid fa-volume-off"></i> vLimit</span>
       </button>
-      <button type="button" class="button" onclick="openCamWindow()">
-          <span class="button__text"><i class="fa-regular fa-camera"></i> Doorway</span>
+      <button type="button" class="button" onclick="sendCmd('main','relaxps','')">
+          <span class="button__text"><i class="fa-solid fa-couch"></i> Relax</span>
       </button>
       <button type="button" class="button" onclick="volMode()">
           <span id="sub__text" class="button__text"></i></span>

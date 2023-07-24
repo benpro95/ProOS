@@ -16,7 +16,7 @@
   <a onclick="showMenu('mainmenu')" class="mainmenu__anchor">
     <i class="fa-solid fa-list"></i>
   </a>
-  <a onclick="GoToHomePage()" id="load__progress">
+  <a onclick="GoToAutomate()" id="load__progress">
      <div id="load__bar"></div>
   </a>
 </div>
@@ -24,8 +24,8 @@
 <div class="main_dropdown">
   <div class="dropdown-content" id="mainmenu">
     <a onclick="GoToAutomate()"><i class="fa fa-home"></i>  Home</a>
-    <a href="picker.html">ColorPicker</a>
-    <a href="settings/index.php">Settings</a>
+    <a href="picker.html"><i class="fa-solid fa-palette"></i> Colors</a>
+    <a href="settings/index.php"><i class="fa-solid fa-gear"></i> Settings</a>
   </div>
 </div>
 
@@ -69,7 +69,7 @@
         <span class="button__text"><i class="fa-solid fa-shuffle"></i> Shuffle</span>
     </button>
   <p class="parstd"></p> 
-    <button type="button" class="button" onclick="sendPicmd('leds','stop','')">
+    <button type="button" class="button button__off" onclick="sendPicmd('leds','stop','')">
         <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
     </button>
     <button type="button" class="button button__lgr" onclick="sendPicmd('leds','pause','')">

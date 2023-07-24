@@ -16,7 +16,7 @@
   <a onclick="showMenu('mainmenu')" class="mainmenu__anchor">
     <i class="fa-solid fa-list"></i>
   </a>
-  <a onclick="GoToHomePage()" id="load__progress">
+  <a onclick="GoToAutomate()" id="load__progress">
      <div id="load__bar"></div>
   </a>
 </div>
@@ -24,7 +24,7 @@
 <div class="main_dropdown">
   <div class="dropdown-content" id="mainmenu">
     <a onclick="GoToAutomate()"><i class="fa fa-home"></i>  Home</a>
-    <a href="settings/index.php">Settings</a>
+    <a href="settings/index.php"><i class="fa-solid fa-gear"></i> Settings</a>
   </div>
 </div>
 
@@ -61,10 +61,10 @@
     <button type="button" class="button" onclick="openSendWindow()">
         <span class="button__text"></i> Xmit</span>
     </button>
-    <button type="button" class="button" onclick="sendPicmd('main','stop','')">
+    <button type="button" class="button button__off" onclick="sendPicmd('main','stop','')">
         <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
     </button>
-    <button type="button" class="button button__lgr" onclick="sendPicmd('main','clear','')">
+    <button type="button" class="button button__lgr button__off" onclick="sendPicmd('main','clear','')">
         <span class="button__text"><i class="fa-solid fa-stop"></i> Clear</span>
     </button>
   <p class="body__text" id="bottom"></p>

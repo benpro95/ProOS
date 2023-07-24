@@ -85,12 +85,12 @@ body {
 
 .button_right_txtwin { 
   position: absolute;
-  width: 130px;
+  width: 120px;
   right: 5px;
 }
 
 .button_left_txtwin {
-  width: 130px;
+  width: 100px;
 }
 
 .button__textsmall {
@@ -321,6 +321,7 @@ body {
   left: 5px;
   position: fixed;
   display: inline-block;
+  z-index: 99999;
 }
 
 /* Dropdown Content (Hidden by Default) */

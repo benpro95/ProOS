@@ -5,9 +5,18 @@ var load_bar = 0;
 var console_data = null;
 var servercmd_data = null;
 var promptCount = 0;
+var rowtoggle = 0;
 
 // on-page-load
 window.onload = function() {
+  // detect running on phone
+  if (navigator.userAgent.match(/Android/i)
+   || navigator.userAgent.match(/webOS/i)
+   || navigator.userAgent.match(/iPhone/i)
+   || navigator.userAgent.match(/iPad/i)) {
+    // 3x collumns
+    toggleColumns();
+  }
   // load volume mode support on main page only
   if (window.location.href == "https://"+location.hostname+"/") {
     volMode();
@@ -22,7 +31,7 @@ window.onload = function() {
   }
   // set loading bar text
   var elem = document.getElementById("load__bar");
-  elem.textContent = "Automate"; 
+  elem.textContent = "Automate";
 };
 
 // hide all drop down menus
@@ -31,6 +40,22 @@ function hideDropdowns() {
   var _class = document.getElementsByClassName("dropdown-content");
   for (_itr = 0; _itr < _class.length; _itr++) {
       _class[_itr].style.display = 'none';
+  }
+};
+
+function toggleColumns() {
+  hideDropdowns();
+  var _state;
+  rowtoggle = !rowtoggle;
+  if (rowtoggle == true) {
+    _state = 'block';
+  } else {
+    _state = 'none';
+  }
+  var _itr;
+  var _class = document.getElementsByClassName("parsplit");
+  for (_itr = 0; _itr < _class.length; _itr++) {
+      _class[_itr].style.display = _state;
   }
 };
 

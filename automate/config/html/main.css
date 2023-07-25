@@ -42,6 +42,16 @@ body {
 	line-height: 0;
 }
 
+.parsplit {
+  display: none;
+}
+
+.grid {
+  overflow: auto;
+  display: block;
+  white-space: nowrap;
+}
+
 .button {
     transition: all 0.2s;
 	  width: 150px;
@@ -355,9 +365,6 @@ body {
 
 /* Change color of dropdown links on hover */
 .dropdown-content a:active {background-color: #000; color: #fff;}
-
-/* Show the dropdown menu on hover */
-/*/.dropdown:hover .dropdown-content {display: block;}
 
 /* Change the background color of the dropdown button when hovering */
 .dropdown:hover .dropbtn {background-color: #000;}

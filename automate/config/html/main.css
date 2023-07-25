@@ -383,6 +383,7 @@ body {
 .scroll-style-7::-webkit-scrollbar
 {
   width: 6px;
+  height: 6px;
   background-color: #414040;
 }
 

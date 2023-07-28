@@ -166,6 +166,26 @@ function savePOST(data) {
   data = "";
 };
 
+// send server action
+async function serverSend(mask) {
+  if (servercmd_data == null) {
+    document.getElementById("logTextBox").value = "Select an action.";
+  } else {
+    var cmd_text;
+    if (mask == 1) {
+       cmd_text = "xxxxxxxx";
+    } else {
+       cmd_text = servercmd_data;
+    }
+    showSpinner();
+    // send data
+    sendCmd('main','server',servercmd_data);
+    // refresh log
+    loadLog();
+  }  
+  servercmd_data = null;
+};
+
 // transmit command for server
 async function sendCmd(act, arg1, arg2) {
   hideDropdowns();
@@ -240,28 +260,6 @@ function resetAction() {
   // return default color of send button 
   document.getElementById("sendButton").style.background='#1e2352';  
   // clear command data
-  servercmd_data = null;
-};
-
-// send server action
-async function serverSend(mask) {
-  if (servercmd_data == null) {
-    document.getElementById("logTextBox").value = "Select an action.";
-  } else {
-    var cmd_text;
-    if (mask == 1) {
-       cmd_text = "xxxxxxxx";
-    } else {
-       cmd_text = servercmd_data;
-    }
-    showSpinner();
-    // send data
-    sendCmd('main','server',servercmd_data);
-    // delay
-    await sleep(400);
-    // refresh log
-    loadLog();
-  }  
   servercmd_data = null;
 };
 

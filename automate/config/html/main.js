@@ -180,8 +180,6 @@ async function serverSend(mask) {
     showSpinner();
     // send data
     sendCmd('main','server',servercmd_data);
-    // refresh log
-    loadLog();
   }  
   servercmd_data = null;
 };

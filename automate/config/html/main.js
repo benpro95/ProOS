@@ -241,9 +241,8 @@ async function serverSend() {
     showSpinner();
     // send data
     sendCmd('main','server',serverCmdData);
-    await sleep(1000);
+    await sleep(200);
     loadLog();
-    hideSpinner();
   }  
   serverCmdData = null;
 };

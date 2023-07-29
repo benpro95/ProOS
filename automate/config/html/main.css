@@ -238,7 +238,7 @@ body {
 
 /* loading spinning 'apple style' - hidden by default */
 .lds-spinner {
-  color: official;
+  color: #000;
   position: fixed;
   bottom: 55px;
   right: 60px;
@@ -459,29 +459,3 @@ body {
   -webkit-transform: scale(0.37);
   -webkit-transform-origin: 0 0;
 }
-
-@keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
-
-@-moz-keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
-
-@-webkit-keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
-
-@-o-keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
-
-@-ms-keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
-

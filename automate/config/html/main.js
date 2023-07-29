@@ -254,7 +254,7 @@ async function serverSend() {
     showSpinner();
     // send data
     sendCmd('main','server',serverCmdData);
-    await sleep(300);
+    await sleep(1000);
     loadLog();
   }  
   serverCmdData = null;
@@ -262,7 +262,7 @@ async function serverSend() {
 
 
 // transmit command for server
-async function sendCmd(act, arg1, arg2) {
+function sendCmd(act, arg1, arg2) {
   // construct API string
   const url = location.protocol+"//"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
   // display API string on page
@@ -320,22 +320,12 @@ function resetAction() {
 
 
 function openLogWindow() {
-  // current date
-  var date = new Date();
-  var hh = (date.getHours() % 12 || 12);
-  var mm = date.getMinutes();
-  var ss = date.getSeconds();
-  var day = date.getDate();
-  var mth = 1 + date.getMonth();
-  var year = date.getFullYear();
-  var curr_time = hh+':'+mm+':'+ss;
-  var curr_date = mth+'/'+day+'/'+year;
   // open server log window
   closePopup();
-  // help message 
-  document.getElementById("logTextBox").value = " Proxmox Linux Server "+curr_time+" "+curr_date+" ";
   // show log form window
   document.getElementById("logForm").style.display = "block";
+  // load log data
+  loadLog();
 };
 
 

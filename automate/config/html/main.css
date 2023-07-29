@@ -20,7 +20,7 @@ html {
     background-image:
     linear-gradient( 
       to bottom,  
-      #0e1539, 
+      #e6ffe6,  
       #000 75%  
     ); /* top-bottom gradient colors */
     background-repeat: no-repeat; 
@@ -57,6 +57,10 @@ body {
   -ms-animation: fadeIn 0.5s;
 }
 
+.nowrap {
+  flex-wrap: nowrap;
+}
+
 .body__text {
   color: #fff; /* header font color */
   padding-left: 8px;
@@ -73,8 +77,8 @@ body {
 .button {
     transition: all 0.2s;
 	  width: 150px;
-    -webkit-user-select: none;
     user-select: none;
+    -webkit-user-select: none;
     touch-action: manipulation;
     border: 0; 
     margin-bottom: 5px;
@@ -85,7 +89,7 @@ body {
     color: #fff; /* buttons font color */
     text-shadow: 1px 1px 1px #000;
     border-radius: 12px;
-    background-color: #1e2352; /* button background color */
+    background-color: #ccffcc; /* button background color */
     background-image: linear-gradient(to top left,
                                       rgba(0, 0, 0, .2),
                                       rgba(0, 0, 0, .2) 30%,
@@ -94,7 +98,7 @@ body {
                 inset -2px -2px 3px rgba(0, 0, 0, .6);
 }
 .button:hover {
-    background-color: #1b1f46; /* button hover color */
+    background-color: #b3ffb3; /* button hover color */
     background-image: linear-gradient(to top left,
                                       rgba(0, 0, 0, .2),
                                       rgba(0, 0, 0, .2) 50%,
@@ -107,12 +111,12 @@ body {
                 inset 2px 2px 3px rgba(0, 0, 0, .6);
 }
 
-.nowrap {
-  flex-wrap: nowrap;
+.button__off {
+  background-color: #e6ffe6; /* off button color */
 }
 
-.button__off {
-  background-color: #171b3f; /* off button color */
+.button-alert {
+  background-color: #2c0c2c; /* alert style button color */
 }
 
 .button__text {
@@ -239,7 +243,7 @@ body {
 
 /* log window top menu */
 .scrollmenu {
-  background-color: #333;
+  background-color: #2d353d;
   overflow: hidden;
   white-space: nowrap;
 }
@@ -252,12 +256,13 @@ body {
   text-decoration: none;
 }
 
-.scrollmenu a:hover {
+/* menu hover over color*/
+.scrollmenu a:hover { 
   background-color: #000;
 }
 
 
-/* The container <div> - needed to position the dropdown content */
+/* position the dropdown content */
 .dropdown {
   position: relative;
   display: inline-block;
@@ -268,7 +273,7 @@ body {
   left: 5px;
   position: fixed;
   display: block;
-  z-index: 99999;
+  z-index: 8;
 }
 
 /* Dropdown Content (Hidden by Default) */
@@ -278,7 +283,6 @@ body {
   background-color: #4d5b69;
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 9999;
 }
 
 /* Links inside the dropdown */
@@ -290,7 +294,7 @@ body {
 }
 
 /* Change color of dropdown links on hover */
-.dropdown-content a:hover {background-color: #2d353d;}
+.dropdown-content a:hover {background-color: #1c1e20;}
 
 /* Change color of dropdown links on hover */
 .dropdown-content a:active {background-color: #000; color: #fff;}
@@ -305,7 +309,7 @@ body {
 .scroll-style-7::-webkit-scrollbar-track
 {
   -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-  background-color: #414040;
+  background-color: #000;
   border-radius: 6px;
 }
 
@@ -313,7 +317,7 @@ body {
 {
   width: 6px;
   height: 6px;
-  background-color: #414040;
+  background-color: #000;
 }
 
 .scroll-style-7::-webkit-scrollbar-thumb
@@ -322,8 +326,8 @@ body {
   background-image: -webkit-gradient(linear,
                      left bottom,
                      left top,
-                     color-stop(0.44, rgb(36,67,128)),
-                     color-stop(0.86, rgb(24,41,75)));
+                     color-stop(0, rgb(80,80,80)),
+                     color-stop(0.9, rgb(77,91,105)));
 }
 
 /*
@@ -331,15 +335,15 @@ body {
  */
 #pass__prompt {
   background-color: black;
+  border: 1px solid white;
   position: fixed;
   top: 25%;
   left: 8%;
   width: auto;  
   height: auto;
-  border: 1px solid white;
   padding: 16px; 
   color: #fff;
-  z-index: 99999; 
+  z-index: 999; 
 } 
 
 /*

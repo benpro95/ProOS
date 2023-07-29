@@ -252,7 +252,7 @@ async function serverSend() {
     document.getElementById("logTextBox").value = "Select an action.";
   } else {
     // send data
-    loadBar(1.0);
+    loadBar(30);
     sendCmdNoBar('main','server',serverCmdData);
     await sleep(450);
     loadLog();
@@ -264,7 +264,7 @@ async function serverSend() {
 // transmit command for server
 function sendCmd(act, arg1, arg2) {
   // animation
-  loadBar(0.375);
+  loadBar(1);
   sendGET(act,arg1,arg2);
 };
 
@@ -311,13 +311,14 @@ async function loadLog(file) {
 function serverAction(cmd) {
   serverCmdData = cmd;
   // change color of send button 
-  document.getElementById("sendButton").style.background='#2c0c2c';
+  var _elem = document.getElementById("sendButton");
+   _elem.classList.add("button-alert");
 };
 
 
 function resetAction() {
-  // return default color of send button 
-  document.getElementById("sendButton").style.background='#1e2352';  
+  var _elem = document.getElementById("sendButton");
+   _elem.classList.remove("button-alert");
   // clear command data
   serverCmdData = null;
 };
@@ -418,7 +419,6 @@ async function loadBar(_interval) {
   if (loadBarState == 0) {
     loadBarState = 1;
     var elem = document.getElementById("load__bar");
-    elem.textContent = " ";  
     var width = 1;
     var id = setInterval(frame, _interval);
     function frame() {

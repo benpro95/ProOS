@@ -15,7 +15,7 @@
 
 <div class="topnav">
   <a onclick="showMenu('mainmenu')" class="mainmenu__anchor">
-    <i class="fa-solid fa-list"></i>
+    <i class="fa-solid fa-list mainmenu__anchor"></i>
   </a>
   <a href="leds.html">LEDs</a>
   <a onclick="GoToHomePage()" id="load__progress">
@@ -165,7 +165,7 @@
   <form class="form-container">
     <div class="scrollmenu">
       <div class="dropdown"> 
-        <a class="dropbtn" onclick="showMenu('actionmenu')" onmouseover="resetAction()">Actions</a>
+        <a class="dropbtn" onclick="showMenu('actionmenu')">Actions</a>
         <div class="dropdown-content" id="actionmenu">
           <a onclick="serverAction('files-git_push')">Sync Git</a>   
           <a onclick="serverAction('syslog')">Server Log</a>                  
@@ -177,7 +177,7 @@
         </div>
       </div>
       <div class="dropdown"> 
-        <a class="dropbtn" onclick="showMenu('regionsmenu')" onmouseover="resetAction()">Regions</a>
+        <a class="dropbtn" onclick="showMenu('regionsmenu')">Regions</a>
         <div class="dropdown-content" id="regionsmenu">
           <a onclick="serverAction('files-ram_region')">RAM Disk</a>
           <a onclick="serverAction('files-www_region')">Web Root</a>
@@ -189,7 +189,7 @@
         </div>
       </div>
       <div class="dropdown"> 
-        <a class="dropbtn" onclick="showMenu('backupmenu')" onmouseover="resetAction()">Backup</a>
+        <a class="dropbtn" onclick="showMenu('backupmenu')">Backup</a>
         <div class="dropdown-content" id="backupmenu">
           <a onclick="getPassword()">Unlock</a>  
           <a onclick="serverAction('detach_bkps')">Detach</a>    
@@ -199,7 +199,7 @@
         </div>
       </div>
       <div class="dropdown"> 
-        <a class="dropbtn" onclick="showMenu('vmmenu')" onmouseover="resetAction()">VMs</a>
+        <a class="dropbtn" onclick="showMenu('vmmenu')">VMs</a>
         <div class="dropdown-content" id="vmmenu">
           <a onclick="serverAction('startdev')">Start Dev</a>
           <a onclick="serverAction('stopdev')">Stop Dev</a>

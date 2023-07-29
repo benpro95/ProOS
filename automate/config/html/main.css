@@ -130,8 +130,8 @@ body {
 }
 
 .button__textsmall {
-  font-size: 20px;
   line-height: 3.8; /* small button height */
+  font-size: 20px;
 }
 
 .button__lgr {

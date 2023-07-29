@@ -31,8 +31,8 @@ function loadCommon() {
   var elem = document.getElementById("load__bar");
   elem.textContent = "Automate";
   // show buttons and header
-  classDisplay('grid','inline-block');
-  classDisplay('body__text','inline-block');
+  classDisplay('grid','block');
+  classDisplay('body__text','block');
 };
 
 // resize event

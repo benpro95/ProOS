@@ -251,10 +251,10 @@ async function serverSend() {
   if (serverCmdData == null) {
     document.getElementById("logTextBox").value = "Select an action.";
   } else {
-    showSpinner();
     // send data
-    sendCmd('main','server',serverCmdData);
-    await sleep(1000);
+    loadBar(1.0);
+    sendCmdNoBar('main','server',serverCmdData);
+    await sleep(450);
     loadLog();
   }  
   serverCmdData = null;
@@ -263,6 +263,16 @@ async function serverSend() {
 
 // transmit command for server
 function sendCmd(act, arg1, arg2) {
+  // animation
+  loadBar(0.375);
+  sendGET(act,arg1,arg2);
+};
+
+function sendCmdNoBar(act, arg1, arg2) {
+  sendGET(act,arg1,arg2);
+};
+
+function sendGET(act, arg1, arg2) {
   // construct API string
   const url = location.protocol+"//"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
   // display API string on page
@@ -271,10 +281,7 @@ function sendCmd(act, arg1, arg2) {
   fetch(url, {
       method: 'GET',
     })
-  // animation
-  loadBar();
 };
-
 
 // load entire text file
 async function loadLog(file) {
@@ -296,8 +303,6 @@ async function loadLog(file) {
     console.error(err);
   }
   consoleData = null;
-  // animations
-  hideSpinner();
   resetAction();
 };
 
@@ -307,7 +312,6 @@ function serverAction(cmd) {
   serverCmdData = cmd;
   // change color of send button 
   document.getElementById("sendButton").style.background='#2c0c2c';
-  hideSpinner();
 };
 
 
@@ -346,7 +350,6 @@ function openCamWindow() {
 
 function closePopup() {
   // close all popup windows
-  hideSpinner();
   document.getElementById("logForm").style.display = "none";
   document.getElementById("camForm").style.display = "none";
   // Show our element, then call our callback
@@ -359,20 +362,6 @@ function closePopup() {
   });
 };
 
-
-function showSpinner() {
-  // hide button before drawing spinner
-  document.getElementById("sendButton").style.display = "none";  
-  // show apple spinner
-  document.getElementById("formSpinner").style.display = "inline-block";   
-};
-
-function hideSpinner() {
-  // hide apple spinner
-  document.getElementById("formSpinner").style.display = "none";
-  // re-enable close button
-  document.getElementById("sendButton").style.display = "inline-block";  
-};
 
 function closeSendbox() {
   // close all popup windows
@@ -408,7 +397,7 @@ function sendText() {
     }
     xhr.send(data);
   }
-  loadBar();
+  loadBar(0.5);
 };
 
 
@@ -425,13 +414,13 @@ function disableButton() {
 
 
 // loading bar animation 
-async function loadBar() {
+async function loadBar(_interval) {
   if (loadBarState == 0) {
     loadBarState = 1;
     var elem = document.getElementById("load__bar");
     elem.textContent = " ";  
     var width = 1;
-    var id = setInterval(frame, 0.5);
+    var id = setInterval(frame, _interval);
     function frame() {
       if (width >= 100) {
         clearInterval(id);

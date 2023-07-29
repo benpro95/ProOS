@@ -31,7 +31,7 @@ function loadCommon() {
   var elem = document.getElementById("load__bar");
   elem.textContent = "Automate";
   // show buttons and header
-  classDisplay('grid','block');
+  classDisplay('grid','inline-block');
   classDisplay('body__text','inline-block');
 };
 
@@ -59,7 +59,7 @@ function classDisplay(_elem, _state) {
 
 // hide all drop down menus
 function hideDropdowns() {
-  classDisplay('dropdown-content','none');
+  classDisplay("dropdown-content","none");
 };
 
 function detectMobile() {
@@ -241,7 +241,7 @@ async function serverSend() {
     showSpinner();
     // send data
     sendCmd('main','server',serverCmdData);
-    await sleep(200);
+    await sleep(300);
     loadLog();
   }  
   serverCmdData = null;
@@ -300,7 +300,6 @@ function serverAction(cmd) {
 
 
 function resetAction() {
-  hideDropdowns();
   // return default color of send button 
   document.getElementById("sendButton").style.background='#1e2352';  
   // clear command data
@@ -326,6 +325,7 @@ function openLogWindow() {
   // show log form window
   document.getElementById("logForm").style.display = "block";
 };
+
 
 function openCamWindow() {
   closePopup();

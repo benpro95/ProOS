@@ -8,11 +8,15 @@ var rowState = 0;
 
 //////////////////////////
 
+// hide menu's when clicking outside
 document.addEventListener('click', function handleClickOutsideBox(event) {
-  console.log('user clicked: ', event.target);
-  // hide menu when clicking outside
-  if (!event.target.classList.contains('dropbtn') && 
-   !event.target.classList.contains('mainmenu__anchor')) {
+  //console.log('user clicked: ', event.target);
+  // don't hide when clicking these elements
+  if (!event.target.classList.contains('button') &&
+      !event.target.classList.contains('button__text') &&
+      !event.target.classList.contains('fa-solid') &&
+      !event.target.classList.contains('dropbtn') &&  
+      !event.target.classList.contains('mainmenu__anchor')) {
     hideDropdowns();
   }
 });

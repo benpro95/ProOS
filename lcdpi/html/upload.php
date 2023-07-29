@@ -11,4 +11,7 @@ class DumpHTTPRequestToFile {
 }
 
 // write to FIFO
-(new DumpHTTPRequestToFile)->execute('/dev/zterm');
+passthru('rm -f /tmp/data.txt');
+passthru('touch /tmp/data.txt');
+(new DumpHTTPRequestToFile)->execute('/tmp/data.txt');
+passthru('cat /tmp/data.txt > /dev/zterm');

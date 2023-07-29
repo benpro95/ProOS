@@ -259,7 +259,6 @@ async function serverSend() {
 
 // transmit command for server
 async function sendCmd(act, arg1, arg2) {
-  hideDropdowns();
   // construct API string
   const url = location.protocol+"//"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
   // display API string on page
@@ -354,7 +353,6 @@ function openCamWindow() {
 function closePopup() {
   // close all popup windows
   hideSpinner();
-  hideDropdowns();
   document.getElementById("logForm").style.display = "none";
   document.getElementById("camForm").style.display = "none";
   // Show our element, then call our callback

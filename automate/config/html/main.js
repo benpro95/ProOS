@@ -1,38 +1,65 @@
 // globals
-var vol_mode = 1;
-var relax_mode = 1;
-var load_bar = 0;
-var console_data = null;
-var servercmd_data = null;
+var toggledState = 0;
+var loadBarState = 0;
+var consoleData = null;
+var serverCmdData = null;
 var promptCount = 0;
-var rowtoggle = 0;
+var rowState = 0;
 
-// on-page-load
-window.onload = function() {
-  // load volume mode support on main page only
-  if (window.location.href == "https://"+location.hostname+"/") {
-    volMode();
-  }else{
-    vol_mode = 0;  
-  }
-  // load relax mode support on bedroom page only
-  if (window.location.href == "https://"+location.hostname+"/ambiance.html") {
-    relaxMode();
-  }else{
-    relax_mode = 0;
-  }
-  // set loading bar text
+//////////////////////////
+
+// runs on any other page load
+function loadPage() {
+  loadCommon();
+};
+
+// runs on automate page load
+function loadAutomate() {
+  volMode();
+  loadCommon();
+};
+
+// runs on ambiance page load
+function loadAmbiance() {
+  relaxMode();
+  loadCommon();
+};
+
+function loadCommon() {
+  resizeEvent();
+  // set title
   var elem = document.getElementById("load__bar");
   elem.textContent = "Automate";
+  // show buttons and header
+  classDisplay('grid','block');
+  classDisplay('body__text','inline-block');
 };
+
+// resize event
+window.onresize = function(event) {
+  resizeEvent();
+};
+
+function resizeEvent() {
+  if (window.innerWidth < 860) {
+    classDisplay('parsplit','block');
+  } else {
+    classDisplay('parsplit','none');
+  }
+};
+
+// show / hide multiple classes
+function classDisplay(_elem, _state) {
+  var _itr;
+  var _class = document.getElementsByClassName(_elem);
+  for (_itr = 0; _itr < _class.length; _itr++) {
+      _class[_itr].style.display = _state;
+  }
+}
 
 // hide all drop down menus
 function hideDropdowns() {
-  var _itr;
-  var _class = document.getElementsByClassName("dropdown-content");
-  for (_itr = 0; _itr < _class.length; _itr++) {
-      _class[_itr].style.display = 'none';
-  }
+  classDisplay('dropdown-content','none');
 };
 
 function detectMobile() {
@@ -40,24 +67,7 @@ function detectMobile() {
     || navigator.userAgent.match(/webOS/i)
     || navigator.userAgent.match(/iPhone/i)
     || navigator.userAgent.match(/iPad/i)) {
-      // 3x collumns
-      toggleColumns();
-  }
-};
-
-function toggleColumns() {
-  hideDropdowns();
-  var _state;
-  rowtoggle = !rowtoggle;
-  if (rowtoggle == true) {
-    _state = 'block';
-  } else {
-    _state = 'none';
-  }
-  var _itr;
-  var _class = document.getElementsByClassName("parsplit");
-  for (_itr = 0; _itr < _class.length; _itr++) {
-      _class[_itr].style.display = _state;
+      console.log("Mobile Browser");
   }
 };
 
@@ -89,50 +99,50 @@ function GoToAutomate() {
 
 function GoToCamera() {
   closePopup();
-  window.location = "https://"+location.hostname+"/cam1";
+  window.location = location.protocol+"//"+location.hostname+"/cam1";
 };
 
 function passwordPrompt(text){
-var pwprompt = document.createElement("div"); //creates the div to be used as a prompt
-pwprompt.id= "pass__prompt"; //gives the prompt an id - not used in my example but good for styling with css-file
-var pwtext = document.createElement("div"); //create the div for the password-text
-pwtext.innerHTML = text; //put inside the text
-pwprompt.appendChild(pwtext); //append the text-div to the password-prompt
-var pwinput = document.createElement("input"); //creates the password-input
-pwinput.id = "password_id"; //give it some id - not really used in this example...
-pwinput.type="password"; // makes the input of type password to not show plain-text
-pwprompt.appendChild(pwinput); //append it to password-prompt
-var pwokbutton = document.createElement("button"); //the ok button
-pwokbutton.innerHTML = "Send";
-var pwcancelb = document.createElement("button"); //the cancel-button
-pwcancelb.innerHTML = "Cancel";
-pwprompt.appendChild(pwcancelb); //append cancel-button first
-pwprompt.appendChild(pwokbutton); //append the ok-button
-document.body.appendChild(pwprompt); //append the password-prompt so it gets visible
-pwinput.focus(); //focus on the password-input-field so user does not need to click 
-/*now comes the magic: create and return a promise*/
-return new Promise(function(resolve, reject) {
-    pwprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
-      if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
-      pwprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
-      if (e.target === pwokbutton) { //click on ok-button
-        resolve(pwinput.value); //return the value of the password
-      } else {
-        reject(new Error('User cancelled')); //return an error
-      }
-      document.body.removeChild(pwprompt);  //as we are done clean up by removing the password-prompt
-
-    });
-    pwinput.addEventListener('keyup',function handleEnter(e){ //users dont like to click on buttons
-        if(e.keyCode == 13){ //if user enters "enter"-key on password-field
-            resolve(pwinput.value); //return password-value
-            document.body.removeChild(pwprompt); //clean up by removing the password-prompt
-        }else if(e.keyCode==27){ //user enters "Escape" on password-field
-            document.body.removeChild(pwprompt); //clean up the password-prompt
-            reject(new Error("User cancelled")); //return an error
+  var pwprompt = document.createElement("div"); //creates the div to be used as a prompt
+  pwprompt.id= "pass__prompt"; //gives the prompt an id - not used in my example but good for styling with css-file
+  var pwtext = document.createElement("div"); //create the div for the password-text
+  pwtext.innerHTML = text; //put inside the text
+  pwprompt.appendChild(pwtext); //append the text-div to the password-prompt
+  var pwinput = document.createElement("input"); //creates the password-input
+  pwinput.id = "password_id"; //give it some id - not really used in this example...
+  pwinput.type="password"; // makes the input of type password to not show plain-text
+  pwprompt.appendChild(pwinput); //append it to password-prompt
+  var pwokbutton = document.createElement("button"); //the ok button
+  pwokbutton.innerHTML = "Send";
+  var pwcancelb = document.createElement("button"); //the cancel-button
+  pwcancelb.innerHTML = "Cancel";
+  pwprompt.appendChild(pwcancelb); //append cancel-button first
+  pwprompt.appendChild(pwokbutton); //append the ok-button
+  document.body.appendChild(pwprompt); //append the password-prompt so it gets visible
+  pwinput.focus(); //focus on the password-input-field so user does not need to click 
+  /*now comes the magic: create and return a promise*/
+  return new Promise(function(resolve, reject) {
+      pwprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
+        if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
+        pwprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
+        if (e.target === pwokbutton) { //click on ok-button
+          resolve(pwinput.value); //return the value of the password
+        } else {
+          reject(new Error('User cancelled')); //return an error
         }
-    });
-}); 
+        document.body.removeChild(pwprompt);  //as we are done clean up by removing the password-prompt
+
+      });
+      pwinput.addEventListener('keyup',function handleEnter(e){ //users dont like to click on buttons
+          if(e.keyCode == 13){ //if user enters "enter"-key on password-field
+              resolve(pwinput.value); //return password-value
+              document.body.removeChild(pwprompt); //clean up by removing the password-prompt
+          }else if(e.keyCode==27){ //user enters "Escape" on password-field
+              document.body.removeChild(pwprompt); //clean up the password-prompt
+              reject(new Error("User cancelled")); //return an error
+          }
+      });
+  }); 
 }
 
 async function getPassword(){
@@ -155,67 +165,102 @@ async function getPassword(){
 
 // save file
 function savePOST(data) {
-  fetch("https://"+location.hostname+"/upload.php", {
+  fetch(location.protocol+"//"+location.hostname+"/upload.php", {
       method: 'POST',
       headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: data
   })
   data = "";
 };
 
+// switch volume controls on main page
+function volMode() {   
+  var id = document.getElementById("sub__text");
+  if (toggledState == 1) {
+     id.textContent = "Subwoofers";
+     toggledState = 0;
+  } else {  
+     id.textContent = "Bedroom";
+     toggledState = 1;
+  }
+};
+
+// switch volume controls on bedroom page
+function relaxMode() {   
+  var id = document.getElementById("relax__text");
+  if (toggledState == 1) {
+     id.textContent = "HiFi";
+     toggledState = 0;
+  } else {  
+     id.textContent = "Bedroom";
+     toggledState = 1;
+  }
+};
+
+function relaxSend(_cmd) {
+  var _mode;
+  // volume mode
+  if (_cmd == 'vup' 
+   || _cmd == 'vdwn'
+   || _cmd == 'vmute') {
+    _mode = _cmd;
+    if (toggledState == 0) {
+      _cmd = 'hifi';
+    } else {
+      _cmd = 'bedroom';
+    } 
+  } else {
+    // relax mode
+    _mode = 'relax';
+    if (toggledState == 0) {
+      _cmd = _cmd+"-hifi";
+    } 
+  }
+  sendCmd('main',_mode,_cmd);
+};
+
+
+function toggledVol(_mode) {
+  if (toggledState == 0) {
+    _cmd = 'subs';
+  } else {
+    _cmd = 'bedroom';
+  } 
+  sendCmd('main',_mode,_cmd);
+};
+
+
 // send server action
-async function serverSend(mask) {
-  if (servercmd_data == null) {
+async function serverSend() {
+  if (serverCmdData == null) {
     document.getElementById("logTextBox").value = "Select an action.";
   } else {
-    var cmd_text;
-    if (mask == 1) {
-       cmd_text = "xxxxxxxx";
-    } else {
-       cmd_text = servercmd_data;
-    }
     showSpinner();
     // send data
-    sendCmd('main','server',servercmd_data);
+    sendCmd('main','server',serverCmdData);
+    await sleep(250);
+    loadLog();
+    hideSpinner();
   }  
-  servercmd_data = null;
+  serverCmdData = null;
 };
+
 
 // transmit command for server
 async function sendCmd(act, arg1, arg2) {
   hideDropdowns();
-  // adjust API syntax for different functions
-  if (vol_mode == 1) {  
-    arg2 = "subs";
-  }
-  if (relax_mode == 1) {  
-    arg2 = arg2+"-hifi";
-  } 
   // construct API string
-  let url = "https://"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
+  const url = location.protocol+"//"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
   // display API string on page
-  document.getElementById("bottom").innerHTML = url;
-  // send data
-  fetch(url, {
-      method: 'GET',
-    })
-  // animation
-  loadBar();
-};
-
-// transmit command for Raspberry Pi's
-function sendPicmd(act, arg1, arg2) {
-  hideDropdowns();
-  // construct API string
-  let url = "http://"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
   //document.getElementById("bottom").innerHTML = url;
   // send data
   fetch(url, {
       method: 'GET',
     })
+  // animation
   loadBar();
 };
 
@@ -227,39 +272,42 @@ async function loadLog(file) {
     // build url and force cache reload
     const time = new Date();
     const timestamp = (time.getTime());   
-    const url = "https://"+location.hostname+"/ram/sysout.txt"+"?ver="+timestamp;
+    const url = location.protocol+"//"+location.hostname+"/ram/sysout.txt"+"?ver="+timestamp;
     // parse incoming text file
     const response = await fetch(url);
-    console_data = await response.text(); 
+    consoleData = await response.text(); 
     // display text on page 
-    document.getElementById("logTextBox").value = console_data;
+    document.getElementById("logTextBox").value = consoleData;
     // scroll to bottom of page
     var txtArea = document.getElementById("logTextBox");
     txtArea.scrollTop = txtArea.scrollHeight;
   } catch (err) {
     console.error(err);
   }
-  console_data = null;
+  consoleData = null;
   // animations
   hideSpinner();
   resetAction();
 };
 
+
 // load server action 
 function serverAction(cmd) {
-  servercmd_data = cmd;
+  serverCmdData = cmd;
   // change color of send button 
   document.getElementById("sendButton").style.background='#2c0c2c';
   hideSpinner();
 };
+
 
 function resetAction() {
   hideDropdowns();
   // return default color of send button 
   document.getElementById("sendButton").style.background='#1e2352';  
   // clear command data
-  servercmd_data = null;
+  serverCmdData = null;
 };
+
 
 function openLogWindow() {
   // current date
@@ -294,6 +342,7 @@ function openCamWindow() {
   });
 };
 
+
 function closePopup() {
   // close all popup windows
   hideSpinner();
@@ -309,6 +358,7 @@ function closePopup() {
       });
   });
 };
+
 
 function showSpinner() {
   // hide button before drawing spinner
@@ -335,6 +385,7 @@ function openSendWindow() {
   document.getElementById("sendForm").style.display = "block";
 };
 
+
 function sendText() {
   const data = document.getElementById("logTextBox").value;
   if (data.trim() === "") {
@@ -342,7 +393,7 @@ function sendText() {
   } else {
   // Create the HTTP POST request
     const xhr = new XMLHttpRequest();
-    const url = "http://"+location.hostname+"/upload.php";
+    const url = location.protocol+"//"+location.hostname+"/upload.php";
     xhr.open("POST", url);
     xhr.setRequestHeader("Content-Type", "text/plain");
     xhr.onreadystatechange = function() {
@@ -360,44 +411,23 @@ function sendText() {
   loadBar();
 };
 
+
 function clearText() {
   // celar text window
   document.getElementById("logTextBox").value = "";
 };
 
-// switch volume controls on main page
-function volMode() {   
-	let id = document.getElementById("sub__text");
-  if (vol_mode == 0) {
-     id.textContent = "Subwoofers";
-     vol_mode = 1;
-  } else {	
-     id.textContent = "Bedroom";
-     vol_mode = 0;
-  }
-};
-
-// switch volume controls on bedroom page
-function relaxMode() {   
-  let id = document.getElementById("relax__text");
-  if (relax_mode == 0) {
-     id.textContent = "HiFi";
-     relax_mode = 1;
-  } else {  
-     id.textContent = "Bedroom";
-     relax_mode = 0;
-  }
-};
 
 // disable a button
 function disableButton() {
 	document.getElementById("sub__text").disabled = true;
 };	
 
+
 // loading bar animation 
 async function loadBar() {
-  if (load_bar == 0) {
-    load_bar = 1;
+  if (loadBarState == 0) {
+    loadBarState = 1;
     var elem = document.getElementById("load__bar");
     elem.textContent = " ";  
     var width = 1;
@@ -405,7 +435,7 @@ async function loadBar() {
     function frame() {
       if (width >= 100) {
         clearInterval(id);
-        load_bar = 0;
+        loadBarState = 0;
       } else {
         width++;
         elem.style.width = width + "%";

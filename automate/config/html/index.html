@@ -11,7 +11,7 @@
     <script src="jquery-1.10.1.min.js"></script>
     <script src="main.js"></script>
 </head>
-<body class="scroll-style-7">
+<body onload="loadAutomate()" class="scroll-style-7">
 
 <div class="topnav">
   <a onclick="showMenu('mainmenu')" class="mainmenu__anchor">
@@ -33,7 +33,7 @@
   </div>
 </div>
 
-<div class="grid scroll-style-7">
+<div class="grid">
     <p></p>
       <button type="button" class="button" onclick="sendCmd('main','pcon','')">
           <span class="button__text"><i class="fa-solid fa-computer"></i> PC</span>
@@ -145,13 +145,13 @@
           <span id="sub__text" class="button__text"></i></span>
       </button>
     <div class="parsplit"><p class="parstd"></p></div>          
-      <button type="button" class="button" onclick="sendCmd('main','vdwn','bedroom')">
+      <button type="button" class="button" onclick="toggledVol('vdwn')">
           <span class="button__text"><i class="fa-solid fa-volume-low"></i></span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','vmute','bedroom')">
+      <button type="button" class="button" onclick="toggledVol('vmute')">
           <span class="button__text"><i class="fa-solid fa-volume-xmark"></i></span>
       </button>
-      <button type="button" class="button nowrap" onclick="sendCmd('main','vup','bedroom')">
+      <button type="button" class="button nowrap" onclick="toggledVol('vup')">
           <span class="button__text"><i class="fa-solid fa-volume-high"></i></span>
       </button>
     <p class="body__text" id="bottom"></p>
@@ -218,7 +218,7 @@
     <button type="button" class="button button_left_txtwin" onclick="loadLog()">
           <span class="button__textsmall"></i> View</span>
     </button>
-    <button type="button" class="button button_right_txtwin" id="sendButton" onclick="serverSend(0)">
+    <button type="button" class="button button_right_txtwin" id="sendButton" onclick="serverSend()">
           <span class="button__textsmall"></i> Send</span>
     </button>
     <div id="formSpinner" class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>

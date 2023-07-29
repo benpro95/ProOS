@@ -359,6 +359,7 @@ if [ $RELAX_HOST == "hifi" ]; then
   echo "playing $CMDARG on HiFi"
   ## Optical Decoder Input
   XMITCMD="coaxial" ; XMIT
+  sleep 0.25
   ## Preamp DAC Input
   XMITCMD="dac" ; XMIT 
   ## Play Audio on System
@@ -391,9 +392,7 @@ if [ "$CMDARG" == "hifi" ]; then
   ## Stop Audio on System
   ESP32="no"; TARGET="hifi.home"; XMITCMD="stoprelax"; CALLAPI  
   ## Auto Decoder Input
-  XMITCMD="inauto" ; XMIT
-  ## Preamp DAC Input
-  XMITCMD="dac" ; XMIT
+  XMITCMD="autodac" ; XMIT
 fi  
 exit
 ;;

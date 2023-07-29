@@ -2,7 +2,7 @@
 <html lang="en-US" class="notranslate" translate="no">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=0.75">
   <title>Ambiance</title>
     <link href="fa/css/fontawesome.css" rel="stylesheet">
     <link href="fa/css/brands.css" rel="stylesheet">
@@ -11,7 +11,7 @@
     <script src="jquery-1.10.1.min.js"></script>
     <script src="main.js"></script>
 </head>
-<body class="scroll-style-7">
+<body onload="loadAmbiance()" class="scroll-style-7">
 
 <div class="topnav">
   <a onclick="showMenu('mainmenu')" class="mainmenu__anchor">
@@ -34,100 +34,105 @@
   </div>
 </div>
 
-<div>      
+<div class="grid">
   <p></p>
-      <button type="button" class="button" onclick="sendCmd('main','vdwn','bedroom')">
+      <button type="button" class="button" onclick="relaxSend('vdwn')">
           <span class="button__text"><i class="fa-solid fa-volume-low"></i></span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','vmute','bedroom')">
-          <span class="button__text"><i class="fa-solid fa-volume-xmark"></i></span>
+      <button type="button" class="button" onclick="relaxSend('vmute')">
+          <span class="button__text"><i class="fa-solid fa-stop"></i></span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','vup','bedroom')">
+      <button type="button" class="button" onclick="relaxSend('vup')">
           <span class="button__text"><i class="fa-solid fa-volume-high"></i></span>
       </button>
+    <div class="parsplit"><p class="parstd"></p></div>    
       <button type="button" class="button" onclick="relaxMode()">
           <span id="relax__text" class="button__text"></i></span>
       </button>      
-      <button type="button" class="button" onclick="sendCmd('main','relax','waterfall')">
+      <button type="button" class="button" onclick="relaxSend('waterfall')">
           <span class="button__text"></i>Waterfall</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','relax','amazon')">
+      <button type="button" class="button" onclick="relaxSend('amazon')">
           <span class="button__text"></i>Amazon</span>
       </button>
     <p class="parstd"></p>      
-      <button type="button" class="button" onclick="sendCmd('main','relax','campfire')">
+      <button type="button" class="button" onclick="relaxSend('campfire')">
           <span class="button__text"></i>Campfire</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','relax','forest')">
+      <button type="button" class="button" onclick="relaxSend('forest')">
           <span class="button__text"></i>Forest</span>
       </button>  
-      <button type="button" class="button" onclick="sendCmd('main','relax','harbour')">
+      <button type="button" class="button" onclick="relaxSend('harbour')">
           <span class="button__text"></i>Harbour</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','relax','wind')">
+    <div class="parsplit"><p class="parstd"></p></div>    
+      <button type="button" class="button" onclick="relaxSend('wind')">
           <span class="button__text"></i>Wind</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','relax','jungle')">
+      <button type="button" class="button" onclick="relaxSend('jungle')">
           <span class="button__text"></i>Jungle</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','relax','meadow')">
+      <button type="button" class="button" onclick="relaxSend('meadow')">
           <span class="button__text"></i>Meadow</span>
       </button>
     <p class="parstd"></p>      
-      <button type="button" class="button" onclick="sendCmd('main','relax','stream')">
+      <button type="button" class="button" onclick="relaxSend('stream')">
           <span class="button__text"></i>Stream</span>
       </button>  
-      <button type="button" class="button" onclick="sendCmd('main','relax','ocean')">
+      <button type="button" class="button" onclick="relaxSend('ocean')">
           <span class="button__text"></i>Ocean</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','relax','river')">
+      <button type="button" class="button" onclick="relaxSend('river')">
           <span class="button__text"></i>River</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','relax','rain')">
+    <div class="parsplit"><p class="parstd"></p></div>  
+      <button type="button" class="button" onclick="relaxSend('rain')">
           <span class="button__text"></i>Rain</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','relax','rain-2')">
+      <button type="button" class="button" onclick="relaxSend('rain-2')">
           <span class="button__text"></i>Rain II</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','relax','storm')">
+      <button type="button" class="button" onclick="relaxSend('storm')">
           <span class="button__text"></i>Storm</span>
       </button>  
     <p class="parstd"></p>
-      <button type="button" class="button" onclick="sendCmd('main','relax','thunder')">
+      <button type="button" class="button" onclick="relaxSend('thunder')">
           <span class="button__text"></i>Thunder</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','relax','traffic')">
+      <button type="button" class="button" onclick="relaxSend('traffic')">
           <span class="button__text"></i>Traffic</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','relax','beach')">
+      <button type="button" class="button" onclick="relaxSend('beach')">
           <span class="button__text"></i>Beach</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','relax','warp')">
+    <div class="parsplit"><p class="parstd"></p></div>    
+      <button type="button" class="button" onclick="relaxSend('warp')">
           <span class="button__text"></i>Warp</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','relax','ambient1')">
+      <button type="button" class="button" onclick="relaxSend('ambient1')">
           <span class="button__text"></i>Ambient I</span>
       </button>  
-      <button type="button" class="button" onclick="sendCmd('main','relax','ambient2')">
+      <button type="button" class="button" onclick="relaxSend('ambient2')">
           <span class="button__text"></i>Ambient II</span>
       </button>
     <p class="parstd"></p>      
-      <button type="button" class="button" onclick="sendCmd('main','relax','ambient3')">
+      <button type="button" class="button" onclick="relaxSend('ambient3')">
           <span class="button__text"></i>Ambient III</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','relax','classical')">
+      <button type="button" class="button" onclick="relaxSend('classical')">
           <span class="button__text"></i>Classical</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','relax','fan')">
+      <button type="button" class="button" onclick="relaxSend('fan')">
           <span class="button__text"></i>Fan</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','relax','islands')">
+    <div class="parsplit"><p class="parstd"></p></div>    
+      <button type="button" class="button" onclick="relaxSend('islands')">
           <span class="button__text"></i>Islands</span>
       </button>  
-      <button type="button" class="button" onclick="sendCmd('main','relax','fields')">
+      <button type="button" class="button" onclick="relaxSend('fields')">
           <span class="button__text"></i>Fields</span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','relax','garden')">
+      <button type="button" class="button" onclick="relaxSend('garden')">
           <span class="button__text"></i>Garden</span>
       </button>
   <p class="body__text" id="bottom"></p>

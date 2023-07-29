@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="scroll-style-7" lang="en" translate="no">
+<html lang="en-US" class="notranslate" translate="no">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=0.75">
@@ -10,7 +10,7 @@
     <link href="main.css" rel="stylesheet">
     <script src="main.js"></script>
 </head>
-<body>
+<body onload="loadPage()" class="scroll-style-7">
 
 <div class="topnav">
   <a onclick="showMenu('mainmenu')" class="mainmenu__anchor">
@@ -28,24 +28,24 @@
   </div>
 </div>
 
-<div>      
+<div class="grid">
   <p></p>   
     <div class="dropdown">
       <button type="button" class="button" onclick="showMenu('delaymenu')">
         <span class="button__text"><i class="fa-solid fa-forward-fast"></i> Speed</span>
       </button>  
       <div class="dropdown-content" id="delaymenu">
-        <a onclick="sendPicmd('main','delay','2000')">2000 ms</a>
-        <a onclick="sendPicmd('main','delay','1000')">1000 ms</a>
-        <a onclick="sendPicmd('main','delay','700')">700 ms</a>
-        <a onclick="sendPicmd('main','delay','500')">500 ms</a>
-        <a onclick="sendPicmd('main','delay','350')">350 ms</a>
-        <a onclick="sendPicmd('main','delay','200')">200 ms</a>
-        <a onclick="sendPicmd('main','delay','150')">150 ms</a>
-        <a onclick="sendPicmd('main','delay','90')">90 ms</a>
-        <a onclick="sendPicmd('main','delay','50')">50 ms</a>
-        <a onclick="sendPicmd('main','delay','20')">20 ms</a>
-        <a onclick="sendPicmd('main','delay','5')">5 ms</a>
+        <a onclick="sendCmd('main','delay','2000')">2000 ms</a>
+        <a onclick="sendCmd('main','delay','1000')">1000 ms</a>
+        <a onclick="sendCmd('main','delay','700')">700 ms</a>
+        <a onclick="sendCmd('main','delay','500')">500 ms</a>
+        <a onclick="sendCmd('main','delay','350')">350 ms</a>
+        <a onclick="sendCmd('main','delay','200')">200 ms</a>
+        <a onclick="sendCmd('main','delay','150')">150 ms</a>
+        <a onclick="sendCmd('main','delay','90')">90 ms</a>
+        <a onclick="sendCmd('main','delay','50')">50 ms</a>
+        <a onclick="sendCmd('main','delay','20')">20 ms</a>
+        <a onclick="sendCmd('main','delay','5')">5 ms</a>
       </div>
     </div>
     <div class="dropdown">
@@ -53,18 +53,19 @@
         <span class="button__text"><i class="fa-solid fa-lightbulb"></i> Backlight</span>
       </button>  
       <div class="dropdown-content" id="blmenu">
-        <a onclick="sendPicmd('main','backlight','0')">Auto</a>
-        <a onclick="sendPicmd('main','backlight','2')">High</a>
-        <a onclick="sendPicmd('main','backlight','1')">Low</a>
+        <a onclick="sendCmd('main','backlight','0')">Auto</a>
+        <a onclick="sendCmd('main','backlight','2')">High</a>
+        <a onclick="sendCmd('main','backlight','1')">Low</a>
       </div>
     </div>
     <button type="button" class="button" onclick="openSendWindow()">
         <span class="button__text"></i> Message</span>
     </button>
-    <button type="button" class="button button__off" onclick="sendPicmd('main','stop','')">
+  <div class="parsplit"><p class="parstd"></p></div>    
+    <button type="button" class="button button__off" onclick="sendCmd('main','stop','')">
         <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
     </button>
-    <button type="button" class="button button__lgr button__off" onclick="sendPicmd('main','clear','')">
+    <button type="button" class="button button__lgr button__off" onclick="sendCmd('main','clear','')">
         <span class="button__text"><i class="fa-solid fa-stop"></i> Clear</span>
     </button>
   <p class="body__text" id="bottom"></p>

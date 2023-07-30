@@ -300,28 +300,28 @@ body {
  *  Scrollbar Style
  */
 
-.scroll-style-7::-webkit-scrollbar-track
+.scroll-bar::-webkit-scrollbar-track
 {
   -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
   background-color: #000;
   border-radius: 6px;
 }
 
-.scroll-style-7::-webkit-scrollbar
+.scroll-bar::-webkit-scrollbar
 {
   width: 6px;
   height: 6px;
   background-color: #000;
 }
 
-.scroll-style-7::-webkit-scrollbar-thumb
+.scroll-bar::-webkit-scrollbar-thumb
 {
   border-radius: 6px;
   background-image: -webkit-gradient(linear,
                      left bottom,
                      left top,
                      color-stop(0, rgb(80,80,80)),
-                     color-stop(0.9, rgb(77,91,105)));
+                     color-stop(0.8, rgb(77,91,105)));
 }
 
 /*

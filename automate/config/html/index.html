@@ -12,7 +12,7 @@
     <script src="jquery-1.10.1.min.js"></script>
     <script src="main.js"></script>
 </head>
-<body onload="loadAutomate()" class="scroll-style-7">
+<body onload="loadAutomate()" class="scroll-bar">
 
 <div class="topnav">
   <a onclick="showMenu('mainmenu')" class="mainmenu__anchor">
@@ -40,34 +40,34 @@
           <span class="button__text"><i class="fa-solid fa-computer"></i> PC</span>
       </button>
       <button type="button" class="button" onclick="sendCmd('main','roomon','')">
-          <span class="button__text"><i class="fa-solid fa-toggle-on"></i> All</span>
+          <span class="button__text"><i class="fa-solid fa-plug-circle-bolt"></i> All</span>
       </button>   
       <button type="button" class="button" onclick="sendCmd('main','allon','')">
           <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Lights</span>
       </button>
     <div class="parsplit"><p class="parstd"></p></div>       
       <button type="button" class="button" onclick="sendCmd('main','pcoff','')">
-          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> PC</span>
+          <span class="button__text"><i class="fa-solid fa-plug-circle-xmark"></i> PC</span>
       </button> 
       <button type="button" class="button" onclick="sendCmd('main','roomoff','')">
-          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> All</span>
+          <span class="button__text"><i class="fa-solid fa-power-off"></i> All</span>
       </button>       
       <button type="button" class="button" onclick="sendCmd('main','alloff','')">
-          <span class="button__text"><i class="fa-regular fa-toggle-off"></i> Lights</span>
+          <span class="button__text"><i class="fa-solid fa-plug-circle-xmark"></i> Lights</span>
       </button> 
     <p class="parstd"></p>
       <button type="button" class="button" onclick="sendCmd('main','rfa1','on')">
         <span class="button__text"><i class="fa-solid fa-floppy-disk"></i> Macs</span>
       </button>    
       <button type="button" class="button" onclick="sendCmd('main','rfa2','on')">
-          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Dresser</span>
+          <span class="button__text"><i class="fa-solid fa-lightbulb"></i> Dresser</span>
       </button> 
       <button type="button" class="button" onclick="sendCmd('main','rfc1','on')">
           <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Main</span>
       </button>   
     <div class="parsplit"><p class="parstd"></p></div>            
       <button type="button" class="button" onclick="sendCmd('main','rfa1','off')">
-        <span class="button__text"><i class="fa-solid fa-toggle-off"></i> Macs</span>
+        <span class="button__text"><i class="fa-solid fa-plug-circle-xmark"></i> Macs</span>
       </button>        
       <button type="button" class="button" onclick="sendCmd('main','rfa2','off')">
           <span class="button__text"><i class="fa-regular fa-toggle-off"></i> Dresser</span> 
@@ -87,13 +87,13 @@
       </button>
     <div class="parsplit"><p class="parstd"></p></div>              
       <button type="button" class="button" onclick="sendCmd('main','hifioff','')">
-          <span class="button__text"><i class="fa-solid fa-toggle-off"></i> HiFi</span>
+          <span class="button__text"><i class="fa-solid fa-plug-circle-xmark"></i> HiFi</span>
       </button>
       <button type="button" class="button" onclick="sendCmd('main','sleep','')">
           <span class="button__text"><i class="fa-regular fa-moon"></i> Sleep</span>
       </button> 
       <button type="button" class="button" onclick="sendCmd('main','rfa3','off')">
-        <span class="button__text"><i class="fa-solid fa-toggle-off"></i> TV</span>
+        <span class="button__text"><i class="fa-solid fa-plug-circle-xmark"></i> TV</span>
       </button> 
     <p class="parstd"></p>
       <button type="button" class="button" onclick="sendCmd('main','dwnf','')">
@@ -212,7 +212,7 @@
         </div>
       </div>
     </div>
-    <textarea class="scroll-style-7" id="logTextBox" placeholder="" required=""></textarea>  
+    <textarea class="scroll-bar" id="logTextBox" placeholder="" required=""></textarea>  
     <button type="button" class="button button_left_txtwin" onclick="closePopup()">
           <span class="button__textsmall"></i> Close</span>
     </button>       

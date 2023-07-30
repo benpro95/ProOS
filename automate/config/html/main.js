@@ -1,17 +1,17 @@
 // globals
 var toggledState = 0;
 var loadBarState = 0;
-var consoleData = null;
-var serverCmdData = null;
 var promptCount = 0;
 var rowState = 0;
-var currentTheme = null;
+var consoleData;
+var currentTheme;
+var serverCmdData;
 
 //////////////////////////
 
 // hide menu's when clicking outside
 document.addEventListener('click', function handleClickOutsideBox(event) {
-  //console.log('user clicked: ', event.target);
+  console.log('user clicked: ', event.target);
   // don't hide when clicking these elements
   if (!event.target.classList.contains('button') &&
       !event.target.classList.contains('button__text') &&
@@ -47,17 +47,21 @@ function loadCommon() {
   // show buttons and header
   classDisplay('grid','block');
   classDisplay('body__text','block');
-  setTheme('blue-theme','red-theme');
+  // read theme from local storage or choose default
+  currentTheme = localStorage.getItem("styledata") || "blue-theme";
+  setTheme(currentTheme);
 };
 
-function setTheme(oldTheme, newTheme) {
+function setTheme(newTheme) {
   const body = document.getElementsByTagName("html")[0];
   // Remove old theme scope from body's class list
-  body.classList.remove(oldTheme);
+  body.classList.remove(currentTheme);
   // Add new theme scope to body's class list
   body.classList.add(newTheme);
   // Set it as current theme
   currentTheme = newTheme;
+  // Store the new theme in local storage
+  localStorage.setItem("styledata", newTheme);
 }
 
 // resize event

@@ -45,6 +45,11 @@ body {
   --gradient-background: #3f0000;
 }
 
+.green-theme {
+  --button-color: #0e390e;
+  --gradient-background: #0b2e0b;
+}
+
 .parstd {
 	border: 0px;
 	margin-bottom: 1px;

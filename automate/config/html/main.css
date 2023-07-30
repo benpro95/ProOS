@@ -3,7 +3,7 @@
     src: url('../fonts/JosefinSans-SemiBold-webfont.eot?v=4.3.0');
     src: url('../fonts/JosefinSans-SemiBold-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/JosefinSans-SemiBold-webfont.woff2?v=4.3.0') format('woff2'), url('../fonts/JosefinSans-SemiBold-webfont.woff') format('woff'), url('../fonts/JosefinSans-SemiBold-webfont.ttf') format('truetype'), url('../fonts/JosefinSans-SemiBold-webfont.svg') format('svg');
     font-weight: normal;
-    font-style: normal
+    font-style: normal;
 }
 
 * {
@@ -15,14 +15,16 @@
 }  
 
 html {
-    background-color: black;
     height: 100%;
+    --button-color: black;
+    --gradient-background: black;
+    background-color: black;
     background-image:
-    linear-gradient( 
-      to bottom,  
-      #0e1539,  
-      #000 75%  
-    ); /* top-bottom gradient colors */
+      linear-gradient( 
+        to bottom,  
+        var(--gradient-background),  
+        #000 75%  
+      ); /* top-bottom gradient colors */
     background-repeat: no-repeat; 
 }
 
@@ -31,7 +33,17 @@ body {
     height: 100%;
     min-height: 100%
     background-color: black; 
-}  
+}
+
+.blue-theme {
+  --button-color: #1e2352;
+  --gradient-background: #151632;
+}
+
+.red-theme {
+  --button-color: #590000;
+  --gradient-background: #3f0000;
+}
 
 .parstd {
 	border: 0px;
@@ -85,7 +97,7 @@ body {
     color: #fff; /* buttons font color */
     text-shadow: 1px 1px 1px #000;
     border-radius: 12px;
-    background-color: #1e2352; /* button background color */
+    background-color: var(--button-color);
     background-image: linear-gradient(to top left,
                                       rgba(0, 0, 0, .2),
                                       rgba(0, 0, 0, .2) 15%,

@@ -5,6 +5,7 @@ var consoleData = null;
 var serverCmdData = null;
 var promptCount = 0;
 var rowState = 0;
+var currentTheme = null;
 
 //////////////////////////
 
@@ -46,7 +47,18 @@ function loadCommon() {
   // show buttons and header
   classDisplay('grid','block');
   classDisplay('body__text','block');
+  setTheme('blue-theme','red-theme');
 };
+
+function setTheme(oldTheme, newTheme) {
+  const body = document.getElementsByTagName("html")[0];
+  // Remove old theme scope from body's class list
+  body.classList.remove(oldTheme);
+  // Add new theme scope to body's class list
+  body.classList.add(newTheme);
+  // Set it as current theme
+  currentTheme = newTheme;
+}
 
 // resize event
 window.onresize = function(event) {

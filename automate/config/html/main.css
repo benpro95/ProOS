@@ -40,13 +40,23 @@ body {
   --gradient-background: color-mix(in srgb, var(--button-color) 80%, black);
 }
 
+.turquoise-theme {
+  --button-color: #174b77;
+  --gradient-background: color-mix(in srgb, var(--button-color) 80%, black);
+}
+
 .red-theme {
   --button-color: #6c1313;
   --gradient-background: color-mix(in srgb, var(--button-color) 80%, black);
 }
 
 .green-theme {
-  --button-color: #6c1313;
+  --button-color: #104f2d;
+  --gradient-background: color-mix(in srgb, var(--button-color) 80%, black);
+}
+
+.purple-theme {
+  --button-color: #451379;
   --gradient-background: color-mix(in srgb, var(--button-color) 80%, black);
 }
 
@@ -125,7 +135,7 @@ body {
 }
 
 .button-alert {
-  background-color: color-mix(in srgb, var(--button-color) 90%, white);
+  background-color: color-mix(in srgb, var(--button-color) 85%, white);
 }
 
 .button__text {

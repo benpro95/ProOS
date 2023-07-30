@@ -1,3 +1,6 @@
+// Home Automation Website - Automate
+// by Ben Provenzano III
+
 // globals
 var toggledState = 0;
 var loadBarState = 0;
@@ -126,9 +129,9 @@ function GoToAutomate() {
   window.location = 'https://automate.home/';   
 };
 
-function GoToCamera() {
+function GotoSubURL(_path) {
   closePopup();
-  window.location = location.protocol+"//"+location.hostname+"/cam1";
+  window.location = location.protocol+"//"+location.hostname+"/"+_path;
 };
 
 function passwordPrompt(text){

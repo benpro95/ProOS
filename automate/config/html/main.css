@@ -16,15 +16,15 @@
 
 html {
     height: 100%;
-    --button-color: black;
+    --main-color: black;
     --gradient-background: black;
     background-repeat: no-repeat; 
     background-color: black;
     background-image:
       linear-gradient( 
         to bottom,  
-        var(--gradient-background),  
-        #000 75%  
+        color-mix(in srgb, var(--main-color) 75%, black),  
+        #000 75%
       ); /* top-bottom gradient colors */
 }
 
@@ -36,28 +36,23 @@ body {
 }
 
 .blue-theme {
-  --button-color: #2a2b58;
-  --gradient-background: color-mix(in srgb, var(--button-color) 80%, black);
+  --main-color: #2a2b58;
 }
 
 .turquoise-theme {
-  --button-color: #174b77;
-  --gradient-background: color-mix(in srgb, var(--button-color) 80%, black);
+  --main-color: #174b77;
 }
 
 .red-theme {
-  --button-color: #6c1313;
-  --gradient-background: color-mix(in srgb, var(--button-color) 80%, black);
+  --main-color: #6c1313;
 }
 
 .green-theme {
-  --button-color: #104f2d;
-  --gradient-background: color-mix(in srgb, var(--button-color) 80%, black);
+  --main-color: #104f2d;
 }
 
 .purple-theme {
-  --button-color: #451379;
-  --gradient-background: color-mix(in srgb, var(--button-color) 80%, black);
+  --main-color: #451379;
 }
 
 .parstd {
@@ -112,7 +107,7 @@ body {
     color: #fff; /* buttons font color */
     text-shadow: 1px 1px 1px #000;
     border-radius: 12px;
-    background-color: var(--button-color);
+    background-color: var(--main-color);
     background-image: linear-gradient(to top left,
                                       rgba(0, 0, 0, .2),
                                       rgba(0, 0, 0, .2) 15%,
@@ -121,7 +116,7 @@ body {
                 inset -2px -2px 3px rgba(0, 0, 0, .6);
 }
 .button:hover {
-    background-color: color-mix(in srgb, var(--button-color) 95%, white);
+    background-color: color-mix(in srgb, var(--main-color) 95%, white);
     background-image: linear-gradient(to top left,
                                       rgba(0, 0, 0, .2),
                                       rgba(0, 0, 0, .2) 25%,
@@ -135,7 +130,7 @@ body {
 }
 
 .button-alert {
-  background-color: color-mix(in srgb, var(--button-color) 85%, white);
+  background-color: color-mix(in srgb, var(--main-color) 85%, white);
 }
 
 .button__text {

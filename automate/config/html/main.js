@@ -14,7 +14,7 @@ var serverCmdData;
 
 // hide menu's when clicking outside
 document.addEventListener('click', function handleClickOutsideBox(event) {
-  console.log('user clicked: ', event.target);
+  //console.log('user clicked: ', event.target);
   // don't hide when clicking these elements
   if (!event.target.classList.contains('button') &&
       !event.target.classList.contains('button__text') &&

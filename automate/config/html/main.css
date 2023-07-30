@@ -16,6 +16,7 @@
 
 html {
     height: 100%;
+    --button-color: black;
     --gradient-background: black;
     background-color: black;
     background-image:
@@ -35,14 +36,17 @@ body {
 }
 
 .blue-theme {
+  --button-color: #1e2352;
   --gradient-background: #151632;
 }
 
 .red-theme {
+  --button-color: #590000;
   --gradient-background: #3f0000;
 }
 
 .green-theme {
+  --button-color: #0e390e;
   --gradient-background: #0b2e0b;
 }
 
@@ -99,7 +103,7 @@ body {
     text-shadow: 1px 1px 1px #000;
     border-radius: 12px;
     background-color: var(--gradient-background);
-    filter: brightness(1.50); /* button is lighter background color */
+    filter: brightness(1.15); /* button is lighter background color */
     background-image: linear-gradient(to top left,
                                       rgba(0, 0, 0, .2),
                                       rgba(0, 0, 0, .2) 15%,
@@ -108,7 +112,6 @@ body {
                 inset -2px -2px 3px rgba(0, 0, 0, .6);
 }
 .button:hover {
-    filter: brightness(1.75); /* lighten on hover */
     background-image: linear-gradient(to top left,
                                       rgba(0, 0, 0, .2),
                                       rgba(0, 0, 0, .2) 25%,
@@ -122,7 +125,7 @@ body {
 }
 
 .button-alert {
-  filter: brightness(2.00); /* alert button color */
+  filter: brightness(1.75); 
 }
 
 .button__text {

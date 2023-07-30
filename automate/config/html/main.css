@@ -36,23 +36,23 @@ body {
 }
 
 .blue-theme {
-  --button-color: color-mix(in srgb, var(--gradient-background) 90%, white);
-  --button-hover: color-mix(in srgb, var(--gradient-background) 85%, white);
-  --button-alert: color-mix(in srgb, var(--gradient-background) 75%, white);
-  --gradient-background: #151632;
+  --button-color: #2a2b58;
+  --gradient-background: color-mix(in srgb, var(--button-color) 80%, black);
+  --button-hover: color-mix(in srgb, var(--button-color) 95%, white);
+  --button-alert: color-mix(in srgb, var(--button-color) 85%, white);
 }
 
 .red-theme {
-  --button-color: color-mix(in srgb, var(--gradient-background) 90%, white);
-  --button-hover: color-mix(in srgb, var(--gradient-background) 85%, white);
-  --button-alert: color-mix(in srgb, var(--gradient-background) 75%, white);
+  --button-color: color-mix(in srgb, var(--gradient-background) 93%, white);
+  --button-hover: color-mix(in srgb, var(--gradient-background) 87%, white);
+  --button-alert: color-mix(in srgb, var(--gradient-background) 80%, white);
   --gradient-background: #3f0000;
 }
 
 .green-theme {
-  --button-color: color-mix(in srgb, var(--gradient-background) 90%, white);
-  --button-hover: color-mix(in srgb, var(--gradient-background) 85%, white);
-  --button-alert: color-mix(in srgb, var(--gradient-background) 75%, white);
+  --button-color: color-mix(in srgb, var(--gradient-background) 93%, white);
+  --button-hover: color-mix(in srgb, var(--gradient-background) 87%, white);
+  --button-alert: color-mix(in srgb, var(--gradient-background) 80%, white);
   --gradient-background: #0b2e0b;
 }
 

@@ -38,22 +38,16 @@ body {
 .blue-theme {
   --button-color: #2a2b58;
   --gradient-background: color-mix(in srgb, var(--button-color) 80%, black);
-  --button-hover: color-mix(in srgb, var(--button-color) 95%, white);
-  --button-alert: color-mix(in srgb, var(--button-color) 85%, white);
 }
 
 .red-theme {
-  --button-color: color-mix(in srgb, var(--gradient-background) 93%, white);
-  --button-hover: color-mix(in srgb, var(--gradient-background) 87%, white);
-  --button-alert: color-mix(in srgb, var(--gradient-background) 80%, white);
-  --gradient-background: #3f0000;
+  --button-color: #6c1313;
+  --gradient-background: color-mix(in srgb, var(--button-color) 80%, black);
 }
 
 .green-theme {
-  --button-color: color-mix(in srgb, var(--gradient-background) 93%, white);
-  --button-hover: color-mix(in srgb, var(--gradient-background) 87%, white);
-  --button-alert: color-mix(in srgb, var(--gradient-background) 80%, white);
-  --gradient-background: #0b2e0b;
+  --button-color: #6c1313;
+  --gradient-background: color-mix(in srgb, var(--button-color) 80%, black);
 }
 
 .parstd {
@@ -117,7 +111,7 @@ body {
                 inset -2px -2px 3px rgba(0, 0, 0, .6);
 }
 .button:hover {
-    background-color: var(--button-hover);
+    background-color: color-mix(in srgb, var(--button-color) 95%, white);
     background-image: linear-gradient(to top left,
                                       rgba(0, 0, 0, .2),
                                       rgba(0, 0, 0, .2) 25%,
@@ -131,7 +125,7 @@ body {
 }
 
 .button-alert {
-  background-color: var(--button-alert);
+  background-color: color-mix(in srgb, var(--button-color) 90%, white);
 }
 
 .button__text {

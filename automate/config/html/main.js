@@ -251,9 +251,13 @@ async function serverSend() {
   if (serverCmdData == null) {
     document.getElementById("logTextBox").value = "Select an action.";
   } else {
-    // send data
+    // animations
     loadBar(3.0);
+    var _elem = document.getElementById("sendButton");
+    _elem.classList.remove("button-alert");
+    // send command
     sendCmdNoBar('main','server',serverCmdData);
+    // load log data
     await sleep(450);
     loadLog();
   }  
@@ -303,7 +307,7 @@ async function loadLog(file) {
     console.error(err);
   }
   consoleData = null;
-  resetAction();
+  serverCmdData = null;
 };
 
 
@@ -313,14 +317,6 @@ function serverAction(cmd) {
   // change color of send button 
   var _elem = document.getElementById("sendButton");
    _elem.classList.add("button-alert");
-};
-
-
-function resetAction() {
-  var _elem = document.getElementById("sendButton");
-   _elem.classList.remove("button-alert");
-  // clear command data
-  serverCmdData = null;
 };
 
 

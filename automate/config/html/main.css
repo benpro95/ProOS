@@ -20,7 +20,7 @@ html {
     background-image:
     linear-gradient( 
       to bottom,  
-      #e6ffe6,  
+      #0e1539,  
       #000 75%  
     ); /* top-bottom gradient colors */
     background-repeat: no-repeat; 
@@ -57,10 +57,6 @@ body {
   -ms-animation: fadeIn 0.5s;
 }
 
-.nowrap {
-  flex-wrap: nowrap;
-}
-
 .body__text {
   color: #fff; /* header font color */
   padding-left: 8px;
@@ -89,7 +85,7 @@ body {
     color: #fff; /* buttons font color */
     text-shadow: 1px 1px 1px #000;
     border-radius: 12px;
-    background-color: #ccffcc; /* button background color */
+    background-color: #1e2352; /* button background color */
     background-image: linear-gradient(to top left,
                                       rgba(0, 0, 0, .2),
                                       rgba(0, 0, 0, .2) 30%,
@@ -98,7 +94,7 @@ body {
                 inset -2px -2px 3px rgba(0, 0, 0, .6);
 }
 .button:hover {
-    background-color: #b3ffb3; /* button hover color */
+    background-color: #1b1f46; /* button hover color */
     background-image: linear-gradient(to top left,
                                       rgba(0, 0, 0, .2),
                                       rgba(0, 0, 0, .2) 50%,
@@ -111,15 +107,11 @@ body {
                 inset 2px 2px 3px rgba(0, 0, 0, .6);
 }
 
-.button__off {
-  background-color: #e6ffe6; /* off button color */
-}
-
 .button-alert {
   background-color: #2c0c2c; /* alert button color */
 }
 .button-alert:hover {
-    background-color: #1e081e; /* alert button hover color */
+  background-color: #1e081e; /* alert button hover color */
 }
 
 .button__text {
@@ -232,7 +224,6 @@ body {
   color: #fff; /* textbox font color */
   background: #000; /* textbox background color */
   resize: none;
-  white-space: nowrap;
   font-kerning: none;
   font-family: "Consolas",monospace,system-ui,sans-serif; /* log window font */
   font-size: 14.5px; /* page default font size */

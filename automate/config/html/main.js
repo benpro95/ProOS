@@ -252,7 +252,7 @@ async function serverSend() {
     document.getElementById("logTextBox").value = "Select an action.";
   } else {
     // send data
-    loadBar(30);
+    loadBar(3.0);
     sendCmdNoBar('main','server',serverCmdData);
     await sleep(450);
     loadLog();
@@ -264,7 +264,7 @@ async function serverSend() {
 // transmit command for server
 function sendCmd(act, arg1, arg2) {
   // animation
-  loadBar(1);
+  loadBar(0.5);
   sendGET(act,arg1,arg2);
 };
 
@@ -419,6 +419,7 @@ async function loadBar(_interval) {
   if (loadBarState == 0) {
     loadBarState = 1;
     var elem = document.getElementById("load__bar");
+    elem.textContent = " ";  
     var width = 1;
     var id = setInterval(frame, _interval);
     function frame() {

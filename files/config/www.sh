@@ -300,16 +300,10 @@ then
   exit
 fi
 
-if [[ $REPLY == "netscan_d" ]]
+if [[ $REPLY == "netscan" ]]
 then
   echo "** network scan **"
   nmap --unprivileged -v --open -PT 10.177.1.0/24
-  exit
-fi
-
-if [[ $REPLY == "netscan_s" ]]
-then
-  echo "** network scan **"
   nmap --unprivileged -v --open -sn 10.177.1.0/24
   exit
 fi

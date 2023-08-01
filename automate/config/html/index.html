@@ -39,11 +39,11 @@
 
 <div class="main_dropdown">
   <div class="dropdown-content" id="thememenu">
-    <a onclick="setTheme('red-theme')"></i> Red</a>
-    <a onclick="setTheme('green-theme')"></i> Green</a>
-    <a onclick="setTheme('blue-theme')"></i> Blue</a>
-    <a onclick="setTheme('purple-theme')"></i> Purple</a>
-    <a onclick="setTheme('turquoise-theme')"></i> Turquoise</a>
+    <a class="red-menu" onclick="setTheme('red-theme')"></i> Red</a>
+    <a class="green-menu" onclick="setTheme('green-theme')"></i> Green</a>
+    <a class="blue-menu" onclick="setTheme('blue-theme')"></i> Blue</a>
+    <a class="purple-menu" onclick="setTheme('purple-theme')"></i> Purple</a>
+    <a class="turquoise-menu" onclick="setTheme('turquoise-theme')"></i> Turquoise</a>
   </div>
 </div>
 
@@ -177,13 +177,12 @@
       <div class="dropdown"> 
         <a class="dropbtn" onclick="showMenu('actionmenu')">Actions</a>
         <div class="dropdown-content" id="actionmenu">
-          <a onclick="serverAction('files-git_push')">Sync Git</a>   
-          <a onclick="serverAction('syslog')">Server Log</a>                  
           <a onclick="serverAction('files-podget')">Podget</a>
-          <a onclick="serverAction('files-netscan_d')">IP Scan (D)</a>      
-          <a onclick="serverAction('files-netscan_s')">IP Scan (S)</a>       
-          <a onclick="serverAction('files-lastlog')">Last Login</a>      
-          <a onclick="serverAction('files-clearlog')">Clear Log</a>
+          <a onclick="serverAction('files-netscan')">IP Scan</a>   
+          <a onclick="serverAction('files-git_push')">Sync Git</a>      
+          <a onclick="serverAction('files-lastlog')">Last Login</a>
+          <a onclick="serverAction('syslog')">Server Log</a>  
+          <a onclick="serverAction('files-clearlog')">Clear Logs</a>
         </div>
       </div>
       <div class="dropdown"> 

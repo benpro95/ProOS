@@ -24,7 +24,7 @@ html {
       linear-gradient( 
         to bottom,  
         color-mix(in srgb, var(--main-color) 75%, black),  
-        #000 75%
+        #000 80%
       ); /* top-bottom gradient colors */
 }
 
@@ -36,23 +36,23 @@ body {
 }
 
 .blue-theme {
-  --main-color: #2a2b58;
+  --main-color: #1f2051;
 }
 
 .turquoise-theme {
-  --main-color: #174b77;
+  --main-color: #133d61;
 }
 
 .red-theme {
-  --main-color: #6c1313;
+  --main-color: #4b0606;
 }
 
 .green-theme {
-  --main-color: #104f2d;
+  --main-color: #0d3d23;
 }
 
 .purple-theme {
-  --main-color: #451379;
+  --main-color: #3d0c63;
 }
 
 .parstd {
@@ -72,11 +72,11 @@ body {
   display: none;
   overflow: hidden;
   white-space: nowrap;
-  animation: fadeIn 0.35s;
-  -webkit-animation: fadeIn 0.35s;
-  -moz-animation: fadeIn 0.35s;;
-  -o-animation: fadeIn 0.35s;
-  -ms-animation: fadeIn 0.35s;
+  animation: fadeIn 0.3s;
+  -webkit-animation: fadeIn 0.3s;
+  -moz-animation: fadeIn 0.3s;;
+  -o-animation: fadeIn 0.3s;
+  -ms-animation: fadeIn 0.3s;
 }
 
 .body__text {
@@ -84,6 +84,7 @@ body {
   padding-left: 8px;
   font-size: 20px;
   text-align: left;
+  min-height: 50px;
   display: none;
   animation: fadeIn 1s;
   -webkit-animation: fadeIn 1s;
@@ -130,7 +131,7 @@ body {
 }
 
 .button-alert {
-  background-color: color-mix(in srgb, var(--main-color) 85%, white);
+  background-color: color-mix(in srgb, var(--main-color) 80%, white);
 }
 
 .button__text {

@@ -11,7 +11,7 @@
     <link href="main.css" rel="stylesheet">
     <script src="main.js"></script>
 </head>
-<body onload="loadPage()" class="default-theme scroll-bar">
+<body onload="loadPage()" class="scroll-bar">
 
 <div class="topnav">
   <a onclick="showMenu('mainmenu')" class="mainmenu__anchor">
@@ -37,6 +37,8 @@
     <a onclick="setTheme('red-theme')"></i> Red</a>
     <a onclick="setTheme('green-theme')"></i> Green</a>
     <a onclick="setTheme('blue-theme')"></i> Blue</a>
+    <a onclick="setTheme('purple-theme')"></i> Purple</a>
+    <a onclick="setTheme('turquoise-theme')"></i> Turquoise</a>
   </div>
 </div>
 
@@ -80,13 +82,8 @@
     <button type="button" class="button button__lgr" onclick="sendCmd('main','clear','')">
         <span class="button__text"><i class="fa-solid fa-trash-can"></i> Clear</span>
     </button>
-  <p class="body__text fadein" id="bottom"></p>
+  <p class="body__text">- Ben Provenzano III</p>
 </div>
-
-<div>
-  <p style="min-height: 50px" class="body__text">by Ben Provenzano III</p>
-</div>
-
 
 <div class="chat-popup" id="sendForm">
   <form class="form-container">

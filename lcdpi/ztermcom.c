@@ -15,8 +15,6 @@
 #include <errno.h>
 #include <ctype.h>
 
-// divide to whole number macro
-#define ROUND_DIVIDE(numer, denom) (((numer) + (denom) / 2) / (denom))
 // max buffer length
 #define buffLen 32
 
@@ -41,6 +39,7 @@ size_t controlLen = 0;
 bool controlMode = 0;
 // line output data
 size_t lineSize = 0;
+size_t writeLineSize = 0;
 size_t writeLoops = 0;
 char serCharBuf[buffLen];
 // flags
@@ -64,6 +63,7 @@ void pauseExec() {
 void clearLine() {
   enableSend = 0;
   writeLoops = 0;
+  writeLineSize = 0;
   lineSize = 0;
   free(line);
   line = (char*) malloc(1 * sizeof(char));
@@ -172,20 +172,15 @@ void eofAction() {
     if (controlMode == 0) { // not in control mode
       if (enableSend == 0) { // not currently sending
         if (lineSize > 0) { // one character or more
-          // calcuate transmission rounds
-          writeLoops = 
-            (ROUND_DIVIDE(lineSize,maxCmdLength) + 1);
-          if (lineSize <= maxCmdLength){
-            writeLoops = 1;
-          }  
           // enable transmit
+          writeLineSize = lineSize;
           if (lineSize == 1){
             enableSend = 2; // single character (no delay)
           } else {
             enableSend = 1;
           } 
         }
-        // terminate line (add extra nulls, bug fix)
+        // terminate line (add extra nulls)
         for (size_t i = 0; i < buffLen * 2; i++) {
           line = realloc(line, (lineSize + 1));
           line[lineSize] = '\0';
@@ -305,16 +300,14 @@ int serialWrite() {
     printf("Serial port not available\n");
     return 1;
   }
-  size_t _loops = 0;
   size_t _delay = 1;
-  size_t _startpos = 0;
-  printf("# of transmissions: '%zu'\n", writeLoops); 
-  // write max-char segments
-  for (_loops = 1; _loops <= writeLoops; ++_loops) {
-    char _rawData[buffLen];
+  // write data in chunks
+  for (int i = 0; i < writeLineSize; i += maxCmdLength) {
+  	// define buffers
     char _chunkBuf[buffLen];
-    _rawData[0] = '\0';
+    char _rawData[buffLen];
     _chunkBuf[0] = '\0';
+    _rawData[0] = '\0';
     // no delay mode
     if (enableSend == 2) {
       _delay = 0; 
@@ -326,13 +319,12 @@ int serialWrite() {
     strcat(_rawData, "<0,"); 
     strcat(_rawData, _delaystr); 
     strcat(_rawData, ",");
-    if (_loops > 1) {
-      strncpy(_chunkBuf, (line + _startpos), maxCmdLength);
-      _startpos = _startpos + maxCmdLength;
-    } else {
-      strncpy(_chunkBuf, line, maxCmdLength);
-      _startpos = maxCmdLength;
-    }
+    // Calculate the size of the current chunk
+    int chunkLength = (i + maxCmdLength <= writeLineSize) ? maxCmdLength : writeLineSize - i;
+    // Copy the chunk from the input string to the buffer
+    strncpy(_chunkBuf, line + i, chunkLength);
+    // Null-terminate the buffer
+    _chunkBuf[chunkLength] = '\0';
     strcat(_rawData, _chunkBuf); 
     strcat(_rawData, ">");
     printf("Serial Data: %s\n", _rawData);

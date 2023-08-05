@@ -61,7 +61,6 @@ bool newData = 0;
 
 //////////////////////////////////////////////////////////////////////////
 // Enable Serial Messages (0 = off) (1 = on)
-// breaks Pi program communication in debug mode
 #define DEBUG 0
 /////////////////
 #if DEBUG == 1
@@ -536,8 +535,6 @@ void loop() {
   if( lcdReset > 0) {
     digitalWrite(LED_BUILTIN, HIGH);
     drawChar(0,lcdReset);
-    // send ack to computer
-    Serial1.println('*');
     digitalWrite(LED_BUILTIN, LOW);
   }
   // ran in main and during delay loop 

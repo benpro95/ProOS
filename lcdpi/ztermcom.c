@@ -40,7 +40,6 @@ bool controlMode = 0;
 // line output data
 size_t lineSize = 0;
 size_t writeLineSize = 0;
-size_t writeLoops = 0;
 char serCharBuf[buffLen];
 // flags
 size_t enableSend = 0;
@@ -62,7 +61,6 @@ void pauseExec() {
 // reset line array
 void clearLine() {
   enableSend = 0;
-  writeLoops = 0;
   writeLineSize = 0;
   lineSize = 0;
   free(line);
@@ -129,7 +127,7 @@ void controlParser() {
     strcat(_rawData, _cmdstr);   
     strcat(_rawData, ","); 
     strcat(_rawData, _datstr);  
-    strcat(_rawData, ",0>"); 
+    strcat(_rawData, ",>"); 
     printf("Control data: %s\n", _rawData);
     // transmit
     usleep(10000);
@@ -298,6 +296,7 @@ int serialWrite() {
   // check if the serial port is available
   if (access(device, F_OK) != 0) {
     printf("Serial port not available\n");
+    writeLineSize = 0;
     return 1;
   }
   size_t _delay = 1;
@@ -333,6 +332,7 @@ int serialWrite() {
     // wait for response
     status = serialRead();
   }
+  writeLineSize = 0;
   return status;
 }
 

@@ -385,9 +385,9 @@ void readSerial() {
 void decodeMessage() {
   uint8_t _end = serialMessageEnd;
   // count delimiters
-  char _delimiter = ',';
   uint8_t _delims = 0;
   uint8_t _maxchars = 10;
+  char _delimiter = ',';
   for(uint8_t _idx = 0; _idx < _end; _idx++) {
     char _vchr = serialMessage[_idx];  
     if (_vchr == _delimiter) {

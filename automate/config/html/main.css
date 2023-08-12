@@ -18,6 +18,7 @@
     --red-color: #4b0606;
     --green-color: #0d3d23;
     --purple-color: #3d0c63;
+    --peach-color: #edccc5;
 }  
 
 html {
@@ -75,6 +76,13 @@ body {
 .purple-menu {
   margin: 8px;
   background-color: var(--purple-color);
+}
+.peach-theme {
+  --main-color: var(--peach-color);
+}
+.peach-menu {
+  margin: 8px;
+  background-color: var(--peach-color);
 }
 
 .parstd {
@@ -268,7 +276,7 @@ body {
   resize: none;
   font-kerning: none;
   font-family: "Consolas",monospace,system-ui,sans-serif; /* log window font */
-  font-size: 14.5px; /* page default font size */
+  font-size: 15px; /* page default font size */
 }
 
 /* When the textarea gets focus, do something */

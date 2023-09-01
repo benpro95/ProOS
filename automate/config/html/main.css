@@ -325,8 +325,9 @@ body {
   display: none;
   position: fixed;
   background-color: #4d5b69;
-  min-width: 160px;
+  min-width: 125px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 999;
 }
 
 /* Links inside the dropdown */

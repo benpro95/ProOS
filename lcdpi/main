@@ -36,6 +36,17 @@ systemctl restart ztermcom
 exit
 ;;
 
+weather)
+/usr/bin/inxi -xxxW 42.882698,-78.876442 \
+ --weather-unit i --no-ssl \
+ | sed 's/Report://g 
+ ; s/conditions: //g 
+ ; s\ temperature:\temp:\g 
+ ; s\Weather:  \Buffalo, NY\g
+ ; 2,$d' > /dev/zterm
+exit
+;;
+
 delay)
 DELAYSET
 exit

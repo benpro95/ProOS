@@ -134,6 +134,35 @@ function GotoSubURL(_path) {
   window.location = location.protocol+"//"+location.hostname+"/"+_path;
 };
 
+function show_wifiPrompt(text){
+  var wifiprompt = document.createElement("div"); //creates the div to be used as a prompt
+  wifiprompt.id= "wifi__prompt"; //gives the prompt an id - not used in my example but good for styling with css-file
+  var wifitext = document.createElement("div"); //create the div for the password-text
+  wifitext.innerHTML = text; //put inside the text
+  wifiprompt.appendChild(wifitext); //append the text-div to the password-prompt   wifi__img
+  var img = document.createElement("img");
+  img.src = "img/wifi.png";
+  img.id = "wifi__img";
+  wifiprompt.appendChild(img);
+  var wificancelb = document.createElement("button"); //the cancel-button
+  wificancelb.innerHTML = "Cancel";
+  wificancelb.className ="button"; 
+  wificancelb.type="button"; 
+  wifiprompt.appendChild(wificancelb); //append cancel-button
+  document.body.appendChild(wifiprompt); //append the password-prompt so it gets visible
+  new Promise(function(resolve, reject) {
+      wifiprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
+        if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
+        wifiprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
+        document.body.removeChild(wifiprompt);  //as we are done clean up by removing the password-prompt
+      });
+  });   
+}
+
+async function wifiPrompt(){
+  await show_wifiPrompt("Scan for WiFi Access:");
+}
+
 function passwordPrompt(text){
   var pwprompt = document.createElement("div"); //creates the div to be used as a prompt
   pwprompt.id= "pass__prompt"; //gives the prompt an id - not used in my example but good for styling with css-file

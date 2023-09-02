@@ -3,6 +3,7 @@ rpi/pkgs
 rpi/sources
 pve/vmbkps
 pve/photos
+automate/config/html/img/wifi.png
 xana
 *authorized_keys*
 *Thumbs.db*

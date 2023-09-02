@@ -51,7 +51,7 @@
       <button type="button" class="button" onclick="showMenu('delaymenu')">
         <span class="button__text"><i class="fa-solid fa-forward-fast"></i> Speed</span>
       </button>  
-      <div class="dropdown-content" id="delaymenu">
+      <div class="dropdown-content dd-button" id="delaymenu">
         <a onclick="sendCmd('main','delay','2000')">2000 ms</a>
         <a onclick="sendCmd('main','delay','1000')">1000 ms</a>
         <a onclick="sendCmd('main','delay','700')">700 ms</a>
@@ -69,7 +69,7 @@
       <button type="button" class="button" onclick="showMenu('blmenu')">
         <span class="button__text"><i class="fa-solid fa-lightbulb"></i> Backlight</span>
       </button>  
-      <div class="dropdown-content" id="blmenu">
+      <div class="dropdown-content dd-button" id="blmenu">
         <a onclick="sendCmd('main','backlight','0')">Auto</a>
         <a onclick="sendCmd('main','backlight','2')">High</a>
         <a onclick="sendCmd('main','backlight','1')">Low</a>

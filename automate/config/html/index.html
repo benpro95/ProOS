@@ -55,7 +55,7 @@
         <button type="button" class="button" onclick="showMenu('pcmenu')">
           <span class="button__text"><i class="fa-solid fa-computer"></i> PC</span>
         </button>  
-        <div class="dropdown-content" id="pcmenu">
+        <div class="dropdown-content dd-button" id="pcmenu">
           <a onclick="sendCmd('main','pcon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
           <a onclick="sendCmd('main','pcoff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
@@ -64,7 +64,7 @@
         <button type="button" class="button" onclick="showMenu('allmenu')">
           <span class="button__text"><i class="fa-solid fa-power-off"></i> All</span>
         </button>  
-        <div class="dropdown-content" id="allmenu">
+        <div class="dropdown-content dd-button" id="allmenu">
           <a onclick="sendCmd('main','roomon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
           <a onclick="sendCmd('main','roomoff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
@@ -73,7 +73,7 @@
         <button type="button" class="button" onclick="showMenu('macs-menu')">
           <span class="button__text"><i class="fa-solid fa-floppy-disk"></i> Macs</span>
         </button>  
-        <div class="dropdown-content" id="macs-menu">
+        <div class="dropdown-content dd-button" id="macs-menu">
           <a onclick="sendCmd('main','rfa1','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
           <a onclick="sendCmd('main','rfa1','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
@@ -85,7 +85,7 @@
         <button type="button" class="button" onclick="showMenu('lightmenu')">
           <span class="button__text"><i class="fa-regular fa-lightbulb"></i> All Lights</span>
         </button>  
-        <div class="dropdown-content" id="lightmenu">
+        <div class="dropdown-content dd-button" id="lightmenu">
           <a onclick="sendCmd('main','allon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
           <a onclick="sendCmd('main','alloff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
@@ -94,7 +94,7 @@
         <button type="button" class="button" onclick="showMenu('dresser-menu')">
           <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Dresser</span>
         </button>  
-        <div class="dropdown-content" id="dresser-menu">
+        <div class="dropdown-content dd-button" id="dresser-menu">
           <a onclick="sendCmd('main','rfa2','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
           <a onclick="sendCmd('main','rfa2','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
@@ -103,7 +103,7 @@
         <button type="button" class="button" onclick="showMenu('main-menu')">
           <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Main</span>
         </button>  
-        <div class="dropdown-content" id="main-menu">
+        <div class="dropdown-content dd-button" id="main-menu">
           <a onclick="sendCmd('main','rfc1','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
           <a onclick="sendCmd('main','rfc1','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
@@ -118,7 +118,7 @@
         <button type="button" class="button" onclick="showMenu('led-menu')">
           <span class="button__text"><i class="fa-regular fa-sun"></i> Effects</span>
         </button>  
-        <div class="dropdown-content" id="led-menu">
+        <div class="dropdown-content dd-button" id="led-menu">
           <a onclick="GotoSubURL('leds.html')"><i class="fa-solid fa-sliders"></i> More...</a>
           <a onclick="sendCmd('leds','randcolor','')"><i class="fa-solid fa-shuffle"></i> Random</a>
           <a onclick="sendCmd('leds','shuffle','')"><i></i> Shuffle</a>
@@ -142,7 +142,7 @@
         <button type="button" class="button" onclick="showMenu('tv-menu')">
           <span class="button__text"><i class="fa-solid fa-tv"></i> TV</span>
         </button>  
-        <div class="dropdown-content" id="tv-menu">
+        <div class="dropdown-content dd-button" id="tv-menu">
           <a onclick="sendCmd('main','rfa3','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
           <a onclick="sendCmd('main','rfa3','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
@@ -172,7 +172,7 @@
         <button type="button" class="button" onclick="showMenu('hifi-menu')">
           <span class="button__text"><i class="fa-solid fa-play"></i> HiFi</span>
         </button>  
-        <div class="dropdown-content" id="hifi-menu">
+        <div class="dropdown-content dd-button" id="hifi-menu">
           <a onclick="sendCmd('main','hifion','')"><i class="fa-solid fa-toggle-on"></i> On</a>
           <a onclick="sendCmd('main','hifioff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
@@ -230,6 +230,7 @@
       </button>
 
     <p class="body__text">- Ben Provenzano III</p>
+    <p class="parend"></p>  
 </div>
 
 <div class="chat-popup" id="logForm">

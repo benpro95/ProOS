@@ -118,6 +118,10 @@ body {
 	line-height: 0;
 }
 
+.parend {
+  margin-bottom: 45px;
+}
+
 .parsplit {
   display: none;
 }
@@ -352,6 +356,10 @@ body {
   min-width: 125px;
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 999;
+}
+
+.dd-button {
+  position: absolute;
 }
 
 /* Links inside the dropdown */

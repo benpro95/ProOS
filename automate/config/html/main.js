@@ -18,6 +18,7 @@ document.addEventListener('click', function handleClickOutsideBox(event) {
   // don't hide when clicking these elements
   if (!event.target.classList.contains('button') &&
       !event.target.classList.contains('button__text') &&
+      !event.target.classList.contains('fa-regular') &&
       !event.target.classList.contains('fa-solid') &&
       !event.target.classList.contains('dropbtn') &&  
       !event.target.classList.contains('mainmenu__anchor')) {

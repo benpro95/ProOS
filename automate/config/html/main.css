@@ -26,6 +26,7 @@ html {
     height: 100%;
     --main-color: black;
     --gradient-background: black;
+    -webkit-overflow-scrolling: touch;
     background-repeat: no-repeat; 
     background-color: black;
     background-image:
@@ -310,7 +311,7 @@ body {
 .scrollmenu a {
   display: inline-block;
   color: white;
-  text-align: center;
+  text-align: left;
   padding: 14px;
   text-decoration: none;
 }

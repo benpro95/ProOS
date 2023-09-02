@@ -235,15 +235,15 @@
   <form class="form-container">
     <div class="scrollmenu">
       <div class="dropdown"> 
-        <a class="dropbtn" onclick="showMenu('actionmenu')">Actions</a>
-        <div class="dropdown-content" id="actionmenu">
+        <a class="dropbtn" onclick="showMenu('options-menu')">Options</a>
+        <div class="dropdown-content" id="options-menu">
           <a onclick="serverAction('files-podget')">Podget</a>
-          <a onclick="serverAction('files-netscan')">IP Scan</a>   
-          <a onclick="serverAction('files-git_push')">Sync Git</a>     
-          <a onclick="wifiPrompt()">WiFi Access</a> 
+          <a onclick="serverAction('files-git_push')">Sync Git</a>
+          <a onclick="serverAction('files-netscan')">NetScan</a>   
           <a onclick="serverAction('files-lastlog')">Last Login</a>
-          <a onclick="serverAction('syslog')">Server Log</a>  
-          <a onclick="serverAction('files-clearlog')">Clear Logs</a>
+          <a onclick="serverAction('syslog')">Server Log</a>
+          <a onclick="wifiPrompt()"> WiFi Access</a> 
+          <a onclick="serverAction('files-clearlog')"> Clear Logs</a>
         </div>
       </div>
       <div class="dropdown"> 
@@ -271,13 +271,14 @@
       <div class="dropdown"> 
         <a class="dropbtn" onclick="showMenu('vmmenu')">VMs</a>
         <div class="dropdown-content" id="vmmenu">
-          <a onclick="serverAction('startdev')">Start Dev</a>
-          <a onclick="serverAction('stopdev')">Stop Dev</a>
-          <a onclick="serverAction('startunifi')">Start Unifi</a>
-          <a onclick="serverAction('stopunifi')">Stop Unifi</a>          
-          <a onclick="serverAction('startxana')">Start Xana</a>
-          <a onclick="serverAction('restorexana')">Erase Xana</a>
-          <a onclick="serverAction('stopxana')">Stop Xana</a>
+          <a onclick="serverAction('startdev')"><i class="fa-solid fa-toggle-on"></i>  Start Dev</a>
+          <a onclick="serverAction('stopdev')"><i class="fa-solid fa-toggle-off"></i>  Stop Dev</a>
+          <a onclick="GoToExtPage('unifi.home:8443')"><i class="fa-solid fa-wifi"></i> Unifi AP</a>
+          <a onclick="serverAction('startunifi')"><i class="fa-solid fa-toggle-on"></i>  Start Unifi</a>
+          <a onclick="serverAction('stopunifi')"><i class="fa-solid fa-toggle-off"></i>  Stop Unifi</a>          
+          <a onclick="serverAction('startxana')"><i class="fa-solid fa-toggle-on"></i>  Start Xana</a>
+          <a onclick="serverAction('restorexana')"><i class="fa-solid fa-eraser"></i>  Erase Xana</a>
+          <a onclick="serverAction('stopxana')"><i class="fa-solid fa-toggle-off"></i>  Stop Xana</a>
         </div>
       </div>
     </div>

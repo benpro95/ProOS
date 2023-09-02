@@ -130,6 +130,10 @@ function GoToAutomate() {
   window.location = 'https://automate.home/';   
 };
 
+function GoToExtPage(_path) {
+  window.location = "https://"+_path;   
+};
+
 function GotoSubURL(_path) {
   closePopup();
   window.location = location.protocol+"//"+location.hostname+"/"+_path;
@@ -146,7 +150,7 @@ function show_wifiPrompt(text){
   img.id = "wifi__img";
   wifiprompt.appendChild(img);
   var wificancelb = document.createElement("button"); //the cancel-button
-  wificancelb.innerHTML = "Cancel";
+  wificancelb.innerHTML = "Close";
   wificancelb.className ="button"; 
   wificancelb.type="button"; 
   wifiprompt.appendChild(wificancelb); //append cancel-button

@@ -51,7 +51,7 @@ function loadCommon() {
   classDisplay('grid','block');
   classDisplay('body__text','block');
   // read theme from local storage or choose default
-  currentTheme = localStorage.getItem("styledata") || "blue-theme";
+  currentTheme = localStorage.getItem("styledata") || "darkblue-theme";
   setTheme(currentTheme);
 };
 

@@ -13,12 +13,13 @@
     font-family: JosefinSans,system-ui,-apple-system,system-ui,"Segoe UI","Helvetica Neue";
     font-size: 24px; /* page default font size */
     /* theme colors */
-    --blue-color: #1f2051;
+    --darkblue-color: #1f2051; 
+    --lightblue-color: #101278;
     --turquoise-color: #133d61;
     --red-color: #4b0606;
     --green-color: #0d3d23;
     --purple-color: #3d0c63;
-    --peach-color: #edccc5;
+    --dark-color: #1c1822;
 }  
 
 html {
@@ -49,6 +50,20 @@ body {
   margin: 8px;
   background-color: var(--blue-color);
 }
+.darkblue-theme {
+  --main-color: var(--darkblue-color);
+}
+.darkblue-menu {
+  margin: 8px;
+  background-color: var(--darkblue-color);
+}
+.lightblue-theme {
+  --main-color: var(--lightblue-color);
+}
+.lightblue-menu {
+  margin: 8px;
+  background-color: var(--lightblue-color);
+}
 .turquoise-theme {
   --main-color: var(--turquoise-color);
 }
@@ -77,12 +92,12 @@ body {
   margin: 8px;
   background-color: var(--purple-color);
 }
-.peach-theme {
-  --main-color: var(--peach-color);
+.dark-theme {
+  --main-color: var(--dark-color);
 }
-.peach-menu {
+.dark-menu {
   margin: 8px;
-  background-color: var(--peach-color);
+  background-color: var(--dark-color);
 }
 
 .parstd {

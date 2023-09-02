@@ -20,6 +20,7 @@
     --green-color: #0d3d23;
     --purple-color: #3d0c63;
     --dark-color: #1c1822;
+    --orange-color: #a03401;
 }  
 
 html {
@@ -99,6 +100,13 @@ body {
 .dark-menu {
   margin: 8px;
   background-color: var(--dark-color);
+}
+.orange-theme {
+  --main-color: var(--orange-color);
+}
+.orange-menu {
+  margin: 8px;
+  background-color: var(--orange-color);
 }
 
 .parstd {

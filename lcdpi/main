@@ -37,13 +37,17 @@ exit
 ;;
 
 weather)
+
 /usr/bin/inxi -xxxW 42.882698,-78.876442 \
  --weather-unit i --no-ssl \
- | sed 's/Report://g 
- ; s/conditions: //g 
- ; s\ temperature:\temp:\g 
- ; s\Weather:  \Buffalo, NY\g
- ; 2,$d' > /dev/zterm
+ | sed 's/Report://g; 
+   s/conditions: //g;
+   s\ temperature:\temp:\g; 
+   s\Weather:\Buffalo, NY\g' \
+ | tr -s ' ' > /tmp/weather.raw
+tr -d '\n' < /tmp/weather.raw > /tmp/weather.txt
+ex -sc '%s/\(\Locale:\).*/\1/ | x' /tmp/weather.txt
+sed 's/Locale://g' /tmp/weather.txt > /dev/zterm
 exit
 ;;
 
@@ -69,7 +73,7 @@ exit
 
 clear-top)
 echo "${SIG}c1" > /dev/zterm
-exit
+exit 
 ;;
 
 lorem)

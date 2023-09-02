@@ -141,13 +141,17 @@ function passwordPrompt(text){
   pwtext.innerHTML = text; //put inside the text
   pwprompt.appendChild(pwtext); //append the text-div to the password-prompt
   var pwinput = document.createElement("input"); //creates the password-input
-  pwinput.id = "password_id"; //give it some id - not really used in this example...
+  pwinput.id = "pass__textbox"; //give it some id - not really used in this example...
   pwinput.type="password"; // makes the input of type password to not show plain-text
   pwprompt.appendChild(pwinput); //append it to password-prompt
   var pwokbutton = document.createElement("button"); //the ok button
   pwokbutton.innerHTML = "Send";
+  pwokbutton.className ="button"; 
+  pwokbutton.type="button"; 
   var pwcancelb = document.createElement("button"); //the cancel-button
   pwcancelb.innerHTML = "Cancel";
+  pwcancelb.className ="button"; 
+  pwcancelb.type="button"; 
   pwprompt.appendChild(pwcancelb); //append cancel-button first
   pwprompt.appendChild(pwokbutton); //append the ok-button
   document.body.appendChild(pwprompt); //append the password-prompt so it gets visible

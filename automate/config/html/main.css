@@ -399,11 +399,17 @@ body {
   position: fixed;
   top: 25%;
   left: 8%;
-  width: auto;  
+  width: 350px;  
   height: auto;
   padding: 16px; 
   color: #fff;
   z-index: 999; 
+} 
+
+#pass__textbox {
+  margin: 15px;
+  width: 285px; 
+  padding: 5px; 
 } 
 
 /*

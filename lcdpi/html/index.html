@@ -47,6 +47,7 @@
 
 <div class="grid">
   <p></p>   
+
     <div class="dropdown">
       <button type="button" class="button" onclick="showMenu('delaymenu')">
         <span class="button__text"><i class="fa-solid fa-forward-fast"></i> Speed</span>
@@ -74,21 +75,55 @@
         <a onclick="sendCmd('main','backlight','2')">High</a>
         <a onclick="sendCmd('main','backlight','1')">Low</a>
       </div>
-    </div>
-    <button type="button" class="button" onclick="openSendWindow()">
-        <span class="button__text"></i> Message</span>
-    </button>
-    <button type="button" class="button" onclick="sendCmd('main','weather','')">
-        <span class="button__text"></i> Weather</span>
-    </button>
-  <div class="parsplit"><p class="parstd"></p></div>    
+    </div>    
     <button type="button" class="button" onclick="sendCmd('main','stop','')">
         <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
     </button>
+
+  <div class="parsplit"><p class="parstd"></p></div>  
+
     <button type="button" class="button button__lgr" onclick="sendCmd('main','clear','')">
         <span class="button__text"><i class="fa-solid fa-trash-can"></i> Clear</span>
     </button>
+    <button type="button" class="button" onclick="openSendWindow()">
+        <span class="button__text"><i class="fa-solid fa-envelope-open-text"></i> Message</span>
+    </button>
+
+  <p class="parstd"></p>   
+
+    <button type="button" class="button" onclick="">
+        <span class="button__text"></i> PL</span>
+    </button>
+    <button type="button" class="button" onclick="sendCmd('main','weather','')">
+        <span class="button__text"><i class="fa-solid fa-temperature-three-quarters"></i> Weather</span>
+    </button>
+    <div class="dropdown">
+      <button type="button" class="button" onclick="showMenu('archmenu')">
+        <span class="button__text"><i class="fa-solid fa-reply-all"></i> Replay</span>
+      </button>  
+      <div class="dropdown-content dd-button" id="archmenu">
+        <a onclick="sendCmd('main','msgarchive','2')"><i class="fa-regular fa-envelope"></i> Last</a>
+        <a onclick="sendCmd('main','msgarchive','3')"><i class="fa-regular fa-envelope"></i> -2</a>
+        <a onclick="sendCmd('main','msgarchive','4')"><i class="fa-regular fa-envelope"></i> -3</a>
+        <a onclick="sendCmd('main','msgarchive','5')"><i class="fa-regular fa-envelope"></i> -4</a>
+        <a onclick="sendCmd('main','msgarchive','6')"><i class="fa-regular fa-envelope"></i> -5</a>
+      </div>
+    </div>
+
+  <div class="parsplit"><p class="parstd"></p></div>  
+
+    <button type="button" class="button" onclick="">
+        <span class="button__text"></i> PL</span>
+    </button>
+    <button type="button" class="button" onclick="">
+        <span class="button__text"></i> PL</span>
+    </button>
+    <button type="button" class="button" onclick="">
+        <span class="button__text"></i> PL</span>
+    </button>
+
   <p class="body__text">- Ben Provenzano III</p>
+  <p class="parend-fb"></p>   
 </div>
 
 <div class="chat-popup" id="sendForm">

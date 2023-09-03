@@ -18,6 +18,8 @@ case "$1" in
 boot)
 ## Start Z-Terminal Service
 systemctl start ztermcom
+## Delete messages
+rm -rfv /tmp/message*.txt
 ## Turn off power LED
 echo 0 > /sys/class/leds/ACT/brightness
 ## Disable HDMI (saves 30mA)
@@ -45,8 +47,29 @@ weather)
    s\Weather:\Buffalo, NY\g' \
  | tr -s ' ' > /tmp/weather.raw
 tr -d '\n' < /tmp/weather.raw > /tmp/weather.txt
-ex -sc '%s/\(\Locale:\).*/\1/ | x' /tmp/weather.txt
-sed 's/Locale://g' /tmp/weather.txt > /dev/zterm
+ex -sc '%s/\(\pressure:\).*/\1/ | x' /tmp/weather.txt
+sed -i 's/pressure://g' /tmp/weather.txt
+## Send Message
+curl -X POST 127.0.0.1/upload.php \
+ -H "Content-Type: text/plain" -d "$(cat /tmp/weather.txt)"
+exit
+;;
+
+message)
+## add space to EOF
+echo ' ' >> /tmp/message.txt
+## retain archived messages
+for i in {5..1}
+do
+   mv -f /tmp/message-$i.txt /tmp/message-$((i+1)).txt
+done
+mv -f /tmp/message.txt /tmp/message-1.txt
+cat /tmp/message-1.txt > /dev/zterm
+exit
+;;
+
+msgarchive)
+cat /tmp/message-$ARG.txt > /dev/zterm
 exit
 ;;
 

@@ -36,6 +36,9 @@ chown root:root /usr/bin/ztermcom
 systemctl disable ztermcom.service
 systemctl restart ztermcom.service
 
+## Remove archived messages
+rm -rfv /tmp/message*.txt
+
 ## Web Interface
 cp -rv /opt/rpi/html/* /var/www/html/
 chmod -R 777 /var/www/html/*

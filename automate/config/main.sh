@@ -9,6 +9,7 @@
 RAMDISK="/var/www/html/ram"
 LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
+LCDPI_MSG=""
 
 CALLAPI(){
 #### API Call
@@ -28,6 +29,11 @@ XMITARG=""
 APIDATA=""
 ESP32=""
 return
+}
+
+CALL_LCDPI(){
+  /usr/bin/curl -X POST http://lcdpi.home/upload.php \
+   -H "Content-Type: text/plain" -d "$LCDPI_MSG"
 }
 
 XMIT(){
@@ -64,67 +70,89 @@ fi
 if [[ "$XMITCMD" == "pwrhifi" ]]; then
    rm -f $LOCKFOLDER/subs.enabled 
    XMITCALL="0|0|1270227167"
-   CALLAPI
+   LCDPI_MSG="Toggle HiFi"
+   CALLAPI   
+   CALL_LCDPI
    return
 fi
 if [[ "$XMITCMD" == "hifioff" ]]; then
    rm -f $LOCKFOLDER/subs.enabled 
    XMITCALL="0|0|1261859214"
-   CALLAPI
+   LCDPI_MSG="HiFi Off"
+   CALLAPI   
+   CALL_LCDPI
    return
 fi
 if [[ "$XMITCMD" == "hifion" ]]; then
    rm -f $LOCKFOLDER/subs.enabled 
    XMITCALL="0|0|1261869414"
-   CALLAPI
+   LCDPI_MSG="HiFi On"
+   CALLAPI   
+   CALL_LCDPI
    return
 fi
 ## DAC
 if [[ "$XMITCMD" == "dac" ]]; then
    XMITCALL="0|0|1261793423"
+   LCDPI_MSG="DAC"
    CALLAPI
+   CALL_LCDPI
    return   
 fi
 ## Aux
 if [[ "$XMITCMD" == "aux" ]]; then
    XMITCALL="0|0|1261826063"
-   CALLAPI
+   LCDPI_MSG="Aux"
+   CALLAPI   
+   CALL_LCDPI
    return
 fi
 ## Phono
 if [[ "$XMITCMD" == "phono" ]]; then 
    XMITCALL="0|0|1261766903"
-   CALLAPI
+   LCDPI_MSG="Phono"
+   CALLAPI   
+   CALL_LCDPI
    return
 fi
 ## Airplay
 if [[ "$XMITCMD" == "airplay-preamp" ]]; then
    XMITCALL="0|0|1261799543"
-   CALLAPI
+   LCDPI_MSG="AirPlay"
+   CALLAPI   
+   CALL_LCDPI
    return
 fi   
 ## Volume Limit Mode
 if [[ "$XMITCMD" == "vlimit" ]]; then
    XMITCALL="0|0|1261783223"
-   CALLAPI
+   LCDPI_MSG="vLimit"
+   CALLAPI   
+   CALL_LCDPI
    return   
 fi   
 ## Key Mute / Toggle
 if [[ "$XMITCMD" == "mute" ]]; then
    XMITCALL="0|0|1270259807"
-   CALLAPI
+   LCDPI_MSG="Toggle Mute"
+   CALLAPI   
+   CALL_LCDPI
    return
 fi
 ## Optical Mode
 if [[ "$XMITCMD" == "optical-preamp" ]]; then
    XMITCALL="0|0|1261824023"
-   CALLAPI
+   LCDPI_MSG="Optical"
+   CALLAPI   
+   CALL_LCDPI
    return
 fi
 ## Key Toggle Hi-Pass Filter
 if [[ "$XMITCMD" == "togglehpf" ]]; then
    XMITCALL="0|0|1261875534"
-   CALLAPI
+   LCDPI_MSG="Toggle HPF"
+   CALLAPI   
+   CALL_LCDPI
    return
 fi
 ## Key Down
@@ -157,21 +185,27 @@ fi
 ## Mute Key
 if [[ "$XMITCMD" == "subpwr" ]]; then
    XMITCALL="0|0|551506095"
-   CALLAPI
+   LCDPI_MSG="Toggle Subwoofer Power"
+   CALLAPI   
+   CALL_LCDPI
    return
 fi
 ##
 ## (0) Key
 if [[ "$XMITCMD" == "subon" ]]; then
    XMITCALL="0|0|551504055"
-   CALLAPI
+   LCDPI_MSG="Subwoofer On"
+   CALLAPI   
+   CALL_LCDPI
    return
 fi
 ##
 ## (1) Key
 if [[ "$XMITCMD" == "suboff" ]]; then
    XMITCALL="0|0|551520375"
-   CALLAPI
+   LCDPI_MSG="Subwoofer Off"
+   CALLAPI   
+   CALL_LCDPI
    return
 fi
 ##
@@ -221,12 +255,16 @@ fi
 ## Vintage Macs
 if [[ "$XMITCMD" == "rfa1on" ]]; then
    XMITCALL="1|0|734733"
-   CALLAPI
+   LCDPI_MSG="Macs On"
+   CALLAPI   
+   CALL_LCDPI
    return
 fi
 if [[ "$XMITCMD" == "rfa1off" ]]; then
    XMITCALL="1|0|734734"
-   CALLAPI
+   LCDPI_MSG="Macs Off"
+   CALLAPI   
+   CALL_LCDPI
    return
 fi
 ## Dresser Lamp
@@ -243,12 +281,16 @@ fi
 ## RetroPi
 if [[ "$XMITCMD" == "rfa3on" ]]; then
    XMITCALL="1|0|734735"
-   CALLAPI
+   LCDPI_MSG="RetroPi On"
+   CALLAPI   
+   CALL_LCDPI
    return
 fi
 if [[ "$XMITCMD" == "rfa3off" ]]; then
    XMITCALL="1|0|734736"
-   CALLAPI
+   LCDPI_MSG="RetroPi Off"
+   CALLAPI   
+   CALL_LCDPI
    return
 fi
 ##
@@ -256,7 +298,9 @@ fi
 ##
 if [[ "$XMITCMD" == "rfb3" ]]; then
    XMITCALL="2|2|32"
-   CALLAPI
+   LCDPI_MSG="Toggle PC Power"
+   CALLAPI   
+   CALL_LCDPI
    return
 fi
 ##
@@ -328,7 +372,9 @@ if [[ "$XMITCMD" == "minidwnc" ]]; then
 fi
 if [[ "$XMITCMD" == "minimute" ]]; then
    XMITCALL="1|0|696944"
-   CALLAPI
+   LCDPI_MSG="Toggle Mute HiFi mini"
+   CALLAPI   
+   CALL_LCDPI
    return
 fi
 if [[ "$XMITCMD" == "minidefv" ]]; then
@@ -366,10 +412,12 @@ if [ $RELAX_HOST == "hifi" ]; then
   ESP32="no"; TARGET="hifi.home"; XMITCMD="relax"; CALLAPI
 else
   ## Play Audio on Apple TV
-  echo "playing $CMDARG on Apple TV"
+  LCDPI_MSG="playing $CMDARG on Apple TV"
+  echo "$LCDPI_MSG"
   systemctl stop relaxloop
   systemctl set-environment rpi_relaxmode=$CMDARG
   systemctl start relaxloop
+  CALL_LCDPI  
 fi
 exit
 ;;
@@ -381,6 +429,8 @@ if [ "$CMDARG" == "bedroom" ]; then
   ## Turn off Apple TV
   ##systemctl set-environment rpi_relaxmode=off
   ##systemctl start relaxloop
+  LCDPI_MSG="stopping playback on Apple TV"
+  CALL_LCDPI
 fi
 if [ "$CMDARG" == "subs" ]; then
   XMITCMD="subpwr" ; XMIT
@@ -521,6 +571,9 @@ XMITCMD="rfb1" ; XMITARG="off" ; XMIT
 sleep 1
 ## Blank LEDwalls
 /opt/system/leds stop
+## LCDpi message
+LCDPI_MSG="all lights off"
+CALL_LCDPI
 exit
 ;;
 
@@ -608,6 +661,9 @@ fi
 ## LEDwalls
 /opt/system/leds abstract
 /opt/system/leds fc norm
+## LCDpi message
+LCDPI_MSG="all power on"
+CALL_LCDPI
 exit
 ;;
 
@@ -634,6 +690,9 @@ systemctl stop relaxloop
 ## Turn off Apple TV
 ##systemctl set-environment rpi_relaxmode=off
 ##systemctl start relaxloop
+## LCDpi message
+LCDPI_MSG="all power off"
+CALL_LCDPI
 exit
 ;;
 
@@ -665,6 +724,9 @@ fi
 ## Pass action file to the hypervisor
 echo "action $SERVERARG submitted." &>> $LOGFILE
 touch $RAMDISK/$SERVERARG.txt
+## LCDpi message
+LCDPI_MSG="($SERVERARG) command sent."
+CALL_LCDPI
 exit
 ;;
 

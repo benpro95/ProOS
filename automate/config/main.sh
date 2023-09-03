@@ -70,7 +70,7 @@ fi
 if [[ "$XMITCMD" == "pwrhifi" ]]; then
    rm -f $LOCKFOLDER/subs.enabled 
    XMITCALL="0|0|1270227167"
-   LCDPI_MSG="Toggle HiFi"
+   LCDPI_MSG="toggle HiFi"
    CALLAPI   
    CALL_LCDPI
    return
@@ -78,7 +78,7 @@ fi
 if [[ "$XMITCMD" == "hifioff" ]]; then
    rm -f $LOCKFOLDER/subs.enabled 
    XMITCALL="0|0|1261859214"
-   LCDPI_MSG="HiFi Off"
+   LCDPI_MSG="HiFi off"
    CALLAPI   
    CALL_LCDPI
    return
@@ -86,7 +86,7 @@ fi
 if [[ "$XMITCMD" == "hifion" ]]; then
    rm -f $LOCKFOLDER/subs.enabled 
    XMITCALL="0|0|1261869414"
-   LCDPI_MSG="HiFi On"
+   LCDPI_MSG="HiFi on"
    CALLAPI   
    CALL_LCDPI
    return
@@ -102,7 +102,7 @@ fi
 ## Aux
 if [[ "$XMITCMD" == "aux" ]]; then
    XMITCALL="0|0|1261826063"
-   LCDPI_MSG="Aux"
+   LCDPI_MSG="aux."
    CALLAPI   
    CALL_LCDPI
    return
@@ -110,7 +110,7 @@ fi
 ## Phono
 if [[ "$XMITCMD" == "phono" ]]; then 
    XMITCALL="0|0|1261766903"
-   LCDPI_MSG="Phono"
+   LCDPI_MSG="phono"
    CALLAPI   
    CALL_LCDPI
    return
@@ -134,7 +134,7 @@ fi
 ## Key Mute / Toggle
 if [[ "$XMITCMD" == "mute" ]]; then
    XMITCALL="0|0|1270259807"
-   LCDPI_MSG="Toggle Mute"
+   LCDPI_MSG="toggle mute"
    CALLAPI   
    CALL_LCDPI
    return
@@ -142,7 +142,7 @@ fi
 ## Optical Mode
 if [[ "$XMITCMD" == "optical-preamp" ]]; then
    XMITCALL="0|0|1261824023"
-   LCDPI_MSG="Optical"
+   LCDPI_MSG="optical"
    CALLAPI   
    CALL_LCDPI
    return
@@ -150,7 +150,7 @@ fi
 ## Key Toggle Hi-Pass Filter
 if [[ "$XMITCMD" == "togglehpf" ]]; then
    XMITCALL="0|0|1261875534"
-   LCDPI_MSG="Toggle HPF"
+   LCDPI_MSG="toggle HPF"
    CALLAPI   
    CALL_LCDPI
    return
@@ -185,7 +185,7 @@ fi
 ## Mute Key
 if [[ "$XMITCMD" == "subpwr" ]]; then
    XMITCALL="0|0|551506095"
-   LCDPI_MSG="Toggle Subwoofer Power"
+   LCDPI_MSG="toggle subwoofer power"
    CALLAPI   
    CALL_LCDPI
    return
@@ -194,7 +194,7 @@ fi
 ## (0) Key
 if [[ "$XMITCMD" == "subon" ]]; then
    XMITCALL="0|0|551504055"
-   LCDPI_MSG="Subwoofer On"
+   LCDPI_MSG="subwoofer on"
    CALLAPI   
    CALL_LCDPI
    return
@@ -203,7 +203,7 @@ fi
 ## (1) Key
 if [[ "$XMITCMD" == "suboff" ]]; then
    XMITCALL="0|0|551520375"
-   LCDPI_MSG="Subwoofer Off"
+   LCDPI_MSG="subwoofer off"
    CALLAPI   
    CALL_LCDPI
    return
@@ -255,14 +255,14 @@ fi
 ## Vintage Macs
 if [[ "$XMITCMD" == "rfa1on" ]]; then
    XMITCALL="1|0|734733"
-   LCDPI_MSG="Macs On"
+   LCDPI_MSG="macs on"
    CALLAPI   
    CALL_LCDPI
    return
 fi
 if [[ "$XMITCMD" == "rfa1off" ]]; then
    XMITCALL="1|0|734734"
-   LCDPI_MSG="Macs Off"
+   LCDPI_MSG="macs off"
    CALLAPI   
    CALL_LCDPI
    return
@@ -281,14 +281,14 @@ fi
 ## RetroPi
 if [[ "$XMITCMD" == "rfa3on" ]]; then
    XMITCALL="1|0|734735"
-   LCDPI_MSG="RetroPi On"
+   LCDPI_MSG="RetroPi on"
    CALLAPI   
    CALL_LCDPI
    return
 fi
 if [[ "$XMITCMD" == "rfa3off" ]]; then
    XMITCALL="1|0|734736"
-   LCDPI_MSG="RetroPi Off"
+   LCDPI_MSG="RetroPi off"
    CALLAPI   
    CALL_LCDPI
    return
@@ -298,7 +298,7 @@ fi
 ##
 if [[ "$XMITCMD" == "rfb3" ]]; then
    XMITCALL="2|2|32"
-   LCDPI_MSG="Toggle PC Power"
+   LCDPI_MSG="toggle PC power"
    CALLAPI   
    CALL_LCDPI
    return
@@ -372,7 +372,7 @@ if [[ "$XMITCMD" == "minidwnc" ]]; then
 fi
 if [[ "$XMITCMD" == "minimute" ]]; then
    XMITCALL="1|0|696944"
-   LCDPI_MSG="Toggle Mute HiFi mini"
+   LCDPI_MSG="toggle mute HiFi mini"
    CALLAPI   
    CALL_LCDPI
    return
@@ -543,6 +543,8 @@ exit
 ;;
 
 allon)
+LCDPI_MSG="all lights on"
+CALL_LCDPI
 touch $LOCKFOLDER/lights.save
 ## Main Lamp
 XMITCMD="rfc1" ; XMITARG="on" ; XMIT 
@@ -558,6 +560,9 @@ exit
 ;;
 
 alloff)
+## LCDpi message
+LCDPI_MSG="all lights off"
+CALL_LCDPI
 ## Turn all lights off
 rm -f $LOCKFOLDER/lights.save
 ## Main Lamp
@@ -571,9 +576,6 @@ XMITCMD="rfb1" ; XMITARG="off" ; XMIT
 sleep 1
 ## Blank LEDwalls
 /opt/system/leds stop
-## LCDpi message
-LCDPI_MSG="all lights off"
-CALL_LCDPI
 exit
 ;;
 
@@ -725,7 +727,7 @@ fi
 echo "action $SERVERARG submitted." &>> $LOGFILE
 touch $RAMDISK/$SERVERARG.txt
 ## LCDpi message
-LCDPI_MSG="($SERVERARG) command sent."
+LCDPI_MSG="($SERVERARG) command sent"
 CALL_LCDPI
 exit
 ;;

@@ -83,10 +83,10 @@
   <div class="parsplit"><p class="parstd"></p></div>  
 
     <button type="button" class="button button__lgr" onclick="sendCmd('main','clear','')">
-        <span class="button__text"><i class="fa-solid fa-trash-can"></i> Clear</span>
+        <span class="button__text"><i class="fa-solid fa-eraser"></i> Erase</span>
     </button>
     <button type="button" class="button" onclick="openSendWindow()">
-        <span class="button__text"><i class="fa-solid fa-envelope-open-text"></i> Message</span>
+        <span class="button__text"><i class="fa-solid fa-envelope-open-text"></i> Send</span>
     </button>
 
   <p class="parstd"></p>   
@@ -102,7 +102,8 @@
         <span class="button__text"><i class="fa-solid fa-reply-all"></i> Replay</span>
       </button>  
       <div class="dropdown-content dd-button" id="archmenu">
-        <a onclick="sendCmd('main','msgarchive','2')"><i class="fa-regular fa-envelope"></i> Last</a>
+        <a onclick="sendCmd('main','msgarchive','1')"><i class="fa-regular fa-envelope"></i> Last</a>
+        <a onclick="sendCmd('main','msgarchive','2')"><i class="fa-regular fa-envelope"></i> -1</a>
         <a onclick="sendCmd('main','msgarchive','3')"><i class="fa-regular fa-envelope"></i> -2</a>
         <a onclick="sendCmd('main','msgarchive','4')"><i class="fa-regular fa-envelope"></i> -3</a>
         <a onclick="sendCmd('main','msgarchive','5')"><i class="fa-regular fa-envelope"></i> -4</a>

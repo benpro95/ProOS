@@ -703,6 +703,9 @@ server)
 _CMDARG=${CMDARG//$'\n'/} 
 SERVERARG=${_CMDARG%-*}
 FILESCMD=${_CMDARG#*-}
+## LCDpi message
+LCDPI_MSG="($_CMDARG) command sent"
+CALL_LCDPI
 ## transmit action to file server
 if [ "$SERVERARG" == "files" ]; then
   if [ "$FILESCMD" != "" ]; then
@@ -726,9 +729,6 @@ fi
 ## Pass action file to the hypervisor
 echo "action $SERVERARG submitted." &>> $LOGFILE
 touch $RAMDISK/$SERVERARG.txt
-## LCDpi message
-LCDPI_MSG="($SERVERARG) command sent"
-CALL_LCDPI
 exit
 ;;
 

@@ -704,7 +704,7 @@ _CMDARG=${CMDARG//$'\n'/}
 SERVERARG=${_CMDARG%-*}
 FILESCMD=${_CMDARG#*-}
 ## LCDpi message
-LCDPI_MSG="($_CMDARG) command sent"
+LCDPI_MSG="($SERVERARG) command sent"
 CALL_LCDPI
 ## transmit action to file server
 if [ "$SERVERARG" == "files" ]; then

@@ -26,35 +26,49 @@ document.addEventListener('click', function handleClickOutsideBox(event) {
   }
 });
 
-// runs on any other page load
+// runs on page load
 function loadPage() {
-  loadCommon();
-};
-
-// runs on automate page load
-function loadAutomate() {
-  volMode();
-  loadCommon();
-};
-
-// runs on ambiance page load
-function loadAmbiance() {
-  relaxMode();
-  loadCommon();
-};
-
-function loadCommon() {
   resizeEvent();
   // set title
   var elem = document.getElementById("load__bar");
   elem.textContent = "Automate";
-  // show buttons and header
-  classDisplay('grid','block');
-  classDisplay('body__text','block');
+  // show buttons
+  showHomePage();
   // read theme from local storage or choose default
   currentTheme = localStorage.getItem("styledata") || "darkblue-theme";
   setTheme(currentTheme);
+  // volume mode switch
+  volMode();
 };
+
+function showHomePage() {
+  toggledState = 1;
+  hidePages();
+  volMode();
+  classDisplay('grid','block');
+  classDisplay('body__text','block');
+}
+
+function showLEDsPage() {
+  hidePages();
+  classDisplay('led-grid','block');
+  classDisplay('body__text','block');
+}
+
+function showSoundsPage() {
+  toggledState = 0;
+  hidePages();
+  relaxMode();
+  classDisplay('sounds-grid','block');
+  classDisplay('body__text','block');
+}
+
+function hidePages() {
+  classDisplay('body__text','none');
+  classDisplay('sounds-grid','none');
+  classDisplay('led-grid','none');
+  classDisplay('grid','none');
+}
 
 function setTheme(newTheme) {
   const body = document.getElementsByTagName("html")[0];
@@ -336,8 +350,6 @@ function sendCmdNoBar(act, arg1, arg2) {
 function sendGET(act, arg1, arg2) {
   // construct API string
   const url = location.protocol+"//"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
-  // display API string on page
-  //document.getElementById("bottom").innerHTML = url;
   // send data
   fetch(url, {
       method: 'GET',

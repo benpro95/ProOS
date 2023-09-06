@@ -329,7 +329,7 @@ async function serverSend() {
     // send command
     sendCmdNoBar('main','server',serverCmdData);
     // load log data
-    await sleep(450);
+    await sleep(1000);
     loadLog();
   }  
   serverCmdData = null;

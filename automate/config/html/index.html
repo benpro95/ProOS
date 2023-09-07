@@ -62,7 +62,7 @@
       </div>    
       <div class="dropdown">
         <button type="button" class="button" onclick="showMenu('allmenu')">
-          <span class="button__text"><i class="fa-solid fa-power-off"></i> All</span>
+          <span class="button__text"><i class="fa-solid fa-power-off"></i> Power</span>
         </button>  
         <div class="dropdown-content dd-button" id="allmenu">
           <a onclick="sendCmd('main','roomon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
@@ -82,6 +82,15 @@
     <div class="parsplit"><p class="parstd"></p></div>  
 
       <div class="dropdown">
+        <button type="button" class="button" onclick="showMenu('main-menu')">
+          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Main</span>
+        </button>  
+        <div class="dropdown-content dd-button" id="main-menu">
+          <a onclick="sendCmd('main','rfc1','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
+          <a onclick="sendCmd('main','rfc1','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+        </div>
+      </div>
+      <div class="dropdown">
         <button type="button" class="button" onclick="showMenu('lightmenu')">
           <span class="button__text"><i class="fa-regular fa-lightbulb"></i> All Lights</span>
         </button>  
@@ -97,15 +106,6 @@
         <div class="dropdown-content dd-button" id="dresser-menu">
           <a onclick="sendCmd('main','rfa2','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
           <a onclick="sendCmd('main','rfa2','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-        </div>
-      </div>
-      <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('main-menu')">
-          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Main</span>
-        </button>  
-        <div class="dropdown-content dd-button" id="main-menu">
-          <a onclick="sendCmd('main','rfc1','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
-          <a onclick="sendCmd('main','rfc1','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
       </div>
 

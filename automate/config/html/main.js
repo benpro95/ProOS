@@ -320,7 +320,7 @@ function toggledVol(_mode) {
 // send server action
 async function serverSend() {
   if (serverCmdData == null) {
-    document.getElementById("logTextBox").value = "Select an action.";
+    document.getElementById("logTextBox").value = "select an option.";
   } else {
     // animations
     loadBar(3.0);
@@ -328,9 +328,7 @@ async function serverSend() {
     _elem.classList.remove("button-alert");
     // send command
     sendCmdNoBar('main','server',serverCmdData);
-    // load log data
-    await sleep(1000);
-    loadLog();
+    document.getElementById("logTextBox").value = "command sent.";
   }  
   serverCmdData = null;
 };

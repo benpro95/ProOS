@@ -370,13 +370,22 @@ if [[ "$XMITCMD" == "minidwnc" ]]; then
    CALLAPI
    return
 fi
-if [[ "$XMITCMD" == "minimute" ]]; then
+if [[ "$XMITCMD" == "minimuteon" ]]; then
    XMITCALL="1|0|696944"
-   LCDPI_MSG="toggle mute HiFi mini"
    CALLAPI   
+   LCDPI_MSG="miniMute on"
    CALL_LCDPI
    return
 fi
+
+if [[ "$XMITCMD" == "minimuteoff" ]]; then
+   XMITCALL="1|0|696999"
+   CALLAPI   
+   LCDPI_MSG="miniMute off"
+   CALL_LCDPI
+   return
+fi
+
 if [[ "$XMITCMD" == "minidefv" ]]; then
    XMITCALL="1|0|696930"
    CALLAPI
@@ -424,13 +433,7 @@ exit
 
 vmute)
 if [ "$CMDARG" == "bedroom" ]; then
-  ## Stop playback on Apple TV
-  systemctl stop relaxloop
-  ## Turn off Apple TV
-  ##systemctl set-environment rpi_relaxmode=off
-  ##systemctl start relaxloop
-  LCDPI_MSG="stopping playback on Apple TV"
-  CALL_LCDPI
+  XMITCMD="minimute" ; XMITARG="toggle" ; XMIT 
 fi
 if [ "$CMDARG" == "subs" ]; then
   XMITCMD="subpwr" ; XMIT

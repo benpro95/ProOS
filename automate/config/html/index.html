@@ -41,6 +41,7 @@
 <div class="automate_dropdown">
   <div class="main_dropdown">
   <div class="dropdown-content" id="mainmenu">
+    <a onclick="GoToAutomate()"><i class="fa fa-home"></i>  Home</a>
     <a href="http://ledwall.home"><i class="fa-regular fa-lightbulb"></i> LEDwall</a>
     <a href="http://ledgrid.home"><i class="fa-regular fa-lightbulb"></i> LEDgrid</a>    
     <a href="http://ledstrip.home"><i class="fa-regular fa-lightbulb"></i> LEDstrip</a>
@@ -152,12 +153,10 @@
         </button>  
         <div class="dropdown-content dd-button" id="led-menu">
           <a onclick="showLEDsPage()"><i class="fa-solid fa-sliders"></i> More...</a>
-          <a onclick="colorPrompt()"><i class="fa-solid fa-sliders"></i> Colors</a>
-          <a onclick="sendCmd('leds','randcolor','')"><i class="fa-solid fa-shuffle"></i> Random</a>
-          <a onclick="sendCmd('leds','shuffle','')"><i></i> Shuffle</a>
-          <a onclick="sendCmd('leds','abstract','')"><i></i> Abstract</a>
+          <a onclick="sendCmd('leds','shuffle','')"><i class="fa-solid fa-shuffle"></i> Shuffle</a>
           <a onclick="sendCmd('leds','flames','')"><i></i> Flames</a>
           <a onclick="sendCmd('leds','prism','')"><i></i> Prism</a>
+          <a onclick="sendCmd('leds','abstract','')"><i></i> Abstract</a>
           <a onclick="sendCmd('leds','pause','')"><i class="fa-solid fa-pause"></i> Pause</a>
           <a onclick="sendCmd('leds','stop','')"><i class="fa-solid fa-stop"></i> Stop</a>
         </div>
@@ -908,7 +907,7 @@
         <a class="dropbtn">Transmit Message</a>
       </div>  
     </div>    
-    <textarea class="scroll-bar" id="logTextBox" placeholder="" required=""></textarea>  
+    <textarea class="scroll-bar" id="lcdTextBox" placeholder="" required=""></textarea>  
     <button type="button" class="button button_left_txtwin" onclick="closeSendbox()">
           <span class="button__textsmall"></i> Close</span>
     </button>   

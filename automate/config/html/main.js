@@ -58,7 +58,6 @@ function loadPage() {
 
 function showHomePage() {
   toggledState = 1;
-  hidePages();
   volMode();
   classDisplay('automate_dropdown','block');  
   classDisplay('grid','block');
@@ -66,14 +65,12 @@ function showHomePage() {
 }
 
 function showLCDpiPage() {
-  hidePages();
   classDisplay('lcdpi_dropdown','block');
   classDisplay('lcdpi-grid','block');
   classDisplay('body__text','block');
 }
 
 function showLEDpiPage() {
-  hidePages();
   classDisplay('ledpi_dropdown','block');
   classDisplay('led-grid','block');
   classDisplay('body__text','block');
@@ -466,9 +463,9 @@ function openSendWindow() {
 
 
 function sendText() {
-  const data = document.getElementById("logTextBox").value;
+  const data = document.getElementById("lcdTextBox").value;
   if (data.trim() === "") {
-    document.getElementById("logTextBox").value = "enter a message before sending.";
+    document.getElementById("lcdTextBox").value = "enter a message before sending.";
   } else {
   // Create the HTTP POST request
     const xhr = new XMLHttpRequest();
@@ -481,7 +478,7 @@ function sendText() {
           // message sent
           clearText();
         } else {
-          document.getElementById("logTextBox").value = "failed to transmit message.";
+          document.getElementById("lcdTextBox").value = "failed to transmit message.";
         }
       }
     }
@@ -489,10 +486,9 @@ function sendText() {
   }
   loadBar(0.3);
 };
-
 function clearText() {
   // celar text window
-  document.getElementById("logTextBox").value = "";
+  document.getElementById("lcdTextBox").value = "";
 };
 
 // loading bar animation 

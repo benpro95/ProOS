@@ -9,9 +9,10 @@
     <link href="fa/css/brands.min.css" rel="stylesheet">
     <link href="fa/css/solid.min.css" rel="stylesheet">
     <link href="main.css" rel="stylesheet">
-    <script src="main.js"></script>
 </head>
 <body onload="loadPage()" class="scroll-bar">
+<script src="device.js"></script>
+<script src="main.js"></script>
 
 <div class="topnav">
   <div class="automate_dropdown">
@@ -32,7 +33,7 @@
   <a onclick="showMenu('thememenu')" class="dropbtn">
     <i class="fa-solid fa-palette"></i>
   </a>
-  <a onclick="GoToHomePage()" id="load__progress">
+  <a onclick="GoToAutomate()" id="load__progress">
      <div id="load__bar"></div>
   </a>
 </div>
@@ -44,8 +45,6 @@
     <a href="http://ledgrid.home"><i class="fa-regular fa-lightbulb"></i> LEDgrid</a>    
     <a href="http://ledstrip.home"><i class="fa-regular fa-lightbulb"></i> LEDstrip</a>
     <a href="http://lcdpi.home"><i class="fa-solid fa-pager"></i> LCDpi</a>
-    <a onclick="showLCDpiPage()"><i class="fa-solid fa-pager"></i> LCDpi Pg</a>
-    <a onclick="showLEDpiPage()"><i class="fa-solid fa-pager"></i> LEDpi Pg</a>
   </div>
   </div>
 </div>

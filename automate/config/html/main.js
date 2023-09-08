@@ -2,16 +2,15 @@
 // by Ben Provenzano III
 
 // globals
+var _home = "Automate";
 var toggledState = 0;
 var loadBarState = 0;
 var promptCount = 0;
 var rowState = 0;
-var isPi = 0;
 var consoleData;
 var currentTheme;
 var serverCmdData;
 var socket;
-var wsHost;
 
 //////////////////////////
 
@@ -29,36 +28,38 @@ document.addEventListener('click', function handleClickOutsideBox(event) {
   }
 });
 
-function loadPi() {
-  isPi = 1;
-  init();
-};
-
 // runs on page load
 function loadPage() {
-  init();
-  // volume mode switch
-  volMode();
-};
-
-function init() {
+  // resize button grid
   resizeEvent();
   // set title
   var elem = document.getElementById("load__bar");
-  elem.textContent = "Automate";
-  // show buttons
-  showHomePage();
+  elem.textContent = _home;
+  var _device = deviceType();
+  // detect device type
+  if (_device == _home) {
+    // volume mode switch
+    volMode();
+    // server home
+    showHomePage(); 
+  } else { // pi's
+    if (_device == 'LEDpi') {
+      showLEDpiPage();
+    }
+    if (_device == 'LCDpi') {
+      showLCDpiPage();
+    }
+  }
   // read theme from local storage or choose default
   currentTheme = localStorage.getItem("styledata") || "dark-theme";
   setTheme(currentTheme);
 };
 
+
 function showHomePage() {
   toggledState = 1;
   hidePages();
-  if (isPi == 0) {
-    volMode();
-  }
+  volMode();
   classDisplay('automate_dropdown','block');  
   classDisplay('grid','block');
   classDisplay('body__text','block');

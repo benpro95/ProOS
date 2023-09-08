@@ -40,9 +40,12 @@ systemctl restart ztermcom.service
 rm -rfv /tmp/message*.txt
 
 ## Web Interface
-cp -rv /opt/rpi/html/* /var/www/html/
-chmod -R 777 /var/www/html/*
-chown -R www-data:www-data /var/www/html
+cp -v /opt/rpi/device.js /var/www/html/
+chmod -R 777 /var/www/html/device.js
+chown -R www-data:www-data /var/www/html/device.js
+cp -v /opt/rpi/upload.php /var/www/html/
+chmod -R 777 /var/www/html/upload.php
+chown -R www-data:www-data /var/www/html/upload.php
 
 ## Link RPi to global commands library
 ln -sf /opt/rpi/main /usr/bin/main

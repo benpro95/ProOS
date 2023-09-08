@@ -494,7 +494,7 @@ echo "Skipping module modification."
 else
   ## Set module name to light server
   sed -i "s/RaspberryPi/$MODNAME/g" /var/www/html/settings/index.php
-  sed -i "s/RaspberryPi/$MODNAME/g" /var/www/html/index.html
+  sed -i "s/>Automate</>$MODNAME</g" /var/www/html/index.html
 fi
 
 ## WWW Permissions (Network Web UI)

@@ -349,7 +349,11 @@ async function serverSend() {
     _elem.classList.remove("button-alert");
     // send command
     sendCmdNoBar('main','server',serverCmdData);
-    document.getElementById("logTextBox").value = "command sent.";
+    // display command sent
+    document.getElementById("logTextBox").value += "\ncommand sent, click load to refresh log.";
+    // scroll to bottom of page
+    var txtArea = document.getElementById("logTextBox");
+    txtArea.scrollTop = txtArea.scrollHeight;    
   }  
   serverCmdData = null;
 };
@@ -358,7 +362,7 @@ async function serverSend() {
 // transmit command for server
 function sendCmd(act, arg1, arg2) {
   // animation
-  loadBar(0.5);
+  loadBar(0.3);
   sendGET(act,arg1,arg2);
 };
 
@@ -460,7 +464,7 @@ function sendText() {
       if (xhr.readyState === XMLHttpRequest.DONE) {
         if (xhr.status === 200) {
           // message sent
-          document.getElementById("logTextBox").value = "";
+          clearText();
         } else {
           document.getElementById("logTextBox").value = "failed to transmit message.";
         }

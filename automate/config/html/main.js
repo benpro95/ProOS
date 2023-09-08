@@ -42,13 +42,6 @@ function loadPage() {
 };
 
 function init() {
-  var _proto;
-  if (location.protocol == 'http:'){
-    _proto = 'ws://';
-  } else {
-    _proto = 'wss://';
-  }
-  wsHost = _proto + location.hostname + ":7890";
   resizeEvent();
   // set title
   var elem = document.getElementById("load__bar");
@@ -56,7 +49,7 @@ function init() {
   // show buttons
   showHomePage();
   // read theme from local storage or choose default
-  currentTheme = localStorage.getItem("styledata") || "darkblue-theme";
+  currentTheme = localStorage.getItem("styledata") || "dark-theme";
   setTheme(currentTheme);
 };
 
@@ -65,13 +58,29 @@ function showHomePage() {
   hidePages();
   if (isPi == 0) {
     volMode();
-  }  
+  }
+  classDisplay('automate_dropdown','block');  
   classDisplay('grid','block');
+  classDisplay('body__text','block');
+}
+
+function showLCDpiPage() {
+  hidePages();
+  classDisplay('lcdpi_dropdown','block');
+  classDisplay('lcdpi-grid','block');
+  classDisplay('body__text','block');
+}
+
+function showLEDpiPage() {
+  hidePages();
+  classDisplay('ledpi_dropdown','block');
+  classDisplay('led-grid','block');
   classDisplay('body__text','block');
 }
 
 function showLEDsPage() {
   hidePages();
+  classDisplay('automate_dropdown','block');
   classDisplay('led-grid','block');
   classDisplay('body__text','block');
 }
@@ -80,13 +89,18 @@ function showSoundsPage() {
   toggledState = 0;
   hidePages();
   relaxMode();
+  classDisplay('automate_dropdown','block');
   classDisplay('sounds-grid','block');
   classDisplay('body__text','block');
 }
 
 function hidePages() {
+  classDisplay('automate_dropdown','none');
+  classDisplay('ledpi_dropdown','none');
+  classDisplay('lcdpi_dropdown','none');
   classDisplay('body__text','none');
   classDisplay('sounds-grid','none');
+  classDisplay('lcdpi-grid','none');
   classDisplay('led-grid','none');
   classDisplay('grid','none');
 }
@@ -475,18 +489,10 @@ function sendText() {
   loadBar(0.3);
 };
 
-
 function clearText() {
   // celar text window
   document.getElementById("logTextBox").value = "";
 };
-
-
-// disable a button
-function disableButton() {
-	document.getElementById("sub__text").disabled = true;
-};	
-
 
 // loading bar animation 
 async function loadBar(_interval) {
@@ -526,12 +532,19 @@ function hexToRgb(hex) {
     } : null;
 }
 
-function updateSettings(_color) {
+function updateSettings(_hexin) {
+  var _proto;
   var color;
+  if (location.protocol == 'http:'){
+    _proto = 'ws://';
+  } else {
+    _proto = 'wss://';
+  }
+  _host = _proto + location.hostname + ":7890";
   // Connect to a Fadecandy server
-  socket = new WebSocket(wsHost);
+  socket = new WebSocket(_host);
   socket.onopen = function(event) {
-      color = hexToRgb(_color);
+      color = hexToRgb(_hexin);
       var rounds = 32;
       for (var i = 0; i < rounds; i++) {
           writeFrame(

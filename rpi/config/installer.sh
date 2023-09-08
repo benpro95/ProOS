@@ -828,7 +828,7 @@ rm -f /etc/preinit
 
 ## Clean systemd logs
 journalctl --flush --rotate
-journalctl -m --vacuum-time=1s
+journalctl -m --vacuum-time=300s
 
 echo ""
 echo "Configuration Complete."

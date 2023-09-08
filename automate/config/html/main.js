@@ -422,14 +422,7 @@ function openCamWindow() {
   closePopup();
   // show camera form window
   document.getElementById("camForm").style.display = "block";
-  // Show our element, then call our callback
-  $(".iframe-container").show(function(){
-      // Find the iframes within our newly-visible element
-      $(this).find("iframe").prop("src", function(){
-          // Set their src attribute to data-active
-          return $(this).data('active');
-      });
-  });
+  document.getElementById("cam-iframe").src = "/cam1";
 };
 
 
@@ -437,14 +430,7 @@ function closePopup() {
   // close all popup windows
   document.getElementById("logForm").style.display = "none";
   document.getElementById("camForm").style.display = "none";
-  // Show our element, then call our callback
-  $(".iframe-container").show(function(){
-      // Find the iframes within our newly-visible element
-      $(this).find("iframe").prop("src", function(){
-          // Set their src attribute to data-inactive
-          return $(this).data('inactive');
-      });
-  });
+  document.getElementById("cam-iframe").src = "about:blank";
 };
 
 
@@ -482,7 +468,7 @@ function sendText() {
     }
     xhr.send(data);
   }
-  loadBar(0.5);
+  loadBar(0.3);
 };
 
 
@@ -536,13 +522,12 @@ function hexToRgb(hex) {
     } : null;
 }
 
-var color;
 function updateSettings(_color) {
+  var color;
   // Connect to a Fadecandy server
   socket = new WebSocket(wsHost);
   socket.onopen = function(event) {
       color = hexToRgb(_color);
-      //$('#colorValue').text(color.r + ', ' + color.g + ', ' + color.b);
       var rounds = 32;
       for (var i = 0; i < rounds; i++) {
           writeFrame(
@@ -588,14 +573,8 @@ function show_colorPrompt(text){
   colorprompt.id= "color__prompt"; //gives the prompt an id - not used in my example but good for styling with css-file
   var colortext = document.createElement("div"); //create the div for the password-text
   colortext.innerHTML = text; //put inside the text
+  colortext.id = "color__text";
   colorprompt.appendChild(colortext); //append the text-div to the prompt
-  // color selector box
-  var colorinput = document.createElement("input");
-  colorinput.id = "color";
-  colorinput.name = "color";
-  colorinput.type = "color";
-  colorinput.value = "#000000";
-  colorprompt.appendChild(colorinput);
   // the cancel-button
   var colorcancelb = document.createElement("button"); 
   colorcancelb.innerHTML = "Close";
@@ -604,15 +583,22 @@ function show_colorPrompt(text){
   colorprompt.appendChild(colorcancelb); //append cancel-button
   // the set color-button
   var colorsetb = document.createElement("button"); 
-  colorsetb.innerHTML = "Set";
+  colorsetb.innerHTML = "Apply";
   colorsetb.className ="button"; 
   colorsetb.type="button"; 
-  colorprompt.appendChild(colorsetb); //append cancel-button
+  colorprompt.appendChild(colorsetb); //append set-button
+  // color selector box
+  var colorinput = document.createElement("input");
+  colorinput.id = "color__box";
+  colorinput.name = "color";
+  colorinput.type = "color";
+  colorinput.value = "#000000";
+  colorprompt.appendChild(colorinput);
   // append the password-prompt so it is visible
   document.body.appendChild(colorprompt); 
   var _colorval;
   new Promise(function(resolve, reject) {
-      colorinput.addEventListener('input', function saveColorValues(){
+      colorinput.addEventListener('input', function () {
         _colorval = colorinput.value; // save color values
       });
       colorprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
@@ -621,7 +607,6 @@ function show_colorPrompt(text){
           // set button action
           updateSettings(_colorval);
         } else { // close button
-          colorprompt.removeEventListener('input', saveColorValues); //removes eventhandlers
           colorprompt.removeEventListener('click', handleButtonClicks);
           document.body.removeChild(colorprompt);  //as we are done clean up by removing the password-prompt
         }  

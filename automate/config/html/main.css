@@ -466,17 +466,46 @@ body {
   margin: 10px;
 } 
 
+/*
+ *  Color Selector Style
+ */
+
 #color__prompt {
   background-color: black;
   border: 1px solid white;
   position: fixed;
-  top: 15%;
-  left: 15%;
-  width: 267px;  
+  top: 8%;
+  left: 5%;
+  width: 350px;  
   height: auto;
   padding: 16px; 
   color: #fff;
   z-index: 999; 
+}
+
+#color__text {
+  margin-left: 10px;
+  margin-bottom: 5px;
+  position: relative;
+}
+
+#color__box {
+  position: relative;
+  padding: 0;
+  border: 1px solid white;
+  border-radius: 0px;
+  background: none;
+  margin-top: 10px;
+  margin-left: 10px;
+  height: 30px;
+  width: 295px;  
+}
+#color__box::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+#color__box::-webkit-color-swatch {
+  border: solid 1px #000; /*change color of the swatch border here*/
+  border-radius: 0px;
 }
 
 /*

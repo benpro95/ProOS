@@ -11,7 +11,7 @@
     <link href="main.css" rel="stylesheet">
     <script src="main.js"></script>
 </head>
-<body onload="loadPage()" class="scroll-bar">
+<body onload="loadPi()" class="scroll-bar">
 
 <div class="topnav">
   <a onclick="showMenu('mainmenu')" class="mainmenu__anchor">
@@ -28,7 +28,7 @@
 <div class="main_dropdown">
   <div class="dropdown-content" id="mainmenu">
     <a onclick="GoToAutomate()"><i class="fa fa-home"></i>  Home</a>
-    <a href="picker.html"><i class="fa-solid fa-brush"></i> Colors</a>
+    <a onclick="colorPrompt()"><i class="fa-solid fa-brush"></i> Colors</a>
     <a href="settings/index.php"><i class="fa-solid fa-gear"></i> Settings</a>
   </div>
 </div>

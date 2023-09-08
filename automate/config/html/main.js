@@ -6,9 +6,12 @@ var toggledState = 0;
 var loadBarState = 0;
 var promptCount = 0;
 var rowState = 0;
+var isPi = 0;
 var consoleData;
 var currentTheme;
 var serverCmdData;
+var socket;
+var wsHost;
 
 //////////////////////////
 
@@ -26,8 +29,26 @@ document.addEventListener('click', function handleClickOutsideBox(event) {
   }
 });
 
+function loadPi() {
+  isPi = 1;
+  init();
+};
+
 // runs on page load
 function loadPage() {
+  init();
+  // volume mode switch
+  volMode();
+};
+
+function init() {
+  var _proto;
+  if (location.protocol == 'http:'){
+    _proto = 'ws://';
+  } else {
+    _proto = 'wss://';
+  }
+  wsHost = _proto + location.hostname + ":7890";
   resizeEvent();
   // set title
   var elem = document.getElementById("load__bar");
@@ -37,14 +58,14 @@ function loadPage() {
   // read theme from local storage or choose default
   currentTheme = localStorage.getItem("styledata") || "darkblue-theme";
   setTheme(currentTheme);
-  // volume mode switch
-  volMode();
 };
 
 function showHomePage() {
   toggledState = 1;
   hidePages();
-  volMode();
+  if (isPi == 0) {
+    volMode();
+  }  
   classDisplay('grid','block');
   classDisplay('body__text','block');
 }
@@ -501,10 +522,110 @@ async function loadBar(_interval) {
   }
 };
 
+function hexToRgb(hex) {
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+        return r + r + g + g + b + b;
+    });
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
 
+var color;
+function updateSettings(_color) {
+  // Connect to a Fadecandy server
+  socket = new WebSocket(wsHost);
+  socket.onopen = function(event) {
+      color = hexToRgb(_color);
+      //$('#colorValue').text(color.r + ', ' + color.g + ', ' + color.b);
+      var rounds = 32;
+      for (var i = 0; i < rounds; i++) {
+          writeFrame(
+          color.r,
+          color.g,
+          color.b);
+      }           
+  }
+}
 
+// Set all pixels to a given color
+function writeFrame(red, green, blue) {
+    var leds = 512;
+    var packet = new Uint8ClampedArray(4 + leds * 3);
+    if (socket.readyState != 1 /* OPEN */) {
+        // The server connection isn't open. Nothing to do.
+        return;
+    }
+    if (socket.bufferedAmount > packet.length) {
+        // The network is lagging, and we still haven't sent the previous frame.
+        // Don't flood the network, it will just make us laggy.
+        // If fcserver is running on the same computer, it should always be able
+        // to keep up with the frames we send, so we shouldn't reach this point.
+        return;
+    }
+    // Dest position in our packet. Start right after the header.
+    var dest = 4;
+    // Sample the center pixel of each LED
+    for (var i = 0; i < leds; i++) {
+        packet[dest++] = red;
+        packet[dest++] = green;
+        packet[dest++] = blue;
+    }
+    socket.send(packet.buffer);
+}
 
+async function colorPrompt(){
+  await show_colorPrompt("Pick a color:");
+}
 
-
-
+function show_colorPrompt(text){
+  var colorprompt = document.createElement("div"); //creates the div to be used as a prompt
+  colorprompt.id= "color__prompt"; //gives the prompt an id - not used in my example but good for styling with css-file
+  var colortext = document.createElement("div"); //create the div for the password-text
+  colortext.innerHTML = text; //put inside the text
+  colorprompt.appendChild(colortext); //append the text-div to the prompt
+  // color selector box
+  var colorinput = document.createElement("input");
+  colorinput.id = "color";
+  colorinput.name = "color";
+  colorinput.type = "color";
+  colorinput.value = "#000000";
+  colorprompt.appendChild(colorinput);
+  // the cancel-button
+  var colorcancelb = document.createElement("button"); 
+  colorcancelb.innerHTML = "Close";
+  colorcancelb.className ="button"; 
+  colorcancelb.type="button"; 
+  colorprompt.appendChild(colorcancelb); //append cancel-button
+  // the set color-button
+  var colorsetb = document.createElement("button"); 
+  colorsetb.innerHTML = "Set";
+  colorsetb.className ="button"; 
+  colorsetb.type="button"; 
+  colorprompt.appendChild(colorsetb); //append cancel-button
+  // append the password-prompt so it is visible
+  document.body.appendChild(colorprompt); 
+  var _colorval;
+  new Promise(function(resolve, reject) {
+      colorinput.addEventListener('input', function saveColorValues(){
+        _colorval = colorinput.value; // save color values
+      });
+      colorprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
+        if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
+        if (e.target === colorsetb) { 
+          // set button action
+          updateSettings(_colorval);
+        } else { // close button
+          colorprompt.removeEventListener('input', saveColorValues); //removes eventhandlers
+          colorprompt.removeEventListener('click', handleButtonClicks);
+          document.body.removeChild(colorprompt);  //as we are done clean up by removing the password-prompt
+        }  
+      });
+  });   
+}
 

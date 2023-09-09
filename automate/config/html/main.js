@@ -2,7 +2,8 @@
 // by Ben Provenzano III
 
 // globals
-var home = "Automate";
+var defaultSite = "Automate";
+var colorPromptActive = 0;
 var toggledState = 0;
 var loadBarState = 0;
 var promptCount = 0;
@@ -35,10 +36,10 @@ function loadPage() {
   resizeEvent();
   // set title
   var elem = document.getElementById("load__bar");
-  elem.textContent = home;
+  elem.textContent = defaultSite;
   device = deviceType();
   // detect device type
-  if (device == home) {
+  if (device == defaultSite) {
     toggledState = 1;
     // volume mode switch
     volMode();
@@ -73,6 +74,7 @@ function hidePages() {
   classDisplay('automate-grid','none');  
   classDisplay('sounds-grid','none');
   classDisplay('lcdpi-grid','none');
+  classDisplay('ledpi-grid','none');
   classDisplay('led-grid','none');
 }
 
@@ -147,7 +149,7 @@ function GoToHomePage() {
 
 // back to home page ****
 function GoToAutomate() {
-  window.location = 'https://automate.home/';   
+  window.location = 'https://'+defaultSite+'.home';   
 };
 
 function GoToExtPage(_path) {
@@ -553,11 +555,15 @@ async function colorPrompt(){
   if (device == 'Automate') {
     sendCmd('leds','randcolor','');
   } else {
-    await show_colorPrompt("Pick a color:");
+    hideDropdowns();
+    if (colorPromptActive == 0) {
+      await show_colorPrompt("Pick a color:");
+    } 
   }
 }
 
 function show_colorPrompt(text){
+  colorPromptActive = 1; 
   var colorprompt = document.createElement("div"); //creates the div to be used as a prompt
   colorprompt.id= "color__prompt"; //gives the prompt an id - not used in my example but good for styling with css-file
   var colortext = document.createElement("div"); //create the div for the password-text
@@ -597,7 +603,8 @@ function show_colorPrompt(text){
           updateSettings(_colorval);
         } else { // close button
           colorprompt.removeEventListener('click', handleButtonClicks);
-          document.body.removeChild(colorprompt);  //as we are done clean up by removing the password-prompt
+          document.body.removeChild(colorprompt);  //as we are done clean up by removing the-prompt
+          colorPromptActive = 0;
         }  
       });
   });   

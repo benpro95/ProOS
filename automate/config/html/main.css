@@ -130,41 +130,27 @@ body {
   display: none;
 }
 
+.ledpi-grid {
+  display: none; 
+}
+
 .led-grid {
-  display: none;
-  overflow: hidden;
-  white-space: nowrap;
-  animation: fadeIn 0.1s;
-  -webkit-animation: fadeIn 0.1s;
-  -moz-animation: fadeIn 0.1s;;
-  -o-animation: fadeIn 0.1s;
-  -ms-animation: fadeIn 0.1s;   
+  display: none; 
 }
 
 .sounds-grid {
   display: none;
-  overflow: hidden;
-  white-space: nowrap;
-  animation: fadeIn 0.3s;
-  -webkit-animation: fadeIn 0.3s;
-  -moz-animation: fadeIn 0.3s;;
-  -o-animation: fadeIn 0.3s;
-  -ms-animation: fadeIn 0.3s;  
 }
 
 .lcdpi-grid {
   display: none;
-  overflow: hidden;
-  white-space: nowrap;
-  animation: fadeIn 0.1s;
-  -webkit-animation: fadeIn 0.1s;
-  -moz-animation: fadeIn 0.1s;;
-  -o-animation: fadeIn 0.1s;
-  -ms-animation: fadeIn 0.1s;  
+}
+
+.automate-grid {
+  display: none;
 }
 
 .grid {
-  display: none;
   overflow: hidden;
   white-space: nowrap;
   animation: fadeIn 0.3s;
@@ -382,18 +368,6 @@ body {
   position: fixed;
   display: block;
   z-index: 8;
-}
-
-.automate_dropdown {
-  display: none;
-}
-
-.lcdpi_dropdown {
-  display: none;
-}
-
-.ledpi_dropdown {
-  display: none;
 }
 
 /* Dropdown Content (Hidden by Default) */

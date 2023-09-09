@@ -15,21 +15,16 @@
 <script src="main.js"></script>
 
 <div class="topnav">
-  <div class="automate_dropdown">
+  <div class="automate-grid sounds-grid led-grid">
     <a onclick="showMenu('mainmenu')" class="mainmenu__anchor">
       <i class="fa-solid fa-list"></i>
     </a>
   </div>  
-  <div class="lcdpi_dropdown">
-    <a onclick="showMenu('lcdpi-mainmenu')" class="mainmenu__anchor">
+  <div class="ledpi-grid lcdpi-grid">
+    <a onclick="showMenu('pi-mainmenu')" class="mainmenu__anchor">
       <i class="fa-solid fa-list"></i>
     </a>
   </div>  
-  <div class="ledpi_dropdown">
-    <a onclick="showMenu('ledpi-mainmenu')" class="mainmenu__anchor">
-      <i class="fa-solid fa-list"></i>
-    </a>
-  </div>   
   <a onclick="showMenu('thememenu')" class="dropbtn">
     <i class="fa-solid fa-palette"></i>
   </a>
@@ -38,7 +33,7 @@
   </a>
 </div>
 
-<div class="automate_dropdown">
+<div class="automate-grid sounds-grid led-grid">
   <div class="main_dropdown">
   <div class="dropdown-content" id="mainmenu">
     <a onclick="GoToAutomate()"><i class="fa fa-home"></i>  Home</a>
@@ -50,20 +45,10 @@
   </div>
 </div>
 
-<div class="lcdpi_dropdown">
+<div class="lcdpi-grid ledpi-grid">
   <div class="main_dropdown">
-    <div class="dropdown-content" id="lcdpi-mainmenu">
+    <div class="dropdown-content" id="pi-mainmenu">
       <a onclick="GoToAutomate()"><i class="fa fa-home"></i>  Home</a>
-      <a href="settings/index.php"><i class="fa-solid fa-gear"></i> Settings</a>
-    </div>
-  </div>
-</div>
-
-<div class="ledpi_dropdown">
-  <div class="main_dropdown">
-    <div class="dropdown-content" id="ledpi-mainmenu">
-      <a onclick="GoToAutomate()"><i class="fa fa-home"></i>  Home</a>
-      <a onclick="colorPrompt()"><i class="fa-solid fa-brush"></i> Colors</a>
       <a href="settings/index.php"><i class="fa-solid fa-gear"></i> Settings</a>
     </div>
   </div>
@@ -82,6 +67,7 @@
   </div>
 </div>
 
+<div class="automate-grid">
 <div class="grid">
     <p></p>
       <div class="dropdown">
@@ -264,8 +250,10 @@
     <p class="body__text">- Ben Provenzano III</p>
     <p class="parend"></p>  
 </div>
+</div>
 
-<div class="led-grid">
+<div class="led-grid ledpi-grid">
+<div class="grid">
   <p></p>
 
     <button type="button" class="button" onclick="sendCmd('leds','fc','10')">
@@ -306,9 +294,9 @@
 
     <button type="button" class="button" onclick="sendCmd('leds','fc','100')">   
         <span class="button__text"><i class=""></i>100%</span>
-    </button>      
-    <button type="button" class="button" onclick="sendCmd('leds','randcolor','')">
-        <span class="button__text"><i class="fa-solid fa-shapes"></i> Random</span>
+    </button>  
+    <button type="button" class="button" onclick="colorPrompt()">
+        <span class="button__text"><i class="fa-solid fa-brush"></i> Colors</span>
     </button>
     <button type="button" class="button" onclick="sendCmd('leds','shuffle','')">
         <span class="button__text"><i class="fa-solid fa-shuffle"></i> Shuffle</span>
@@ -626,8 +614,10 @@
     <p class="body__text">- Ben Provenzano III</p>
     <p class="parend"></p>  
 </div>
+</div>
 
 <div class="sounds-grid">
+<div class="grid">
   <p></p>
       <button type="button" class="button" onclick="relaxSend('vdwn')">
           <span class="button__text"><i class="fa-solid fa-volume-low"></i></span>
@@ -750,8 +740,10 @@
     <p class="body__text">- Ben Provenzano III</p>
     <p class="parend"></p>  
 </div>
+</div>
 
 <div class="lcdpi-grid">
+<div class="grid">
   <p></p>
     <div class="dropdown">
       <button type="button" class="button" onclick="showMenu('delaymenu')">
@@ -830,6 +822,7 @@
 
   <p class="body__text">- Ben Provenzano III</p>
   <p class="parend-fb"></p>     
+</div>
 </div>
 
 <div>

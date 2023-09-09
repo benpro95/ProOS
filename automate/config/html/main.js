@@ -2,7 +2,7 @@
 // by Ben Provenzano III
 
 // globals
-var _home = "Automate";
+var home = "Automate";
 var toggledState = 0;
 var loadBarState = 0;
 var promptCount = 0;
@@ -11,6 +11,7 @@ var consoleData;
 var currentTheme;
 var serverCmdData;
 var socket;
+var device;
 
 //////////////////////////
 
@@ -34,20 +35,21 @@ function loadPage() {
   resizeEvent();
   // set title
   var elem = document.getElementById("load__bar");
-  elem.textContent = _home;
-  var _device = deviceType();
+  elem.textContent = home;
+  device = deviceType();
   // detect device type
-  if (_device == _home) {
+  if (device == home) {
+    toggledState = 1;
     // volume mode switch
     volMode();
     // server home
-    showHomePage(); 
+    classDisplay('automate-grid','block');
   } else { // pi's
-    if (_device == 'LEDpi') {
-      showLEDpiPage();
+    if (device == 'LEDpi') {
+      classDisplay('ledpi-grid','block');
     }
-    if (_device == 'LCDpi') {
-      showLCDpiPage();
+    if (device == 'LCDpi') {
+      classDisplay('lcdpi-grid','block');
     }
   }
   // read theme from local storage or choose default
@@ -55,56 +57,27 @@ function loadPage() {
   setTheme(currentTheme);
 };
 
-
-function showHomePage() {
-  toggledState = 1;
-  volMode();
-  classDisplay('automate_dropdown','block');  
-  classDisplay('grid','block');
-  classDisplay('body__text','block');
-}
-
-function showLCDpiPage() {
-  classDisplay('lcdpi_dropdown','block');
-  classDisplay('lcdpi-grid','block');
-  classDisplay('body__text','block');
-}
-
-function showLEDpiPage() {
-  classDisplay('ledpi_dropdown','block');
-  classDisplay('led-grid','block');
-  classDisplay('body__text','block');
-}
-
 function showLEDsPage() {
   hidePages();
-  classDisplay('automate_dropdown','block');
   classDisplay('led-grid','block');
-  classDisplay('body__text','block');
 }
 
 function showSoundsPage() {
   toggledState = 0;
   hidePages();
   relaxMode();
-  classDisplay('automate_dropdown','block');
   classDisplay('sounds-grid','block');
-  classDisplay('body__text','block');
 }
 
 function hidePages() {
-  classDisplay('automate_dropdown','none');
-  classDisplay('ledpi_dropdown','none');
-  classDisplay('lcdpi_dropdown','none');
-  classDisplay('body__text','none');
+  classDisplay('automate-grid','none');  
   classDisplay('sounds-grid','none');
   classDisplay('lcdpi-grid','none');
   classDisplay('led-grid','none');
-  classDisplay('grid','none');
 }
 
 function setTheme(newTheme) {
-  const body = document.getElementsByTagName("html")[0];
+  var body = document.getElementsByTagName("html")[0];
   // Remove old theme scope from body's class list
   body.classList.remove(currentTheme);
   // Add new theme scope to body's class list
@@ -516,26 +489,24 @@ async function loadBar(_interval) {
 };
 
 function hexToRgb(hex) {
-    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
-    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
-        return r + r + g + g + b + b;
-    });
-    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-    } : null;
+  // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+  var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+  hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+      return r + r + g + g + b + b;
+  });
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+  } : null;
 }
 
 function updateSettings(_hexin) {
-  var _proto;
+  var _proto = 'wss://';
   var color;
   if (location.protocol == 'http:'){
     _proto = 'ws://';
-  } else {
-    _proto = 'wss://';
   }
   _host = _proto + location.hostname + ":7890";
   // Connect to a Fadecandy server
@@ -554,32 +525,36 @@ function updateSettings(_hexin) {
 
 // Set all pixels to a given color
 function writeFrame(red, green, blue) {
-    var leds = 512;
-    var packet = new Uint8ClampedArray(4 + leds * 3);
-    if (socket.readyState != 1 /* OPEN */) {
-        // The server connection isn't open. Nothing to do.
-        return;
-    }
-    if (socket.bufferedAmount > packet.length) {
-        // The network is lagging, and we still haven't sent the previous frame.
-        // Don't flood the network, it will just make us laggy.
-        // If fcserver is running on the same computer, it should always be able
-        // to keep up with the frames we send, so we shouldn't reach this point.
-        return;
-    }
-    // Dest position in our packet. Start right after the header.
-    var dest = 4;
-    // Sample the center pixel of each LED
-    for (var i = 0; i < leds; i++) {
-        packet[dest++] = red;
-        packet[dest++] = green;
-        packet[dest++] = blue;
-    }
-    socket.send(packet.buffer);
+  var leds = 512;
+  var packet = new Uint8ClampedArray(4 + leds * 3);
+  if (socket.readyState != 1 /* OPEN */) {
+      // The server connection isn't open. Nothing to do.
+      return;
+  }
+  if (socket.bufferedAmount > packet.length) {
+      // The network is lagging, and we still haven't sent the previous frame.
+      // Don't flood the network, it will just make us laggy.
+      // If fcserver is running on the same computer, it should always be able
+      // to keep up with the frames we send, so we shouldn't reach this point.
+      return;
+  }
+  // Dest position in our packet. Start right after the header.
+  var dest = 4;
+  // Sample the center pixel of each LED
+  for (var i = 0; i < leds; i++) {
+      packet[dest++] = red;
+      packet[dest++] = green;
+      packet[dest++] = blue;
+  }
+  socket.send(packet.buffer);
 }
 
 async function colorPrompt(){
-  await show_colorPrompt("Pick a color:");
+  if (device == 'Automate') {
+    sendCmd('leds','randcolor','');
+  } else {
+    await show_colorPrompt("Pick a color:");
+  }
 }
 
 function show_colorPrompt(text){

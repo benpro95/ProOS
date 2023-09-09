@@ -5,6 +5,7 @@ usb256-04
 usb256-05
 usb256-06
 usb256-07
+usb256-08
 hdd4tb-01
 hdd4tb-02
 hdd4tb-03

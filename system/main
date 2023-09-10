@@ -8,8 +8,6 @@ ARG2=$2
 case "$1" in
 
 boot)
-## CPU Activity LED Mode
-echo cpu | tee /sys/class/leds/led0/trigger &>/dev/null
 ## AirPlay Support
 systemctl start nqptp
 systemctl start rpi-airplay

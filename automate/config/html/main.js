@@ -40,7 +40,6 @@ function loadPage() {
   device = deviceType();
   // detect device type
   if (device == defaultSite) {
-    toggledState = 1;
     // volume mode switch
     volMode();
     // server home

@@ -1,0 +1,117 @@
+#!/bin/bash
+## Attach ZFS drives
+################################
+
+## VM Log File
+TRIGGERS_DIR="/opt/zfsman"
+LOGFILE="$TRIGGERS_DIR/sysout.txt"
+
+if [ "$1" == "attach" ]; then
+  touch $TRIGGERS_DIR/attach_bkps.txt
+fi
+
+if [ "$1" == "detach" ]; then
+  touch $TRIGGERS_DIR/detach_bkps.txt
+fi
+
+function EXIT_ROUTINE {
+  rm -f /tmp/actiontrig.lock
+  echo " "
+  TRAILER=$(date)
+  TRAILER+=" ("
+  TRAILER+=$(hostname)
+  TRAILER+=")"
+  echo "$TRAILER"
+  chmod 777 $LOGFILE
+  exit
+}
+
+## Lock file
+if [ -e /tmp/actiontrig.lock ]; then
+  echo "process locked! exiting. (pve.home)"
+  exit
+fi
+
+## Log file
+if [ ! -e $LOGFILE ]; then
+  touch $LOGFILE 
+  chmod 777 $LOGFILE 
+fi
+
+### IMPORT ZFS ########################################   
+if [ -e $TRIGGERS_DIR/attach_bkps.txt ]; then
+  echo " "
+  touch /tmp/actiontrig.lock
+  rm -f $TRIGGERS_DIR/attach_bkps.txt
+  if [ ! -e $TRIGGERS_DIR/pwd.txt ]; then
+	echo "password file not found, exiting."
+	EXIT_ROUTINE
+  fi
+  if [ ! -e $TRIGGERS_DIR/drives.txt ]; then
+	echo "drives file not found, exiting."
+	EXIT_ROUTINE
+  fi
+  echo ""
+  readarray -t ZFSPOOLS < $TRIGGERS_DIR/drives.txt
+  for _POOL in "${ZFSPOOLS[@]}"; do
+    POOL=$(echo $_POOL | sed -e 's/\r//g')
+    if [ ! "$POOL" == "" ]; then
+      if [ "$POOL" == "tank" ] || \
+         [ "$POOL" == "datastore" ] || \
+         [ "$POOL" == "rpool" ] ; then
+        echo "invalid pool specified."
+      else
+        echo "importing ZFS backup volume $POOL."
+        zpool import $POOL
+   	    zfs load-key -L file://$TRIGGERS_DIR/pwd.txt $POOL/extbkp
+  	    zfs mount $POOL/extbkp
+  	    zpool status $POOL
+      fi
+      echo ""
+    fi
+  done
+  zfs list
+  echo ""
+  shred -n 2 -z -u $TRIGGERS_DIR/pwd.txt
+  echo "imported ZFS backup volumes"
+  EXIT_ROUTINE
+fi
+
+### EXPORT ZFS ########################################
+if [ -e $TRIGGERS_DIR/detach_bkps.txt ]; then
+  echo " "
+  touch /tmp/actiontrig.lock	
+  rm -f $TRIGGERS_DIR/detach_bkps.txt
+  if [ ! -e $TRIGGERS_DIR/drives.txt ]; then
+	echo "drives file not found, exiting."
+	EXIT_ROUTINE
+  fi  
+  echo ""
+  readarray -t ZFSPOOLS < $TRIGGERS_DIR/drives.txt
+  for _POOL in "${ZFSPOOLS[@]}"; do
+    POOL=$(echo $_POOL | sed -e 's/\r//g')
+    if [ ! "$POOL" == "" ]; then
+      if [ "$POOL" == "tank" ] || \
+         [ "$POOL" == "datastore" ] || \
+         [ "$POOL" == "rpool" ] ; then
+        echo "invalid pool specified."
+      else
+        echo "unmounting ZFS backup volume $POOL."
+        zfs unmount /mnt/extbkps/$POOL
+        zpool export $POOL
+      fi
+      echo ""  
+    fi  
+  done 
+  zfs unload-key -a
+  zpool status
+  zfs list
+  echo ""
+  echo "unmounted ZFS backup volumes"
+  EXIT_ROUTINE
+fi
+
+
+exit
+
+

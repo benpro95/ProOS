@@ -185,7 +185,6 @@ chown root:root /etc/cron.weekly/zfs-auto-snapshot
 #rm -fv /etc/cron.hourly/zfs-auto-snapshot
 #rm -fv /etc/cron.monthly/zfs-auto-snapshot
 #rm -fv /etc/cron.weekly/zfs-auto-snapshot
-#zfs set com.sun:auto-snapshot=false tank/datastore
 
 ## ZFS Scrub, Trim, and System Report Timers
 cp -f /tmp/config/zfsutils-linux /etc/cron.d/

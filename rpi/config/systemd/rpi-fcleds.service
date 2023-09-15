@@ -4,8 +4,8 @@ Conflicts=shutdown.target
 
 [Service]
 User=root
-Type=forking
-ExecStart=/opt/rpi/leds.sysd
+Type=simple
+ExecStart=/bin/bash -c "/opt/rpi/leds.sysd"
 Restart=always
 KillSignal=SIGKILL
 RestartSec=5

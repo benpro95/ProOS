@@ -32,7 +32,7 @@ return
 }
 
 CALL_LCDPI(){
-  /usr/bin/curl -X POST http://lcdpi.home/upload.php \
+  /usr/bin/curl $CURLARGS -X POST http://lcdpi.home/upload.php \
    -H "Content-Type: text/plain" -d "$LCDPI_MSG"
 }
 
@@ -70,7 +70,7 @@ fi
 if [[ "$XMITCMD" == "pwrhifi" ]]; then
    rm -f $LOCKFOLDER/subs.enabled 
    XMITCALL="0|0|1270227167"
-   LCDPI_MSG="toggle HiFi"
+   LCDPI_MSG="system power"
    CALLAPI   
    CALL_LCDPI
    return
@@ -78,7 +78,7 @@ fi
 if [[ "$XMITCMD" == "hifioff" ]]; then
    rm -f $LOCKFOLDER/subs.enabled 
    XMITCALL="0|0|1261859214"
-   LCDPI_MSG="HiFi off"
+   LCDPI_MSG="system off"
    CALLAPI   
    CALL_LCDPI
    return
@@ -86,7 +86,7 @@ fi
 if [[ "$XMITCMD" == "hifion" ]]; then
    rm -f $LOCKFOLDER/subs.enabled 
    XMITCALL="0|0|1261869414"
-   LCDPI_MSG="HiFi on"
+   LCDPI_MSG="system on"
    CALLAPI   
    CALL_LCDPI
    return
@@ -94,7 +94,7 @@ fi
 ## DAC
 if [[ "$XMITCMD" == "dac" ]]; then
    XMITCALL="0|0|1261793423"
-   LCDPI_MSG="DAC"
+   LCDPI_MSG="DAC in"
    CALLAPI
    CALL_LCDPI
    return   
@@ -102,7 +102,7 @@ fi
 ## Aux
 if [[ "$XMITCMD" == "aux" ]]; then
    XMITCALL="0|0|1261826063"
-   LCDPI_MSG="aux."
+   LCDPI_MSG="aux in"
    CALLAPI   
    CALL_LCDPI
    return
@@ -110,7 +110,7 @@ fi
 ## Phono
 if [[ "$XMITCMD" == "phono" ]]; then 
    XMITCALL="0|0|1261766903"
-   LCDPI_MSG="phono"
+   LCDPI_MSG="phono in"
    CALLAPI   
    CALL_LCDPI
    return
@@ -118,7 +118,7 @@ fi
 ## Airplay
 if [[ "$XMITCMD" == "airplay-preamp" ]]; then
    XMITCALL="0|0|1261799543"
-   LCDPI_MSG="AirPlay"
+   LCDPI_MSG="AirPlay in"
    CALLAPI   
    CALL_LCDPI
    return
@@ -126,7 +126,7 @@ fi
 ## Volume Limit Mode
 if [[ "$XMITCMD" == "vlimit" ]]; then
    XMITCALL="0|0|1261783223"
-   LCDPI_MSG="vLimit"
+   LCDPI_MSG="volume limiter"
    CALLAPI   
    CALL_LCDPI
    return   
@@ -134,15 +134,13 @@ fi
 ## Key Mute / Toggle
 if [[ "$XMITCMD" == "mute" ]]; then
    XMITCALL="0|0|1270259807"
-   LCDPI_MSG="toggle mute"
    CALLAPI   
-   CALL_LCDPI
    return
 fi
 ## Optical Mode
 if [[ "$XMITCMD" == "optical-preamp" ]]; then
    XMITCALL="0|0|1261824023"
-   LCDPI_MSG="optical"
+   LCDPI_MSG="optical in"
    CALLAPI   
    CALL_LCDPI
    return
@@ -281,14 +279,14 @@ fi
 ## RetroPi
 if [[ "$XMITCMD" == "rfa3on" ]]; then
    XMITCALL="1|0|734735"
-   LCDPI_MSG="RetroPi on"
+   LCDPI_MSG="CRT TV on"
    CALLAPI   
    CALL_LCDPI
    return
 fi
 if [[ "$XMITCMD" == "rfa3off" ]]; then
    XMITCALL="1|0|734736"
-   LCDPI_MSG="RetroPi off"
+   LCDPI_MSG="CRT TV off"
    CALLAPI   
    CALL_LCDPI
    return
@@ -298,9 +296,7 @@ fi
 ##
 if [[ "$XMITCMD" == "rfb3" ]]; then
    XMITCALL="2|2|32"
-   LCDPI_MSG="toggle PC power"
    CALLAPI   
-   CALL_LCDPI
    return
 fi
 ##
@@ -421,7 +417,7 @@ if [ $RELAX_HOST == "hifi" ]; then
   ESP32="no"; TARGET="hifi.home"; XMITCMD="relax"; CALLAPI
 else
   ## Play Audio on Apple TV
-  LCDPI_MSG="playing $CMDARG on Apple TV"
+  LCDPI_MSG="playing $CMDARG"
   echo "$LCDPI_MSG"
   systemctl stop relaxloop
   systemctl set-environment rpi_relaxmode=$CMDARG
@@ -494,6 +490,9 @@ if (systemctl is-active --quiet relaxloop.service); then
   ##systemctl set-environment rpi_relaxmode=off
   ##systemctl start relaxloop
 else
+  LCDPI_MSG="sleep mode"
+  CALLAPI   
+  CALL_LCDPI
   echo "Service not runnning starting sleep mode..."
   /opt/system/main relax waterfall
   /opt/system/main pcoff
@@ -526,6 +525,8 @@ exit
 ;;
 
 lightson)
+LCDPI_MSG="lights on"
+CALL_LCDPI
 ## Turn all lights on
 touch $LOCKFOLDER/lights.save
 ## Main Lamp
@@ -536,6 +537,8 @@ exit
 ;;
 
 lightsoff)
+LCDPI_MSG="lights off"
+CALL_LCDPI
 ## Turn all lights off
 rm -f $LOCKFOLDER/lights.save
 ## Main Lamp
@@ -588,6 +591,8 @@ if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
   echo "wkst.home is online"
 else
+  LCDPI_MSG="PC on"
+  CALL_LCDPI
   XMITCMD="rfb3" ; XMIT 
 fi
 exit
@@ -596,6 +601,8 @@ exit
 pcoff)
 if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
+  LCDPI_MSG="PC off"
+  CALL_LCDPI  
   XMITCMD="rfb3" ; XMIT 
 else
   echo "wkst.home is offline"
@@ -706,9 +713,6 @@ server)
 _CMDARG=${CMDARG//$'\n'/} 
 SERVERARG=${_CMDARG%-*}
 FILESCMD=${_CMDARG#*-}
-## LCDpi message
-LCDPI_MSG="server command sent"
-CALL_LCDPI
 ## transmit action to file server
 if [ "$SERVERARG" == "files" ]; then
   if [ "$FILESCMD" != "" ]; then
@@ -729,6 +733,9 @@ fi
 #  fi
 #  exit
 #fi
+## LCDpi message
+LCDPI_MSG="$SERVERARG cmd sent"
+CALL_LCDPI
 ## Pass action file to the hypervisor
 echo "action $SERVERARG submitted." &>> $LOGFILE
 touch $RAMDISK/$SERVERARG.txt

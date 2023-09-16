@@ -427,6 +427,15 @@ fi
 exit
 ;;
 
+relaxstop)
+echo "Stopping playback on Apple TV..."
+systemctl stop relaxloop
+## Turn off Apple TV
+##systemctl set-environment rpi_relaxmode=off
+##systemctl start relaxloop
+exit
+;;
+
 vmute)
 if [ "$CMDARG" == "bedroom" ]; then
   XMITCMD="minimute" ; XMITARG="toggle" ; XMIT 

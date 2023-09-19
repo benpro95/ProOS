@@ -12,14 +12,14 @@
 auto lo
 iface lo inet loopback
 
-iface enp5s0f0 inet manual
-iface enp5s0f1 inet manual
-iface enp4s0f0 inet manual
-iface enp4s0f1 inet manual
+iface enp1s0f0 inet manual
+iface enp1s0f1 inet manual
+iface enp1s0f2 inet manual
+iface enp1s0f3 inet manual
 
 auto bond0
 iface bond0 inet manual
-        slaves enp5s0f0 enp5s0f1 enp4s0f0 enp4s0f1
+        slaves enp1s0f0 enp1s0f1 enp1s0f2 enp1s0f3
         bond_miimon 100
         bond_mode 802.3ad
         bond-downdelay 200

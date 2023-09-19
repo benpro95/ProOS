@@ -417,11 +417,11 @@ if [ $RELAX_HOST == "hifi" ]; then
   ESP32="no"; TARGET="hifi.home"; XMITCMD="relax"; CALLAPI
 else
   ## Play Audio on Apple TV
-  LCDPI_MSG="playing $CMDARG"
   echo "$LCDPI_MSG"
   systemctl stop relaxloop
   systemctl set-environment rpi_relaxmode=$CMDARG
   systemctl start relaxloop
+  LCDPI_MSG="playing $CMDARG"
   CALL_LCDPI  
 fi
 exit
@@ -499,14 +499,14 @@ if (systemctl is-active --quiet relaxloop.service); then
   ##systemctl set-environment rpi_relaxmode=off
   ##systemctl start relaxloop
 else
-  LCDPI_MSG="sleep mode"
   CALLAPI   
-  CALL_LCDPI
   echo "Service not runnning starting sleep mode..."
   /opt/system/main relax waterfall
   /opt/system/main pcoff
   /opt/system/main alloff
   XMITCMD="hifioff" ; XMIT 
+  LCDPI_MSG="sleep mode" 
+  CALL_LCDPI  
 fi
 exit
 ;;
@@ -534,32 +534,32 @@ exit
 ;;
 
 lightson)
-LCDPI_MSG="lights on"
-CALL_LCDPI
 ## Turn all lights on
 touch $LOCKFOLDER/lights.save
 ## Main Lamp
 XMITCMD="rfc1" ; XMITARG="on" ; XMIT 
 ## Dresser Lamp
-XMITCMD="rfa2" ; XMITARG="on" ; XMIT 
+XMITCMD="rfa2" ; XMITARG="on" ; XMIT
+## LCDpi message
+LCDPI_MSG="lights on"
+CALL_LCDPI
 exit
 ;;
 
 lightsoff)
-LCDPI_MSG="lights off"
-CALL_LCDPI
 ## Turn all lights off
 rm -f $LOCKFOLDER/lights.save
 ## Main Lamp
 XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
 ## Dresser Lamp
-XMITCMD="rfa2" ; XMITARG="off" ; XMIT 
+XMITCMD="rfa2" ; XMITARG="off" ; XMIT
+## LCDpi message
+LCDPI_MSG="lights off"
+CALL_LCDPI
 exit
 ;;
 
 allon)
-LCDPI_MSG="all lights on"
-CALL_LCDPI
 touch $LOCKFOLDER/lights.save
 ## Main Lamp
 XMITCMD="rfc1" ; XMITARG="on" ; XMIT 
@@ -571,13 +571,13 @@ XMITCMD="rfb1" ; XMITARG="on" ; XMIT
 /opt/system/leds candle
 sleep 2.5
 /opt/system/leds fc 60
+## LCDpi message
+LCDPI_MSG="all lights on"
+CALL_LCDPI
 exit
 ;;
 
 alloff)
-## LCDpi message
-LCDPI_MSG="all lights off"
-CALL_LCDPI
 ## Turn all lights off
 rm -f $LOCKFOLDER/lights.save
 ## Main Lamp
@@ -591,6 +591,9 @@ XMITCMD="rfb1" ; XMITARG="off" ; XMIT
 sleep 1
 ## Blank LEDwalls
 /opt/system/leds stop
+## LCDpi message
+LCDPI_MSG="all lights off"
+CALL_LCDPI
 exit
 ;;
 
@@ -600,9 +603,9 @@ if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
   echo "wkst.home is online"
 else
-  LCDPI_MSG="PC on"
-  CALL_LCDPI
   XMITCMD="rfb3" ; XMIT 
+  LCDPI_MSG="PC on"
+  CALL_LCDPI  
 fi
 exit
 ;;
@@ -610,9 +613,9 @@ exit
 pcoff)
 if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
+  XMITCMD="rfb3" ; XMIT
   LCDPI_MSG="PC off"
   CALL_LCDPI  
-  XMITCMD="rfb3" ; XMIT 
 else
   echo "wkst.home is offline"
 fi
@@ -742,12 +745,12 @@ fi
 #  fi
 #  exit
 #fi
-## LCDpi message
-LCDPI_MSG="$SERVERARG cmd sent"
-CALL_LCDPI
 ## Pass action file to the hypervisor
 echo "action $SERVERARG submitted." &>> $LOGFILE
 touch $RAMDISK/$SERVERARG.txt
+## LCDpi message
+LCDPI_MSG="$SERVERARG cmd sent"
+CALL_LCDPI
 exit
 ;;
 

@@ -70,43 +70,14 @@
 <div class="automate-grid">
 <div class="grid">
     <p></p>
-      <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('pcmenu')">
-          <span class="button__text"><i class="fa-solid fa-computer"></i> PC</span>
-        </button>  
-        <div class="dropdown-content dd-button" id="pcmenu">
-          <a onclick="sendCmd('main','pcon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-          <a onclick="sendCmd('main','pcoff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-        </div>
-      </div>    
-      <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('allmenu')">
-          <span class="button__text"><i class="fa-solid fa-power-off"></i> Power</span>
-        </button>  
-        <div class="dropdown-content dd-button" id="allmenu">
-          <a onclick="sendCmd('main','roomon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-          <a onclick="sendCmd('main','roomoff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-        </div>
-      </div>      
-      <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('macs-menu')">
-          <span class="button__text"><i class="fa-solid fa-floppy-disk"></i> Macs</span>
-        </button>  
-        <div class="dropdown-content dd-button" id="macs-menu">
-          <a onclick="sendCmd('main','rfa1','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
-          <a onclick="sendCmd('main','rfa1','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-        </div>
-      </div>
-
-    <div class="parsplit"><p class="parstd"></p></div>  
 
       <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('main-menu')">
-          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Main</span>
+        <button type="button" class="button" onclick="showMenu('dresser-menu')">
+          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Bedroom</span>
         </button>  
-        <div class="dropdown-content dd-button" id="main-menu">
-          <a onclick="sendCmd('main','rfc1','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
-          <a onclick="sendCmd('main','rfc1','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+        <div class="dropdown-content dd-button" id="dresser-menu">
+          <a onclick="sendCmd('main','rfa2','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
+          <a onclick="sendCmd('main','rfa2','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
       </div>
       <div class="dropdown">
@@ -119,20 +90,50 @@
         </div>
       </div> 
       <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('dresser-menu')">
-          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Bedroom</span>
+        <button type="button" class="button" onclick="showMenu('main-menu')">
+          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Main</span>
         </button>  
-        <div class="dropdown-content dd-button" id="dresser-menu">
-          <a onclick="sendCmd('main','rfa2','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
-          <a onclick="sendCmd('main','rfa2','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+        <div class="dropdown-content dd-button" id="main-menu">
+          <a onclick="sendCmd('main','rfc1','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
+          <a onclick="sendCmd('main','rfc1','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
       </div>
 
+    <div class="parsplit"><p class="parstd"></p></div>  
+
+      <div class="dropdown">
+        <button type="button" class="button" onclick="showMenu('macs-menu')">
+          <span class="button__text"><i class="fa-solid fa-floppy-disk"></i> Macs</span>
+        </button>  
+        <div class="dropdown-content dd-button" id="macs-menu">
+          <a onclick="sendCmd('main','rfa1','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
+          <a onclick="sendCmd('main','rfa1','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+        </div>
+      </div>    
+      <div class="dropdown">
+        <button type="button" class="button" onclick="showMenu('allmenu')">
+          <span class="button__text"><i class="fa-solid fa-power-off"></i> Power</span>
+        </button>  
+        <div class="dropdown-content dd-button" id="allmenu">
+          <a onclick="sendCmd('main','roomon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
+          <a onclick="sendCmd('main','roomoff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+        </div>
+      </div>      
+      <div class="dropdown">
+        <button type="button" class="button" onclick="showMenu('pcmenu')">
+          <span class="button__text"><i class="fa-solid fa-computer"></i> PC</span>
+        </button>  
+        <div class="dropdown-content dd-button" id="pcmenu">
+          <a onclick="sendCmd('main','pcon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
+          <a onclick="sendCmd('main','pcoff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+        </div>
+      </div> 
+
     <p class="parstd"></p>   
 
-      <button type="button" class="button" onclick="openCamWindow()">   
-        <span class="button__text"><i class="fa-solid fa-door-open"></i> Doorway</span>
-      </button>      
+      <button type="button" class="button" onclick="showSoundsPage()">
+        <span class="button__text"><i class="fa-solid fa-music"></i> Sounds</span>
+      </button>   
       <div class="dropdown">
         <button type="button" class="button" onclick="showMenu('led-menu')">
           <span class="button__text"><i class="fa-regular fa-sun"></i> Effects</span>
@@ -147,14 +148,14 @@
           <a onclick="sendCmd('leds','stop','')"><i class="fa-solid fa-stop"></i> Stop</a>
         </div>
       </div>
-      <button type="button" class="button" onclick="showSoundsPage()">
-        <span class="button__text"><i class="fa-solid fa-music"></i> Sounds</span>
-      </button>   
+      <button type="button" class="button" onclick="openCamWindow()">   
+        <span class="button__text"><i class="fa-solid fa-door-open"></i> Doorway</span>
+      </button>  
 
     <div class="parsplit"><p class="parstd"></p></div> 
 
-      <button type="button" class="button" onclick="openLogWindow()">
-          <span class="button__text"><i class="fa-solid fa-terminal"></i> Server</span>
+      <button type="button" class="button" onclick="sendCmd('main','sleep','')">
+          <span class="button__text"><i class="fa-regular fa-moon"></i> Sleep</span>
       </button>
       <div class="dropdown">
         <button type="button" class="button" onclick="showMenu('tv-menu')">
@@ -164,10 +165,10 @@
           <a onclick="sendCmd('main','rfa3','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
           <a onclick="sendCmd('main','rfa3','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
-      </div>      
-      <button type="button" class="button" onclick="sendCmd('main','sleep','')">
-          <span class="button__text"><i class="fa-regular fa-moon"></i> Sleep</span>
-      </button>
+      </div>  
+      <button type="button" class="button" onclick="openLogWindow()">
+          <span class="button__text"><i class="fa-solid fa-terminal"></i> Server</span>
+      </button>          
 
     <p class="parstd"></p>  
 

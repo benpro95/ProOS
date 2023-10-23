@@ -161,12 +161,11 @@ body {
 }
 
 .body__text {
-  color: #fff; /* header font color */
+  color: #6c7177; /* header font color */
   padding-left: 8px;
   font-size: 20px;
   text-align: left;
   min-height: 50px;
-  display: none;
   animation: fadeIn 1s;
   -webkit-animation: fadeIn 1s;
   -moz-animation: fadeIn 1s;

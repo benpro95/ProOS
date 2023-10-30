@@ -69,9 +69,10 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           echo "Ben' share not found!"
         else
           echo "syncing 'Ben' share to $POOL drive..."
-          rsync $CHECKSUM -aP --exclude="tmp" \
-          --exclude="Software/Workstation/**.adi" --exclude="Software/Playstation" --exclude="Software/**VM.7z" \
-          --exclude="Software/**VM.zip" --exclude="Software/**HD.zip" --exclude="Software/**HD.7z" \
+          rsync $CHECKSUM -aP \
+          --exclude="Software/**.adi" --exclude="Games/" \
+          --exclude="Software/**VM.7z" --exclude="Software/**VM.zip" \
+          --exclude="Software/**HD.zip" --exclude="Software/**HD.7z" \
           /mnt/ben/ /mnt/extbkps/$POOL/Ben/ -delete --delete-excluded
         fi
         #### Regions Share ####
@@ -79,7 +80,7 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           echo "'Regions' share not found!"
         else
           echo "syncing 'Regions' share to $POOL drive..."
-          rsync $CHECKSUM -aP --exclude="Public/Movies/" \
+          rsync $CHECKSUM -aP --exclude="Public/" \
           /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
         fi
         ##### END BACKUP #####
@@ -102,7 +103,7 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           echo "Ben' share not found!"
         else
           echo "syncing 'Ben' share to $POOL drive..."
-          rsync $CHECKSUM -aP --exclude="tmp" \
+          rsync $CHECKSUM -aP \
           /mnt/ben/ /mnt/extbkps/$POOL/Ben/ -delete --delete-excluded
         fi
         #### Regions Share ####

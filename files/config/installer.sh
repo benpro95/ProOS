@@ -179,6 +179,8 @@ chown root:root /etc/fstab
 cp -f /tmp/config/drives.txt /opt/
 chmod 644 /opt/drives.txt
 chown root:root /opt/drives.txt
+cp -v /opt/drives.txt /mnt/ramdisk/
+chmod 777 /mnt/ramdisk/drives.txt
 
 ##  Podcast Support
 mkdir -p /home/media

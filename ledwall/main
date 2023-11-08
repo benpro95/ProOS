@@ -7,8 +7,6 @@
 case "$1" in
 
 boot)
-## Unified Web Server
-systemctl start rpi-urserver
 ## WiFi Toggle Switch
 systemctl start rpi-wifiswitch
 ## LED Controller

@@ -1,0 +1,23 @@
+# ~/.profile: executed by Bourne-compatible login shells.
+
+## Command Aliases
+alias matrix='/usr/bin/cmatrix'
+
+######## Custom login scripts below ###########
+
+# You may uncomment the following lines if you want `ls' to be colorized:
+export LS_OPTIONS='--color=auto'
+eval "`dircolors`"
+alias ls='ls $LS_OPTIONS'
+alias ll='ls $LS_OPTIONS -l'
+alias l='ls $LS_OPTIONS -lA'
+
+# Set text colors
+ambertty=`tput setaf 3`
+bluetty=`tput setaf 4`
+resettty=`tput sgr0`
+
+echo "${ambertty}"
+echo "Files LXC"
+uname -m -n -s -o -r
+echo "${resettty}"

@@ -11,7 +11,7 @@ groupadd server
 useradd media -g shared --shell /bin/false
 useradd cameras -g shared --shell /bin/false
 useradd server -g server --shell /bin/bash
-useradd ben -g shared --home /sftp --shell /usr/sbin/nologin
+useradd ben -g shared --home /home/ben --shell /usr/sbin/nologin
 
 ## SFTP for 'ben' user
 mkdir -p /home/ben

@@ -150,6 +150,11 @@ body {
   display: none;
 }
 
+.container {
+  display: flex;
+  justify-content: space-around;
+}
+
 .grid {
   overflow: hidden;
   white-space: nowrap;

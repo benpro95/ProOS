@@ -149,6 +149,24 @@ if [ -e $TRIGGERS_DIR/stopdev.txt ]; then
   EXIT_ROUTINE
 fi
 #######################################################
+if [ -e $TRIGGERS_DIR/startlegacy.txt ]; then
+  echo " "
+  touch /tmp/actiontrig.lock
+  rm -f $TRIGGERS_DIR/startlegacy.txt
+  echo "starting legacy file share LXC..."
+  pct start 108
+  chmod 777 $LOGFILE
+  EXIT_ROUTINE
+fi
+if [ -e $TRIGGERS_DIR/stoplegacy.txt ]; then
+  echo " "
+  touch /tmp/actiontrig.lock	
+  rm -f $TRIGGERS_DIR/stoplegacy.txt
+  echo "shutting down legacy file share LXC..."
+  pct stop 108
+  EXIT_ROUTINE
+fi
+#######################################################
 if [ -e $TRIGGERS_DIR/startunifi.txt ]; then
   echo " "
   touch /tmp/actiontrig.lock
@@ -210,6 +228,13 @@ if [ -e $TRIGGERS_DIR/pve_vmsbkp.txt ]; then
     --maxfiles 1 --remove 1 --exclude-path /var/www/html
   cp -v /etc/pve/lxc/106.conf $VM_CONFS/automate/lxc.conf
   chmod 777 $VM_CONFS/automate/lxc.conf
+  ###
+  echo ""
+  echo "Backing-up Legacy LXC 108..."
+  vzdump 108 --mode snapshot --compress zstd --node pve --storage local \
+    --maxfiles 1 --remove 1 --exclude-path /mnt
+  cp -v /etc/pve/lxc/108.conf $VM_CONFS/legacy/lxc.conf
+  chmod 777 $VM_CONFS/legacy/lxc.conf  
   ###
   ### Virtual Machine Backups
   ###

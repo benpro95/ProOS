@@ -240,6 +240,18 @@ then
   fi
   exit
 fi
+## Copy To Media
+if [[ $REPLY == "scratchcopy" ]]
+then
+  if [ -e "/mnt/media/Downloads" ]; then
+  	rsync -aPv --exclude='*humbs.db' --exclude='*esktop.ini' \
+  	--exclude='.*' --exclude='$RECYCLE.BIN' \
+  	/mnt/scratch/downloads/* /mnt/media/Downloads/
+  else
+    echo "Downloads folder not found."  
+  fi
+  exit
+fi
 if [[ $REPLY == "git_push" ]]
 then
   TIMESTMP=$(date '+%Y-%m-%d %H:%M')

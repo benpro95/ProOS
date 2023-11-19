@@ -32,13 +32,10 @@ document.addEventListener('click', function handleClickOutsideBox(event) {
 
 // runs on page load
 function loadPage() {
+  // read device type
+  device = deviceType(); 
   // resize button grid
   resizeEvent();
-  // set title
-  var elem = document.getElementById("load__bar");
-  elem.textContent = defaultSite;
-  device = deviceType();
-  // detect device type
   if (device == defaultSite) {
     // volume mode switch
     volMode();
@@ -52,6 +49,9 @@ function loadPage() {
       classDisplay('lcdpi-grid','block');
     }
   }
+  // set title
+  var elem = document.getElementById("load__bar");
+  elem.textContent = defaultSite; 
   // read theme from local storage or choose default
   currentTheme = localStorage.getItem("styledata") || "dark-theme";
   setTheme(currentTheme);
@@ -143,12 +143,13 @@ function sleep(ms) {
 
 // back to home page 
 function GoToHomePage() {
-  window.location = '/';   
-};
-
-// back to home page ****
-function GoToAutomate() {
-  window.location = 'https://'+defaultSite+'.home';   
+  if (device == defaultSite) {
+    hidePages();
+    toggledState = 0;
+    loadPage();
+  } else {
+    window.location = 'https://'+defaultSite+'.home';   
+  }
 };
 
 function GoToExtPage(_path) {

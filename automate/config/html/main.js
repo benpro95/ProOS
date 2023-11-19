@@ -2,17 +2,18 @@
 // by Ben Provenzano III
 
 // globals
-var defaultSite = "Automate";
-var colorPromptActive = 0;
-var toggledState = 0;
-var loadBarState = 0;
-var promptCount = 0;
-var rowState = 0;
-var consoleData;
-var currentTheme;
-var serverCmdData;
-var socket;
-var device;
+let defaultSite = "Automate";
+let selectedVM = "";
+let colorPromptActive = 0;
+let toggledState = 0;
+let loadBarState = 0;
+let promptCount = 0;
+let rowState = 0;
+let consoleData;
+let currentTheme;
+let serverCmdData;
+let socket;
+let device;
 
 //////////////////////////
 
@@ -50,7 +51,7 @@ function loadPage() {
     }
   }
   // set title
-  var elem = document.getElementById("load__bar");
+  let elem = document.getElementById("load__bar");
   elem.textContent = defaultSite; 
   // read theme from local storage or choose default
   currentTheme = localStorage.getItem("styledata") || "dark-theme";
@@ -78,7 +79,7 @@ function hidePages() {
 }
 
 function setTheme(newTheme) {
-  var body = document.getElementsByTagName("html")[0];
+  let body = document.getElementsByTagName("html")[0];
   // Remove old theme scope from body's class list
   body.classList.remove(currentTheme);
   // Add new theme scope to body's class list
@@ -104,8 +105,8 @@ function resizeEvent() {
 
 // show / hide multiple classes
 function classDisplay(_elem, _state) {
-  var _itr;
-  var _class = document.getElementsByClassName(_elem);
+  let _itr;
+  let _class = document.getElementsByClassName(_elem);
   for (_itr = 0; _itr < _class.length; _itr++) {
       _class[_itr].style.display = _state;
   }
@@ -127,7 +128,7 @@ function detectMobile() {
 
 // toggle dropdown menu's
 function showMenu(_menu) {
-  var _elem = document.getElementById(_menu);
+  let _elem = document.getElementById(_menu);
   if (_elem.style.display == 'block') {
     _elem.style.display = 'none';
   } else {
@@ -161,17 +162,164 @@ function GotoSubURL(_path) {
   window.location = location.protocol+"//"+location.hostname+"/"+_path;
 };
 
+function show_vmsPrompt(text){
+  selectedVM = "";
+  clearPendingCmd();
+  let vms_prompt = document.createElement("div"); //creates the div to be used as a prompt
+  vms_prompt.id= "vms__prompt"; //gives the prompt an id - not used in my example but good for styling with css-file
+  let vms_text = document.createElement("div"); //create the div for the password-text
+  vms_text.innerHTML = text; //put inside the text
+  vms_text.id="vms__text"; 
+  vms_prompt.appendChild(vms_text); //append the text-div
+  //the cancel-button
+  let vms_cancelb = document.createElement("button"); 
+  vms_cancelb.innerHTML = "Close";
+  vms_cancelb.className ="button button_vmctrls_close"; 
+  vms_cancelb.type="button"; 
+  vms_prompt.appendChild(vms_cancelb); //append cancel-button
+  //the dev-button 
+  let vms_devbtn = document.createElement("button"); 
+  vms_devbtn.innerHTML = "Development";
+  vms_devbtn.className ="button button_vmctrls"; 
+  vms_devbtn.type="button"; 
+  vms_prompt.appendChild(vms_devbtn); 
+  //the unifi-button 
+  let vms_unifibtn = document.createElement("button"); 
+  vms_unifibtn.innerHTML = "UniFi Controller";
+  vms_unifibtn.className ="button button_vmctrls"; 
+  vms_unifibtn.type="button"; 
+  vms_prompt.appendChild(vms_unifibtn); 
+  //the cifs-button 
+  let vms_cifsbtn = document.createElement("button"); 
+  vms_cifsbtn.innerHTML = "Legacy CIFS";
+  vms_cifsbtn.className ="button button_vmctrls"; 
+  vms_cifsbtn.type="button"; 
+  vms_prompt.appendChild(vms_cifsbtn); 
+  //the xana-button 
+  let vms_xanabtn = document.createElement("button"); 
+  vms_xanabtn.innerHTML = "Xana";
+  vms_xanabtn.className ="button button_vmctrls"; 
+  vms_xanabtn.type="button"; 
+  vms_prompt.appendChild(vms_xanabtn); 
+  // start button (hidden)
+  let vms_startbtn = document.createElement("button"); 
+  vms_startbtn.innerHTML = "Start";
+  vms_startbtn.className ="button button_vmactions";
+  vms_startbtn.id = "vms__startbtn";
+  vms_startbtn.type="button";
+  vms_startbtn.style.display = "none";
+  vms_prompt.appendChild(vms_startbtn); 
+  // stop button (hidden)
+  let vms_stopbtn = document.createElement("button"); 
+  vms_stopbtn.innerHTML = "Stop";
+  vms_stopbtn.className ="button button_vmactions";
+  vms_stopbtn.id = "vms__stopbtn";
+  vms_stopbtn.type="button";
+  vms_stopbtn.style.display = "none";
+  vms_prompt.appendChild(vms_stopbtn); 
+  // restore button (hidden)
+  let vms_restorebtn = document.createElement("button"); 
+  vms_restorebtn.innerHTML = "Erase";
+  vms_restorebtn.className ="button button_vmactions";
+  vms_restorebtn.id = "vms__restorebtn";
+  vms_restorebtn.type="button";
+  vms_restorebtn.style.display = "none";
+  vms_prompt.appendChild(vms_restorebtn);
+  // open button (hidden)
+  let vms_openbtn = document.createElement("button"); 
+  vms_openbtn.innerHTML = "Open";
+  vms_openbtn.className ="button button_vmactions";
+  vms_openbtn.id = "vms__openbtn";
+  vms_openbtn.type="button";
+  vms_openbtn.style.display = "none";
+  vms_prompt.appendChild(vms_openbtn);
+  //append the prompt so it gets visible
+  document.body.appendChild(vms_prompt); 
+  new Promise(function(resolve, reject) {
+      vms_prompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
+        if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else      
+          if (e.target === vms_cancelb) { //click on cancel-button
+            vms_prompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
+            document.body.removeChild(vms_prompt);  //as we are done clean up by removing the password-prompt
+            // clear any pending command
+            clearPendingCmd();
+          }
+          // selection buttons
+          if (e.target === vms_devbtn) { 
+            vmPromptSelect('dev');
+          }
+          if (e.target === vms_unifibtn) { 
+            vmPromptSelect('unifi');
+          }  
+          if (e.target === vms_cifsbtn) { 
+            vmPromptSelect('legacy');
+          }  
+          if (e.target === vms_xanabtn) { 
+            vmPromptSelect('xana');
+          }
+          // action buttons
+          if (e.target === vms_startbtn) { 
+            if (selectedVM !=  ""){
+              serverAction('start' + selectedVM);
+              serverSend();
+            }
+          }         
+          if (e.target === vms_stopbtn) { 
+            if (selectedVM !=  ""){
+              serverAction('stop' + selectedVM);
+              serverSend();
+            }           
+          }                 
+          if (e.target === vms_openbtn) { 
+            if (selectedVM ===  'unifi'){
+              GoToExtPage('unifi.home:8443');
+            }           
+          } 
+          if (e.target === vms_restorebtn) { 
+            if (selectedVM !=  ""){
+              serverAction('restore' + selectedVM);
+              let _text = "Click send to confirm restore of " + selectedVM;
+              document.getElementById('vms__text').innerHTML = _text;
+            }           
+          }                        
+      });
+  });   
+}
+
+function vmPromptSelect(_vm){
+  let _text = "Select action for " + _vm + " VM:";
+  // set top text
+  document.getElementById('vms__text').innerHTML = _text;
+  // hide existing buttons
+  document.getElementById("vms__restorebtn").style.display = "none";
+  document.getElementById("vms__openbtn").style.display = "none";
+  // show actions buttons after selection
+  document.getElementById("vms__startbtn").style.display = "inline-block";
+  document.getElementById("vms__stopbtn").style.display = "inline-block";
+  if (_vm === "xana" ) { 
+    document.getElementById("vms__restorebtn").style.display = "inline-block";
+  }
+  if (_vm === "unifi" ) { 
+    document.getElementById("vms__openbtn").style.display = "inline-block";
+  }    
+  selectedVM = _vm;
+}
+
+async function vmsPrompt(){
+  await show_vmsPrompt("Select Virtual Machine:");
+}
+
 function show_wifiPrompt(text){
-  var wifiprompt = document.createElement("div"); //creates the div to be used as a prompt
+  let wifiprompt = document.createElement("div"); //creates the div to be used as a prompt
   wifiprompt.id= "wifi__prompt"; //gives the prompt an id - not used in my example but good for styling with css-file
-  var wifitext = document.createElement("div"); //create the div for the password-text
+  let wifitext = document.createElement("div"); //create the div for the password-text
   wifitext.innerHTML = text; //put inside the text
   wifiprompt.appendChild(wifitext); //append the text-div to the password-prompt   wifi__img
-  var img = document.createElement("img");
+  let img = document.createElement("img");
   img.src = "img/wifi.png";
   img.id = "wifi__img";
   wifiprompt.appendChild(img);
-  var wificancelb = document.createElement("button"); //the cancel-button
+  let wificancelb = document.createElement("button"); //the cancel-button
   wificancelb.innerHTML = "Close";
   wificancelb.className ="button"; 
   wificancelb.type="button"; 
@@ -191,20 +339,20 @@ async function wifiPrompt(){
 }
 
 function passwordPrompt(text){
-  var pwprompt = document.createElement("div"); //creates the div to be used as a prompt
+  let pwprompt = document.createElement("div"); //creates the div to be used as a prompt
   pwprompt.id= "pass__prompt"; //gives the prompt an id - not used in my example but good for styling with css-file
-  var pwtext = document.createElement("div"); //create the div for the password-text
+  let pwtext = document.createElement("div"); //create the div for the password-text
   pwtext.innerHTML = text; //put inside the text
   pwprompt.appendChild(pwtext); //append the text-div to the password-prompt
-  var pwinput = document.createElement("input"); //creates the password-input
+  let pwinput = document.createElement("input"); //creates the password-input
   pwinput.id = "pass__textbox"; //give it some id - not really used in this example...
   pwinput.type="password"; // makes the input of type password to not show plain-text
   pwprompt.appendChild(pwinput); //append it to password-prompt
-  var pwokbutton = document.createElement("button"); //the ok button
+  let pwokbutton = document.createElement("button"); //the ok button
   pwokbutton.innerHTML = "Send";
   pwokbutton.className ="button"; 
   pwokbutton.type="button"; 
-  var pwcancelb = document.createElement("button"); //the cancel-button
+  let pwcancelb = document.createElement("button"); //the cancel-button
   pwcancelb.innerHTML = "Cancel";
   pwcancelb.className ="button"; 
   pwcancelb.type="button"; 
@@ -238,7 +386,7 @@ function passwordPrompt(text){
 }
 
 async function getPassword(){
-  var result;
+  let result;
   try{
     hideDropdowns();
     result = await passwordPrompt("Enter password:");
@@ -270,7 +418,7 @@ function savePOST(data) {
 
 // switch volume controls on main page
 function volMode() {   
-  var id = document.getElementById("sub__text");
+  let id = document.getElementById("sub__text");
   if (toggledState == 1) {
      id.textContent = "Subwoofers";
      toggledState = 0;
@@ -282,7 +430,7 @@ function volMode() {
 
 // switch volume controls on bedroom page
 function relaxMode() {   
-  var id = document.getElementById("relax__text");
+  let id = document.getElementById("relax__text");
   if (toggledState == 1) {
      id.textContent = "HiFi";
      toggledState = 0;
@@ -293,7 +441,7 @@ function relaxMode() {
 };
 
 function relaxSend(_cmd) {
-  var _mode;
+  let _mode;
   // volume mode
   if (_cmd == 'vup' 
    || _cmd == 'vdwn'
@@ -332,19 +480,25 @@ async function serverSend() {
   } else {
     // animations
     loadBar(3.0);
-    var _elem = document.getElementById("sendButton");
+    let _elem = document.getElementById("sendButton");
     _elem.classList.remove("button-alert");
     // send command
     sendCmdNoBar('main','server',serverCmdData);
     // display command sent
     document.getElementById("logTextBox").value += "\ncommand sent, click load to refresh log.";
     // scroll to bottom of page
-    var txtArea = document.getElementById("logTextBox");
+    let txtArea = document.getElementById("logTextBox");
     txtArea.scrollTop = txtArea.scrollHeight;    
   }  
   serverCmdData = null;
 };
 
+// clear a pending server command 
+function clearPendingCmd() {
+  let _elem = document.getElementById("sendButton");
+  _elem.classList.remove("button-alert");
+  serverCmdData = null;
+}
 
 // transmit command for server
 function sendCmd(act, arg1, arg2) {
@@ -380,7 +534,7 @@ async function loadLog(file) {
     // display text on page 
     document.getElementById("logTextBox").value = consoleData;
     // scroll to bottom of page
-    var txtArea = document.getElementById("logTextBox");
+    let txtArea = document.getElementById("logTextBox");
     txtArea.scrollTop = txtArea.scrollHeight;
   } catch (err) {
     console.error(err);
@@ -394,7 +548,7 @@ async function loadLog(file) {
 function serverAction(cmd) {
   serverCmdData = cmd;
   // change color of send button 
-  var _elem = document.getElementById("sendButton");
+  let _elem = document.getElementById("sendButton");
    _elem.classList.add("button-alert");
 };
 
@@ -470,10 +624,10 @@ function clearText() {
 async function loadBar(_interval) {
   if (loadBarState == 0) {
     loadBarState = 1;
-    var elem = document.getElementById("load__bar");
+    let elem = document.getElementById("load__bar");
     elem.textContent = " ";  
-    var width = 1;
-    var id = setInterval(frame, _interval);
+    let width = 1;
+    let id = setInterval(frame, _interval);
     function frame() {
       if (width >= 100) {
         clearInterval(id);
@@ -492,11 +646,11 @@ async function loadBar(_interval) {
 
 function hexToRgb(hex) {
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
-  var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+  let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
   hex = hex.replace(shorthandRegex, function(m, r, g, b) {
       return r + r + g + g + b + b;
   });
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result ? {
       r: parseInt(result[1], 16),
       g: parseInt(result[2], 16),
@@ -505,8 +659,8 @@ function hexToRgb(hex) {
 }
 
 function updateSettings(_hexin) {
-  var _proto = 'wss://';
-  var color;
+  let _proto = 'wss://';
+  let color;
   if (location.protocol == 'http:'){
     _proto = 'ws://';
   }
@@ -515,8 +669,8 @@ function updateSettings(_hexin) {
   socket = new WebSocket(_host);
   socket.onopen = function(event) {
       color = hexToRgb(_hexin);
-      var rounds = 32;
-      for (var i = 0; i < rounds; i++) {
+      let rounds = 32;
+      for (let i = 0; i < rounds; i++) {
           writeFrame(
           color.r,
           color.g,
@@ -527,8 +681,8 @@ function updateSettings(_hexin) {
 
 // Set all pixels to a given color
 function writeFrame(red, green, blue) {
-  var leds = 512;
-  var packet = new Uint8ClampedArray(4 + leds * 3);
+  let leds = 512;
+  let packet = new Uint8ClampedArray(4 + leds * 3);
   if (socket.readyState != 1 /* OPEN */) {
       // The server connection isn't open. Nothing to do.
       return;
@@ -541,9 +695,9 @@ function writeFrame(red, green, blue) {
       return;
   }
   // Dest position in our packet. Start right after the header.
-  var dest = 4;
+  let dest = 4;
   // Sample the center pixel of each LED
-  for (var i = 0; i < leds; i++) {
+  for (let i = 0; i < leds; i++) {
       packet[dest++] = red;
       packet[dest++] = green;
       packet[dest++] = blue;
@@ -564,26 +718,26 @@ async function colorPrompt(){
 
 function show_colorPrompt(text){
   colorPromptActive = 1; 
-  var colorprompt = document.createElement("div"); //creates the div to be used as a prompt
+  let colorprompt = document.createElement("div"); //creates the div to be used as a prompt
   colorprompt.id= "color__prompt"; //gives the prompt an id - not used in my example but good for styling with css-file
-  var colortext = document.createElement("div"); //create the div for the password-text
+  let colortext = document.createElement("div"); //create the div for the password-text
   colortext.innerHTML = text; //put inside the text
   colortext.id = "color__text";
   colorprompt.appendChild(colortext); //append the text-div to the prompt
   // the cancel-button
-  var colorcancelb = document.createElement("button"); 
+  let colorcancelb = document.createElement("button"); 
   colorcancelb.innerHTML = "Close";
   colorcancelb.className ="button"; 
   colorcancelb.type="button"; 
   colorprompt.appendChild(colorcancelb); //append cancel-button
   // the set color-button
-  var colorsetb = document.createElement("button"); 
+  let colorsetb = document.createElement("button"); 
   colorsetb.innerHTML = "Apply";
   colorsetb.className ="button"; 
   colorsetb.type="button"; 
   colorprompt.appendChild(colorsetb); //append set-button
   // color selector box
-  var colorinput = document.createElement("input");
+  let colorinput = document.createElement("input");
   colorinput.id = "color__box";
   colorinput.name = "color";
   colorinput.type = "color";
@@ -591,7 +745,7 @@ function show_colorPrompt(text){
   colorprompt.appendChild(colorinput);
   // append the password-prompt so it is visible
   document.body.appendChild(colorprompt); 
-  var _colorval;
+  let _colorval;
   new Promise(function(resolve, reject) {
       colorinput.addEventListener('input', function () {
         _colorval = colorinput.value; // save color values

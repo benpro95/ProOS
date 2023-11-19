@@ -14,7 +14,7 @@
     font-size: 24px; /* page default font size */
     /* theme colors */
     --darkblue-color: #1f2051; 
-    --lightblue-color: #101278;
+    --lightblue-color: #063a9d;
     --turquoise-color: #133d61;
     --red-color: #4b0606;
     --green-color: #0d3d23;
@@ -52,6 +52,7 @@ body {
   margin: 8px;
   background-color: var(--blue-color);
 }
+
 .darkblue-theme {
   --main-color: var(--darkblue-color);
 }
@@ -59,6 +60,7 @@ body {
   margin: 8px;
   background-color: var(--darkblue-color);
 }
+
 .lightblue-theme {
   --main-color: var(--lightblue-color);
 }
@@ -66,6 +68,7 @@ body {
   margin: 8px;
   background-color: var(--lightblue-color);
 }
+
 .turquoise-theme {
   --main-color: var(--turquoise-color);
 }
@@ -73,6 +76,7 @@ body {
   margin: 8px;
   background-color: var(--turquoise-color);
 }
+
 .red-theme {
   --main-color: var(--red-color);
 }
@@ -80,6 +84,7 @@ body {
   margin: 8px;
   background-color: var(--red-color);
 }
+
 .green-theme {
   --main-color: var(--green-color);
 }
@@ -87,6 +92,7 @@ body {
   margin: 8px;
   background-color: var(--green-color);
 }
+
 .purple-theme {
   --main-color: var(--purple-color);
 }
@@ -94,6 +100,7 @@ body {
   margin: 8px;
   background-color: var(--purple-color);
 }
+
 .dark-theme {
   --main-color: var(--dark-color);
 }
@@ -101,6 +108,7 @@ body {
   margin: 8px;
   background-color: var(--dark-color);
 }
+
 .orange-theme {
   --main-color: var(--orange-color);
 }
@@ -158,11 +166,11 @@ body {
 .grid {
   overflow: hidden;
   white-space: nowrap;
-  animation: fadeIn 0.3s;
-  -webkit-animation: fadeIn 0.3s;
-  -moz-animation: fadeIn 0.3s;;
-  -o-animation: fadeIn 0.3s;
-  -ms-animation: fadeIn 0.3s;
+  animation: fadeIn 0.35s;
+  -webkit-animation: fadeIn 0.35s;
+  -moz-animation: fadeIn 0.35s;;
+  -o-animation: fadeIn 0.35s;
+  -ms-animation: fadeIn 0.35s;
 }
 
 .body__text {
@@ -180,7 +188,7 @@ body {
 
 .button {
     transition: all 0.2s;
-	  width: 150px;
+	width: 150px;
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;
@@ -475,6 +483,42 @@ body {
 #wifi__img {
   margin: 10px;
 } 
+
+
+/*
+ *  VM Control Style
+ */
+#vms__prompt {
+  background-color: black;
+  border: 1px solid white;
+  position: fixed;
+  top: 25%;
+  left: 8%;
+  width: 387px;  
+  height: 350px;
+  padding: 5px; 
+  overflow-y: auto;
+  color: #fff;
+  z-index: 999; 
+}
+
+.button_vmactions { 
+  margin-top: 20px;
+  width: 118px;
+  height: 60px;
+}
+
+.button_vmctrls { 
+  width: 180px;
+  height: 60px;
+}
+
+.button_vmctrls_close { 
+  position: absolute;
+  width: 180px;
+  height: 60px;
+  bottom: 5px;
+}
 
 /*
  *  Color Selector Style

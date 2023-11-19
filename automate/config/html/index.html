@@ -811,18 +811,6 @@
       </div>
     </div>
 
-  <div class="parsplit"><p class="parstd"></p></div>  
-
-    <button type="button" class="button" onclick="">
-        <span class="button__text"></i> PL</span>
-    </button>
-    <button type="button" class="button" onclick="">
-        <span class="button__text"></i> PL</span>
-    </button>
-    <button type="button" class="button" onclick="">
-        <span class="button__text"></i> PL</span>
-    </button>
-
   <p class="body__text">by Ben Provenzano III</p>
   <p class="parend-fb"></p>     
 </div>
@@ -838,15 +826,16 @@
     <div class="scrollmenu">
       <div class="dropdown"> 
         <a class="dropbtn" onclick="showMenu('options-menu')">Options</a>
-        <div class="dropdown-content" id="options-menu">
+        <div class="dropdown-content" id="options-menu">  
           <a onclick="serverAction('files-scratchcopy')">Copy Scratch</a>     
           <a onclick="wifiPrompt()"> WiFi Access</a>     
           <a onclick="serverAction('syslog')">Server Log</a>
           <a onclick="serverAction('files-git_push')">Sync Git</a>
           <a onclick="serverAction('files-podget')">Podget</a>
           <a onclick="serverAction('files-netscan')">NetScan</a>   
-          <a onclick="serverAction('files-lastlog')">Last Login</a>
+          <a onclick="serverAction('files-lastlog')">Last Login</a> 
           <a onclick="serverAction('files-clearlog')"> Clear Logs</a>
+          <a onclick="vmsPrompt()"> VM Control</a> 
         </div>
       </div>
       <div class="dropdown"> 
@@ -869,21 +858,6 @@
           <a onclick="serverAction('pve_vmsbkp')">Proxmox</a> 
           <a onclick="serverAction('files-backupchk')">Checksum</a>   
           <a onclick="serverAction('files-backupstd')">Standard</a> 
-        </div>
-      </div>
-      <div class="dropdown"> 
-        <a class="dropbtn" onclick="showMenu('vmmenu')">VMs</a>
-        <div class="dropdown-content" id="vmmenu">
-          <a onclick="serverAction('startdev')">Start Dev</a>
-          <a onclick="serverAction('stopdev')">Stop Dev</a>
-          <a onclick="GoToExtPage('unifi.home:8443')">Open Unifi</a>
-          <a onclick="serverAction('startunifi')">Start Unifi</a>
-          <a onclick="serverAction('stopunifi')">Stop Unifi</a>   
-          <a onclick="serverAction('startlegacy')">Start CIFS</a>
-          <a onclick="serverAction('stoplegacy')">Stop CIFS</a>                    
-          <a onclick="serverAction('startxana')">Start Xana</a>
-          <a onclick="serverAction('restorexana')">Erase Xana</a>
-          <a onclick="serverAction('stopxana')">Stop Xana</a>
         </div>
       </div>
     </div>

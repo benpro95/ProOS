@@ -271,7 +271,7 @@ function show_vmsPrompt(text){
             }           
           }                 
           if (e.target === vms_openbtn) { 
-            if (selectedVM ===  'unifi'){
+            if (selectedVM === 'unifi'){
               GoToExtPage('unifi.home:8443');
             }           
           } 

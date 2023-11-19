@@ -28,6 +28,9 @@ mount -o remount,ro /boot
 rm -f /opt/rpi/ledtype.txt
 echo "8x8revgrid" > /opt/rpi/ledtype.txt
 
+## Shortcut to main script
+ln -sf /opt/rpi/main /usr/bin/leds
+
 ## Routed Hotspot Configuration
 #cp -f /etc/dnsmasq.routed /etc/dnsmasq.conf
 #chmod 644 /etc/dnsmasq.conf

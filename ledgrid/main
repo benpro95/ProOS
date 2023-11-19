@@ -20,10 +20,18 @@ exit
 
 	    
     *)
-      echo "LEDgrid Server for Raspberry Pi"
-	  echo "  by Ben Provenzano III"
-	  echo " "
-	  echo "Enter a valid command line argument."
+        if [ "$1" == "" ]; then
+          echo "Enter valid command."
+        else  
+	      if [ "$2" == "" ]; then
+	        echo "Sending $1 command..."
+	      else
+	      	echo "Sending $1:$2 command..."
+	      fi  
+	      /usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 30 \
+	      --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive \
+	      --data "var=$2&arg=$1&action=leds" http://127.0.0.1/exec.php
+	    fi
       exit 1
       ;;
     esac

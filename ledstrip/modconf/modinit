@@ -22,6 +22,9 @@ echo "Starting $MODNAME configuration..."
 rm -f /opt/rpi/ledtype.txt
 echo "8x60strips" > /opt/rpi/ledtype.txt
 
+## Shortcut to main script
+ln -sf /opt/rpi/main /usr/bin/leds
+
 ## Copy Boot Config
 mount -o remount,rw /boot
 sleep 1.25

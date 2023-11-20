@@ -37,16 +37,16 @@ function loadPage() {
   device = deviceType(); 
   // resize button grid
   resizeEvent();
-  if (device == defaultSite) {
+  if (device === defaultSite) {
     // volume mode switch
     volMode();
     // server home
     classDisplay('automate-grid','block');
   } else { // pi's
-    if (device == 'LEDpi') {
+    if (device === 'LEDpi') {
       classDisplay('ledpi-grid','block');
     }
-    if (device == 'LCDpi') {
+    if (device === 'LCDpi') {
       classDisplay('lcdpi-grid','block');
     }
   }
@@ -129,7 +129,7 @@ function detectMobile() {
 // toggle dropdown menu's
 function showMenu(_menu) {
   let _elem = document.getElementById(_menu);
-  if (_elem.style.display == 'block') {
+  if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
   } else {
     hideDropdowns();
@@ -144,7 +144,7 @@ function sleep(ms) {
 
 // back to home page 
 function GoToHomePage() {
-  if (device == defaultSite) {
+  if (device === defaultSite) {
     hidePages();
     toggledState = 0;
     loadPage();
@@ -259,13 +259,13 @@ function show_vmsPrompt(text){
           }
           // action buttons
           if (e.target === vms_startbtn) { 
-            if (selectedVM !=  ""){
+            if (selectedVM !==  ""){
               serverAction('start' + selectedVM);
               serverSend();
             }
           }         
           if (e.target === vms_stopbtn) { 
-            if (selectedVM !=  ""){
+            if (selectedVM !==  ""){
               serverAction('stop' + selectedVM);
               serverSend();
             }           
@@ -276,7 +276,7 @@ function show_vmsPrompt(text){
             }           
           } 
           if (e.target === vms_restorebtn) { 
-            if (selectedVM !=  ""){
+            if (selectedVM !==  ""){
               serverAction('restore' + selectedVM);
               let _text = "Click send to confirm restore of " + selectedVM;
               document.getElementById('vms__text').innerHTML = _text;
@@ -419,7 +419,7 @@ function savePOST(data) {
 // switch volume controls on main page
 function volMode() {   
   let id = document.getElementById("sub__text");
-  if (toggledState == 1) {
+  if (toggledState === 1) {
      id.textContent = "Subwoofers";
      toggledState = 0;
   } else {  
@@ -431,7 +431,7 @@ function volMode() {
 // switch volume controls on bedroom page
 function relaxMode() {   
   let id = document.getElementById("relax__text");
-  if (toggledState == 1) {
+  if (toggledState === 1) {
      id.textContent = "HiFi";
      toggledState = 0;
   } else {  
@@ -443,11 +443,11 @@ function relaxMode() {
 function relaxSend(_cmd) {
   let _mode;
   // volume mode
-  if (_cmd == 'vup' 
-   || _cmd == 'vdwn'
-   || _cmd == 'vmute') {
+  if (_cmd === 'vup' 
+   || _cmd === 'vdwn'
+   || _cmd === 'vmute') {
     _mode = _cmd;
-    if (toggledState == 0) {
+    if (toggledState === 0) {
       _cmd = 'hifi';
     } else {
       _cmd = 'bedroom';
@@ -455,7 +455,7 @@ function relaxSend(_cmd) {
   } else {
     // relax mode
     _mode = 'relax';
-    if (toggledState == 0) {
+    if (toggledState === 0) {
       _cmd = _cmd+"-hifi";
     } 
   }
@@ -464,7 +464,7 @@ function relaxSend(_cmd) {
 
 
 function toggledVol(_mode) {
-  if (toggledState == 0) {
+  if (toggledState === 0) {
     _cmd = 'subs';
   } else {
     _cmd = 'bedroom';
@@ -475,7 +475,7 @@ function toggledVol(_mode) {
 
 // send server action
 async function serverSend() {
-  if (serverCmdData == null) {
+  if (serverCmdData === null) {
     document.getElementById("logTextBox").value = "select an option.";
   } else {
     // animations
@@ -622,7 +622,7 @@ function clearText() {
 
 // loading bar animation 
 async function loadBar(_interval) {
-  if (loadBarState == 0) {
+  if (loadBarState === 0) {
     loadBarState = 1;
     let elem = document.getElementById("load__bar");
     elem.textContent = " ";  
@@ -661,7 +661,7 @@ function hexToRgb(hex) {
 function updateSettings(_hexin) {
   let _proto = 'wss://';
   let color;
-  if (location.protocol == 'http:'){
+  if (location.protocol === 'http:'){
     _proto = 'ws://';
   }
   _host = _proto + location.hostname + ":7890";
@@ -706,11 +706,11 @@ function writeFrame(red, green, blue) {
 }
 
 async function colorPrompt(){
-  if (device == 'Automate') {
+  if (device === 'Automate') {
     sendCmd('leds','randcolor','');
   } else {
     hideDropdowns();
-    if (colorPromptActive == 0) {
+    if (colorPromptActive === 0) {
       await show_colorPrompt("Pick a color:");
     } 
   }

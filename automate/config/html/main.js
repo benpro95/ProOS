@@ -557,9 +557,8 @@ function openLogWindow() {
   // open server log window
   closePopup();
   // show log form window
+  document.getElementById("logTextBox").value = "select an option.";
   document.getElementById("logForm").style.display = "block";
-  // load log data
-  loadLog();
 };
 
 

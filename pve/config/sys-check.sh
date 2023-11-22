@@ -31,27 +31,12 @@ df -h --type=zfs --type=ext4
 
 echo ""
 echo "** Drive Status**"
-DISK_DRIVE="/dev/disk/by-id/ata-INTEL_SSDSC2KB480G8_PHYF00540242480BGN"
-/usr/sbin/smartctl --all --quietmode=errorsonly $DISK_DRIVE
-##
-DISK_DRIVE="/dev/disk/by-id/ata-Samsung_SSD_870_EVO_500GB_S6PXNM0TB49117Y"
-/usr/sbin/smartctl --all --quietmode=errorsonly $DISK_DRIVE
-##
-DISK_DRIVE="/dev/disk/by-id/ata-WDC_WD40EFZX-68AWUN0_WD-WXA2D81NA45F"
-/usr/sbin/hddtemp --unit=F $DISK_DRIVE | grep -oP "($DISK_DRIVE: )\K.*" 
-/usr/sbin/smartctl --all --quietmode=errorsonly $DISK_DRIVE
-##
-DISK_DRIVE="/dev/disk/by-id/ata-WDC_WD40EFZX-68AWUN0_WD-WX32D52LE3EX"
-/usr/sbin/hddtemp --unit=F $DISK_DRIVE | grep -oP "($DISK_DRIVE: )\K.*"
-/usr/sbin/smartctl --all --quietmode=errorsonly $DISK_DRIVE
-##
-DISK_DRIVE="/dev/disk/by-id/ata-WDC_WD40EFZX-68AWUN0_WD-WX32D80CF0LE"
-/usr/sbin/hddtemp --unit=F $DISK_DRIVE | grep -oP "($DISK_DRIVE: )\K.*"
-/usr/sbin/smartctl --all --quietmode=errorsonly $DISK_DRIVE
-##
-DISK_DRIVE="/dev/disk/by-id/ata-WDC_WD20EZAZ-00GGJB0_WD-WXK2A30CYK73"
-/usr/sbin/hddtemp --unit=F $DISK_DRIVE | grep -oP "($DISK_DRIVE: )\K.*"
-/usr/sbin/smartctl --all --quietmode=errorsonly $DISK_DRIVE
+readarray -t DRIVES_TBL < /usr/lib/drives.txt
+for DISK_DRIVE in "${DRIVES_TBL[@]}"; do
+  echo "==========================================================================="
+  /usr/sbin/hddtemp --unit=F $DISK_DRIVE | grep -oP "($DISK_DRIVE: )\K.*" 
+  /usr/sbin/smartctl --attributes --log=selftest --log=error --log=ssd $DISK_DRIVE
+done
 
 echo ""
 echo "** Public IP **"

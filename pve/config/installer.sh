@@ -129,17 +129,13 @@ cp -f /tmp/config/apcupsd.service /lib/systemd/system/
 chmod 644 /lib/systemd/system/apcupsd.service
 chown root:root /lib/systemd/system/apcupsd.service
 
-## HD Temperature Configuration
-cp -f /tmp/config/hddtemp.db /etc/
-chmod 644 /etc/hddtemp.db
-chown root:root /etc/hddtemp.db
-
 ## SMART Automatic Drive Checking
 cp -f /tmp/config/smartd.conf /etc/
 chmod 644 /etc/smartd.conf
 chown root:root /etc/smartd.conf
 
 ## Sensors Configuration
+touch /etc/hddtemp.db
 cp -f /tmp/config/sensors3.conf /etc/
 chmod 644 /etc/sensors3.conf
 chown root:root /etc/sensors3.conf
@@ -148,6 +144,11 @@ chown root:root /etc/sensors3.conf
 cp -f /tmp/config/journald.conf /etc/systemd/
 chmod 644 /etc/systemd/journald.conf
 chown root:root /etc/systemd/journald.conf
+
+## Drives List
+cp -f /tmp/config/drives.txt /usr/lib/
+chmod 644 /usr/lib/drives.txt
+chown root:root /usr/lib/drives.txt
 
 ## ZFS Snapshot Configuration
 if [ ! -e /etc/zfsautosnap.enabled ]; then

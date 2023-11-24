@@ -1,0 +1,37 @@
+#!/bin/bash
+##
+
+# Import Host Name
+HOSTNAME=`cat /opt/rpi/config/hostname`
+## Module Path
+BIN=/opt/rpi
+# Import Module Name
+MODNAME=`cat $BIN/modconf/brand.txt`
+
+if [ ! -e /opt/rpi/init ]; then
+echo "Core components missing or corrupted."
+echo "Exiting..."
+sleep 1
+exit
+else
+echo "Components integrity verified."
+fi
+
+echo "Starting $MODNAME configuration..."
+
+## Copy Boot Config
+mount -o remount,rw /boot
+sleep 1.25
+cp -r $BIN/modconf/config.txt /boot/
+
+## Access Point
+touch /boot/apd-routed.enable
+cp -rv $BIN/modconf/hostapd.conf /etc/hostapd/hostapd.conf
+chmod 644 /etc/hostapd/hostapd.conf
+chown root:root /etc/hostapd/hostapd.conf
+
+## Link RPi to global commands library
+ln -sf /opt/rpi/main /usr/bin/main
+
+mount -o remount,ro /boot
+exit

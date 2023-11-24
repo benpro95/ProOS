@@ -25,7 +25,7 @@ else
 echo "Raspberry Pi detected."
 fi
 OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
-if [ "${OSVER}" = "bullseye" ]; then
+if [ "${OSVER}" = "bullseye" ] || [ "${OSVER}" = "bookworm" ]; then
   echo "OS version ${OSVER} detected."
 else
   echo "Unsupported OS version ${OSVER} detected."
@@ -92,30 +92,41 @@ apt-get install -y --no-upgrade --ignore-missing locales console-setup \
  aptitude libnss-mdns usbutils zsync v4l-utils libpq5 htop lsb-release \
  avahi-daemon avahi-discover avahi-utils hostapd dnsmasq unzip wget bc \
  rsync screen parallel sudo sed nano curl insserv wireless-regdb wireless-tools \
- uuid-runtime mpg321 mpv mplayer espeak tightvncserver iptables open-cobol \
- iw crda firmware-brcm80211 wpasupplicant dirmngr autofs triggerhappy apt-utils \
+ uuid-runtime mpg321 mpv mplayer espeak tightvncserver iptables libnss3-tools jq \
+ iw firmware-brcm80211 wpasupplicant dirmngr autofs triggerhappy apt-utils \
  build-essential git autoconf make libtool binutils i2c-tools cmake yasm \
  libmariadb3 texi2html socat nmap autoconf automake pkg-config iperf3 \
- keyboard-configuration ncftp libnss3-tools jq inxi
- 
+ keyboard-configuration ncftp inxi
+
+## OS Specific Packages
+if [ "${OSVER}" = "bookworm" ]; then
+  apt-get install -y --no-upgrade --ignore-missing cryptsetup cryptsetup-bin \
+   dhcpcd dhcpcd-base gnucobol4
+  systemctl stop NetworkManager-wait-online.service NetworkManager-dispatcher.service \
+   NetworkManager.service ModemManager.service
+  systemctl disable NetworkManager-wait-online.service NetworkManager-dispatcher.service \
+   NetworkManager.service ModemManager.service
+  systemctl mask NetworkManager-wait-online.service NetworkManager-dispatcher.service \
+   NetworkManager.service ModemManager.service
+fi
+if [ "${OSVER}" = "bullseye" ]; then
+ apt-get install -y --no-upgrade --ignore-missing crda open-cobol
+fi
+
 ## Developer Packages 
 apt-get install -y --no-upgrade --ignore-missing libgtk2.0-dev libbluetooth3 libbluetooth-dev \
  libavfilter-dev libavdevice-dev libavcodec-dev libavc1394-dev libatlas-base-dev libusb-1.0-0-dev \
- libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev libdbus-glib-1-dev \
+ libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdbus-glib-1-dev \
  libass-dev libfreetype6-dev libgpac-dev libsdl1.2-dev libtheora-dev libssl-dev \
  libva-dev libvdpau-dev libvorbis-dev libx11-dev libxext-dev libxfixes-dev \
  libjack-jackd2-dev portaudio19-dev libffi-dev libxslt1-dev libxml2-dev sqlite3 \
  libxml2-dev libxslt1-dev portaudio19-dev libffi-dev zlib1g-dev libdbus-1-dev
 
  ## AV Codecs Support
-apt-get install -y --no-upgrade --ignore-missing libupnp-dev ffmpeg 
-apt-get remove -y --purge libgstreamer0.10-dev
 apt-get install -y --no-upgrade --ignore-missing libgstreamer1.0-dev gstreamer1.0-plugins-base \
- libx264-dev x264 ffmpeg libswscale-dev libavformat-dev libavcodec-dev \
- gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly \
- gstreamer1.0-tools libgstreamer-plugins-base1.0-0 \
- gstreamer1.0-alsa gstreamer1.0-pulseaudio \
- gstreamer1.0-omx gstreamer1.0-libav
+ libx264-dev x264 ffmpeg libswscale-dev libavformat-dev libavcodec-dev libupnp-dev ffmpeg \
+ gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly gstreamer1.0-tools gstreamer1.0-libav \
+ libgstreamer-plugins-base1.0-0 gstreamer1.0-alsa gstreamer1.0-pulseaudio gstreamer1.0-omx
 
 ## EGL hardware video decoding libraries
 if [ ! -e /usr/lib/arm-linux-gnueabihf/libbrcmEGL.so ]; then
@@ -128,9 +139,9 @@ fi
 
 ## Install X11 and X Programs
 apt-get install -y --no-upgrade --ignore-missing xserver-xorg xorg \
- x11-common x11-apps xserver-xorg-input-evdev xvfb \
+ x11-common x11-apps xserver-xorg-input-evdev xvfb synaptic \
  libxext6 libxtst6 lxde-core libatlas-base-dev x11-common \
- synaptic lxterminal xprintidle xdotool wmctrl
+ lxterminal xprintidle xdotool wmctrl
 
 ## Install Chromium
 apt-mark unhold chromium-browser chromium-codecs-ffmpeg chromium-codecs-ffmpeg-extra
@@ -172,10 +183,11 @@ else
 fi
 
 ## Python Libraries
-apt-get install -y --no-upgrade --ignore-missing net-tools python python3 python3-setuptools \
- python3-pip python3-dev python3-pygame python3-venv python3-gpiozero
-pip3 install --disable-pip-version-check setuptools wheel pyserial xmodem RPi.GPIO \
- ipython pssh PyAudio dam1021 virtualenv virtualenvwrapper numpy
+apt-get install -y --no-upgrade --ignore-missing net-tools python3 
+apt-get install -y --no-upgrade --ignore-missing python3-setuptools \
+ python3-pip python3-dev python3-pygame python3-venv python3-gpiozero \
+ python3-setuptools python3-wheel python3-serial python3-xmodem \
+ python3-rpi.gpio python3-ipython python3-pyaudio python3-numpy
 
 ## Light Web Server
 apt-get install -y --no-upgrade --ignore-missing lighttpd php-common php-cgi php php-mysql
@@ -212,7 +224,9 @@ if [ "$REINSTALL" = "yes" ]; then
   rm -f /usr/bin/omxplayer
 fi
 if [ ! -e /usr/bin/omxplayer ]; then
-  dpkg -i /opt/rpi/pkgs/omxplayer_20190723_armhf.deb
+  if [ "${OSVER}" = "bullseye" ]; then
+    dpkg -i /opt/rpi/pkgs/omxplayer_20190723_armhf.deb
+  fi
 fi
 
 ## Pi 3 Ethernet LED Control 
@@ -231,24 +245,29 @@ if [ "$REINSTALL" = "yes" ]; then
   rm -f /usr/local/bin/shairport-sync
 fi
 if [ ! -e /usr/local/bin/shairport-sync ]; then
-  apt-get remove -y shairport-sync
-  rm -f /lib/systemd/system/nqptp.service
-  git clone https://github.com/mikebrady/nqptp.git
-  cd nqptp
-  autoreconf -fi
-  ./configure --with-systemd-startup
-  make
-  make install
-  cd -
-  git clone https://github.com/mikebrady/shairport-sync.git
-  cd shairport-sync
-  autoreconf -fi
-  ./configure --sysconfdir=/etc --with-alsa --with-soxr \
-    --with-avahi --with-ssl=openssl --with-systemd --with-airplay-2
-  make -j
-  make install
-  cd -
-  ln -sf /usr/local/bin/shairport-sync /usr/bin/shairport-sync
+  if [ "${OSVER}" = "bullseye" ]; then
+    apt-get remove -y shairport-sync
+    rm -f /lib/systemd/system/nqptp.service
+    git clone https://github.com/mikebrady/nqptp.git
+    cd nqptp
+    autoreconf -fi
+    ./configure --with-systemd-startup
+    make
+    make install
+    cd -
+    git clone https://github.com/mikebrady/shairport-sync.git
+    cd shairport-sync
+    autoreconf -fi
+    ./configure --sysconfdir=/etc --with-alsa --with-soxr \
+      --with-avahi --with-ssl=openssl --with-systemd --with-airplay-2
+    make -j
+    make install
+    cd -
+    ln -sf /usr/local/bin/shairport-sync /usr/bin/shairport-sync
+  fi
+  if [ "${OSVER}" = "bookworm" ]; then
+    apt-get install -y --no-upgrade --ignore-missing shairport-sync
+  fi
 fi
 
 ## Camera Motion Server
@@ -256,9 +275,14 @@ if [ "$REINSTALL" = "yes" ]; then
   rm -f /usr/bin/motion
 fi
 if [ ! -e /usr/bin/motion ]; then
-  apt-get install -y --no-upgrade --ignore-missing libmicrohttpd12
-  dpkg -i /opt/rpi/pkgs/pi_bullseye_motion_4.5.0-1_armhf.deb
-  systemctl stop motion
+	systemctl stop motion
+	if [ "${OSVER}" = "bullseye" ]; then
+	  apt-get install -y --no-upgrade --ignore-missing libmicrohttpd12
+	  dpkg -i /opt/rpi/pkgs/pi_bullseye_motion_4.5.0-1_armhf.deb
+	fi
+	if [ "${OSVER}" = "bookworm" ]; then
+    apt-get install -y --no-upgrade --ignore-missing libmicrohttpd12 motion
+	fi
 fi
 groupadd motion
 useradd motion -g motion --shell /bin/false
@@ -608,34 +632,35 @@ rm -f /lib/udev/rules.d/75-persistent-net-generator.rules
 timedatectl set-ntp true
 timedatectl status
 
-## DHCP Configuration
+## Network Configuration
+if [ ! -e /lib/systemd/system/dhcpcd.service ]; then
+  echo "dhcpcd service not found, installing..."
+  cp -f $BIN/dhcpcd.service /lib/systemd/system/
+  chmod 644 /lib/systemd/system/dhcpcd.service
+  chown root:root /lib/systemd/system/dhcpcd.service
+fi
 cp -f $BIN/dhcpcd.conf /etc
 chmod 644 /etc/dhcpcd.conf
 chown root:root /etc/dhcpcd.conf
 cp -f $BIN/dhcpcd.conf /etc/dhcpcd.net
 chmod 644 /etc/dhcpcd.net
 chown root:root /etc/dhcpcd.net
-cp -f $BIN/dhcpcd.bridge /etc/dhcpcd.bridge
-chmod 644 /etc/dhcpcd.bridge
-chown root:root /etc/dhcpcd.bridge
-rm -f /etc/systemd/system/dhcpcd.service.d/wait.conf
-
-# Hotspot Configuration
 cp -f $BIN/dhcpcd.apd /etc/dhcpcd.apd
 chmod 644 /etc/dhcpcd.apd
 chown root:root /etc/dhcpcd.apd
+rm -f /etc/dhcpcd.bridge
+rm -f /etc/systemd/system/dhcpcd.service.d/wait.conf
+## DNS Server
 cp -f $BIN/dnsmasq.nodns /etc/
 chmod 644 /etc/dnsmasq.nodns
 chown root:root /etc/dnsmasq.nodns
 cp -f $BIN/dnsmasq.routed /etc/
 chmod 644 /etc/dnsmasq.routed
 chown root:root /etc/dnsmasq.routed
-cp -f $BIN/dnsmasq.bridge /etc/
-chmod 644 /etc/dnsmasq.bridge
-chown root:root /etc/dnsmasq.bridge
 cp -f $BIN/dnsmasq.hosts /etc/
 chmod 644 /etc/dnsmasq.hosts
 chown root:root /etc/dnsmasq.hosts
+## Access Point
 cp -f $BIN/hostapd.conf /etc/hostapd/hostapd.conf
 chmod 644 /etc/hostapd/hostapd.conf
 chown root:root /etc/hostapd/hostapd.conf

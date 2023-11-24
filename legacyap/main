@@ -1,0 +1,15 @@
+#!/bin/bash
+## Main Parser
+
+
+case "$1" in
+
+boot)
+echo "Startup Complete."
+exit
+;;
+    
+*)
+  exit 1
+;;
+esac   

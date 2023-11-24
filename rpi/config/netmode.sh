@@ -45,29 +45,6 @@ systemctl start wpa_supplicant
 iptables -t mangle -I POSTROUTING 1 -o wlan0 -p udp --dport 123 -j TOS --set-tos 0x00
 }
 
-BRIDGE_MODE(){
-## Stop Networking
-STOP_NET
-## Copy Wi-Fi Settings
-CPWIFI_CONF
-## DHCP Bridge Mode
-cp -f /etc/dhcpcd.bridge /etc/dhcpcd.conf
-chmod 644 /etc/dhcpcd.conf
-chown root:root /etc/dhcpcd.conf
-systemctl start dhcpcd
-## Start Wi-Fi Service
-systemctl start wpa_supplicant
-## Forward Traffic
-iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE  
-iptables -A FORWARD -i wlan0 -o eth0 -m state --state RELATED,ESTABLISHED -j ACCEPT  
-iptables -A FORWARD -i eth0 -o wlan0 -j ACCEPT
-## DNS Service
-cp -f /etc/dnsmasq.bridge /etc/dnsmasq.conf
-chmod 644 /etc/dnsmasq.conf
-chown root:root /etc/dnsmasq.conf
-systemctl start dnsmasq
-}
-
 CPWIFI_CONF(){
 if [ ! -e /boot/wpa.conf ]; then
   echo "WiFi config not found resetting."
@@ -170,17 +147,12 @@ boot)
 ## REQUIRED TO START NETWORKING!!
 rfkill unblock wifi
 BOOTUP="yes"
-if [ ! -e /boot/ap-bridge.enable ]; then
-  if [ ! -e /boot/apd.enable ]; then
-    echo "Client network mode"
-    CLIENT_MODE
-  else
-    echo "Hotspot network mode"
-    APD_MODE
-  fi
+if [ ! -e /boot/apd.enable ]; then
+  echo "Client network mode"
+  CLIENT_MODE
 else
-  echo "Bridge network mode"
-  BRIDGE_MODE
+  echo "Hotspot network mode"
+  APD_MODE
 fi
 exit
 ;;
@@ -188,13 +160,8 @@ exit
 client)
 ## Switch to client network mode
 BOOTUP="no"
-if [ ! -e /boot/ap-bridge.enable ]; then
-  echo "Client network mode"
-  CLIENT_MODE
-else
-  echo "Bridge network mode"
-  BRIDGE_MODE
-fi
+echo "Client network mode"
+CLIENT_MODE
 exit
 ;;
 

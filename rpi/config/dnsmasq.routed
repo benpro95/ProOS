@@ -5,4 +5,4 @@ domain=home
 local=/raspberrypi.home/
 expand-hosts
 addn-hosts=/etc/dnsmasq.hosts
-dhcp-range=192.168.42.2,192.168.42.199,48h
+dhcp-range=10.177.42.2,10.177.42.199,48h

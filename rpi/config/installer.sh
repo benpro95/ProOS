@@ -380,6 +380,7 @@ rm -f /boot/firmware/apd.enable
 
 ## Default Boot Config
 if [ "${OSVER}" = "bookworm" ]; then
+  raspi-config nonint enable_bootro
   cp -fv /boot/firmware/config.txt /boot/firmware/config.bak
   cp -f $BIN/config.txt /boot/firmware/
 else
@@ -405,16 +406,8 @@ if [ "${OSVER}" = "bullseye" ]; then
   cp -f $BIN/cmdline.txt /boot/cmdline.txt
   chmod 644 /boot/cmdline.txt
   chown root:root /boot/cmdline.txt
-  rm -f /sbin/overlayRoot.sh
   rm -f /boot/cmdline.rw
   rm -f /boot/cmdline.ro
-fi
-if [ "${OSVER}" = "bookworm" ]; then
-  cp -fv /boot/firmware/cmdline.txt /boot/firmware/cmdline.bak
-  cp -f $BIN/cmdline.txt /boot/firmware/cmdline.txt
-  chown root:root /boot/firmware/cmdline.txt
-  rm -f /boot/firmware/cmdline.rw
-  rm -f /boot/firmware/cmdline.ro
 fi
 
 ## WiFi Configuration

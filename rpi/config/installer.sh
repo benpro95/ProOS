@@ -50,6 +50,9 @@ echo "*"
 echo "Resettings to defaults..."
 echo "*"
 
+## Set boot partition to read/write
+mount -o remount,rw /boot
+
 ## Re-install Manual Sources
 REINSTALL="no"
 if [ -e /etc/rpi-reinitsource.done ]; then
@@ -73,16 +76,13 @@ chown -R pi:pi /home/pi
 chsh -s /bin/bash pi
 
 ## Node.js APT Key
-curl --silent -L https://deb.nodesource.com/gpgkey/nodesource.gpg.key | \
-  gpg --no-default-keyring --keyring /etc/apt/trusted.gpg --import -
-
-## Source List
-cp -f $BIN/rpi-apt.list /etc/apt/sources.list.d/rpi-apt.list
-chmod 644 /etc/apt/sources.list.d/rpi-apt.list
-chown root:root /etc/apt/sources.list.d/rpi-apt.list  
-
-## Set boot partition to read/write
-mount -o remount,rw /boot
+if [ "${OSVER}" = "bullseye" ]; then
+  curl --silent -L https://deb.nodesource.com/gpgkey/nodesource.gpg.key | \
+    gpg --no-default-keyring --keyring /etc/apt/trusted.gpg --import -
+  cp -f $BIN/node.list /etc/apt/sources.list.d/node.list
+  chmod 644 /etc/apt/sources.list.d/node.list
+  chown root:root /etc/apt/sources.list.d/node.list  
+fi
 
 ## Update Sources
 apt-get -y update --allow-releaseinfo-change
@@ -100,8 +100,7 @@ apt-get install -y --no-upgrade --ignore-missing locales console-setup \
 
 ## OS Specific Packages
 if [ "${OSVER}" = "bookworm" ]; then
-  apt-get install -y --no-upgrade --ignore-missing cryptsetup cryptsetup-bin \
-   dhcpcd dhcpcd-base gnucobol4
+  apt-get install -y --no-upgrade --ignore-missing dhcpcd dhcpcd-base gnucobol4
   systemctl stop NetworkManager-wait-online.service NetworkManager-dispatcher.service \
    NetworkManager.service ModemManager.service
   systemctl disable NetworkManager-wait-online.service NetworkManager-dispatcher.service \
@@ -154,7 +153,12 @@ update-rc.d dphys-swapfile remove
 apt-get -y remove --purge dphys-swapfile
 
 ## Perl Support
-apt-get install -y --no-upgrade --ignore-missing perl perl-modules-5.32
+if [ "${OSVER}" = "bookworm" ]; then
+  apt-get install -y --no-upgrade --ignore-missing perl perl-modules
+fi
+if [ "${OSVER}" = "bullseye" ]; then
+  apt-get install -y --no-upgrade --ignore-missing perl perl-modules-5.32
+fi
 
 ## CPU Specific Packages
 if [ "$CPUTYPE" = "Raspberry Pi Zero W Rev 1.1" ]; then
@@ -173,12 +177,17 @@ else
     rm -f /usr/bin/rclone
   fi 
   if [ ! -e /usr/bin/rclone ]; then
-    ## Newest Version
-    #curl https://rclone.org/install.sh | sudo bash
-    ## 1.58 Version
-    dpkg -i /opt/rpi/pkgs/rclone-v1.58.0-linux-arm-v7.deb
-    rclone --version
-    cd $BIN
+    if [ "${OSVER}" = "bookworm" ]; then
+      apt-get install -y --no-upgrade --ignore-missing rclone
+    fi
+    if [ "${OSVER}" = "bullseye" ]; then
+      ## Newest Version
+      #curl https://rclone.org/install.sh | sudo bash
+      ## 1.58 Version
+      dpkg -i /opt/rpi/pkgs/rclone-v1.58.0-linux-arm-v7.deb
+      rclone --version
+      cd $BIN
+    fi
   fi
 fi
 
@@ -233,11 +242,13 @@ fi
 if [ "$REINSTALL" = "yes" ]; then
   rm -f /usr/bin/lan951x-led-ctl
 fi
-if [ ! -e /usr/bin/lan951x-led-ctl ]; then
-  cd /opt/rpi/pkgs/lan951x-led-ctl-master
-  make
-  cp -v lan951x-led-ctl /usr/bin/
-  cd $BIN
+if [ "${OSVER}" = "bullseye" ]; then
+  if [ ! -e /usr/bin/lan951x-led-ctl ]; then
+    cd /opt/rpi/pkgs/lan951x-led-ctl-master
+    make
+    cp -v lan951x-led-ctl /usr/bin/
+    cd $BIN
+  fi
 fi
 
 ## AirPlay Support
@@ -295,12 +306,11 @@ apt-get remove --purge -y exim4 exim4-base exim4-config exim4-daemon-light udisk
   tigervnc-common tigervnc-standalone-server iptables-persistent bridge-utils vlc ntfs-3g \
   lxlock xscreensaver xscreensaver-data gvfs gvfs-backends vnc4server light-locker libudisks2-0 \
   desktop-file-utils exfat-fuse exfat-utils gdisk gnome-mime-data wolfram-engine libssl-doc \
-  libatasmart4 libavahi-glib1 gvfs-common gvfs-daemons gvfs-libs mpd mpc modemmanager \
+  libatasmart4 libavahi-glib1 gvfs-common gvfs-daemons gvfs-libs mpd mpc \
   rng-tools rng-tools-debian
 apt-get -y autoremove
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
-rm -rf /var/log/exim4
 rm -rf /etc/cron.*
 
 ## v5.0 Random Number Generator

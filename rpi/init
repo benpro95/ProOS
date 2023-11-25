@@ -160,9 +160,15 @@ if [[ "$STRIN" == *"$SUBSTR"* ]]; then
   ## Overlay mode on
   echo 'Rebooting in read/write mode...'
   systemctl stop rpi-*
-  mount -o remount,rw /boot
+  OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
+  if [ "${OSVER}" = "bookworm" ]; then
+    mount -o remount,rw /boot/firmware
+  else
+    # Boot partition read-only
+    mount -o remount,rw /boot
+  fi
+  systemctl daemon-reload
   raspi-config nonint disable_overlayfs
-  mount -o remount,ro /boot
   shutdown -r now  
 else
   ## Overlay mode off   
@@ -182,11 +188,41 @@ else
   ## Overlay mode off   
   echo 'Rebooting in read/only mode...'
   systemctl stop rpi-*
-  mount -o remount,rw /boot
+  OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
+  if [ "${OSVER}" = "bookworm" ]; then
+    mount -o remount,rw /boot/firmware
+  else
+    # Boot partition read-only
+    mount -o remount,rw /boot
+  fi
+  systemctl daemon-reload
   raspi-config nonint enable_overlayfs
-  mount -o remount,ro /boot
   shutdown -r now
 fi
+exit
+;;
+
+rwboot)
+OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
+if [ "${OSVER}" = "bookworm" ]; then
+  mount -o remount,rw /boot/firmware
+else
+  # Boot partition read-only
+  mount -o remount,rw /boot
+fi
+systemctl daemon-reload
+exit
+;;
+
+roboot)
+OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
+if [ "${OSVER}" = "bookworm" ]; then
+  mount -o remount,ro /boot/firmware
+else
+  # Boot partition read-only
+  mount -o remount,ro /boot
+fi
+systemctl daemon-reload
 exit
 ;;
 
@@ -202,7 +238,14 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
     exit 1
 fi
-mount -o remount,rw /boot
+OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
+if [ "${OSVER}" = "bookworm" ]; then
+  mount -o remount,rw /boot/firmware
+else
+  # Boot partition read-only
+  mount -o remount,rw /boot
+fi
+systemctl daemon-reload
 apt-get -y update --allow-releaseinfo-change
 apt-get upgrade
 apt-get dist-upgrade
@@ -236,7 +279,14 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
     exit 1
 fi
-mount -o remount,rw /boot
+OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
+if [ "${OSVER}" = "bookworm" ]; then
+  mount -o remount,rw /boot/firmware
+else
+  # Boot partition read-only
+  mount -o remount,rw /boot
+fi
+systemctl daemon-reload
 raspi-config --expand-rootfs
 echo " "
 echo "Re-enable read-only mode after reboot!"
@@ -255,23 +305,57 @@ exit
 cpwifi)
 echo 'Copying WiFi configuration...'
 sleep 1.25
-mount -o remount,rw /boot
-cp -f /tmp/wifidata /boot/wpa.conf
-mount -o remount,ro /boot
+OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
+if [ "${OSVER}" = "bookworm" ]; then
+  mount -o remount,rw /boot/firmware
+else
+  # Boot partition read-only
+  mount -o remount,rw /boot
+fi
+systemctl daemon-reload
+if [ "${OSVER}" = "bookworm" ]; then
+  cp -f /tmp/wifidata /boot/firmware/wpa.conf
+  mount -o remount,ro /boot/firmware
+else
+  # Boot partition read-only
+  cp -f /tmp/wifidata /boot/wpa.conf
+  mount -o remount,ro /boot
+fi
+systemctl daemon-reload
 exit
 ;;
 
 apdonboot)
-mount -o remount,rw /boot
-if [ -e /boot/apd.enable ]; then
-  echo 'Disabling hotspot mode on startup...'
-  rm -f /boot/apd.enable
+OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
+if [ "${OSVER}" = "bookworm" ]; then
+  mount -o remount,rw /boot/firmware
 else
-  echo 'Enabling hotspot mode on startup...'
-  touch /boot/apd.enable
+  # Boot partition read-only
+  mount -o remount,rw /boot
 fi
+systemctl daemon-reload
 sleep 1.25
-mount -o remount,ro /boot
+if [ "${OSVER}" = "bookworm" ]; then
+  if [ -e /boot/firmware/apd.enable ]; then
+    echo 'Disabling hotspot mode on startup...'
+    rm -f /boot/firmware/apd.enable
+  else
+    echo 'Enabling hotspot mode on startup...'
+    touch /boot/firmware/apd.enable
+  fi
+  mount -o remount,ro /boot/firmware
+else
+  if [ -e /boot/apd.enable ]; then
+    echo 'Disabling hotspot mode on startup...'
+    rm -f /boot/apd.enable
+  else
+    echo 'Enabling hotspot mode on startup...'
+    touch /boot/apd.enable
+  fi
+  # Boot partition read-only
+  mount -o remount,ro /boot
+fi
+systemctl daemon-reload
 exit
 ;;
 

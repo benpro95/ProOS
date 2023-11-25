@@ -1,5 +1,5 @@
 #!/bin/bash
-## Raspberry Pi ProOS Server Setup Script v10.0
+## Raspberry Pi ProOS Server Setup Script v11.0
 ## RUN 1st, then Module Installer
 
 # Core Path
@@ -51,7 +51,12 @@ echo "Resettings to defaults..."
 echo "*"
 
 ## Set boot partition to read/write
-mount -o remount,rw /boot
+if [ "${OSVER}" = "bookworm" ]; then
+  mount -o remount,rw /boot/firmware
+else
+  # Boot partition read-only
+  mount -o remount,rw /boot
+fi
 
 ## Re-install Manual Sources
 REINSTALL="no"
@@ -91,16 +96,17 @@ apt-get -y update --allow-releaseinfo-change
 apt-get install -y --no-upgrade --ignore-missing locales console-setup \
  aptitude libnss-mdns usbutils zsync v4l-utils libpq5 htop lsb-release \
  avahi-daemon avahi-discover avahi-utils hostapd dnsmasq unzip wget bc \
- rsync screen parallel sudo sed nano curl insserv wireless-regdb wireless-tools \
  uuid-runtime mpg321 mpv mplayer espeak tightvncserver iptables libnss3-tools jq \
- iw firmware-brcm80211 wpasupplicant dirmngr autofs triggerhappy apt-utils \
- build-essential git autoconf make libtool binutils i2c-tools cmake yasm \
- libmariadb3 texi2html socat nmap autoconf automake pkg-config iperf3 \
- keyboard-configuration ncftp inxi
+ rsync screen parallel sudo sed nano curl insserv wireless-regdb wireless-tools \
+ iw wpasupplicant dirmngr autofs triggerhappy apt-utils build-essential \
+ git autoconf make libtool binutils i2c-tools cmake yasm libmariadb3 \
+ texi2html socat nmap autoconf automake pkg-config \
+ keyboard-configuration ncftp inxi overlayfs
 
 ## OS Specific Packages
 if [ "${OSVER}" = "bookworm" ]; then
-  apt-get install -y --no-upgrade --ignore-missing dhcpcd dhcpcd-base gnucobol4
+  apt-get install -y --no-upgrade --ignore-missing dhcpcd dhcpcd-base gnucobol4 \
+   cryptsetup cryptsetup-bin
   systemctl stop NetworkManager-wait-online.service NetworkManager-dispatcher.service \
    NetworkManager.service ModemManager.service
   systemctl disable NetworkManager-wait-online.service NetworkManager-dispatcher.service \
@@ -115,25 +121,27 @@ fi
 ## Developer Packages 
 apt-get install -y --no-upgrade --ignore-missing libgtk2.0-dev libbluetooth3 libbluetooth-dev \
  libavfilter-dev libavdevice-dev libavcodec-dev libavc1394-dev libatlas-base-dev libusb-1.0-0-dev \
- libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdbus-glib-1-dev \
- libass-dev libfreetype6-dev libgpac-dev libsdl1.2-dev libtheora-dev libssl-dev \
- libva-dev libvdpau-dev libvorbis-dev libx11-dev libxext-dev libxfixes-dev \
  libjack-jackd2-dev portaudio19-dev libffi-dev libxslt1-dev libxml2-dev sqlite3 \
- libxml2-dev libxslt1-dev portaudio19-dev libffi-dev zlib1g-dev libdbus-1-dev
+ libass-dev libfreetype6-dev libgpac-dev libsdl1.2-dev libtheora-dev libssl-dev \
+ libxml2-dev libxslt1-dev portaudio19-dev libffi-dev zlib1g-dev libdbus-1-dev \
+ libva-dev libvdpau-dev libvorbis-dev libx11-dev libxext-dev libxfixes-dev \
+ libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdbus-glib-1-dev
 
  ## AV Codecs Support
 apt-get install -y --no-upgrade --ignore-missing libgstreamer1.0-dev gstreamer1.0-plugins-base \
- libx264-dev x264 ffmpeg libswscale-dev libavformat-dev libavcodec-dev libupnp-dev ffmpeg \
  gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly gstreamer1.0-tools gstreamer1.0-libav \
+ libx264-dev x264 ffmpeg libswscale-dev libavformat-dev libavcodec-dev libupnp-dev ffmpeg \
  libgstreamer-plugins-base1.0-0 gstreamer1.0-alsa gstreamer1.0-pulseaudio gstreamer1.0-omx
 
 ## EGL hardware video decoding libraries
+if [ "${OSVER}" = "bullseye" ]; then
 if [ ! -e /usr/lib/arm-linux-gnueabihf/libbrcmEGL.so ]; then
   cd /usr/lib/arm-linux-gnueabihf
   curl -sSfLO 'https://raw.githubusercontent.com/raspberrypi/firmware/master/opt/vc/lib/libbrcmEGL.so'
   curl -sSfLO 'https://raw.githubusercontent.com/raspberrypi/firmware/master/opt/vc/lib/libbrcmGLESv2.so'
   curl -sSfLO 'https://raw.githubusercontent.com/raspberrypi/firmware/master/opt/vc/lib/libopenmaxil.so'
   cd $BIN
+fi
 fi
 
 ## Install X11 and X Programs
@@ -226,7 +234,9 @@ apt-get install -y --no-upgrade --ignore-missing alsa-base alsa-utils mpg321 lam
 apt-get install -y --no-upgrade --ignore-missing bluetooth pi-bluetooth bluez bluez-tools
 
 ## Bluetooth Audio Support
-dpkg -i /opt/rpi/pkgs/bluealsa_0.13_armhf.deb
+if [ "${OSVER}" = "bullseye" ]; then
+  dpkg -i /opt/rpi/pkgs/bluealsa_0.13_armhf.deb
+fi
 
 ## OMX-Player
 if [ "$REINSTALL" = "yes" ]; then
@@ -341,12 +351,6 @@ fi
 rm -f /opt/rpi/remotes/leds
 rm -f /tmp/global-fc.lock
 
-## Enable overlayFS filesystem
-raspi-config nonint enable_overlayfs
-
-## Set bootloader RO
-mount -o remount,ro /boot
-
 echo "Phase I setup complete."
 fi ###### END OF SUB-SCRIPT #######################
 ###################################################
@@ -356,34 +360,62 @@ fi ###### END OF SUB-SCRIPT #######################
 echo "Installing system configuration."
 
 ## Boot partition read-write
-mount -o remount,rw /boot
+if [ "${OSVER}" = "bookworm" ]; then
+  mount -o remount,rw /boot/firmware
+else
+  # Boot partition read-only
+  mount -o remount,rw /boot
+fi
 
 ## SSH will be enabled by systemd, do not use this file
 rm -f /boot/ssh
+rm -f /boot/firmware/ssh
 ## Delete flags, return to default
 rm -f /boot/ap-bridge.enable
 rm -f /boot/apd-routed.enable
 rm -f /boot/apd.enable
+rm -f /boot/firmware/ap-bridge.enable
+rm -f /boot/firmware/apd-routed.enable
+rm -f /boot/firmware/apd.enable
 
 ## Default Boot Config
-cp -f $BIN/config.txt /boot/
+if [ "${OSVER}" = "bookworm" ]; then
+  cp -fv /boot/firmware/config.txt /boot/firmware/config.bak
+  cp -f $BIN/config.txt /boot/firmware/
+else
+  cp -f $BIN/config.txt /boot/
+fi
+
+## Text mode
+systemctl set-default multi-user.target
 
 ## Pi Zero W 2 Support
-if [ ! -e /boot/bcm2710-rpi-zero-2.dtb ]; then
-  echo "Copying Pi Zero W 2 ROM file to boot partition."
-  cp -f /opt/rpi/pkgs/bcm2710-rpi-zero-2.dtb /boot/
+if [ "${OSVER}" = "bullseye" ]; then
+  if [ ! -e /boot/bcm2710-rpi-zero-2.dtb ]; then
+    echo "Copying Pi Zero W 2 ROM file to boot partition."
+    cp -f /opt/rpi/pkgs/bcm2710-rpi-zero-2.dtb /boot/
+  fi
 fi
 
 ## OverlayFS Configuration
-cp -f $BIN/fstab /etc
-chmod 644 /etc/fstab
-chown root:root /etc/fstab
-cp -f $BIN/cmdline.txt /boot/cmdline.txt
-chmod 644 /boot/cmdline.txt
-chown root:root /boot/cmdline.txt
-rm -f /sbin/overlayRoot.sh
-rm -f /boot/cmdline.rw
-rm -f /boot/cmdline.ro
+if [ "${OSVER}" = "bullseye" ]; then
+  cp -f $BIN/fstab /etc/fstab
+  chmod 644 /etc/fstab
+  chown root:root /etc/fstab
+  cp -f $BIN/cmdline.txt /boot/cmdline.txt
+  chmod 644 /boot/cmdline.txt
+  chown root:root /boot/cmdline.txt
+  rm -f /sbin/overlayRoot.sh
+  rm -f /boot/cmdline.rw
+  rm -f /boot/cmdline.ro
+fi
+if [ "${OSVER}" = "bookworm" ]; then
+  cp -fv /boot/firmware/cmdline.txt /boot/firmware/cmdline.bak
+  cp -f $BIN/cmdline.txt /boot/firmware/cmdline.txt
+  chown root:root /boot/firmware/cmdline.txt
+  rm -f /boot/firmware/cmdline.rw
+  rm -f /boot/firmware/cmdline.ro
+fi
 
 ## WiFi Configuration
 raspi-config nonint do_wifi_country US
@@ -398,11 +430,21 @@ if [ ! -e /etc/wpa_supplicant/wpa_supplicant.conf ]; then
 fi
 if [ ! -e /boot/wpa.conf ]; then
   echo "Copying Wi-Fi settings to boot partition."
-  cp -f /etc/wpa_supplicant/wpa_supplicant.conf /boot/wpa.conf
+  if [ "${OSVER}" = "bullseye" ]; then
+    cp -f /etc/wpa_supplicant/wpa_supplicant.conf /boot/wpa.conf
+  fi  
+  if [ "${OSVER}" = "bookworm" ]; then
+    cp -f /etc/wpa_supplicant/wpa_supplicant.conf /boot/firmware/wpa.conf
+    ln -sf /boot/firmware/wpa.conf /boot/wpa.conf
+  fi  
 fi
 
-## Boot partition read-only
-mount -o remount,ro /boot
+if [ "${OSVER}" = "bookworm" ]; then
+  mount -o remount,ro /boot/firmware
+else
+  # Boot partition read-only
+  mount -o remount,ro /boot
+fi
 
 ## Copy SSH Configuration
 cp $BIN/sshd_config /etc/ssh
@@ -431,12 +473,14 @@ chown pi:pi /home/pi/.bashrc
 passwd -d root
 
 ## System Configuration
+cp -f /etc/sysctl.conf /etc/sysconf.bak
 cp -f $BIN/sysctl.conf /etc
 chmod 644 /etc/sysctl.conf
 chown root:root /etc/sysctl.conf
 
 ## Journal Configuration
-cp -f $BIN/journald.conf /etc/systemd
+cp -f /etc/systemd/journald.conf /etc/systemd/journald.bak
+cp -f $BIN/journald.conf /etc/systemd/
 chmod 644 /etc/systemd/journald.conf
 chown root:root /etc/systemd/journald.conf
 
@@ -648,6 +692,7 @@ if [ ! -e /lib/systemd/system/dhcpcd.service ]; then
   cp -f $BIN/dhcpcd.service /lib/systemd/system/
   chmod 644 /lib/systemd/system/dhcpcd.service
   chown root:root /lib/systemd/system/dhcpcd.service
+  systemctl daemon-reload
 fi
 cp -f $BIN/dhcpcd.conf /etc
 chmod 644 /etc/dhcpcd.conf
@@ -780,11 +825,8 @@ cobc -x --free /opt/rpi/effects/colorscan.cbl -o /opt/rpi/effects/colorscan
 systemctl daemon-reload
 if [ ! -e /etc/rpi-conf.done ]; then
 ## Active on startup
-systemctl enable ssh avahi-daemon systemd-timesyncd systemd-time-wait-sync
-systemctl enable proinit rpi-cleanup.timer
-systemctl unmask systemd-journald
-systemctl unmask hostapd
-systemctl unmask motion
+systemctl enable ssh avahi-daemon systemd-timesyncd systemd-time-wait-sync proinit rpi-cleanup.timer
+systemctl unmask systemd-journald hostapd motion
 ## Disabled on startup
 systemctl disable hostapd dhcpcd networking wpa_supplicant keyboard-setup \
 plymouth sysstat lightdm apache2 lighttpd dnsmasq apt-daily.service wifiswitch plymouth-log \

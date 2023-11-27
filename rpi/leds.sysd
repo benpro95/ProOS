@@ -13,7 +13,7 @@ EFFECT=${rpi_fceffect#*-}
 #echo "Set LEDs to $PRGM_TYPE program $EFFECT"
 
 ## Perl Effects
-if [ "$PRGM_TYPE" = "perl" ]; then
+if [ "$PRGM_TYPE" == "perl" ]; then
 ##  
   export PERL5LIB=$BIN_PATH/effects
   /usr/bin/perl $BIN_PATH/effects/$EFFECT.pl
@@ -22,30 +22,30 @@ if [ "$PRGM_TYPE" = "perl" ]; then
 fi
 
 ## Python Effects
-if [ "$PRGM_TYPE" = "pyth" ]; then
+if [ "$PRGM_TYPE" == "pyth" ]; then
 ##  
-  if [ "$EFFECT" = "rave"  ] || [ "$EFFECT" = "chase" ]; then
-    /usr/bin/python2 $BIN_PATH/effects/$EFFECT.py
+  if [ "$EFFECT" == "rave"  ] || [ "$EFFECT" == "chase" ]; then
+    /usr/bin/python3 $BIN_PATH/effects/$EFFECT.py
     exit
   else
-    /usr/bin/python2 $BIN_PATH/effects/$EFFECT.py \
-     --layout $BIN_PATH/effects/wall.json
+    /usr/bin/python3 $BIN_PATH/effects/$EFFECT.py \
+     --layout $BIN_PATH/effects/wall.json -f 60
     exit
   fi
 ##
 fi
 
 ## Java Effects
-if [ "$PRGM_TYPE" = "java" ]; then
+if [ "$PRGM_TYPE" == "java" ]; then
 ##
-  if [ "$EFFECT" = "spectro" ]; then
+  if [ "$EFFECT" == "spectro" ]; then
     /usr/bin/Xvfb :1 -screen 0 640x640x24 &
     sleep 1.0
     /usr/bin/nice -n 10 $BIN_PATH/effects/spectro/SpectroGraph
     exit
   fi
 ##
-  if [ "$EFFECT" = "rainbow" ]; then
+  if [ "$EFFECT" == "rainbow" ]; then
     /usr/bin/Xvfb :1 -screen 0 640x640x24 &
     sleep 1.0
     /usr/bin/nice -n 10 $BIN_PATH/effects/rainbow/rainbow

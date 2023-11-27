@@ -19,10 +19,16 @@ fi
 echo "Starting $MODNAME configuration..."
 
 ## Copy Boot Config
-mount -o remount,rw /boot
-sleep 1.25
-cp -r $BIN/modconf/config.txt /boot/
-mount -o remount,ro /boot
+OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
+if [ "${OSVER}" = "bookworm" ]; then
+  mount -o remount,rw /boot/firmware
+  cp -f $BIN/modconf/config.txt /boot/firmware/
+  mount -o remount,ro /boot/firmware
+else
+  mount -o remount,rw /boot
+  cp -f $BIN/modconf/config.txt /boot/
+  mount -o remount,ro /boot
+fi
 
 ## Set LEDgrid Type
 rm -f /opt/rpi/ledtype.txt

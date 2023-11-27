@@ -19,7 +19,7 @@ if not dev:
 
 dev.set_configuration()
 
-print("Serial number: %s" % usb.util.get_string(dev, 255, dev.iSerialNumber))
+print(("Serial number: %s" % usb.util.get_string(dev, 255, dev.iSerialNumber)))
 
 # Debug flags
 
@@ -62,6 +62,6 @@ while True:
         #print(binascii.b2a_hex(data))
 
     #print('')
-    raw_input()
+    input()
     #time.sleep(0.1)
 

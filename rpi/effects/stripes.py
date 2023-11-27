@@ -19,7 +19,7 @@ Then run this script in another shell to send colors to the simulator
 
 """
 
-from __future__ import division
+
 import time
 import sys
 import optparse
@@ -50,18 +50,18 @@ options, args = parser.parse_args()
 
 if not options.layout:
     parser.print_help()
-    print
-    print 'ERROR: you must specify a layout file using --layout'
-    print
+    print()
+    print('ERROR: you must specify a layout file using --layout')
+    print()
     sys.exit(1)
 
 
 #-------------------------------------------------------------------------------
 # parse layout file
 
-print
-print '    parsing layout file'
-print
+print()
+print('    parsing layout file')
+print()
 
 coordinates = []
 for item in json.load(open(options.layout)):
@@ -74,11 +74,11 @@ for item in json.load(open(options.layout)):
 
 client = opc.Client(options.server)
 if client.can_connect():
-    print '    connected to %s' % options.server
+    print('    connected to %s' % options.server)
 else:
     # can't connect, but keep running in case the server appears later
-    print '    WARNING: could not connect to %s' % options.server
-print
+    print('    WARNING: could not connect to %s' % options.server)
+print()
 
 
 #-------------------------------------------------------------------------------
@@ -121,8 +121,8 @@ def pixel_color(t, coord, ii, n_pixels):
 #-------------------------------------------------------------------------------
 # send pixels
 
-print '    sending pixels forever (control-c to exit)...'
-print
+print('    sending pixels forever (control-c to exit)...')
+print()
 
 n_pixels = len(coordinates)
 start_time = time.time()

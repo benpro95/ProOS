@@ -2,7 +2,7 @@
 
 """Helper functions to make color manipulations easier."""
 
-from __future__ import division
+
 import math
 
 def remap(x, oldmin, oldmax, newmin, newmax):

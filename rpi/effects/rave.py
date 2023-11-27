@@ -18,7 +18,7 @@ Then run this script in another shell to send colors to the simulator
 
 """
 
-from __future__ import division
+
 import time
 import math
 import sys
@@ -35,11 +35,11 @@ if len(sys.argv) == 1:
 elif len(sys.argv) == 2 and ':' in sys.argv[1] and not sys.argv[1].startswith('-'):
     IP_PORT = sys.argv[1]
 else:
-    print
-    print '    Usage: raver_plaid.py [ip:port]'
-    print
-    print '    If not set, ip:port defauls to 127.0.0.1:7890'
-    print
+    print()
+    print('    Usage: raver_plaid.py [ip:port]')
+    print()
+    print('    If not set, ip:port defauls to 127.0.0.1:7890')
+    print()
     sys.exit(0)
 
 
@@ -48,17 +48,17 @@ else:
 
 client = opc.Client(IP_PORT)
 if client.can_connect():
-    print '    connected to %s' % IP_PORT
+    print('    connected to %s' % IP_PORT)
 else:
     # can't connect, but keep running in case the server appears later
-    print '    WARNING: could not connect to %s' % IP_PORT
-print
+    print('    WARNING: could not connect to %s' % IP_PORT)
+print()
 
 
 #-------------------------------------------------------------------------------
 # send pixels
 
-print
+print()
 
 n_pixels = 128  # number of pixels in the included "wall" layout
 fps = 30         # frames per second

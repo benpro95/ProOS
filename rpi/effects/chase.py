@@ -4,7 +4,7 @@
 
 import opc, time
 
-numLEDs = 128
+numLEDs = 512
 client = opc.Client('127.0.0.1:7890')
 
 while True:

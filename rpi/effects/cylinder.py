@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from __future__ import division
+
 import math
 import optparse
 import sys
@@ -58,7 +58,7 @@ for ii in range(options.n_tall):
 result[-1] = result[-1][:-1]
 
 result.append(']')
-print '\n'.join(result)
+print('\n'.join(result))
 
 sys.stderr.write('\nn_around = %s\n' % options.n_around)
 sys.stderr.write('n_tall = %s\n' % options.n_tall)

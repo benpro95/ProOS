@@ -15,25 +15,28 @@ Recommended use:
 
     # Test if it can connect (optional)
     if client.can_connect():
-        print 'connected to %s' % ADDRESS
+        print('connected to %s' % ADDRESS)
     else:
         # We could exit here, but instead let's just print a warning
         # and then keep trying to send pixels in case the server
         # appears later
-        print 'WARNING: could not connect to %s' % ADDRESS
+        print('WARNING: could not connect to %s' % ADDRESS)
 
     # Send pixels forever at 30 frames per second
     while True:
         my_pixels = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
         if client.put_pixels(my_pixels, channel=0):
-            print '...'
+            print('...')
         else:
-            print 'not connected'
+            print('not connected')
         time.sleep(1/30.0)
 
 """
 
 import socket
+import struct
+import sys
+
 
 class Client(object):
 
@@ -70,7 +73,7 @@ class Client(object):
 
     def _debug(self, m):
         if self.verbose:
-            print '    %s' % str(m)
+            print('    %s' % str(m))
 
     def _ensure_connected(self):
         """Set up a connection if one doesn't already exist.
@@ -146,14 +149,21 @@ class Client(object):
         # build OPC message
         len_hi_byte = int(len(pixels)*3 / 256)
         len_lo_byte = (len(pixels)*3) % 256
-        header = chr(channel) + chr(0) + chr(len_hi_byte) + chr(len_lo_byte)
-        pieces = [header]
-        for r, g, b in pixels:
-            r = min(255, max(0, int(r)))
-            g = min(255, max(0, int(g)))
-            b = min(255, max(0, int(b)))
-            pieces.append(chr(r) + chr(g) + chr(b))
-        message = ''.join(pieces)
+        command = 0  # set pixel colors from openpixelcontrol.org
+
+        header = struct.pack("BBBB", channel, command, len_hi_byte, len_lo_byte)
+
+        pieces = [ struct.pack( "BBB",
+                     min(255, max(0, int(r))),
+                     min(255, max(0, int(g))),
+                     min(255, max(0, int(b)))) for r, g, b in pixels ]
+
+        if sys.version_info[0] == 3:
+            # bytes!
+            message = header + b''.join(pieces)
+        else:
+            # strings!
+            message = header + ''.join(pieces)
 
         self._debug('put_pixels: sending pixels to server')
         try:
@@ -167,6 +177,38 @@ class Client(object):
             self._debug('put_pixels: disconnecting')
             self.disconnect()
 
+        return True
+
+    def set_interpolation(self, enabled = True):
+        """
+        Enables or disables frame interpolation on runtime.
+
+        Return True on success.
+        """
+        self._debug('set_interpolation: connecting')
+        is_connected = self._ensure_connected()
+        if not is_connected:
+            self._debug('set_interpolation: not connected.  ignoring reconfiguration.')
+            return False
+    
+        #build firmaware configuration message as documented on
+        #https://github.com/scanlime/fadecandy/blob/master/doc/fc_protocol_opc.md#set-firmware-configuration
+        if enabled:
+            config_bit = 0
+        else:
+            config_bit = 2
+        message = struct.pack('BBBBBBBBB', 0, 255, 0, 5, 0, 1, 0, 2, config_bit)
+    
+        self._debug('set_interpolation: sending firmware configuration')
+        try:
+            self._socket.send(message)
+        except socket.error:
+            self._debug('set_interpolation: connection lost.  could not send firmware configuration.')
+            self._socket = None
+            return False
+        if not self._long_connection:
+            self._debug('set_interpolation: disconnecting')
+            self.disconnect()
         return True
 
 

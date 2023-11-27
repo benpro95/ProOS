@@ -11,7 +11,7 @@ import cv2
 import opc
 import time
 
-print "Starting VideoLEDs - press CTRL-C to exit"
+print("Starting VideoLEDs - press CTRL-C to exit")
 
 cap = cv2.VideoCapture('/tmp/movie.mp4')
 

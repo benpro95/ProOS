@@ -329,7 +329,7 @@ exit
 ;;
 
 cpwifi)
-echo "Copying WiFi configuration..."
+echo "Copying WiFi configuration to boot partition..."
 OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
 if [ "${OSVER}" = "bookworm" ]; then
   mount -o remount,rw /boot/firmware
@@ -346,6 +346,7 @@ else
   cp -f /tmp/wifidata /boot/wpa.conf
   mount -o remount,ro /boot
 fi
+rm -rf /tmp/wifidata
 systemctl daemon-reload
 exit
 ;;
@@ -385,27 +386,27 @@ exit
 ;;
 
 netdetect)
-echo "Switching to hotspot if network down."
-echo "Log is written to '/tmp/netstat.txt'"
+echo "switching to hotspot if network down."
+echo "log is written to '/tmp/netstat.txt'"
 systemctl start rpi-netdetect.service
 exit
 ;;
 
 delwifi)
-echo "Resetting Wi-Fi Settings..."
-/bin/bash /etc/netmode.sh delwifi
+echo "resetting Wi-Fi settings..."
+/bin/bash /etc/netmode.sh delwifi > /dev/null 2>&1
 exit
 ;;
 
 client)
-echo 'Enabling client network mode...'
-/bin/bash /etc/netmode.sh client
+echo 'enabling client network mode...'
+/bin/bash /etc/netmode.sh client > /dev/null 2>&1
 exit
 ;;
 
 apd)
-echo 'Enabling access point mode...'
-/bin/bash /etc/netmode.sh apd
+echo 'enabling access point mode...'
+/bin/bash /etc/netmode.sh apd > /dev/null 2>&1
 exit
 ;;
 

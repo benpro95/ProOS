@@ -57,7 +57,7 @@ function loadPage() {
   let elem = document.getElementById("load__bar");
   elem.textContent = defaultSite; 
   // read theme from local storage or choose default
-  currentTheme = localStorage.getItem("styledata") || "blue-theme";
+  currentTheme = localStorage.getItem("styledata") || "darkblue-theme";
   setTheme(currentTheme);
 };
 

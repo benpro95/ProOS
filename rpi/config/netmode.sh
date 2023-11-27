@@ -25,7 +25,7 @@ fi
 ## Disable WiFi Power Management
 /sbin/iw dev wlan0 set power_save off
 ## Turn off hotspot LED if exists
-/opt/rpi/main apdled-off
+/opt/rpi/main apdled-off || :
 sleep 2.5
 }
 
@@ -153,13 +153,24 @@ boot)
 ## REQUIRED TO START NETWORKING!!
 rfkill unblock wifi
 BOOTUP="yes"
-if [ ! -e /boot/apd.enable ]; then
-  echo "Client network mode"
-  CLIENT_MODE
+OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
+if [ "${OSVER}" = "bookworm" ]; then
+  if [ ! -e /boot/firmware/apd.enable ]; then
+    echo "Client network mode"
+    CLIENT_MODE
+  else
+    echo "Hotspot network mode"
+    APD_MODE
+  fi
 else
-  echo "Hotspot network mode"
-  APD_MODE
-fi
+  if [ ! -e /boot/apd.enable ]; then
+    echo "Client network mode"
+    CLIENT_MODE
+  else
+    echo "Hotspot network mode"
+    APD_MODE
+  fi
+fi  
 exit
 ;;
 

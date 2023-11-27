@@ -874,8 +874,12 @@
       <div class="dropdown"> 
 	      <a class="dropbtn" onclick="showMenu('pi-options-menu')">Options</a>
 	        <div class="dropdown-content" id="pi-options-menu">
-            <a onclick="showPiWiFiPrompt()"> Setup WiFi</a> 
-	          <a onclick="serverAction('wifiscan')"> WiFi Scan</a> 
+            <a onclick="showPiWiFiPrompt()"> Setup WiFi</a>
+            <a onclick="serverAction('temp')"> Temperature</a> 
+            <a onclick="serverAction('apd')"> Hotspot Network</a> 
+            <a onclick="serverAction('client')"> Client Network</a> 
+            <a onclick="serverAction('showwpa')"> Network Status</a> 
+	          <a onclick="serverAction('wifiscan')"> WiFi Scanner</a> 
 	          <a onclick="serverAction('clearlog')"> Clear Log</a>
 	        </div>
 	      </div>	  	

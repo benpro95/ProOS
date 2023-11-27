@@ -2,42 +2,61 @@
 ##
 ## Pi Web Terminal System Configuration API 
 ##
-LOGFILE="/var/www/html/ram/sysout.txt"
-if [[ "$1" == "" ]]
-then
-  echo "no argument." &>> $LOGFILE  
+EXIT_ROUTINE() {
+  TRAILER=$(date)
+  TRAILER+=" ("
+  TRAILER+=$(hostname)
+  TRAILER+=")"
+  echo "$TRAILER" &>> $LOGFILE
+  echo " " &>> $LOGFILE
   exit
+}
+
+LOGFILE="/var/www/html/ram/sysout.txt"
+
+if [ "$1" == "" ]; then
+  echo "no argument." &>> $LOGFILE  
+  EXIT_ROUTINE
 fi
 ## Wi-Fi setup API
-if [ "$1" = "confwpa" ]; then
-  echo "applying Wi-Fi configuration..." &>> $LOGFILE
+if [ "$1" == "confwpa" ]; then
   ## Decode base64
   WPADATA=$(echo "$2" | base64 --decode)
   ## Split by delimiter
   DELIM="|$|"
-  SSID=${WPADATA%"$DELIM"*}
-  PWD=${WPADATA#*"$DELIM"}
+  WPA_SSID=${WPADATA%"$DELIM"*}
+  WPA_PWD=${WPADATA#*"$DELIM"}
   ## Write to configuration
-  echo "SSID: $SSID" &>> $LOGFILE
-  echo "Password: $PWD" &>> $LOGFILE
-  exit	
+  cp -f /etc/wpa_supplicant/wpa_supplicant.template /tmp/wifidata
+  sed -i -e "s/|||SSID_PLACEHOLDER|||/$WPA_SSID/g" /tmp/wifidata
+  sed -i -e "s/|||PASSWORD_PLACEHOLDER|||/$WPA_PWD/g" /tmp/wifidata
+  ## Copy configuration to boot partition
+  /opt/rpi/init cpwifi
+  echo "set Wi-Fi configuration." &>> $LOGFILE
+  echo " " &>> $LOGFILE
+  EXIT_ROUTINE	
 fi
 ## Server control
-if [ "$1" = "server" ]; then
-	if [[ $2 == "clearlog" ]]
-	then
+if [ "$1" == "server" ]; then
+	if [ "$2" == "clearlog" ]; then
 	  truncate -s 0 $LOGFILE
-	else
-	  /opt/rpi/init "$2" &>> $LOGFILE
+    EXIT_ROUTINE
 	fi
+  if [ "$2" == "showwpa" ]; then
+    echo "current Wi-Fi configuration:" &>> $LOGFILE
+    cat /boot/wpa.conf &>> $LOGFILE
+    echo " " &>> $LOGFILE
+    echo "network configuration:" &>> $LOGFILE
+    ifconfig &>> $LOGFILE
+    EXIT_ROUTINE
+  fi
+  echo "sent $2 system command." &>> $LOGFILE
+	/opt/rpi/init "$2" &>> $LOGFILE
+  EXIT_ROUTINE
 else
 ## Application control
   /opt/rpi/main "$1" "$2" &>> $LOGFILE
+  EXIT_ROUTINE
 fi
-TRAILER=$(date)
-TRAILER+=" ("
-TRAILER+=$(hostname)
-TRAILER+=")"
-echo "$TRAILER" &>> $LOGFILE
-echo " " &>> $LOGFILE
+
 exit

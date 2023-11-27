@@ -311,6 +311,8 @@ usermod -u 1005 motion
 
 ## Remove Packages
 apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp udhcpd usbmuxd
+apt-get remove --purge -y cups cups-client cups-common cups-core-drivers cups-daemon \
+  cups-filters cups-filters-core-drivers cups-ipp-utils cups-ppdc cups-server-common
 apt-get remove --purge -y exim4 exim4-base exim4-config exim4-daemon-light udisks2 \
   tigervnc-common tigervnc-standalone-server iptables-persistent bridge-utils vlc ntfs-3g \
   lxlock xscreensaver xscreensaver-data gvfs gvfs-backends vnc4server libudisks2-0 \
@@ -560,9 +562,10 @@ chmod -R g+rx /var/www/uploads
 chown -R www-data:www-data /var/www/uploads
 
 if [ ! -e /opt/rpi/modconf/brand.txt ]; then
-echo "Skipping module modification."
+  ## No module selected
+  sed -i "s/>Automate</>RaspberryPi</g" /var/www/html/index.html
 else
-  ## Set module name to light server
+  ## Set module name
   sed -i "s/>Automate</>$MODNAME</g" /var/www/html/index.html
 fi
 
@@ -816,7 +819,7 @@ if [ ! -e /etc/rpi-conf.done ]; then
   systemctl disable hostapd dhcpcd networking wpa_supplicant keyboard-setup 
   systemctl disable sysstat lighttpd dnsmasq apt-daily.service wifiswitch motion
   systemctl disable apt-daily.timer apt-daily-upgrade.service apt-daily-upgrade.timer sysstat-collect.timer
-  systemctl disable hciuart bluetooth bthelper@hci0
+  systemctl disable hciuart bluetooth bthelper@hci0 bluealsa
   systemctl disable sysstat-summary.timer man-db.service man-db.timer usbplug nmbd smbd autofs 
   systemctl disable triggerhappy.service triggerhappy.socket e2scrub_all.service e2scrub_all.timer 
   systemctl disable serial-getty@ttyS0.service serial-getty@ttyAMA0.service

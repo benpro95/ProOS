@@ -8,14 +8,21 @@ then
   echo "no argument." &>> $LOGFILE  
   exit
 fi
-## Wi-Fi Setup API
+## Wi-Fi setup API
 if [ "$1" = "confwpa" ]; then
   echo "applying Wi-Fi configuration..." &>> $LOGFILE
+  ## Decode base64
   WPADATA=$(echo "$2" | base64 --decode)
-  echo "$WPADATA" &>> $LOGFILE
+  ## Split by delimiter
+  DELIM="|$|"
+  SSID=${WPADATA%"$DELIM"*}
+  PWD=${WPADATA#*"$DELIM"}
+  ## Write to configuration
+  echo "SSID: $SSID" &>> $LOGFILE
+  echo "Password: $PWD" &>> $LOGFILE
   exit	
 fi
-## Server Control
+## Server control
 if [ "$1" = "server" ]; then
 	if [[ $2 == "clearlog" ]]
 	then
@@ -24,7 +31,7 @@ if [ "$1" = "server" ]; then
 	  /opt/rpi/init "$2" &>> $LOGFILE
 	fi
 else
-## Application Control
+## Application control
   /opt/rpi/main "$1" "$2" &>> $LOGFILE
 fi
 TRAILER=$(date)

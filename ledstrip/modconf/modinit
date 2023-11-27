@@ -25,6 +25,11 @@ echo "8x60strips" > /opt/rpi/ledtype.txt
 ## Shortcut to main script
 ln -sf /opt/rpi/main /usr/bin/leds
 
+## Web Interface
+cp -v /opt/rpi/device.js /var/www/html/
+chmod -R 777 /var/www/html/device.js
+chown -R www-data:www-data /var/www/html/device.js
+
 ## Copy Boot Config
 mount -o remount,rw /boot
 sleep 1.25

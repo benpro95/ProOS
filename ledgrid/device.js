@@ -1,4 +1,4 @@
 var deviceType = function() {
-   const str = 'Pi';
+   const str = 'LEDpi';
    return str;
 }

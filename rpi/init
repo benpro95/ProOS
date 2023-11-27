@@ -27,6 +27,26 @@ watch -n 1 cat /proc/net/wireless
 exit
 ;;
 
+wifiscan)
+iwlist wlan0 scan | awk -F: '
+BEGIN {
+printf "%-40s | %3s | %5s | %4s\n", "SSID", "Enc", "Qual", "Chan"
+}
+function print_network() {
+printf "%-40s | %3s | %5s | %4s\n", essid, key, quality, channel
+}
+/^[[:space:]]*Cell [0-9]+/ { if (key) { print_network() } }
+/^[[:space:]]*Channel:/ { channel=$2 }
+/^[[:space:]]*Encryption key:/ { key=$2 }
+/^[[:space:]]*ESSID:/ { essid=$2 }
+/^[[:space:]]*Quality=/ {
+match($0, /[0-9]+\/[0-9]+/)
+quality=substr($0, RSTART, RLENGTH)
+}
+END { print_network() }'
+exit
+;;
+
 active)
 echo "Active services."
 systemctl list-units --type=service --state=active
@@ -54,6 +74,12 @@ exit
 gpu)
 echo "GPU statistics."
 vcdbg reloc stats
+exit
+;;
+
+rmorphan)
+echo "Removing orphaned packages..."
+deborphan | xargs dpkg -P
 exit
 ;;
 
@@ -303,8 +329,7 @@ exit
 ;;
 
 cpwifi)
-echo 'Copying WiFi configuration...'
-sleep 1.25
+echo "Copying WiFi configuration..."
 OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
 if [ "${OSVER}" = "bookworm" ]; then
   mount -o remount,rw /boot/firmware
@@ -368,19 +393,19 @@ exit
 
 delwifi)
 echo "Resetting Wi-Fi Settings..."
-/usr/bin/screen -dm /bin/bash /etc/netmode.sh delwifi
+/bin/bash /etc/netmode.sh delwifi
 exit
 ;;
 
 client)
 echo 'Enabling client network mode...'
-/usr/bin/screen -dm /bin/bash /etc/netmode.sh client
+/bin/bash /etc/netmode.sh client
 exit
 ;;
 
 apd)
 echo 'Enabling access point mode...'
-/usr/bin/screen -dm /bin/bash /etc/netmode.sh apd
+/bin/bash /etc/netmode.sh apd
 exit
 ;;
 
@@ -389,10 +414,10 @@ togglenet)
 if pgrep -x "hostapd" > /dev/null 2> /dev/null
 then
   echo "APD running, switching to client..."
-  /usr/bin/screen -dm /bin/bash /etc/netmode.sh client
+  /bin/bash /etc/netmode.sh client
 else
   echo "APD not running, switching to hotspot..."
-  /usr/bin/screen -dm /bin/bash /etc/netmode.sh apd
+  /bin/bash /etc/netmode.sh apd
 fi
 exit
 ;;
@@ -445,6 +470,7 @@ exit
           echo "active - Active services"
           echo "timers - Active timers"
           echo "wifistats - Wi-Fi statistics"
+          echo "wifiscan - Wi-Fi network scanner"
           echo "restart-alsa - Restart audio subsystem"
           echo "netdetect - Switch to hotspot if network down"
           echo "apdonboot - Toggle hotspot mode on startup"

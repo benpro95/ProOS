@@ -1,0 +1,36 @@
+#!/bin/bash
+##
+## Pi Web Terminal System Configuration API 
+##
+LOGFILE="/var/www/html/ram/sysout.txt"
+if [[ "$1" == "" ]]
+then
+  echo "no argument." &>> $LOGFILE  
+  exit
+fi
+## Wi-Fi Setup API
+if [ "$1" = "confwpa" ]; then
+  echo "applying Wi-Fi configuration..." &>> $LOGFILE
+  WPADATA=$(echo "$2" | base64 --decode)
+  echo "$WPADATA" &>> $LOGFILE
+  exit	
+fi
+## Server Control
+if [ "$1" = "server" ]; then
+	if [[ $2 == "clearlog" ]]
+	then
+	  truncate -s 0 $LOGFILE
+	else
+	  /opt/rpi/init "$2" &>> $LOGFILE
+	fi
+else
+## Application Control
+  /opt/rpi/main "$1" "$2" &>> $LOGFILE
+fi
+TRAILER=$(date)
+TRAILER+=" ("
+TRAILER+=$(hostname)
+TRAILER+=")"
+echo "$TRAILER" &>> $LOGFILE
+echo " " &>> $LOGFILE
+exit

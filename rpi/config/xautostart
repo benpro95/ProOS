@@ -1,5 +1,5 @@
-## LXDE Desktop
-@lxpanel --profile LXDE
+## User Interface
+@xfce4-panel
 @pcmanfm --desktop --profile LXDE
 ##@xscreensaver -no-splash
 
@@ -10,7 +10,7 @@
 
 ## Clear Caches
 @rm -rf /home/pi/.cache/menus
-@rm -rf /home/pi/.cache/lxsession
+@rm -rf /home/pi/.cache/lxsessionki
 @mkdir -p /home/pi/.cache/lxsession/LXDE
 @ln -sf /dev/null /home/pi/.cache/lxsession/LXDE/run.log
 @rm -rf /home/pi/.cache/openbox
@@ -26,4 +26,4 @@
 #@florence --use-config /usr/share/florence/florence.conf
 
 ## Start Browser 
-@chromium-browser --kiosk --no-first-run --disable-plugins --disable-extensions --disk-cache-size=32000 --media-cache-size=32000 --enable-features=OverlayScrollbar,OverlayScrollbarFlashAfterAnyScrollUpdate,OverlayScrollbarFlashWhenMouseEnter --incognito --disable-restore-session-state --disable-session-crashed-bubble --disable-seccomp-filter-sandbox --disable-software-rasterizer --noerrdialogs --disable-infobars https://www.google.com
+#@chromium-browser --kiosk --no-first-run --disable-plugins --disable-extensions --disk-cache-size=32000 --media-cache-size=32000 --enable-features=OverlayScrollbar,OverlayScrollbarFlashAfterAnyScrollUpdate,OverlayScrollbarFlashWhenMouseEnter --incognito --disable-restore-session-state --disable-session-crashed-bubble --disable-seccomp-filter-sandbox --disable-software-rasterizer --noerrdialogs --disable-infobars https://www.google.com

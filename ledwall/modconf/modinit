@@ -33,6 +33,11 @@ mount -o remount,ro /boot
 rm -f /opt/rpi/ledtype.txt
 echo "93ring" > /opt/rpi/ledtype.txt
 
+## Web Interface
+cp -v /opt/rpi/device.js /var/www/html/
+chmod -R 777 /var/www/html/device.js
+chown -R www-data:www-data /var/www/html/device.js
+
 ## Shortcut to main script
 ln -sf /opt/rpi/main /usr/bin/leds
 

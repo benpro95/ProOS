@@ -1,4 +1,4 @@
-// Home Automation Website - Automate
+// Home Automation Website
 // by Ben Provenzano III
 
 // globals
@@ -41,8 +41,11 @@ function loadPage() {
     // volume mode switch
     volMode();
     // server home
-    classDisplay('automate-grid','block');
+    classDisplay('server-grid','block');
   } else { // pi's
+    if (device === 'Pi') {
+      classDisplay('pi-grid','block');
+    }  
     if (device === 'LEDpi') {
       classDisplay('ledpi-grid','block');
     }
@@ -54,7 +57,7 @@ function loadPage() {
   let elem = document.getElementById("load__bar");
   elem.textContent = defaultSite; 
   // read theme from local storage or choose default
-  currentTheme = localStorage.getItem("styledata") || "dark-theme";
+  currentTheme = localStorage.getItem("styledata") || "blue-theme";
   setTheme(currentTheme);
 };
 
@@ -70,9 +73,10 @@ function showSoundsPage() {
   classDisplay('sounds-grid','block');
 }
 
-function hidePages() {
-  classDisplay('automate-grid','none');  
+function hidePages() { 
+  classDisplay('server-grid','none');  
   classDisplay('sounds-grid','none');
+  classDisplay('pi-grid','none'); 
   classDisplay('lcdpi-grid','none');
   classDisplay('ledpi-grid','none');
   classDisplay('led-grid','none');
@@ -286,6 +290,110 @@ function show_vmsPrompt(text){
   });   
 }
 
+function piWiFiPrompt(){
+  let pinetprompt = document.createElement("div"); 
+  pinetprompt.id= "pinet__prompt"; 
+  // SSID text
+  let pinettext1 = document.createElement("div"); 
+  pinettext1.innerHTML = "Network (SSID):"; 
+  pinetprompt.appendChild(pinettext1); 
+  // SSID box 
+  let pinetssidbox = document.createElement("input"); 
+  pinetssidbox.id = "pinet__ssidbox"; 
+  pinetprompt.appendChild(pinetssidbox); 
+  // password text
+  let pinettext2 = document.createElement("div"); 
+  pinettext2.innerHTML = "Password:"; 
+  pinetprompt.appendChild(pinettext2);   
+  // password box
+  let pinetpassbox = document.createElement("input"); 
+  pinetpassbox.id = "pinet__passbox"; 
+  pinetpassbox.type="password";
+  pinetprompt.appendChild(pinetpassbox); 
+  // save button
+  let pinetokbutton = document.createElement("button"); 
+  pinetokbutton.innerHTML = "Save";
+  pinetokbutton.className ="button"; 
+  pinetokbutton.type="button"; 
+  // cancel button
+  let pinetcancelb = document.createElement("button"); 
+  pinetcancelb.innerHTML = "Cancel";
+  pinetcancelb.className ="button"; 
+  pinetcancelb.type="button"; 
+  // create window
+  pinetprompt.appendChild(pinetcancelb); 
+  pinetprompt.appendChild(pinetokbutton); 
+  document.body.appendChild(pinetprompt); 
+  // focus on SSID text box
+  pinetssidbox.focus();
+  // control logic
+  return new Promise(function(resolve, reject) {
+  	function cancelWiFi(){
+  		pinetssidbox.value = "";
+  		pinetpassbox.value = "";
+        document.body.removeChild(pinetprompt);
+    }
+  	function sendWiFiData(){
+	    if (pinetssidbox.value === "") {
+	      pinettext1.innerHTML = "enter SSID!";
+	    } else {
+	      if (pinetpassbox.value === "") {
+	        pinettext1.innerHTML = "enter password!";
+	      } else {
+	      	// concat and convert to base64
+	        let _wifidata = btoa(pinetssidbox.value + "|$|" + pinetpassbox.value);
+	        resolve(_wifidata);
+	        cancelWiFi();
+	      }
+	    }
+    }
+    // button clicks
+    pinetprompt.addEventListener('click', function handleButtonClicks(e) { 
+      if (e.target.tagName !== 'BUTTON') { return; }
+        if (e.target === pinetokbutton) {
+          sendWiFiData();
+        }
+        if (e.target === pinetcancelb) {
+          cancelWiFi();
+        }        
+    });
+    // key focused on SSID box
+    pinetssidbox.addEventListener('keyup',function handleSSID(e){ 
+        if(e.keyCode == 13){ //if user enters "enter"-key on password-field
+          pinetpassbox.focus(); // focus on password field
+        }else if(e.keyCode==27){ //user enters "Escape" on password-field
+          cancelWiFi();
+        }
+    });
+    // key focused on password box
+    pinetpassbox.addEventListener('keyup',function handlePass(e){ 
+        if(e.keyCode == 13){ //if user enters "enter"-key on password-field
+          sendWiFiData();
+        }else if(e.keyCode==27){ //user enters "Escape" on password-field
+          cancelWiFi();
+        }
+    });      
+
+  }); 
+}
+
+async function showPiWiFiPrompt(){
+  let result;
+  try{
+    hideDropdowns();
+    result = await piWiFiPrompt();
+    if (result != null) {  
+      if (result != '') {  
+        sendCmd('main-www','confwpa',result);
+        document.getElementById("logTextBox").value = "Wi-Fi configuration updated, select client mode to apply changes.";
+      }
+    } 
+    result = "";
+  } catch(e){
+    result = "";
+  }
+}
+
 function vmPromptSelect(_vm){
   let _text = "Select action for " + _vm + " VM:";
   // set top text
@@ -328,8 +436,8 @@ function show_wifiPrompt(text){
   new Promise(function(resolve, reject) {
       wifiprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
         if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
-        wifiprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
-        document.body.removeChild(wifiprompt);  //as we are done clean up by removing the password-prompt
+	        wifiprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
+	        document.body.removeChild(wifiprompt);  //as we are done clean up by removing the password-prompt
       });
   });   
 }
@@ -371,7 +479,6 @@ function passwordPrompt(text){
           reject(new Error('User cancelled')); //return an error
         }
         document.body.removeChild(pwprompt);  //as we are done clean up by removing the password-prompt
-
       });
       pwinput.addEventListener('keyup',function handleEnter(e){ //users dont like to click on buttons
           if(e.keyCode == 13){ //if user enters "enter"-key on password-field
@@ -483,7 +590,11 @@ async function serverSend() {
     let _elem = document.getElementById("sendButton");
     _elem.classList.remove("button-alert");
     // send command
-    sendCmdNoBar('main','server',serverCmdData);
+    if (device === defaultSite) {
+      sendCmdNoBar('main','server',serverCmdData);
+    } else {
+      sendCmdNoBar('main-www','server',serverCmdData);
+    }
     // display command sent
     document.getElementById("logTextBox").value += "\ncommand sent, click load to refresh log.";
     // scroll to bottom of page
@@ -637,7 +748,7 @@ async function loadBar(_interval) {
       }
       if (width >= 100) {
         elem.style.width = 0;  
-        elem.textContent = "Automate";  
+        elem.textContent = defaultSite;  
       }
     }
   }
@@ -705,7 +816,7 @@ function writeFrame(red, green, blue) {
 }
 
 async function colorPrompt(){
-  if (device === 'Automate') {
+  if (device === defaultSite) {
     sendCmd('leds','randcolor','');
   } else {
     hideDropdowns();

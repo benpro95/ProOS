@@ -12,8 +12,8 @@ else
   ## Clear Tables
   iptables -F
   ## Stop DHCP, Hotspot and Wi-Fi Service
-  systemctl stop wpa_supplicant
   systemctl stop rpi-wpaempty
+  systemctl stop rpi-wpa
   systemctl stop hostapd
   systemctl stop dnsmasq
   ## Restart Networking
@@ -26,7 +26,7 @@ fi
 /sbin/iw dev wlan0 set power_save off
 ## Turn off hotspot LED if exists
 /opt/rpi/main apdled-off
-sleep 3.5
+sleep 2.5
 }
 
 CLIENT_MODE(){
@@ -40,21 +40,30 @@ chmod 644 /etc/dhcpcd.conf
 chown root:root /etc/dhcpcd.conf
 systemctl start dhcpcd
 ## Start Wi-Fi Service
-systemctl start wpa_supplicant
+systemctl start rpi-wpa
 ## Default Firewall Rules
 iptables -t mangle -I POSTROUTING 1 -o wlan0 -p udp --dport 123 -j TOS --set-tos 0x00
 }
 
 CPWIFI_CONF(){
 if [ ! -e /boot/wpa.conf ]; then
-  echo "WiFi config not found resetting."
-  cp -f /etc/wpa_supplicant/wpa_supplicant.empty /etc/wpa_supplicant/wpa_supplicant.conf
-  chmod 644 /etc/wpa_supplicant/wpa_supplicant.conf
-  chown root:root /etc/wpa_supplicant/wpa_supplicant.conf
+    echo "WiFi config not found resetting."
+    cp -f /etc/wpa_supplicant/wpa_supplicant.empty /etc/wpa_supplicant/wpa_supplicant.conf
+    chmod 644 /etc/wpa_supplicant/wpa_supplicant.conf
+    chown root:root /etc/wpa_supplicant/wpa_supplicant.conf
 else
-  cp -f /boot/wpa.conf /etc/wpa_supplicant/wpa_supplicant.conf
-  chmod 644 /etc/wpa_supplicant/wpa_supplicant.conf
-  chown root:root /etc/wpa_supplicant/wpa_supplicant.conf
+	OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
+	if [ "${OSVER}" = "bookworm" ]; then
+	  mount -o remount,rw /boot/firmware
+	  cp -f /boot/firmware/wpa.conf /etc/wpa_supplicant/wpa_supplicant.conf
+	  mount -o remount,ro /boot/firmware
+	else
+	  mount -o remount,rw /boot
+	  cp -f /boot/wpa.conf /etc/wpa_supplicant/wpa_supplicant.conf
+	  mount -o remount,ro /boot
+	fi
+    chmod 644 /etc/wpa_supplicant/wpa_supplicant.conf
+    chown root:root /etc/wpa_supplicant/wpa_supplicant.conf
 fi
 }
 
@@ -67,7 +76,7 @@ chmod 644 /etc/dhcpcd.conf
 chown root:root /etc/dhcpcd.conf
 systemctl start dhcpcd
 ## Start Wi-Fi Service
-systemctl start wpa_supplicant
+systemctl start rpi-wpa
 ## Default Firewall Rules
 iptables -t mangle -I POSTROUTING 1 -o wlan0 -p udp --dport 123 -j TOS --set-tos 0x00
 ## Switch to hotspot if network connection not found
@@ -84,11 +93,8 @@ chmod 644 /etc/dhcpcd.conf
 chown root:root /etc/dhcpcd.conf
 systemctl start dhcpcd
 ## Enable WiFi Network Scanning
-systemctl stop wpa_supplicant
-killall wpa_supplicant
-sleep 2.25
+systemctl stop rpi-wpa
 systemctl start rpi-wpaempty
-sleep 1.25
 ## Forward Traffic
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 iptables -A FORWARD -i eth0 -o wlan0 -m state --state RELATED,ESTABLISHED -j ACCEPT
@@ -171,9 +177,16 @@ BOOTUP="no"
 cp -f /etc/wpa_supplicant/wpa_supplicant.empty /etc/wpa_supplicant/wpa_supplicant.conf
 chmod 644 /etc/wpa_supplicant/wpa_supplicant.conf
 chown root:root /etc/wpa_supplicant/wpa_supplicant.conf
-mount -o remount,rw /boot
-cp -f /etc/wpa_supplicant/wpa_supplicant.empty /boot/wpa.conf
-mount -o remount,ro /boot
+OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
+if [ "${OSVER}" = "bookworm" ]; then
+  mount -o remount,rw /boot/firmware
+  cp -f /etc/wpa_supplicant/wpa_supplicant.empty /boot/firmware/wpa.conf
+  mount -o remount,ro /boot/firmware
+else
+  mount -o remount,rw /boot
+  cp -f /etc/wpa_supplicant/wpa_supplicant.empty /boot/wpa.conf
+  mount -o remount,ro /boot
+fi
 ## Switch to hotspot
 APD_MODE
 exit

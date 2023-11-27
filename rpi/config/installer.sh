@@ -40,9 +40,6 @@ echo "############## Configurator ##############"
 echo "######### by Ben Provenzano III ##########"
 echo ""
 
-## Stop RPi Services
-systemctl stop rpi-*
-
 ###################################################
 ### Initial configuration #########################
 if [ ! -e /etc/rpi-conf.done ]; then
@@ -101,7 +98,7 @@ apt-get install -y --no-upgrade --ignore-missing locales console-setup \
  iw wpasupplicant dirmngr autofs triggerhappy apt-utils build-essential \
  git autoconf make libtool binutils i2c-tools cmake yasm libmariadb3 \
  texi2html socat nmap autoconf automake pkg-config \
- keyboard-configuration ncftp inxi overlayfs
+ keyboard-configuration ncftp inxi
 
 ## OS Specific Packages
 if [ "${OSVER}" = "bookworm" ]; then
@@ -110,9 +107,9 @@ if [ "${OSVER}" = "bookworm" ]; then
   systemctl stop NetworkManager-wait-online.service NetworkManager-dispatcher.service \
    NetworkManager.service ModemManager.service
   systemctl disable NetworkManager-wait-online.service NetworkManager-dispatcher.service \
-   NetworkManager.service ModemManager.service
+   NetworkManager.service ModemManager.service userconfig
   systemctl mask NetworkManager-wait-online.service NetworkManager-dispatcher.service \
-   NetworkManager.service ModemManager.service
+   NetworkManager.service ModemManager.service userconfig
 fi
 if [ "${OSVER}" = "bullseye" ]; then
  apt-get install -y --no-upgrade --ignore-missing crda open-cobol
@@ -135,22 +132,20 @@ apt-get install -y --no-upgrade --ignore-missing libgstreamer1.0-dev gstreamer1.
 
 ## EGL hardware video decoding libraries
 if [ "${OSVER}" = "bullseye" ]; then
-if [ ! -e /usr/lib/arm-linux-gnueabihf/libbrcmEGL.so ]; then
-  cd /usr/lib/arm-linux-gnueabihf
-  curl -sSfLO 'https://raw.githubusercontent.com/raspberrypi/firmware/master/opt/vc/lib/libbrcmEGL.so'
-  curl -sSfLO 'https://raw.githubusercontent.com/raspberrypi/firmware/master/opt/vc/lib/libbrcmGLESv2.so'
-  curl -sSfLO 'https://raw.githubusercontent.com/raspberrypi/firmware/master/opt/vc/lib/libopenmaxil.so'
-  cd $BIN
-fi
+  if [ ! -e /usr/lib/arm-linux-gnueabihf/libbrcmEGL.so ]; then
+	cd /usr/lib/arm-linux-gnueabihf
+	curl -sSfLO 'https://raw.githubusercontent.com/raspberrypi/firmware/master/opt/vc/lib/libbrcmEGL.so'
+	curl -sSfLO 'https://raw.githubusercontent.com/raspberrypi/firmware/master/opt/vc/lib/libbrcmGLESv2.so'
+	curl -sSfLO 'https://raw.githubusercontent.com/raspberrypi/firmware/master/opt/vc/lib/libopenmaxil.so'
+	cd $BIN
+  fi
 fi
 
-## Install X11 and X Programs
+## Install X11 
 apt-get install -y --no-upgrade --ignore-missing xserver-xorg xorg \
- x11-common x11-apps xserver-xorg-input-evdev xvfb synaptic \
- libxext6 libxtst6 lxde-core libatlas-base-dev x11-common \
- lxterminal xprintidle xdotool wmctrl
-
-## Install Chromium
+ x11-common x11-common xserver-xorg-input-evdev xserver-xorg-legacy xvfb \
+ libxext6 libxtst6 libatlas-base-dev xprintidle xdotool wmctrl openbox lxde-common \
+ lxsession pcmanfm lxterminal gpicview xfce4-panel xfce4-whiskermenu-plugin
 apt-mark unhold chromium-browser chromium-codecs-ffmpeg chromium-codecs-ffmpeg-extra
 apt-get install -y --no-upgrade --ignore-missing chromium-browser
 
@@ -177,7 +172,8 @@ if [ "$CPUTYPE" = "Raspberry Pi Zero W Rev 1.1" ]; then
 else
   echo "ARMv7 CPU detected, installing Java, Arduino, Node.js..."
   ## Note: Tested Node.js version 14.17.1
-  apt-get install -y --no-upgrade --ignore-missing nodejs arduino avrdude openjdk-11-jre
+  apt-get install -y --no-upgrade --ignore-missing nodejs arduino avrdude \
+   openjdk-11-jre
   ## Cloud Drive Support
   echo "Installing rclone..."
   apt-get install -y --no-upgrade fuse
@@ -236,6 +232,9 @@ apt-get install -y --no-upgrade --ignore-missing bluetooth pi-bluetooth bluez bl
 ## Bluetooth Audio Support
 if [ "${OSVER}" = "bullseye" ]; then
   dpkg -i /opt/rpi/pkgs/bluealsa_0.13_armhf.deb
+fi
+if [ "${OSVER}" = "bookworm" ]; then
+  apt-get install -y --no-upgrade --ignore-missing bluez-alsa-utils
 fi
 
 ## OMX-Player
@@ -314,11 +313,13 @@ usermod -u 1005 motion
 apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp udhcpd usbmuxd
 apt-get remove --purge -y exim4 exim4-base exim4-config exim4-daemon-light udisks2 \
   tigervnc-common tigervnc-standalone-server iptables-persistent bridge-utils vlc ntfs-3g \
-  lxlock xscreensaver xscreensaver-data gvfs gvfs-backends vnc4server light-locker libudisks2-0 \
-  desktop-file-utils exfat-fuse exfat-utils gdisk gnome-mime-data wolfram-engine libssl-doc \
-  libatasmart4 libavahi-glib1 gvfs-common gvfs-daemons gvfs-libs mpd mpc \
-  rng-tools rng-tools-debian
-apt-get -y autoremove
+  lxlock xscreensaver xscreensaver-data gvfs gvfs-backends vnc4server libudisks2-0 \
+  wolfram-engine libssl-doc libatasmart4 libavahi-glib1 mpd mpc rng-tools rng-tools-debian
+  
+if [ "${OSVER}" = "bookworm" ]; then
+  apt-get remove --purge -y openjdk-17-jre-headless firefox pocketsphinx-en-us piwiz \
+   plymouth plymouth-label plymouth-themes 
+fi
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
 rm -rf /etc/cron.*
@@ -415,6 +416,9 @@ raspi-config nonint do_wifi_country US
 cp -f $BIN/wpa.empty /etc/wpa_supplicant/wpa_supplicant.empty
 chmod 644 /etc/wpa_supplicant/wpa_supplicant.empty
 chown root:root /etc/wpa_supplicant/wpa_supplicant.empty
+cp -f $BIN/wpa.template /etc/wpa_supplicant/wpa_supplicant.template
+chmod 644 /etc/wpa_supplicant/wpa_supplicant.template
+chown root:root /etc/wpa_supplicant/wpa_supplicant.template
 if [ ! -e /etc/wpa_supplicant/wpa_supplicant.conf ]; then
   echo "WiFi config not installed resetting."
   cp -f /etc/wpa_supplicant/wpa_supplicant.empty /etc/wpa_supplicant/wpa_supplicant.conf
@@ -544,6 +548,8 @@ rm -r /var/www/html
 mkdir -p /var/www/html
 mv -f $BIN/html-base/* /var/www/html
 mv -f $BIN/html/* /var/www/html
+mkdir -p /var/www/html/ram
+touch /var/www/html/ram/sysout.txt
 chmod -R 775 /var/www/html
 chown -R www-data:www-data /var/www/html
 mkdir -p /var/www/sessions
@@ -553,18 +559,10 @@ mkdir -p /var/www/uploads
 chmod -R g+rx /var/www/uploads
 chown -R www-data:www-data /var/www/uploads
 
-## Set hostname to configurations
-if [ ! -e $BIN/hostname ]; then
-echo "Skipping hostname modification."
-else
-## Set module name to light server
-sed -i "s/raspberrypi/$NEWHOST/g" /var/www/html/settings/index.php
-fi
 if [ ! -e /opt/rpi/modconf/brand.txt ]; then
 echo "Skipping module modification."
 else
   ## Set module name to light server
-  sed -i "s/RaspberryPi/$MODNAME/g" /var/www/html/settings/index.php
   sed -i "s/>Automate</>$MODNAME</g" /var/www/html/index.html
 fi
 
@@ -573,23 +571,9 @@ rm -f /etc/sudoers.d/www-perms
 rm -f /etc/sudoers.d/www-nopasswd
 rm -f /etc/sudoers.d/www-mod-nopasswd
 sh -c "touch /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/sbin/ifdown wlan0\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/sbin/ifup wlan0\" >> /etc/sudoers.d/www-perms"
 sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/bin/cat /etc/wpa_supplicant/wpa_supplicant.conf\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/bin/cp /tmp/wifidata /etc/wpa_supplicant/wpa_supplicant.conf\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli scan_results\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli -i wlan0 scan\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli -i wlan0 reconfigure\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/sbin/shutdown -h now\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/sbin/shutdown -r now\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/sbin/reboot\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/init overtemp\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/init temp\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/init client\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/init cpwifi\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/init bridge\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/init apd\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/main*\" >> /etc/sudoers.d/www-perms"
+sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/main-www\" >> /etc/sudoers.d/www-perms"
+sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/main\" >> /etc/sudoers.d/www-perms"
 sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/leds\" >> /etc/sudoers.d/www-perms"
 sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/xmit\" >> /etc/sudoers.d/www-perms"
 chown root:root /etc/sudoers.d/www-perms
@@ -599,7 +583,7 @@ chmod u=r,g=r,o= /etc/sudoers.d/www-perms
 ## Nobody User Permissions (THD Hotkeys)
 rm -f /etc/sudoers.d/nobody-perms
 sh -c "touch /etc/sudoers.d/nobody-perms"
-sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/rpi/main*\" >> /etc/sudoers.d/nobody-perms"
+sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/rpi/main\" >> /etc/sudoers.d/nobody-perms"
 sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/rpi/leds\" >> /etc/sudoers.d/nobody-perms"
 sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/rpi/xmit\" >> /etc/sudoers.d/nobody-perms"
 chown root:root /etc/sudoers.d/nobody-perms
@@ -614,9 +598,11 @@ sh -c "echo \"pi ALL=(ALL) NOPASSWD: ALL\" >> /etc/sudoers.d/010_pi-nopasswd"
 chown root:root /etc/sudoers.d/010_pi-nopasswd
 chmod u=rwx,g=rx,o=rx /etc/sudoers.d/010_pi-nopasswd
 chmod u=r,g=r,o= /etc/sudoers.d/010_pi-nopasswd
-addgroup pi sudo
+usermod -a -G sudo pi
 
 ## X Server Configuration
+usermod -a -G tty pi
+usermod -a -G video pi
 cp -f $BIN/Xwrapper.config /etc/X11
 chmod 644 /etc/X11/Xwrapper.config
 chown root:root /etc/X11/Xwrapper.config
@@ -652,7 +638,12 @@ chown root:root /etc/systemd/system/bthelper@.service.d/override.conf
 chmod 644 /etc/systemd/system/bthelper@.service.d/override.conf
 # BlueALSA Configuration
 rm -f /etc/systemd/system/bluealsa.service
-cp -f $BIN/bluealsa.service  /lib/systemd/system/
+if [ "${OSVER}" = "bullseye" ]; then
+  cp -f $BIN/bluealsa.service /lib/systemd/system/bluealsa.service 
+fi  
+if [ "${OSVER}" = "bookworm" ]; then
+  cp -f $BIN/bluealsa.bookworm.service /lib/systemd/system/bluealsa.service 
+fi  
 chown root:root /lib/systemd/system/bluealsa.service
 chmod 644 /lib/systemd/system/bluealsa.service
 mkdir -p /etc/systemd/system/bluealsa.service.d
@@ -815,23 +806,26 @@ ln -sf /opt/rpi/leds /usr/bin/leds
 cobc -x --free /opt/rpi/effects/colorscan.cbl -o /opt/rpi/effects/colorscan
 
 ## Services Configuration
+rm -f /lib/systemd/system/shairport-sync.service
 systemctl daemon-reload
 if [ ! -e /etc/rpi-conf.done ]; then
-## Active on startup
-systemctl enable ssh avahi-daemon systemd-timesyncd systemd-time-wait-sync proinit rpi-cleanup.timer
-systemctl unmask systemd-journald hostapd motion
-## Disabled on startup
-systemctl disable hostapd dhcpcd networking wpa_supplicant keyboard-setup \
-plymouth sysstat lightdm apache2 lighttpd dnsmasq apt-daily.service wifiswitch plymouth-log \
-apt-daily.timer apt-daily-upgrade.service apt-daily-upgrade.timer sysstat-collect.timer motion \
-sysstat-summary.timer man-db.service man-db.timer hciuart bluetooth usbplug nmbd smbd autofs \
-shairport-sync nqptp triggerhappy.service triggerhappy.socket e2scrub_all.service e2scrub_all.timer \
-serial-getty@ttyS0.service serial-getty@ttyAMA0.service
+  ## Active on startup
+  systemctl enable ssh avahi-daemon systemd-timesyncd systemd-time-wait-sync proinit rpi-cleanup.timer
+  systemctl unmask systemd-journald hostapd motion
+  ## Disabled on startup
+  systemctl disable hostapd dhcpcd networking wpa_supplicant keyboard-setup 
+  systemctl disable sysstat lighttpd dnsmasq apt-daily.service wifiswitch motion
+  systemctl disable apt-daily.timer apt-daily-upgrade.service apt-daily-upgrade.timer sysstat-collect.timer
+  systemctl disable hciuart bluetooth bthelper@hci0
+  systemctl disable sysstat-summary.timer man-db.service man-db.timer usbplug nmbd smbd autofs 
+  systemctl disable triggerhappy.service triggerhappy.socket e2scrub_all.service e2scrub_all.timer 
+  systemctl disable serial-getty@ttyS0.service serial-getty@ttyAMA0.service
+  systemctl disable glamor-test rp1-test
 
-echo "Initial setup (phase II) complete."
-touch /etc/rpi-conf.done
+  echo "Initial setup (phase II) complete."
+  touch /etc/rpi-conf.done
 else
-echo "Skipping services configuration."
+  echo "Skipping services configuration."
 fi
 
 ## Run module script if found

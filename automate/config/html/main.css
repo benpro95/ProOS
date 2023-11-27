@@ -138,10 +138,6 @@ body {
   display: none;
 }
 
-.ledpi-grid {
-  display: none; 
-}
-
 .led-grid {
   display: none; 
 }
@@ -150,12 +146,20 @@ body {
   display: none;
 }
 
+.server-grid {
+  display: none;
+}
+
+.pi-grid {
+  display: none;
+}
+
 .lcdpi-grid {
   display: none;
 }
 
-.automate-grid {
-  display: none;
+.ledpi-grid {
+  display: none; 
 }
 
 .container {
@@ -461,7 +465,38 @@ body {
   margin: 15px;
   width: 285px; 
   padding: 5px; 
+}
+
+
+/*
+ *  Pi WiFi Connection Manager
+ */
+#pinet__prompt {
+  background-color: black;
+  border: 1px solid white;
+  position: fixed;
+  top: 15%;
+  left: 8%;
+  width: 350px;  
+  height: auto;
+  padding: 16px; 
+  color: #fff;
+  z-index: 999; 
 } 
+
+#pinet__ssidbox {
+  margin: 15px;
+  width: 285px; 
+  padding: 5px; 
+}
+
+#pinet__passbox {
+  margin: 15px;
+  width: 285px; 
+  padding: 5px; 
+  padding-bottom: 10px; 
+} 
+
 
 /*
  *  WiFi Prompt Style

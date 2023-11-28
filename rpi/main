@@ -21,13 +21,8 @@ echo actpwr | tee /sys/class/leds/led0/trigger &>/dev/null
 ## Disable HDMI (saves 30mA of power draw)
 #tvservice -o
 ## Auto Hotspot
-# only run if bluetooth not connected
-if [ ! -e /tmp/bt.connected ]; then
-   # (on boot only)	
-   systemctl start rpi-netdetect.service
-   # (runs every 5min)	
-   #systemctl start rpi-netdetect.timer
-fi
+# (runs every 5min)	
+systemctl start rpi-netdetect.timer
 exit
 ;;
 

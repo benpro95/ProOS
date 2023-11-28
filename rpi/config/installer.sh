@@ -809,22 +809,33 @@ ln -sf /opt/rpi/leds /usr/bin/leds
 cobc -x --free /opt/rpi/effects/colorscan.cbl -o /opt/rpi/effects/colorscan
 
 ## Services Configuration
+if [ "${OSVER}" = "bookworm" ]; then
+  cp -f $BIN/timesyncd.conf /etc/systemd/
+  chmod 644 /etc/systemd/timesyncd.conf
+  chown root:root /etc/systemd/timesyncd.conf
+  cp -f $BIN/keyboard-setup.service /lib/systemd/system/
+  chmod 644 /lib/systemd/system/keyboard-setup.service
+  chown root:root /lib/systemd/system/keyboard-setup.service
+fi  
 rm -f /lib/systemd/system/shairport-sync.service
 systemctl daemon-reload
 if [ ! -e /etc/rpi-conf.done ]; then
   ## Active on startup
-  systemctl enable ssh avahi-daemon systemd-timesyncd systemd-time-wait-sync proinit rpi-cleanup.timer
+  systemctl enable ssh avahi-daemon proinit rpi-cleanup.timer \
+   systemd-timesyncd systemd-time-wait-sync
   systemctl unmask systemd-journald hostapd motion
   ## Disabled on startup
-  systemctl disable hostapd dhcpcd networking wpa_supplicant keyboard-setup 
-  systemctl disable sysstat lighttpd dnsmasq apt-daily.service wifiswitch motion
-  systemctl disable apt-daily.timer apt-daily-upgrade.service apt-daily-upgrade.timer sysstat-collect.timer
+  systemctl disable hostapd dhcpcd networking wpa_supplicant keyboard-setup \
+   sysstat lighttpd dnsmasq rpi-netdetect wifiswitch motion
+  systemctl disable apt-daily.service apt-daily.timer apt-daily-upgrade.service \
+   apt-daily-upgrade.timer sysstat-collect.timer
+  systemctl disable triggerhappy.service triggerhappy.socket \
+   e2scrub_all.service e2scrub_all.timer 
+  systemctl disable serial-getty@ttyS0.service serial-getty@ttyAMA0.service  
+  systemctl disable sysstat-summary.timer man-db.service man-db.timer
   systemctl disable hciuart bluetooth bthelper@hci0 bluealsa
-  systemctl disable sysstat-summary.timer man-db.service man-db.timer usbplug nmbd smbd autofs 
-  systemctl disable triggerhappy.service triggerhappy.socket e2scrub_all.service e2scrub_all.timer 
-  systemctl disable serial-getty@ttyS0.service serial-getty@ttyAMA0.service
+  systemctl disable usbplug nmbd smbd samba-ad-dc autofs 
   systemctl disable glamor-test rp1-test
-
   echo "Initial setup (phase II) complete."
   touch /etc/rpi-conf.done
 else

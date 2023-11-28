@@ -7,4 +7,4 @@ RemainAfterExit=yes
 ExecStart=/opt/rpi/main usbplug
 
 [Install]
-WantedBy=multi-user.target
+#WantedBy=multi-user.target

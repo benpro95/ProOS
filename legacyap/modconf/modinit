@@ -23,10 +23,13 @@ echo "Starting $MODNAME configuration..."
 OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
 if [ "${OSVER}" = "bookworm" ]; then
   mount -o remount,rw /boot/firmware
+  touch /boot/firmware/apd-routed.enable
+  ln -sf /boot/firmware/apd-routed.enable /boot/apd-routed.enable
   cp -f $BIN/modconf/config.txt /boot/firmware/
   mount -o remount,ro /boot/firmware
 else
   mount -o remount,rw /boot
+  touch /boot/apd-routed.enable
   cp -f $BIN/modconf/config.txt /boot/
   mount -o remount,ro /boot
 fi

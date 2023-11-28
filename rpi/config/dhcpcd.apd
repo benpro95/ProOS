@@ -44,7 +44,7 @@ nohook wpa_supplicant
 interface wlan0
 static ip_address=10.177.42.1/24
 static routers=10.177.42.1
-static domain_name_servers=8.8.8.8
+static domain_name_servers=
 
 ## Don't request or claim the address by ARP.
 noarp

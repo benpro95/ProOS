@@ -120,12 +120,6 @@ NETDETECT(){
 SERVER=$(/sbin/ip route | awk '/default/ { print $3 }')
 date
 echo "Gateway IP $SERVER"
-# only run if bluetooth not connected
-if [ -e /tmp/bt.connected ]; then
-  echo "bluetooth active, network check has been disabled."
-  echo " "
-  exit
-fi
 ########
 if [ ! -e /sys/class/net/wlan0 ] ; then
   echo "wlan0 not found, network check has been disabled."

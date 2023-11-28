@@ -32,7 +32,6 @@ else
 fi
 
 ## Access Point
-touch /boot/apd-routed.enable
 cp -rv $BIN/modconf/hostapd.conf /etc/hostapd/hostapd.conf
 chmod 644 /etc/hostapd/hostapd.conf
 chown root:root /etc/hostapd/hostapd.conf
@@ -40,5 +39,4 @@ chown root:root /etc/hostapd/hostapd.conf
 ## Link RPi to global commands library
 ln -sf /opt/rpi/main /usr/bin/main
 
-mount -o remount,ro /boot
 exit

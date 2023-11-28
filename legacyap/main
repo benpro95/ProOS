@@ -5,7 +5,9 @@
 case "$1" in
 
 boot)
-echo "Startup Complete."
+## Start Hotspot
+sleep 60
+/bin/bash /etc/netmode.sh apd > /dev/null 2>&1
 exit
 ;;
     

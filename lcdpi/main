@@ -17,6 +17,8 @@ case "$1" in
 
 boot)
 ## Start Z-Terminal Service
+systemctl stop serial-getty@ttyS0
+sleep 1.5
 systemctl start ztermcom
 ## Delete messages
 rm -rfv /tmp/message*.txt

@@ -1,0 +1,23 @@
+#!/bin/bash
+## Main Parser
+
+
+case "$1" in
+
+boot)
+## Start Hotspot
+sleep 60
+/bin/bash /etc/netmode.sh apd > /dev/null 2>&1
+exit
+;;
+
+usbplug)
+## This script is ran after USB drive attached and when its removed.
+echo "no function assigned"
+exit
+;;
+    
+*)
+  exit 1
+;;
+esac   

@@ -14,9 +14,6 @@ max_framebuffers=2
 # Use the kernel's default instead.
 disable_fw_kms_setup=1
 
-# Disable bluetooth
-dtoverlay=disable-bt
-
 # Run as fast as firmware / board allows
 arm_boost=1
 
@@ -25,9 +22,6 @@ gpu_mem=192
 
 #-------Max USB Current-------
 max_usb_current=1
-
-#-------Disable Pi Splash screen on boot-------------
-disable_splash=1
 
 #------Reboot when exceeds-----
 temp_limit=75

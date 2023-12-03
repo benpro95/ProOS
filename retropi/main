@@ -5,6 +5,11 @@
 case "$1" in
 
 boot)
+## Mount Flash Drive
+mkdir -p /home/pi/RetroPie
+mount /dev/sda1 /home/pi/RetroPie
+## Emulation Station
+systemctl start rpi-emustation
 ## Start Hotspot
 sleep 60
 /bin/bash /etc/netmode.sh apd > /dev/null 2>&1

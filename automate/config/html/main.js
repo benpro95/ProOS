@@ -9,10 +9,10 @@ let toggledState = 0;
 let loadBarState = 0;
 let promptCount = 0;
 let rowState = 0;
-let consoleData;
-let currentTheme;
-let serverCmdData;
-let socket;
+let consoleData = null;
+let currentTheme = null;
+let serverCmdData = null;
+let socket = null;
 let device;
 
 //////////////////////////

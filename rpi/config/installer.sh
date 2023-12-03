@@ -212,7 +212,7 @@ chmod -R 777 /var/www/html
 chown -R www-data:www-data /var/www/html
 
 ## USB File Service
-apt-get install -y --no-upgrade --ignore-missing samba samba-common-bin samba-libs usbmount pmount 
+apt-get install -y --no-upgrade --ignore-missing samba samba-common-bin samba-libs 
 chmod 777 /media
 chmod 777 /media/usb*
 chown root:root /media/usb*
@@ -310,7 +310,7 @@ groupmod -g 1005 motion
 usermod -u 1005 motion
 
 ## Remove Packages
-apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp udhcpd usbmuxd
+apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp udhcpd usbmuxd usbmount pmount
 apt-get remove --purge -y cups cups-client cups-common cups-core-drivers cups-daemon \
   cups-filters cups-filters-core-drivers cups-ipp-utils cups-ppdc cups-server-common
 apt-get remove --purge -y exim4 exim4-base exim4-config exim4-daemon-light udisks2 \
@@ -337,7 +337,7 @@ rm -f /var/log/messages
 rm -f /var/log/syslog
 
 ## Delete custom services
-rm -fvr /etc/systemd/system/rpi-*
+rm -fr /etc/systemd/system/rpi-*
 
 ## Reset hotspot configuration
 cp -f $BIN/hostapd.conf /etc/hostapd
@@ -495,7 +495,7 @@ if [ ! -e /etc/systemd/system/proinit.service ]; then
 fi
 
 ## Replacement / New Services
-cp -fvr $BIN/systemd/* /etc/systemd/system/
+cp -fr $BIN/systemd/* /etc/systemd/system/
 chmod -fR 644 /etc/systemd/system/*.timer
 chown -fR root:root /etc/systemd/system/*.timer
 chmod -fR 644 /etc/systemd/system/*.service
@@ -777,10 +777,6 @@ else
 sed -i "s/RaspberryPi/$MODNAME/g" /etc/samba/smb.conf
 fi
 
-## USB Automount Configuration
-cp -f $BIN/usbmount.conf /etc/usbmount
-chmod 644 /etc/usbmount/usbmount.conf
-chown root:root /etc/usbmount/usbmount.conf
 ## Automount Fix System Override
 mkdir -p /etc/systemd/system/systemd-udevd.service.d
 cp -f $BIN/udevd-override.conf /etc/systemd/system/systemd-udevd.service.d/override.conf

@@ -1,0 +1,11 @@
+[Unit]
+Description=Start the Graphical User Interface
+
+[Service]
+User=pi
+ExecStart=/bin/bash -c '/usr/bin/emulationstation'
+WorkingDirectory=/home/pi
+StandardInput=tty-force
+TTYVHangup=yes
+TTYPath=/dev/tty1
+TTYReset=yes

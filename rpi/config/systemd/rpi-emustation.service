@@ -3,9 +3,8 @@ Description=Start the Graphical User Interface
 
 [Service]
 User=pi
+Type=forking
 ExecStart=/bin/bash -c '/usr/bin/emulationstation'
 WorkingDirectory=/home/pi
 StandardInput=tty-force
-TTYVHangup=yes
 TTYPath=/dev/tty1
-TTYReset=yes

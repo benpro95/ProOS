@@ -128,7 +128,7 @@ apt-get install -y --no-upgrade --ignore-missing libgtk2.0-dev libbluetooth3 lib
 apt-get install -y --no-upgrade --ignore-missing libgstreamer1.0-dev gstreamer1.0-plugins-base \
  gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly gstreamer1.0-tools gstreamer1.0-libav \
  libx264-dev x264 ffmpeg libswscale-dev libavformat-dev libavcodec-dev libupnp-dev ffmpeg \
- libgstreamer-plugins-base1.0-0 gstreamer1.0-alsa gstreamer1.0-pulseaudio gstreamer1.0-omx
+ libgstreamer-plugins-base1.0-0 gstreamer1.0-alsa
 
 ## EGL hardware video decoding libraries
 if [ "${OSVER}" = "bullseye" ]; then
@@ -752,19 +752,6 @@ chown root:root /etc/asound.conf
 cp -f $BIN/aliases.conf /lib/modprobe.d/
 chmod 644 /lib/modprobe.d/aliases.conf
 chown root:root /lib/modprobe.d/aliases.conf
-
-## PulseAudio Configuration
-cp -f $BIN/system.pa /etc/pulse
-chmod 644 /etc/pulse/system.pa
-chown root:root /etc/pulse/system.pa
-cp -f $BIN/client.conf /etc/pulse
-chmod 644 /etc/pulse/client.conf
-chown root:root /etc/pulse/client.conf
-rm -r /home/pi/.config/pulse
-mkdir -p /home/pi/.config/pulse
-cp -f $BIN/client.conf /home/pi/.config/pulse/
-chmod 644 /home/pi/.config/pulse/client.conf
-chown pi:pi /home/pi/.config/pulse/client.conf
 
 ## Samba USB Share Configuration
 cp -f $BIN/smb.conf /etc/samba

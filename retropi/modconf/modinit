@@ -25,6 +25,7 @@ if [ "${OSVER}" = "bookworm" ]; then
   mount -o remount,rw /boot/firmware
   touch /boot/firmware/apd-routed.enable
   ln -sf /boot/firmware/apd-routed.enable /boot/apd-routed.enable
+  cp -f $BIN/modconf/cmdline.txt /boot/firmware/
   cp -f $BIN/modconf/config.txt /boot/firmware/
   mount -o remount,ro /boot/firmware
 else
@@ -38,6 +39,11 @@ fi
 cp -rv $BIN/modconf/hostapd.conf /etc/hostapd/hostapd.conf
 chmod 644 /etc/hostapd/hostapd.conf
 chown root:root /etc/hostapd/hostapd.conf
+
+## Start Emulationstation on Boot
+cp -rv $BIN/modconf/bashrc /home/pi/.bashrc
+chmod +x /home/pi/.bashrc
+chown pi:pi /home/pi/.bashrc
 
 ## Link RPi to global commands library
 ln -sf /opt/rpi/main /usr/bin/main

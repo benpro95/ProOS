@@ -6,6 +6,9 @@
 echo "schedutil" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 
 ### Start network configuration website / automation API
-/bin/systemctl start lighttpd
+systemctl --no-block start lighttpd.service
+
+## Console On Display
+systemctl --no-block start getty@tty1.service
 
 exit

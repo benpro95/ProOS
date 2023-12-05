@@ -12,8 +12,8 @@ mount /dev/sda1 /home/pi/RetroPie
 sleep 2.5
 swapon /home/pi/RetroPie/swapfile
 ## Start Hotspot
-#sleep 60
-#/bin/bash /etc/netmode.sh apd > /dev/null 2>&1
+sleep 45
+/bin/bash /etc/netmode.sh apd > /dev/null 2>&1
 exit
 ;;
 

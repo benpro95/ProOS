@@ -383,7 +383,11 @@ rm -f /boot/firmware/apd.enable
 
 ## Default Boot Config
 if [ "${OSVER}" = "bookworm" ]; then
-  raspi-config nonint enable_bootro
+  if [ ! -e /etc/rpi-bootro.done ]; then
+    echo "Enabling read-only boot partition.."  
+    raspi-config nonint enable_bootro
+    touch /etc/rpi-bootro.done
+  fi
   cp -fv /boot/firmware/config.txt /boot/firmware/config.bak
   cp -f $BIN/config.txt /boot/firmware/
 else

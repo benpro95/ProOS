@@ -186,6 +186,8 @@ function build_emulationstation() {
     fi
 
     rpSwap on 1000
+    touch /tmp/emuparms.txt
+    echo "${params}" > /tmp/emuparms.txt
     cmake . "${params[@]}"
     make clean
     make VERBOSE=1

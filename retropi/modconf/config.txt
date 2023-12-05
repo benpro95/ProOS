@@ -1,42 +1,25 @@
 ## Created by Ben Provenzano III
 
+# Automatically load initramfs files, if found
+auto_initramfs=1
+
 #-------GPU Memory-------
 gpu_mem=128
 
 #-------Max USB Current-------
 max_usb_current=1
 
-#-------Force HDMI to 1080p---------
-#hdmi_ignore_edid=0xa5000080
-#config_hdmi_boost=4
-#hdmi_force_hotplug=1
-#hdmi_group=1
-#hdmi_mode=16
-#hdmi_drive=2
+#-------KMS Video Driver-------
+dtoverlay=vc4-kms-v3d
+max_framebuffers=2
+framebuffer_priority=2
 
-#-------Force HDMI to 480i---------
+#-------Force HDMI to 480i (boot only)---------
 hdmi_ignore_edid=0xa5000080
 config_hdmi_boost=4
 hdmi_force_hotplug=1
 hdmi_group=1
 hdmi_mode=6
-overscan_scale=1
-overscan_left=-20
-overscan_right=20
-overscan_top=-5
-overscan_bottom=-15
-
-##------Enable Composite Video (disable HDMI)---------
-#hdmi_ignore_hotplug=1
-#overscan_scale=1
-#overscan_left=8
-#overscan_right=8
-#overscan_top=2
-#overscan_bottom=2
-#sdtv_mode=0
-
-#-------Disable Ram temp refresh every 500ms---------
-disable_pvt=1
 
 #-------Audio support-------
 dtparam=audio=on

@@ -19,7 +19,7 @@ function get_ver_sdl2() {
     if [[ "$__os_debian_ver" -ge 11 ]]; then
         echo "2.26.3"
     else
-        echo "2.0.10"
+        echo "2.0.20"
     fi
 }
 

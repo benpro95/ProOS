@@ -3,16 +3,15 @@
 # Automatically load initramfs files, if found
 auto_initramfs=1
 
-#-------GPU Memory-------
-gpu_mem=128
-
 #-------Max USB Current-------
 max_usb_current=1
 
 #-------KMS Video Driver-------
 dtoverlay=vc4-kms-v3d
-max_framebuffers=2
-framebuffer_priority=2
+max_framebuffers=1
+gpu_mem=128
+cma_lwm=16
+cma_hwm=256
 
 #-------Force HDMI to 480i (boot only)---------
 hdmi_ignore_edid=0xa5000080

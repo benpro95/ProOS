@@ -230,6 +230,7 @@ exit
 ;;
 
 rwboot)
+echo "Enabling read/write boot partition..."
 OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
 if [ "${OSVER}" = "bookworm" ]; then
   mount -o remount,rw /boot/firmware
@@ -242,6 +243,7 @@ exit
 ;;
 
 roboot)
+echo "Enabling read/only boot partition..."
 OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
 if [ "${OSVER}" = "bookworm" ]; then
   mount -o remount,ro /boot/firmware

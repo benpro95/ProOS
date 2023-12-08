@@ -10,8 +10,8 @@ max_usb_current=1
 dtoverlay=vc4-kms-v3d
 max_framebuffers=1
 gpu_mem=128
-cma_lwm=16
 cma_hwm=256
+cma_lwm=16
 
 #-------Force HDMI to 480i (boot only)---------
 hdmi_ignore_edid=0xa5000080
@@ -25,7 +25,7 @@ dtparam=audio=on
 hdmi_drive=2
 
 #------Reboot when exceeds-----
-temp_limit=80
+temp_limit=85
 
 #------Disable the activity LED-----
 dtparam=act_led_trigger=none

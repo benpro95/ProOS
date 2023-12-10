@@ -212,7 +212,6 @@ function show_vmsPrompt(text){
   vms_startbtn.id = "vms__startbtn";
   vms_startbtn.type="button";
   vms_startbtn.style.display = "none";
-  vms_prompt.appendChild(vms_startbtn); 
   // stop button (hidden)
   let vms_stopbtn = document.createElement("button"); 
   vms_stopbtn.innerHTML = "Stop";
@@ -220,7 +219,6 @@ function show_vmsPrompt(text){
   vms_stopbtn.id = "vms__stopbtn";
   vms_stopbtn.type="button";
   vms_stopbtn.style.display = "none";
-  vms_prompt.appendChild(vms_stopbtn); 
   // restore button (hidden)
   let vms_restorebtn = document.createElement("button"); 
   vms_restorebtn.innerHTML = "Erase";
@@ -228,7 +226,6 @@ function show_vmsPrompt(text){
   vms_restorebtn.id = "vms__restorebtn";
   vms_restorebtn.type="button";
   vms_restorebtn.style.display = "none";
-  vms_prompt.appendChild(vms_restorebtn);
   // open button (hidden)
   let vms_openbtn = document.createElement("button"); 
   vms_openbtn.innerHTML = "Open";
@@ -236,7 +233,11 @@ function show_vmsPrompt(text){
   vms_openbtn.id = "vms__openbtn";
   vms_openbtn.type="button";
   vms_openbtn.style.display = "none";
+  // button order
+  vms_prompt.appendChild(vms_restorebtn);
   vms_prompt.appendChild(vms_openbtn);
+  vms_prompt.appendChild(vms_stopbtn); 
+  vms_prompt.appendChild(vms_startbtn);
   //append the prompt so it gets visible
   document.body.appendChild(vms_prompt); 
   new Promise(function(resolve, reject) {

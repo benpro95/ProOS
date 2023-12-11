@@ -1,5 +1,5 @@
 #!/bin/bash
-## Raspberry Pi ProOS Server Setup Script v11.0
+## Raspberry Pi ProOS Server Setup Script v12.0
 ## run this 1st, then module installer
 
 # Core Path
@@ -116,9 +116,6 @@ dphys-swapfile uninstall
 update-rc.d dphys-swapfile remove
 apt-get -y remove --purge dphys-swapfile
 
-## Perl Support
-apt-get install -y --no-upgrade --ignore-missing perl perl-modules-5.32
-
 ## CPU Specific Packages
 if [ "$CPUTYPE" = "Raspberry Pi Zero W Rev 1.1" ]; then
   echo "Pi Zero detected, not installing rclone."
@@ -142,14 +139,14 @@ else
 fi
 
 ## Python Libraries
-apt-get install -y --no-upgrade --ignore-missing net-tools python3 
-apt-get install -y --no-upgrade --ignore-missing python3-setuptools \
- python3-pip python3-dev python3-pygame python3-venv python3-gpiozero \
- python3-setuptools python3-wheel python3-serial python3-xmodem \
+apt-get install -y --no-upgrade --ignore-missing net-tools python3 \
+ python3-setuptools python3-pip python3-dev python3-pygame python3-venv \
+ python3-gpiozero python3-setuptools python3-wheel python3-serial python3-xmodem \
  python3-rpi.gpio python3-ipython python3-pyaudio python3-numpy
 
 ## Light Web Server
-apt-get install -y --no-upgrade --ignore-missing lighttpd php-common php-cgi php php-mysql
+apt-get install -y --no-upgrade --ignore-missing lighttpd php-common php-cgi \
+ php php-mysql perl perl-modules
 chown www-data:www-data /var/www
 chmod 775 /var/www
 usermod -a -G www-data pi
@@ -232,12 +229,8 @@ mount -o remount,rw /boot/firmware
 rm -f /boot/ssh
 rm -f /boot/firmware/ssh
 ## Delete flags, return to default
-rm -f /boot/ap-bridge.enable
-rm -f /boot/apd-routed.enable
-rm -f /boot/apd.enable
-rm -f /boot/firmware/ap-bridge.enable
-rm -f /boot/firmware/apd-routed.enable
 rm -f /boot/firmware/apd.enable
+rm -f /boot/firmware/apd.conf
 
 ## Default Boot Config
 if [ ! -e /etc/rpi-bootro.done ]; then
@@ -557,13 +550,13 @@ rm -f /lib/systemd/system/shairport-sync.service
 systemctl daemon-reload
 if [ ! -e /etc/rpi-conf.done ]; then
   ## Active on startup
-  systemctl unmask NetworkManager-wait-online.service NetworkManager-dispatcher.service \
-   NetworkManager.service ModemManager.service systemd-journald hostapd motion
-  systemctl enable NetworkManager-wait-online.service NetworkManager-dispatcher.service \
-   NetworkManager.service ModemManager.service
+  systemctl unmask NetworkManager-wait-online NetworkManager-dispatcher \
+   NetworkManager ModemManager systemd-journald hostapd motion
   systemctl enable ssh avahi-daemon proinit rpi-cleanup.timer \
    systemd-timesyncd systemd-time-wait-sync
   ## Disabled on startup
+  systemctl disable NetworkManager ModemManager dnsmasq \
+   NetworkManager-wait-online NetworkManager-dispatcher
   systemctl disable hostapd keyboard-setup sysstat lighttpd wifiswitch motion userconfig
   systemctl disable apt-daily.service apt-daily.timer apt-daily-upgrade.service \
    apt-daily-upgrade.timer sysstat-collect.timer 

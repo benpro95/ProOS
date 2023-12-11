@@ -3,6 +3,9 @@
 #### RUN FROM '/opt/rpi/init CMD'
 
 STOP_NET(){
+systemctl restart NetworkManager
+systemctl restart ModemManager
+sleep 2.5
 ## Clear Firewall Tables
 iptables -F
 if [ -e /sys/class/net/wlan0 ] ; then
@@ -22,12 +25,13 @@ if [ -e /sys/class/net/wlan0 ] ; then
   ## Turn off hotspot LED if exists
   /opt/rpi/main apdled-off || :
 fi
+sleep 2.5
 }
 
 CLIENT_MODE(){
+## Stop Networking
+STOP_NET
 if [ -e /sys/class/net/wlan0 ] ; then
-  ## Stop Networking
-  STOP_NET
   ## Read Wi-Fi Configuration
   if [ -e /boot/firmware/wpa.conf ]; then
     WPADATA=`cat /boot/firmware/wpa.conf`
@@ -37,6 +41,8 @@ if [ -e /sys/class/net/wlan0 ] ; then
     nmcli con add con-name RPiWiFi ifname wlan0 type wifi ssid "$WPA_SSID"
     nmcli con modify RPiWiFi wifi-sec.key-mgmt wpa-psk
     nmcli con modify RPiWiFi wifi-sec.psk "$WPA_PWD"
+    nmcli con modify RPiWiFi autoconnect no
+    nmcli con down RPiWiFi
     nmcli con up RPiWiFi
   else
     echo "No WiFi Configuration Found, Switching to Access Point..."
@@ -47,24 +53,25 @@ else
 fi
 }
 
-
-DELWIFI_MODE(){
+APD_MODE(){
 ## Stop Networking
 STOP_NET
-## Switch to hotspot if network connection not found
-sleep 60
-NETDETECT
-}
-
-APD_MODE(){
 if [ -e /sys/class/net/wlan0 ] ; then
-  ## Stop Networking
-  STOP_NET
-  HOSTNME=`cat /etc/hostname`
-  nmcli device wifi hotspot ifname wlan0 con-name RPiHotspot ssid "$HOSTNME" password "raspberry"
+  ## Read Custom Hotspot Configuration 
+  if [ -e /boot/firmware/apd.conf ]; then
+    APDDATA=`cat /boot/firmware/apd.conf`
+    DELIM="|$|"
+    APD_SSID=${APDDATA%"$DELIM"*}
+    APD_PWD=${APDDATA#*"$DELIM"}
+  else
+    APD_SSID=`cat /etc/hostname`
+    APD_PWD="raspberry"
+  fi
+  nmcli device wifi hotspot ifname wlan0 con-name RPiHotspot ssid "$APD_SSID" password "$APD_PWD"
   nmcli con modify RPiHotspot 802-11-wireless-security.key-mgmt wpa-psk
   nmcli con modify RPiHotspot 802-11-wireless-security.pairwise ccmp
   nmcli con modify RPiHotspot 802-11-wireless-security.proto wpa
+  nmcli con modify RPiHotspot autoconnect no
   nmcli con down RPiHotspot
   nmcli con up RPiHotspot
 else
@@ -115,7 +122,9 @@ if [ ! -e /boot/firmware/apd.enable ]; then
 else
   echo "Hotspot network mode"
   APD_MODE
-fi  
+fi
+## Run Boot Script
+/etc/preinit.sh
 exit
 ;;
 

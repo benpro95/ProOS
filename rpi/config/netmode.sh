@@ -3,9 +3,6 @@
 #### RUN FROM '/opt/rpi/init CMD'
 
 STOP_NET(){
-systemctl restart NetworkManager
-systemctl restart ModemManager
-sleep 2.5
 ## Clear Firewall Tables
 iptables -F
 if [ -e /sys/class/net/wlan0 ] ; then
@@ -41,7 +38,7 @@ if [ -e /sys/class/net/wlan0 ] ; then
     nmcli con add con-name RPiWiFi ifname wlan0 type wifi ssid "$WPA_SSID"
     nmcli con modify RPiWiFi wifi-sec.key-mgmt wpa-psk
     nmcli con modify RPiWiFi wifi-sec.psk "$WPA_PWD"
-    nmcli con modify RPiWiFi autoconnect no
+    nmcli con modify RPiWiFi connection.autoconnect yes
     nmcli con down RPiWiFi
     nmcli con up RPiWiFi
   else
@@ -69,7 +66,7 @@ if [ -e /sys/class/net/wlan0 ] ; then
   fi
   nmcli device wifi hotspot ifname wlan0 con-name RPiHotspot ssid "$APD_SSID" password "$APD_PWD"
   nmcli con modify RPiHotspot 802-11-wireless-security.key-mgmt wpa-psk
-  nmcli con modify RPiHotspot 802-11-wireless-security.pairwise ccmp
+  nmcli con modify RPiHotspot 802-11-wireless-security.pairwise tkip
   nmcli con modify RPiHotspot 802-11-wireless-security.proto wpa
   nmcli con modify RPiHotspot autoconnect no
   nmcli con down RPiHotspot

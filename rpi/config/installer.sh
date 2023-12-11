@@ -554,11 +554,11 @@ if [ ! -e /etc/rpi-conf.done ]; then
    NetworkManager ModemManager systemd-journald hostapd motion
   systemctl enable ssh avahi-daemon proinit rpi-cleanup.timer \
    systemd-timesyncd systemd-time-wait-sync
+  systemctl enable NetworkManager ModemManager \
+   NetworkManager-wait-online NetworkManager-dispatcher   
   ## Disabled on startup
-  systemctl disable NetworkManager ModemManager dnsmasq \
-   NetworkManager-wait-online NetworkManager-dispatcher
   systemctl disable hostapd keyboard-setup sysstat lighttpd wifiswitch motion userconfig
-  systemctl disable apt-daily.service apt-daily.timer apt-daily-upgrade.service \
+  systemctl disable apt-daily.service apt-daily.timer apt-daily-upgrade.service dnsmasq \
    apt-daily-upgrade.timer sysstat-collect.timer 
   systemctl disable triggerhappy.service triggerhappy.socket \
    e2scrub_all.service e2scrub_all.timer 
@@ -626,9 +626,6 @@ chmod -R 755 /opt/rpi
 chown -R root:root /opt/rpi
 
 ## Remove Installer Files
-rm -rfv /opt/rpi/urserver*
-rm -rfv /opt/rpi/manager
-rm -rfv /opt/rpi/remotes
 rm -rf /opt/rpi/config
 rm -rf /opt/rpi/nodeopc
 rm -f /opt/rpi/pythproc 

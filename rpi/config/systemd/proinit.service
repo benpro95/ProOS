@@ -2,7 +2,8 @@
 Description=ProOS Init Service by Ben Provenzano III
 DefaultDependencies=no
 Conflicts=shutdown.target
-After=network.target
+After=network-online.target
+Requires=network-online.target
 
 [Service]
 Type=oneshot

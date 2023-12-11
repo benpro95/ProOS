@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Raspberry Pi ProOS Server Setup Script v11.0
-## RUN 1st, then Module Installer
+## run this 1st, then module installer
 
 # Core Path
 BIN=/opt/rpi/config
@@ -25,7 +25,7 @@ else
 echo "Raspberry Pi detected."
 fi
 OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
-if [ "${OSVER}" = "bullseye" ] || [ "${OSVER}" = "bookworm" ]; then
+if [ "${OSVER}" = "bookworm" ]; then
   echo "OS version ${OSVER} detected."
 else
   echo "Unsupported OS version ${OSVER} detected."
@@ -48,12 +48,7 @@ echo "Resettings to defaults..."
 echo "*"
 
 ## Set boot partition to read/write
-if [ "${OSVER}" = "bookworm" ]; then
-  mount -o remount,rw /boot/firmware
-else
-  # Boot partition read-only
-  mount -o remount,rw /boot
-fi
+mount -o remount,rw /boot/firmware
 
 ## Re-install Manual Sources
 REINSTALL="no"
@@ -77,14 +72,6 @@ adduser pi
 chown -R pi:pi /home/pi
 chsh -s /bin/bash pi
 
-## Node.js APT Key
-if [ "${OSVER}" = "bullseye" ]; then
-  curl --silent -L https://deb.nodesource.com/gpgkey/nodesource.gpg.key | \
-    gpg --no-default-keyring --keyring /etc/apt/trusted.gpg --import -
-  cp -f $BIN/node.list /etc/apt/sources.list.d/node.list
-  chmod 644 /etc/apt/sources.list.d/node.list
-  chown root:root /etc/apt/sources.list.d/node.list  
-fi
 
 ## Update Sources
 apt-get -y update --allow-releaseinfo-change
@@ -98,22 +85,7 @@ apt-get install -y --no-upgrade --ignore-missing locales console-setup \
  iw wpasupplicant dirmngr autofs triggerhappy apt-utils build-essential \
  git autoconf make libtool binutils i2c-tools cmake yasm libmariadb3 \
  texi2html socat nmap autoconf automake pkg-config \
- keyboard-configuration ncftp inxi
-
-## OS Specific Packages
-if [ "${OSVER}" = "bookworm" ]; then
-  apt-get install -y --no-upgrade --ignore-missing dhcpcd dhcpcd-base gnucobol4 \
-   cryptsetup cryptsetup-bin
-  systemctl stop NetworkManager-wait-online.service NetworkManager-dispatcher.service \
-   NetworkManager.service ModemManager.service
-  systemctl disable NetworkManager-wait-online.service NetworkManager-dispatcher.service \
-   NetworkManager.service ModemManager.service userconfig
-  systemctl mask NetworkManager-wait-online.service NetworkManager-dispatcher.service \
-   NetworkManager.service ModemManager.service userconfig
-fi
-if [ "${OSVER}" = "bullseye" ]; then
- apt-get install -y --no-upgrade --ignore-missing crda open-cobol
-fi
+ keyboard-configuration ncftp inxi gnucobol4 cryptsetup cryptsetup-bin
 
 ## Developer Packages 
 apt-get install -y --no-upgrade --ignore-missing libgtk2.0-dev libbluetooth3 libbluetooth-dev \
@@ -130,17 +102,6 @@ apt-get install -y --no-upgrade --ignore-missing libgstreamer1.0-dev gstreamer1.
  libx264-dev x264 ffmpeg libswscale-dev libavformat-dev libavcodec-dev libupnp-dev ffmpeg \
  libgstreamer-plugins-base1.0-0 gstreamer1.0-alsa
 
-## EGL hardware video decoding libraries
-if [ "${OSVER}" = "bullseye" ]; then
-  if [ ! -e /usr/lib/arm-linux-gnueabihf/libbrcmEGL.so ]; then
-	cd /usr/lib/arm-linux-gnueabihf
-	curl -sSfLO 'https://raw.githubusercontent.com/raspberrypi/firmware/master/opt/vc/lib/libbrcmEGL.so'
-	curl -sSfLO 'https://raw.githubusercontent.com/raspberrypi/firmware/master/opt/vc/lib/libbrcmGLESv2.so'
-	curl -sSfLO 'https://raw.githubusercontent.com/raspberrypi/firmware/master/opt/vc/lib/libopenmaxil.so'
-	cd $BIN
-  fi
-fi
-
 ## Install X11 
 apt-get install -y --no-upgrade --ignore-missing xserver-xorg xorg \
  x11-common x11-common xserver-xorg-input-evdev xserver-xorg-legacy xvfb \
@@ -156,12 +117,7 @@ update-rc.d dphys-swapfile remove
 apt-get -y remove --purge dphys-swapfile
 
 ## Perl Support
-if [ "${OSVER}" = "bookworm" ]; then
-  apt-get install -y --no-upgrade --ignore-missing perl perl-modules
-fi
-if [ "${OSVER}" = "bullseye" ]; then
-  apt-get install -y --no-upgrade --ignore-missing perl perl-modules-5.32
-fi
+apt-get install -y --no-upgrade --ignore-missing perl perl-modules-5.32
 
 ## CPU Specific Packages
 if [ "$CPUTYPE" = "Raspberry Pi Zero W Rev 1.1" ]; then
@@ -181,17 +137,7 @@ else
     rm -f /usr/bin/rclone
   fi 
   if [ ! -e /usr/bin/rclone ]; then
-    if [ "${OSVER}" = "bookworm" ]; then
-      apt-get install -y --no-upgrade --ignore-missing rclone
-    fi
-    if [ "${OSVER}" = "bullseye" ]; then
-      ## Newest Version
-      #curl https://rclone.org/install.sh | sudo bash
-      ## 1.58 Version
-      dpkg -i /opt/rpi/pkgs/rclone-v1.58.0-linux-arm-v7.deb
-      rclone --version
-      cd $BIN
-    fi
+    apt-get install -y --no-upgrade --ignore-missing rclone
   fi
 fi
 
@@ -227,83 +173,14 @@ apt-get install -y --no-upgrade --ignore-missing alsa-base alsa-utils mpg321 lam
  xxd libplist-dev libsodium-dev libavutil-dev uuid-dev libgcrypt-dev
 
 ## Bluetooth Support
-apt-get install -y --no-upgrade --ignore-missing bluetooth pi-bluetooth bluez bluez-tools
-
-## Bluetooth Audio Support
-if [ "${OSVER}" = "bullseye" ]; then
-  dpkg -i /opt/rpi/pkgs/bluealsa_0.13_armhf.deb
-fi
-if [ "${OSVER}" = "bookworm" ]; then
-  apt-get install -y --no-upgrade --ignore-missing bluez-alsa-utils
-fi
-
-## OMX-Player
-if [ "$REINSTALL" = "yes" ]; then
-  rm -f /usr/bin/omxplayer
-fi
-if [ ! -e /usr/bin/omxplayer ]; then
-  if [ "${OSVER}" = "bullseye" ]; then
-    dpkg -i /opt/rpi/pkgs/omxplayer_20190723_armhf.deb
-  fi
-fi
-
-## Pi 3 Ethernet LED Control 
-if [ "$REINSTALL" = "yes" ]; then
-  rm -f /usr/bin/lan951x-led-ctl
-fi
-if [ "${OSVER}" = "bullseye" ]; then
-  if [ ! -e /usr/bin/lan951x-led-ctl ]; then
-    cd /opt/rpi/pkgs/lan951x-led-ctl-master
-    make
-    cp -v lan951x-led-ctl /usr/bin/
-    cd $BIN
-  fi
-fi
+apt-get install -y --no-upgrade --ignore-missing bluetooth pi-bluetooth \
+ bluez bluez-tools bluez-alsa-utils
 
 ## AirPlay Support
-if [ "$REINSTALL" = "yes" ]; then
-  rm -f /usr/local/bin/shairport-sync
-fi
-if [ ! -e /usr/local/bin/shairport-sync ]; then
-  if [ "${OSVER}" = "bullseye" ]; then
-    apt-get remove -y shairport-sync
-    rm -f /lib/systemd/system/nqptp.service
-    git clone https://github.com/mikebrady/nqptp.git
-    cd nqptp
-    autoreconf -fi
-    ./configure --with-systemd-startup
-    make
-    make install
-    cd -
-    git clone https://github.com/mikebrady/shairport-sync.git
-    cd shairport-sync
-    autoreconf -fi
-    ./configure --sysconfdir=/etc --with-alsa --with-soxr \
-      --with-avahi --with-ssl=openssl --with-systemd --with-airplay-2
-    make -j
-    make install
-    cd -
-    ln -sf /usr/local/bin/shairport-sync /usr/bin/shairport-sync
-  fi
-  if [ "${OSVER}" = "bookworm" ]; then
-    apt-get install -y --no-upgrade --ignore-missing shairport-sync
-  fi
-fi
+apt-get install -y --no-upgrade --ignore-missing shairport-sync
 
 ## Camera Motion Server
-if [ "$REINSTALL" = "yes" ]; then
-  rm -f /usr/bin/motion
-fi
-if [ ! -e /usr/bin/motion ]; then
-	systemctl stop motion
-	if [ "${OSVER}" = "bullseye" ]; then
-	  apt-get install -y --no-upgrade --ignore-missing libmicrohttpd12
-	  dpkg -i /opt/rpi/pkgs/pi_bullseye_motion_4.5.0-1_armhf.deb
-	fi
-	if [ "${OSVER}" = "bookworm" ]; then
-    apt-get install -y --no-upgrade --ignore-missing libmicrohttpd12 motion
-	fi
-fi
+apt-get install -y --no-upgrade --ignore-missing libmicrohttpd12 motion
 groupadd motion
 useradd motion -g motion --shell /bin/false
 groupmod -g 1005 motion
@@ -312,16 +189,13 @@ usermod -u 1005 motion
 ## Remove Packages
 apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp udhcpd usbmuxd usbmount pmount
 apt-get remove --purge -y cups cups-client cups-common cups-core-drivers cups-daemon \
-  cups-filters cups-filters-core-drivers cups-ipp-utils cups-ppdc cups-server-common
+  cups-filters cups-filters-core-drivers cups-ipp-utils cups-ppdc cups-server-common dhdpcd
 apt-get remove --purge -y exim4 exim4-base exim4-config exim4-daemon-light udisks2 \
   tigervnc-common tigervnc-standalone-server iptables-persistent bridge-utils vlc ntfs-3g \
   lxlock xscreensaver xscreensaver-data gvfs gvfs-backends vnc4server libudisks2-0 \
   wolfram-engine libssl-doc libatasmart4 libavahi-glib1 mpd mpc rng-tools rng-tools-debian
-  
-if [ "${OSVER}" = "bookworm" ]; then
-  apt-get remove --purge -y openjdk-17-jre-headless firefox pocketsphinx-en-us piwiz \
-   plymouth plymouth-label plymouth-themes 
-fi
+apt-get remove --purge -y openjdk-17-jre-headless firefox pocketsphinx-en-us piwiz \
+  plymouth plymouth-label plymouth-themes dhcpcd dhcpcd-base
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
 rm -rf /etc/cron.*
@@ -339,17 +213,6 @@ rm -f /var/log/syslog
 ## Delete custom services
 rm -fr /etc/systemd/system/rpi-*
 
-## Reset hotspot configuration
-cp -f $BIN/hostapd.conf /etc/hostapd
-chmod 644 /etc/hostapd/hostapd.conf
-chown root:root /etc/hostapd/hostapd.conf
-if [ ! -e /opt/rpi/modconf/brand.txt ]; then
-  echo "Skipping module modification."
-else
-  ## Set module name to hotspot config
-  sed -i "s/RaspberryPi/$MODNAME/g" /etc/hostapd/hostapd.conf
-fi
-
 ## Reset LED configuration
 rm -f /opt/rpi/remotes/leds
 rm -f /tmp/global-fc.lock
@@ -363,12 +226,7 @@ fi ###### END OF SUB-SCRIPT #######################
 echo "Installing system configuration."
 
 ## Boot partition read-write
-if [ "${OSVER}" = "bookworm" ]; then
-  mount -o remount,rw /boot/firmware
-else
-  # Boot partition read-only
-  mount -o remount,rw /boot
-fi
+mount -o remount,rw /boot/firmware
 
 ## SSH will be enabled by systemd, do not use this file
 rm -f /boot/ssh
@@ -382,72 +240,19 @@ rm -f /boot/firmware/apd-routed.enable
 rm -f /boot/firmware/apd.enable
 
 ## Default Boot Config
-if [ "${OSVER}" = "bookworm" ]; then
-  if [ ! -e /etc/rpi-bootro.done ]; then
-    echo "Enabling read-only boot partition.."  
-    raspi-config nonint enable_bootro
-    touch /etc/rpi-bootro.done
-  fi
-  cp -fv /boot/firmware/config.txt /boot/firmware/config.bak
-  cp -f $BIN/config.txt /boot/firmware/
-else
-  cp -f $BIN/config.txt /boot/
+if [ ! -e /etc/rpi-bootro.done ]; then
+  echo "Enabling read-only boot partition.."  
+  raspi-config nonint enable_bootro
+  touch /etc/rpi-bootro.done
 fi
+cp -fv /boot/firmware/config.txt /boot/firmware/config.bak
+cp -f $BIN/config.txt /boot/firmware/
 
 ## Text mode
 systemctl set-default multi-user.target
 
-## Pi Zero W 2 Support
-if [ "${OSVER}" = "bullseye" ]; then
-  if [ ! -e /boot/bcm2710-rpi-zero-2.dtb ]; then
-    echo "Copying Pi Zero W 2 ROM file to boot partition."
-    cp -f /opt/rpi/pkgs/bcm2710-rpi-zero-2.dtb /boot/
-  fi
-fi
-
-## OverlayFS Configuration
-if [ "${OSVER}" = "bullseye" ]; then
-  cp -f $BIN/fstab /etc/fstab
-  chmod 644 /etc/fstab
-  chown root:root /etc/fstab
-  cp -f $BIN/cmdline.txt /boot/cmdline.txt
-  chmod 644 /boot/cmdline.txt
-  chown root:root /boot/cmdline.txt
-  rm -f /boot/cmdline.rw
-  rm -f /boot/cmdline.ro
-fi
-
 ## WiFi Configuration
 raspi-config nonint do_wifi_country US
-cp -f $BIN/wpa.empty /etc/wpa_supplicant/wpa_supplicant.empty
-chmod 644 /etc/wpa_supplicant/wpa_supplicant.empty
-chown root:root /etc/wpa_supplicant/wpa_supplicant.empty
-cp -f $BIN/wpa.template /etc/wpa_supplicant/wpa_supplicant.template
-chmod 644 /etc/wpa_supplicant/wpa_supplicant.template
-chown root:root /etc/wpa_supplicant/wpa_supplicant.template
-if [ ! -e /etc/wpa_supplicant/wpa_supplicant.conf ]; then
-  echo "WiFi config not installed resetting."
-  cp -f /etc/wpa_supplicant/wpa_supplicant.empty /etc/wpa_supplicant/wpa_supplicant.conf
-  chmod 644 /etc/wpa_supplicant/wpa_supplicant.conf
-  chown root:root /etc/wpa_supplicant/wpa_supplicant.conf
-fi
-if [ ! -e /boot/wpa.conf ]; then
-  echo "Copying Wi-Fi settings to boot partition."
-  if [ "${OSVER}" = "bullseye" ]; then
-    cp -f /etc/wpa_supplicant/wpa_supplicant.conf /boot/wpa.conf
-  fi  
-  if [ "${OSVER}" = "bookworm" ]; then
-    cp -f /etc/wpa_supplicant/wpa_supplicant.conf /boot/firmware/wpa.conf
-    ln -sf /boot/firmware/wpa.conf /boot/wpa.conf
-  fi  
-fi
-
-if [ "${OSVER}" = "bookworm" ]; then
-  mount -o remount,ro /boot/firmware
-else
-  # Boot partition read-only
-  mount -o remount,ro /boot
-fi
 
 ## Copy SSH Configuration
 cp $BIN/sshd_config /etc/ssh
@@ -505,11 +310,11 @@ chown -fR root:root /etc/systemd/system/*.timer
 chmod -fR 644 /etc/systemd/system/*.service
 chown -fR root:root /etc/systemd/system/*.service
 
-## Startup Scripts (critical)
-cp -f $BIN/netmode.sh /etc
+## Startup Scripts
+cp -f $BIN/netmode.sh /etc/
 chmod 755 /etc/netmode.sh
 chown root:root /etc/netmode.sh
-cp -f $BIN/preinit.sh /etc
+cp -f $BIN/preinit.sh /etc/
 chmod 755 /etc/preinit.sh
 chown root:root /etc/preinit.sh
 
@@ -578,7 +383,6 @@ rm -f /etc/sudoers.d/www-perms
 rm -f /etc/sudoers.d/www-nopasswd
 rm -f /etc/sudoers.d/www-mod-nopasswd
 sh -c "touch /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/bin/cat /etc/wpa_supplicant/wpa_supplicant.conf\" >> /etc/sudoers.d/www-perms"
 sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/main-www\" >> /etc/sudoers.d/www-perms"
 sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/main\" >> /etc/sudoers.d/www-perms"
 sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/leds\" >> /etc/sudoers.d/www-perms"
@@ -645,12 +449,7 @@ chown root:root /etc/systemd/system/bthelper@.service.d/override.conf
 chmod 644 /etc/systemd/system/bthelper@.service.d/override.conf
 # BlueALSA Configuration
 rm -f /etc/systemd/system/bluealsa.service
-if [ "${OSVER}" = "bullseye" ]; then
-  cp -f $BIN/bluealsa.service /lib/systemd/system/bluealsa.service 
-fi  
-if [ "${OSVER}" = "bookworm" ]; then
-  cp -f $BIN/bluealsa.bookworm.service /lib/systemd/system/bluealsa.service 
-fi  
+cp -f $BIN/bluealsa.service /lib/systemd/system/bluealsa.service  
 chown root:root /lib/systemd/system/bluealsa.service
 chmod 644 /lib/systemd/system/bluealsa.service
 mkdir -p /etc/systemd/system/bluealsa.service.d
@@ -677,45 +476,6 @@ rm -f /lib/udev/rules.d/75-persistent-net-generator.rules
 timedatectl set-ntp true
 timedatectl status
 
-## Network Configuration
-if [ ! -e /lib/systemd/system/dhcpcd.service ]; then
-  echo "dhcpcd service not found, installing..."
-  cp -f $BIN/dhcpcd.service /lib/systemd/system/
-  chmod 644 /lib/systemd/system/dhcpcd.service
-  chown root:root /lib/systemd/system/dhcpcd.service
-  systemctl daemon-reload
-fi
-cp -f $BIN/dhcpcd.conf /etc
-chmod 644 /etc/dhcpcd.conf
-chown root:root /etc/dhcpcd.conf
-cp -f $BIN/dhcpcd.conf /etc/dhcpcd.net
-chmod 644 /etc/dhcpcd.net
-chown root:root /etc/dhcpcd.net
-cp -f $BIN/dhcpcd.apd /etc/dhcpcd.apd
-chmod 644 /etc/dhcpcd.apd
-chown root:root /etc/dhcpcd.apd
-rm -f /etc/dhcpcd.bridge
-rm -f /etc/systemd/system/dhcpcd.service.d/wait.conf
-## DNS Server
-cp -f $BIN/dnsmasq.nodns /etc/
-chmod 644 /etc/dnsmasq.nodns
-chown root:root /etc/dnsmasq.nodns
-cp -f $BIN/dnsmasq.routed /etc/
-chmod 644 /etc/dnsmasq.routed
-chown root:root /etc/dnsmasq.routed
-cp -f $BIN/dnsmasq.hosts /etc/
-chmod 644 /etc/dnsmasq.hosts
-chown root:root /etc/dnsmasq.hosts
-## Access Point
-cp -f $BIN/hostapd.conf /etc/hostapd/hostapd.conf
-chmod 644 /etc/hostapd/hostapd.conf
-chown root:root /etc/hostapd/hostapd.conf
-rm -f /etc/init.d/hostapd
-rm -f /etc/default/hostapd
-rm -f /etc/hostapd/ifupdown.sh
-rm -f /etc/network/if-pre-up.d/hostapd
-touch /etc/default/hostapd
-
 ## Set hostname to configurations
 if [ ! -e $BIN/hostname ]; then
 echo "Skipping hostname modification."
@@ -729,16 +489,6 @@ cp -f $BIN/hosts /etc
 chmod 644 /etc/hosts
 chown root:root /etc/hosts
 sed -i "s/raspberrypi/$NEWHOST/g" /etc/hosts
-## Set hostname to DNS configuration
-sed -i "s/raspberrypi/$NEWHOST/g" /etc/dnsmasq.routed
-sed -i "s/raspberrypi/$NEWHOST/g" /etc/dnsmasq.hosts
-fi
-if [ ! -e /opt/rpi/modconf/brand.txt ]; then
-echo "Skipping module modification."
-else
-## Set module name to default hotspot config
-sed -i "s/RaspberryPi/$MODNAME/g" /etc/hostapd/hostapd.conf
-echo "Hostname is $NEWHOST"
 fi
 
 ## Create ALSA state file if not found
@@ -796,33 +546,34 @@ ln -sf /opt/rpi/leds /usr/bin/leds
 cobc -x --free /opt/rpi/effects/colorscan.cbl -o /opt/rpi/effects/colorscan
 
 ## Services Configuration
-if [ "${OSVER}" = "bookworm" ]; then
-  cp -f $BIN/timesyncd.conf /etc/systemd/
-  chmod 644 /etc/systemd/timesyncd.conf
-  chown root:root /etc/systemd/timesyncd.conf
-  cp -f $BIN/keyboard-setup.service /lib/systemd/system/
-  chmod 644 /lib/systemd/system/keyboard-setup.service
-  chown root:root /lib/systemd/system/keyboard-setup.service
-fi  
+cp -f $BIN/timesyncd.conf /etc/systemd/
+chmod 644 /etc/systemd/timesyncd.conf
+chown root:root /etc/systemd/timesyncd.conf
+cp -f $BIN/keyboard-setup.service /lib/systemd/system/
+chmod 644 /lib/systemd/system/keyboard-setup.service
+chown root:root /lib/systemd/system/keyboard-setup.service
 rm -f /lib/systemd/system/shairport-sync.service
+
 systemctl daemon-reload
 if [ ! -e /etc/rpi-conf.done ]; then
   ## Active on startup
+  systemctl unmask NetworkManager-wait-online.service NetworkManager-dispatcher.service \
+   NetworkManager.service ModemManager.service systemd-journald hostapd motion
+  systemctl enable NetworkManager-wait-online.service NetworkManager-dispatcher.service \
+   NetworkManager.service ModemManager.service
   systemctl enable ssh avahi-daemon proinit rpi-cleanup.timer \
    systemd-timesyncd systemd-time-wait-sync
-  systemctl unmask systemd-journald hostapd motion
   ## Disabled on startup
-  systemctl disable hostapd dhcpcd networking wpa_supplicant keyboard-setup \
-   sysstat lighttpd dnsmasq rpi-netdetect wifiswitch motion
+  systemctl disable hostapd keyboard-setup sysstat lighttpd wifiswitch motion userconfig
   systemctl disable apt-daily.service apt-daily.timer apt-daily-upgrade.service \
-   apt-daily-upgrade.timer sysstat-collect.timer
+   apt-daily-upgrade.timer sysstat-collect.timer 
   systemctl disable triggerhappy.service triggerhappy.socket \
    e2scrub_all.service e2scrub_all.timer 
   systemctl disable serial-getty@ttyS0.service serial-getty@ttyAMA0.service  
   systemctl disable sysstat-summary.timer man-db.service man-db.timer
   systemctl disable hciuart bluetooth bthelper@hci0 bluealsa
   systemctl disable usbplug nmbd smbd samba-ad-dc autofs 
-  systemctl disable glamor-test rp1-test
+  systemctl disable glamor-test rp1-test rpi-netdetect
   echo "Initial setup (phase II) complete."
   touch /etc/rpi-conf.done
 else

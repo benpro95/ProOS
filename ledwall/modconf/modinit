@@ -51,9 +51,4 @@ cp -f $BIN/modconf/SpectroGraph.jar /opt/rpi/effects/spectro/lib/
 chmod 755 /opt/rpi/effects/spectro/lib/SpectroGraph.jar
 chown root:root /opt/rpi/effects/spectro/lib/SpectroGraph.jar
 
-## Routed Hotspot Configuration
-#cp -f /etc/dnsmasq.routed /etc/dnsmasq.conf
-#chmod 644 /etc/dnsmasq.conf
-#chown root:root /etc/dnsmasq.conf
-
 exit

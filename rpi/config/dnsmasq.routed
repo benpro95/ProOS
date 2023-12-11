@@ -1,8 +1,0 @@
-interface=wlan0
-bogus-priv
-server=208.67.222.222
-domain=home
-local=/raspberrypi.home/
-expand-hosts
-addn-hosts=/etc/dnsmasq.hosts
-dhcp-range=10.177.42.2,10.177.42.199,48h

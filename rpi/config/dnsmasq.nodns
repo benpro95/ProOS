@@ -1,4 +1,0 @@
-interface=wlan0
-bogus-priv
-port=0
-dhcp-range=10.177.42.2,10.177.42.199,48h

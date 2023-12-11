@@ -22,14 +22,8 @@ fi
 if [ "$1" == "confwpa" ]; then
   ## Decode base64
   WPADATA=$(echo "$2" | base64 --decode)
-  ## Split by delimiter
-  DELIM="|$|"
-  WPA_SSID=${WPADATA%"$DELIM"*}
-  WPA_PWD=${WPADATA#*"$DELIM"}
-  ## Write to configuration
-  cp -f /etc/wpa_supplicant/wpa_supplicant.template /tmp/wifidata
-  sed -i -e "s/|||SSID_PLACEHOLDER|||/$WPA_SSID/g" /tmp/wifidata
-  sed -i -e "s/|||PASSWORD_PLACEHOLDER|||/$WPA_PWD/g" /tmp/wifidata
+  rm -f /tmp/wifidata
+  echo -e "$WPADATA" > /tmp/wifidata
   ## Copy configuration to boot partition
   /opt/rpi/init cpwifi
   echo "set Wi-Fi configuration." &>> $LOGFILE

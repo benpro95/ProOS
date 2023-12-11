@@ -14,9 +14,6 @@ auto_initramfs=1
 # Use the kernel's default instead.
 disable_fw_kms_setup=1
 
-# Run as fast as firmware / board allows
-arm_boost=1
-
 #-------GPU memory-------
 gpu_mem=64
 

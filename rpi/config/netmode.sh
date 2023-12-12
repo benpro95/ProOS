@@ -112,6 +112,7 @@ case "$1" in
 ##############################################
 
 boot)
+sleep 10
 ## REQUIRED TO START NETWORKING!!
 if [ ! -e /boot/firmware/apd.enable ]; then
   echo "Client network mode"

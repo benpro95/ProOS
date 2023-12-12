@@ -1,16 +1,13 @@
 [Unit]
 Description=ProOS Init Service by Ben Provenzano III
-DefaultDependencies=no
 Conflicts=shutdown.target
 After=network-online.target
-Requires=network-online.target
 
 [Service]
-Type=oneshot
+Type=forking
 ExecStartPre=-/etc/netmode.sh boot
 ExecStart=-/opt/rpi/main boot
-RemainAfterExit=yes
 TimeoutSec=240
 
 [Install]
-WantedBy=basic.target
+WantedBy=network-online.target

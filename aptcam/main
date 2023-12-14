@@ -113,11 +113,14 @@ exit
 case "$1" in
 
 boot)
-## Video RAM Disk
+## Video RAM disk
 mkdir -p /mnt/ramdisk
 chmod 777 /mnt/ramdisk
 mount -t tmpfs -o size=284m ramdisk /mnt/ramdisk
-sleep 25
+## Attach flash drive
+mkdir -p /media/usb0
+mount /dev/sda1 /media/usb0
+sleep 15
 ## Attach server SMB share
 if ping -c 1 files.home > /dev/null 2> /dev/null
 then

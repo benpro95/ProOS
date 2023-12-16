@@ -836,15 +836,21 @@
 	      <div class="dropdown"> 
 	        <a class="dropbtn" onclick="showMenu('options-menu')">Options</a>
 	        <div class="dropdown-content" id="options-menu">  
-	          <a onclick="serverAction('files-scratchcopy')">Copy Scratch</a>     
-	          <a onclick="wifiPrompt()"> WiFi Access</a>  
-            <a onclick="vmsPrompt()"> VM Control</a>    
+	          <a onclick="serverAction('files-scratchcopy')">Copy Scratch</a>
+              <a onclick="vmsPrompt()"> VM Control</a>    
 	          <a onclick="serverAction('syslog')">Server Log</a>
-            <a onclick="serverAction('files-lastlog')">Last Login</a> 
-	          <a onclick="serverAction('files-git_push')">Sync Git</a>
-	          <a onclick="serverAction('files-podget')">Podget</a>
-	          <a onclick="serverAction('files-netscan')">IP Scan</a>
+              <a onclick="serverAction('files-lastlog')">Last Login</a> 
 	          <a onclick="serverAction('files-clearlog')"> Clear Log</a>
+	        </div>
+	      </div>
+	      <div class="dropdown"> 
+	        <a class="dropbtn" onclick="showMenu('net-menu')">Network</a>
+	        <div class="dropdown-content" id="net-menu">  
+	          <a onclick="wifiPrompt()"> WiFi Access</a>  
+	          <a onclick="serverAction('files-git_push')">Sync Git</a>
+	          <a onclick="serverAction('files-netscan')">Scanner</a>
+	          <a onclick="serverAction('files-podget')">Podget</a>
+	          
 	        </div>
 	      </div>
 	      <div class="dropdown">

@@ -9,18 +9,12 @@ case "$1" in
 
 boot)
 ## AirPlay Support
-OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
-if [ "${OSVER}" = "bullseye" ]; then
-  systemctl start nqptp
-fi
 systemctl start rpi-airplay
 ## Bluetooth Audio
 systemctl start hciuart
 systemctl start bluetooth
 systemctl start bt-agent@hci0
 systemctl start bluealsa-aplay
-## Disable HDMI (saves 30mA)
-tvservice -o
 ## Auto Hotspot
 systemctl start rpi-netdetect
 exit

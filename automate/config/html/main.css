@@ -131,7 +131,7 @@ body {
 }
 
 .parend-fb {
-  margin-bottom: 800px;
+  margin-bottom: 700px;
 }
 
 .parsplit {
@@ -170,11 +170,11 @@ body {
 .grid {
   overflow: hidden;
   white-space: nowrap;
-  animation: fadeIn 0.35s;
-  -webkit-animation: fadeIn 0.35s;
-  -moz-animation: fadeIn 0.35s;;
-  -o-animation: fadeIn 0.35s;
-  -ms-animation: fadeIn 0.35s;
+  animation: fadeIn 0.3s;
+  -webkit-animation: fadeIn 0.3s;
+  -moz-animation: fadeIn 0.3s;;
+  -o-animation: fadeIn 0.3s;
+  -ms-animation: fadeIn 0.3s;
 }
 
 .body__text {
@@ -192,7 +192,7 @@ body {
 
 .button {
     transition: all 0.2s;
-	width: 150px;
+	  width: 150px;
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;
@@ -261,6 +261,7 @@ body {
 }
 
 .topnav a {
+  cursor: crosshair;
   float: left;
   padding: 0px 12px;
   padding-top: 4px;
@@ -354,6 +355,7 @@ body {
 
 /* log window top menu */
 .scrollmenu {
+  cursor: crosshair;
   background-color: #2d353d;
   overflow: hidden;
   white-space: nowrap;
@@ -368,7 +370,7 @@ body {
 }
 
 /* menu hover over color*/
-.scrollmenu a:hover { 
+.scrollmenu a:hover {
   background-color: #000;
 }
 

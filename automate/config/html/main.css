@@ -261,7 +261,7 @@ body {
 }
 
 .topnav a {
-  cursor: crosshair;
+  cursor: pointer;
   float: left;
   padding: 0px 12px;
   padding-top: 4px;
@@ -355,7 +355,7 @@ body {
 
 /* log window top menu */
 .scrollmenu {
-  cursor: crosshair;
+  cursor: pointer;
   background-color: #2d353d;
   overflow: hidden;
   white-space: nowrap;

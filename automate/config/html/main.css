@@ -255,13 +255,13 @@ body {
 }
 
 .topnav {
+  cursor: pointer;
   line-height: 2.65;
   overflow: hidden;
   background-color: #2d353d; /* nav background color */
 }
 
 .topnav a {
-  cursor: pointer;
   float: left;
   padding: 0px 12px;
   padding-top: 4px;
@@ -390,6 +390,7 @@ body {
 
 /* Dropdown Content (Hidden by Default) */
 .dropdown-content {
+  cursor: pointer;
   display: none;
   position: fixed;
   background-color: #4d5b69;

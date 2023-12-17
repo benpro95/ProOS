@@ -834,11 +834,11 @@
 	      <div class="dropdown"> 
 	        <a class="dropbtn" onclick="showMenu('options-menu')">Options</a>
 	        <div class="dropdown-content" id="options-menu">  
-              <a onclick="vmsPrompt()"> VM Control</a> 
-	          <a onclick="serverAction('files-scratchcopy')">Copy Scratch</a>   
-	          <a onclick="serverAction('syslog')">System Status</a>
-              <a onclick="serverAction('files-lastlog')">Last Login</a> 
-	          <a onclick="serverAction('files-clearlog')"> Clear Log</a>
+            <a onclick="vmsPrompt()"> VM Control</a> 
+            <a onclick="serverAction('files-scratchcopy')">Copy Scratch</a>   
+            <a onclick="serverAction('syslog')">System Status</a>
+            <a onclick="serverAction('files-lastlog')">Last Login</a> 
+            <a onclick="serverAction('files-clearlog')"> Clear Log</a>
 	        </div>
 	      </div>
 	      <div class="dropdown"> 
@@ -854,10 +854,11 @@
           <a class="dropbtn" onclick="showMenu('backupmenu')">Backup</a>
           <div class="dropdown-content" id="backupmenu">
             <a onclick="getPassword()">Unlock</a>  
-            <a onclick="serverAction('detach_bkps')">Detach</a>    
-            <a onclick="serverAction('pve_vmsbkp')">VMs/LXCs</a> 
+            <a onclick="serverAction('detach_bkps')">Detach</a>
+            <a onclick="serverAction('files-backupstd')">Standard</a>             
             <a onclick="serverAction('files-backupchk')">Checksum</a>   
-            <a onclick="serverAction('files-backupstd')">Standard</a> 
+            <a onclick="serverAction('pve_vmsbkp')">VMs/LXCs</a> 
+            <a onclick="serverAction('listsnaps')">List Snapshots</a>
           </div>
 	      </div>
 	      <div class="dropdown"> 

@@ -7,7 +7,6 @@ TRIGGERS_DIR="/mnt/ramdisk"
 LOGFILE="$TRIGGERS_DIR/sysout.txt"
 
 function EXIT_ROUTINE {
-  rm -f /tmp/actiontrig.lock
   echo " "
   TRAILER=$(date)
   TRAILER+=" ("
@@ -15,6 +14,7 @@ function EXIT_ROUTINE {
   TRAILER+=")"
   echo "$TRAILER"
   chmod 777 $LOGFILE
+  rm -f /tmp/actiontrig.lock
   exit
 }
 
@@ -102,7 +102,14 @@ if [ -e $TRIGGERS_DIR/detach_bkps.txt ]; then
   echo "unmounted ZFS backup volumes"
   EXIT_ROUTINE
 fi
-
+if [ -e $TRIGGERS_DIR/listsnaps.txt ]; then
+  echo " "
+  touch /tmp/actiontrig.lock
+  rm -f $TRIGGERS_DIR/listsnaps.txt
+  echo "Snapshots on ZFS pool (tank/datastore):"
+  zfs list -t snapshot tank/datastore | grep -o '^\S*'
+  EXIT_ROUTINE  
+fi
 ### START VMs #########################################
 #######################################################
 if [ -e $TRIGGERS_DIR/startxana.txt ]; then

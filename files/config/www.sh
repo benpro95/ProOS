@@ -193,7 +193,7 @@ then
   exit
 fi
 ## Private Share
-if [[ $REPLY == "private_region" ]]
+if [[ $REPLY == "priv_region" ]]
 then
   if [ -e "$REGROOT/Private" ]; then
     echo "detaching private region..."
@@ -217,7 +217,7 @@ then
   exit
 fi
 ## Snapshot Share
-if [[ $REPLY == "snapshots_region" ]]
+if [[ $REPLY == "snap_region" ]]
 then
   if [ -e "$REGROOT/Snapshots" ]; then
     echo "detaching snapshots region..."

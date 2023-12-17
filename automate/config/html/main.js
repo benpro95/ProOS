@@ -671,7 +671,7 @@ async function loadLog(file) {
 
 // load server action 
 function serverAction(cmd) {
-  if (cmd === 'files-private_region') {
+  if (cmd === 'files-priv_region') {
     arcState = 1;
   }
   serverCmdData = cmd;

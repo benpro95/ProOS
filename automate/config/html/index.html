@@ -755,6 +755,7 @@
   <div class="lcdpi-grid">
     <div class="grid">
       <p></p>
+
         <div class="dropdown">
           <button type="button" class="button" onclick="showMenu('delaymenu')">
             <span class="button__text"><i class="fa-solid fa-forward-fast"></i> Speed</span>
@@ -789,20 +790,8 @@
 
       <div class="parsplit"><p class="parstd"></p></div>  
 
-        <button type="button" class="button button__lgr" onclick="sendCmd('main','clear','')">
-            <span class="button__text"><i class="fa-solid fa-eraser"></i> Erase</span>
-        </button>
-        <button type="button" class="button" onclick="openSendWindow()">
-            <span class="button__text"><i class="fa-solid fa-envelope-open-text"></i> Send</span>
-        </button>
-
-      <p class="parstd"></p>   
-
-        <button type="button" class="button" onclick="">
-            <span class="button__text"></i> PL</span>
-        </button>
-        <button type="button" class="button" onclick="sendCmd('main','weather','')">
-            <span class="button__text"><i class="fa-solid fa-temperature-three-quarters"></i> Weather</span>
+        <button type="button" class="button button__lgr" onclick="openSendWindow()">
+            <span class="button__text"><i class="fa-solid fa-envelope-open-text"></i> Message</span>
         </button>
         <div class="dropdown">
           <button type="button" class="button" onclick="showMenu('archmenu')">
@@ -817,6 +806,15 @@
             <a onclick="sendCmd('main','msgarchive','6')"><i class="fa-regular fa-envelope"></i> -5</a>
           </div>
         </div>
+
+      <p class="parstd"></p>   
+
+        <button type="button" class="button button__lgr" onclick="sendCmd('main','clear','')">
+            <span class="button__text"><i class="fa-solid fa-eraser"></i> Erase</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('main','weather','')">
+            <span class="button__text"><i class="fa-solid fa-temperature-three-quarters"></i> Weather</span>
+        </button>        
 
       <p class="body__text">by Ben Provenzano III</p>
       <p class="parend-fb"></p>     
@@ -865,11 +863,10 @@
 	      <div class="dropdown"> 
           <a class="dropbtn" onclick="showMenu('regionsmenu')">Regions</a>
           <div class="dropdown-content" id="regionsmenu">
+          	<a onclick="serverAction('files-backups_region')">Backups</a>
+          	<a onclick="serverAction('files-private_region')">Private</a>
             <a onclick="serverAction('files-ram_region')">RAM Disk</a>
             <a onclick="serverAction('files-www_region')">Web Root</a>
-            <a onclick="serverAction('files-private_region')">Private</a>          
-            <a onclick="serverAction('files-public_region')">Public</a>
-            <a onclick="serverAction('files-backups_region')">Backups</a>
             <a onclick="serverAction('files-snapshots_region')">Snapshots</a>
             <a onclick="serverAction('files-detach_all_regions')">Detach All</a>
           </div>

@@ -80,7 +80,7 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           echo "'Regions' share not found!"
         else
           echo "syncing 'Regions' share to $POOL drive..."
-          rsync $CHECKSUM -aP --exclude="Public/" \
+          rsync $CHECKSUM -aP --exclude="Archive/" \
           /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
         fi
         ##### END BACKUP #####
@@ -163,7 +163,7 @@ then
   rm -f $REGROOT/Snapshots
   rm -f $REGROOT/Backups  
   rm -f $REGROOT/Private
-  rm -f $REGROOT/Public
+  rm -f $REGROOT/Archive
   rm -f $REGROOT/WWW
   rm -f $REGROOT/RAM
   exit
@@ -204,15 +204,15 @@ then
   fi
   exit
 fi
-## Public Share
-if [[ $REPLY == "public_region" ]]
+## Archive Share
+if [[ $REPLY == "arc_region" ]]
 then
-  if [ -e "$REGROOT/Public" ]; then
-    echo "detaching public region..."   
-    rm $REGROOT/Public
+  if [ -e "$REGROOT/Archive" ]; then
+    echo "detaching archive region..."   
+    rm $REGROOT/Archive
   else
-    echo "attaching public region..."
-    ln -s /mnt/.regions/Public $REGROOT/Public
+    echo "attaching archive region..."
+    ln -s /mnt/.regions/Archive $REGROOT/Archive
   fi
   exit
 fi

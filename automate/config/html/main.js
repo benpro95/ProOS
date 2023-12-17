@@ -9,6 +9,7 @@ let toggledState = 0;
 let loadBarState = 0;
 let promptCount = 0;
 let rowState = 0;
+let arcState = 0;
 let consoleData = null;
 let currentTheme = null;
 let serverCmdData = null;
@@ -73,7 +74,7 @@ function showSoundsPage() {
   classDisplay('sounds-grid','block');
 }
 
-function hidePages() { 
+function hidePages() {
   classDisplay('server-grid','none');  
   classDisplay('sounds-grid','none');
   classDisplay('pi-grid','none'); 
@@ -167,6 +168,7 @@ function GotoSubURL(_path) {
 };
 
 function show_vmsPrompt(text){
+  arcState = 0;	
   selectedVM = "";
   clearPendingCmd();
   let vms_prompt = document.createElement("div"); //creates the div to be used as a prompt
@@ -241,53 +243,63 @@ function show_vmsPrompt(text){
   //append the prompt so it gets visible
   document.body.appendChild(vms_prompt); 
   new Promise(function(resolve, reject) {
-      vms_prompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
-        if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else      
-          if (e.target === vms_cancelb) { //click on cancel-button
-            vms_prompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
-            document.body.removeChild(vms_prompt);  //as we are done clean up by removing the password-prompt
-            // clear any pending command
-            clearPendingCmd();
-          }
-          // selection buttons
-          if (e.target === vms_devbtn) { 
-            vmPromptSelect('dev');
-          }
-          if (e.target === vms_unifibtn) { 
-            vmPromptSelect('unifi');
-          }  
-          if (e.target === vms_cifsbtn) { 
-            vmPromptSelect('legacy');
-          }  
-          if (e.target === vms_xanabtn) { 
-            vmPromptSelect('xana');
-          }
-          // action buttons
-          if (e.target === vms_startbtn) { 
-            if (selectedVM !==  ""){
-              serverAction('start' + selectedVM);
-              serverSend();
-            }
-          }         
-          if (e.target === vms_stopbtn) { 
-            if (selectedVM !==  ""){
-              serverAction('stop' + selectedVM);
-              serverSend();
-            }           
-          }                 
-          if (e.target === vms_openbtn) { 
-            if (selectedVM === 'unifi'){
-              GoToExtPage('unifi.home:8443');
-            }           
-          } 
-          if (e.target === vms_restorebtn) { 
-            if (selectedVM !==  ""){
-              serverAction('restore' + selectedVM);
-              let _text = "Click send to confirm restore of " + selectedVM;
-              document.getElementById('vms__text').innerHTML = _text;
-            }           
-          }                        
-      });
+	  function arcSend() {
+		serverAction('files-arc_region');
+		serverSend();
+		document.body.removeChild(vms_prompt); 
+		clearPendingCmd();       
+	  }
+	  vms_prompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
+	    if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else      
+	      if (e.target === vms_cancelb) { //click on cancel-button
+	        vms_prompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
+	        document.body.removeChild(vms_prompt);  //as we are done clean up by removing the password-prompt
+	        // clear any pending command
+	        clearPendingCmd();
+	      }
+	      // selection buttons
+	      if (e.target === vms_devbtn) { 
+	        vmPromptSelect('dev');
+	      }
+	      if (e.target === vms_unifibtn) { 
+	        vmPromptSelect('unifi');
+	      }  
+	      if (e.target === vms_cifsbtn) { 
+	        vmPromptSelect('legacy');
+	      }  
+	      if (e.target === vms_xanabtn) {
+	        if (arcState === 1 ) {
+	          arcSend();       
+	        } else {
+	          vmPromptSelect('xana');
+	        }
+	      }
+	      // action buttons
+	      if (e.target === vms_startbtn) { 
+	        if (selectedVM !==  ""){
+	          serverAction('start' + selectedVM);
+	          serverSend();
+	        }
+	      }         
+	      if (e.target === vms_stopbtn) { 
+	        if (selectedVM !==  ""){
+	          serverAction('stop' + selectedVM);
+	          serverSend();
+	        }           
+	      }                 
+	      if (e.target === vms_openbtn) { 
+	        if (selectedVM === 'unifi'){
+	          GoToExtPage('unifi.home:8443');
+	        }           
+	      } 
+	      if (e.target === vms_restorebtn) { 
+	        if (selectedVM !==  ""){
+	          serverAction('restore' + selectedVM);
+	          let _text = "Click send to confirm restore of " + selectedVM;
+	          document.getElementById('vms__text').innerHTML = _text;
+	        }           
+	      }                        
+	  });
   });   
 }
 
@@ -610,6 +622,7 @@ function clearPendingCmd() {
   let _elem = document.getElementById("sendButton");
   _elem.classList.remove("button-alert");
   serverCmdData = null;
+  arcState = 0;
 }
 
 // transmit command for server
@@ -658,6 +671,9 @@ async function loadLog(file) {
 
 // load server action 
 function serverAction(cmd) {
+  if (cmd === 'files-private_region') {
+    arcState = 1;
+  }
   serverCmdData = cmd;
   // change color of send button 
   let _elem = document.getElementById("sendButton");
@@ -684,6 +700,7 @@ function openCamWindow() {
 
 function closePopup() {
   // close all popup windows
+  arcState = 0;
   document.getElementById("logForm").style.display = "none";
   document.getElementById("camForm").style.display = "none";
   document.getElementById("cam-iframe").src = "about:blank";

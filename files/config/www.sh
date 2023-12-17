@@ -161,7 +161,7 @@ if [[ $REPLY == "detach_all_regions" ]]
 then
   echo "detaching all regions..."
   rm -f $REGROOT/Snapshots
-  rm -f $REGROOT/Backups  
+  rm -f $REGROOT/External  
   rm -f $REGROOT/Private
   rm -f $REGROOT/Archive
   rm -f $REGROOT/WWW
@@ -228,15 +228,15 @@ then
   fi
   exit
 fi
-## Backups Share
-if [[ $REPLY == "backups_region" ]]
+## External Mountpoints Share
+if [[ $REPLY == "ext_region" ]]
 then
-  if [ -e "$REGROOT/Backups" ]; then
-    echo "detaching backups region..."
-    rm $REGROOT/Backups
+  if [ -e "$REGROOT/External" ]; then
+    echo "detaching external mountpoints region..."
+    rm $REGROOT/External
   else
-    echo "attaching backups region..."
-    ln -s /mnt/extbkps $REGROOT/Backups
+    echo "attaching external mountpoints region..."
+    ln -s /mnt/extbkps $REGROOT/External
   fi
   exit
 fi

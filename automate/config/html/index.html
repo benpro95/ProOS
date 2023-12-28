@@ -140,9 +140,15 @@
 
         <p class="parstd"></p>   
 
-          <button type="button" class="button" onclick="showSoundsPage()">
-            <span class="button__text"><i class="fa-solid fa-music"></i> Sounds</span>
-          </button>   
+          <div class="dropdown">
+            <button type="button" class="button" onclick="showMenu('acc-menu')">
+              <span class="button__text"><i class="fa-solid fa-tv"></i> Accessory</span>
+            </button>  
+            <div class="dropdown-content dd-button" id="acc-menu">
+              <a onclick="sendCmd('main','rfa3','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
+              <a onclick="sendCmd('main','rfa3','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+            </div>
+          </div>  
           <div class="dropdown">
             <button type="button" class="button" onclick="showMenu('led-menu')">
               <span class="button__text"><i class="fa-regular fa-sun"></i> Effects</span>
@@ -166,15 +172,9 @@
           <button type="button" class="button" onclick="sendCmd('main','sleep','')">
               <span class="button__text"><i class="fa-regular fa-moon"></i> Sleep</span>
           </button>
-          <div class="dropdown">
-            <button type="button" class="button" onclick="showMenu('tv-menu')">
-              <span class="button__text"><i class="fa-solid fa-tv"></i> TV</span>
-            </button>  
-            <div class="dropdown-content dd-button" id="tv-menu">
-              <a onclick="sendCmd('main','rfa3','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
-              <a onclick="sendCmd('main','rfa3','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-            </div>
-          </div>  
+          <button type="button" class="button" onclick="showSoundsPage()">
+            <span class="button__text"><i class="fa-solid fa-music"></i> Sounds</span>
+          </button>   
           <button type="button" class="button" onclick="openLogWindow()">
               <span class="button__text"><i class="fa-solid fa-terminal"></i> Server</span>
           </button>          

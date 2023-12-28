@@ -279,14 +279,14 @@ fi
 ## RetroPi
 if [[ "$XMITCMD" == "rfa3on" ]]; then
    XMITCALL="1|0|734735"
-   LCDPI_MSG="CRT TV on"
+   LCDPI_MSG="accessory on"
    CALLAPI   
    CALL_LCDPI
    return
 fi
 if [[ "$XMITCMD" == "rfa3off" ]]; then
    XMITCALL="1|0|734736"
-   LCDPI_MSG="CRT TV off"
+   LCDPI_MSG="accessory off"
    CALLAPI   
    CALL_LCDPI
    return
@@ -369,7 +369,7 @@ fi
 if [[ "$XMITCMD" == "minimuteon" ]]; then
    XMITCALL="1|0|696944"
    CALLAPI   
-   LCDPI_MSG="miniMute on"
+   LCDPI_MSG="mute miniHiFi"
    CALL_LCDPI
    return
 fi
@@ -377,7 +377,7 @@ fi
 if [[ "$XMITCMD" == "minimuteoff" ]]; then
    XMITCALL="1|0|696999"
    CALLAPI   
-   LCDPI_MSG="miniMute off"
+   LCDPI_MSG="unmute miniHiFi"
    CALL_LCDPI
    return
 fi

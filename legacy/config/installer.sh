@@ -7,6 +7,17 @@
 ## Update Sources
 apt-get --yes update
 
+## Debian Bullseye to Bookworm
+#apt dist-upgrade
+#apt upgrade
+#sed -i 's/bullseye/bookworm/g' /etc/apt/sources.list
+#apt-get --yes update
+#apt dist-upgrade
+#apt upgrade
+#apt autoremove
+#apt autoclean
+#apt clean
+
 ## Install Packages
 apt-get install -y --no-upgrade --ignore-missing unzip wget \
  curl screen ethtool aptitude sudo samba sshpass \

@@ -4,7 +4,7 @@
 ###########################################################
 
 function COPYFILE {
-    blocksize=4096
+    blocksize=2048
     count=256
     blocks_read=0
     # check if the file exists on source, remove if found
@@ -27,7 +27,7 @@ function COPYFILE {
     # copy until all bytes of file are not copied
     while [ "$((blocks_read*blocksize))" -lt "$filesize" ]
     do
-	# copy 4096 bytes to destination file with timeout in seconds
+	# copy 2048 bytes to destination file with timeout in seconds
 	timeout 60 dd if="$sourcefile" iflag=nofollow status=none \
 	  bs=$blocksize count=$count skip=$blocks_read  >> "$destfile"
 	# check the status after command is finished
@@ -104,7 +104,7 @@ else
 fi
 
 ## Google drive copy (II)
-if ping -W 10 -c 1 8.8.8.8 > /dev/null 2> /dev/null
+if ping -W 25 -c 1 1.1.1.1 > /dev/null 2> /dev/null
 then
   DEST_PATH="$GDRIVE_PATH/$CAM_NAME"
   if [ ! -e "$DEST_PATH" ]; then

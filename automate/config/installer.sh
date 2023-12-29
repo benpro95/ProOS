@@ -7,6 +7,17 @@
 ## Update Sources
 apt-get --yes update
 
+## Debian Bullseye to Bookworm
+#apt dist-upgrade
+#apt upgrade
+#sed -i 's/bullseye/bookworm/g' /etc/apt/sources.list
+#apt-get --yes update
+#apt dist-upgrade
+#apt upgrade
+#apt autoremove
+#apt autoclean
+#apt clean
+
 ## Install Packages
 apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates bpytop \
  apt-transport-https wget unzip gnupg rsync curl screen parallel ethtool avahi-daemon \
@@ -34,7 +45,7 @@ fi
 ln -sf /usr/bin/bpytop /usr/bin/pytop
 
 ## Apple TV Control
-pip install pyatv
+#pip install pyatv
 
 ## Install Replacement Logger
 apt-get remove --purge -y rsyslog

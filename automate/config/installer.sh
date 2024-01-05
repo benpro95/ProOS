@@ -26,6 +26,19 @@ apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates bpytop 
 ## Remove Packages
 apt-get remove -y --purge cron anacron postfix apache2 apache2-data htop
 
+if [ ! -e /opt/pyatv/bin/atvremote ]; then
+  ## Apple TV Control
+  rm -f /root/.pyatv.conf
+  rm -rf /opt/pyatv
+  mkdir -p /opt/pyatv
+  python3 -m venv /opt/pyatv
+  source /opt/pyatv/bin/activate
+  /opt/pyatv/bin/pip3 install pyatv
+  deactivate
+  echo "Use this command to pair Apple TV:"
+  echo "'/opt/pyatv/bin/atvremote wizard'"
+fi  
+
 ## Process Monitor
 if [ ! -e /usr/local/bin/htop ]; then
   apt-get remove -y htop
@@ -43,9 +56,6 @@ if [ ! -e /usr/local/bin/htop ]; then
   ln -sf /usr/local/bin/htop /usr/bin/htop	
 fi
 ln -sf /usr/bin/bpytop /usr/bin/pytop
-
-## Apple TV Control
-#pip install pyatv
 
 ## Install Replacement Logger
 apt-get remove --purge -y rsyslog
@@ -91,7 +101,7 @@ systemctl restart lighttpd
 ## Base website files
 mkdir -p /var/www/html
 chown -R www-data:www-data /tmp/config/html
-rsync -a --progress=show /tmp/config/html/ /var/www/html/
+rsync -a /tmp/config/html/ /var/www/html/
 chmod g+rx /var/www/html
 chown www-data:www-data /var/www/html
 mkdir -p /var/www/sessions

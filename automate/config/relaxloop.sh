@@ -8,21 +8,18 @@
 WWW_URL="http://files.home/WWW/Relaxation"
 
 ## Load settings file into array
-mapfile -t SETTINGS < <(wget -O- -q $WWW_URL/Settings.txt)
+##mapfile -t SETTINGS < <(wget -O- -q $WWW_URL/Settings.txt)
 
-## Get IP address from hostname
-ATVIP=$(getent ahostsv4 "${SETTINGS[3]%$'\n'}" | awk '{print $1}' | head -1)
-echo "IP Address: $ATVIP"
+## Apple TV ID
+ATV_ID="C869CD3A8484"
 
 ## Turn off Apple TV
 if [ "$rpi_relaxmode" = "off" ]; then
-  ATVSTATE=$(/usr/local/bin/atvremote --address "$ATVIP" --id "${SETTINGS[0]%$'\n'}" \
-    --airplay-credentials "${SETTINGS[2]%$'\n'}" power_state)
+  ATVSTATE=$(/opt/pyatv/bin/atvremote --id "$ATV_ID" --storage-filename /root/.pyatv.conf power_state)
   ## Only turn-off if Apple TV is on  
   if [ "$ATVSTATE" == "PowerState.On" ]; then
     echo "turning off Apple TV..."  
-    /usr/local/bin/atvremote --address "$ATVIP" --id "${SETTINGS[0]%$'\n'}" \
-     --airplay-credentials "${SETTINGS[2]%$'\n'}" turn_off
+    /opt/pyatv/bin/atvremote --id "$ATV_ID" --storage-filename /root/.pyatv.conf turn_off
   fi
   exit
 fi
@@ -30,7 +27,8 @@ fi
 ## Loop on startup / time trigger
 if [ "$rpi_relaxmode" == "boot" ]; then
   ## Set default mode from settings
-  rpi_relaxmode="${SETTINGS[4]%$'\n'}"
+  #rpi_relaxmode="${SETTINGS[0]%$'\n'}"
+  rpi_relaxmode="waterfall"
   ## Read system time  
   DOW=$(date +%u)
   HOUR=$(date +%H)
@@ -56,8 +54,6 @@ FILE="${rpi_relaxmode^}"
 
 ## Play audio in loop on Apple TV
 echo "starting $FILE sound..."
-/usr/bin/ffmpeg -re -i $WWW_URL/$FILE.mp3 -f mp3 - \
- | /usr/local/bin/atvremote --manual --address "$ATVIP" --port 7000 --protocol raop \
- --id "${SETTINGS[0]%$'\n'}" --raop-credentials "${SETTINGS[1]%$'\n'}" stream_file=-
+/opt/pyatv/bin/atvremote --id "$ATV_ID" --storage-filename /root/.pyatv.conf play_url="$WWW_URL/$FILE.mp4"
 
 exit

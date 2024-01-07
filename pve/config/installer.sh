@@ -27,7 +27,7 @@ apt-get --yes update
 ## Support Packages
 apt-get install -y --no-upgrade --ignore-missing rsync cron zip screen \
  libsasl2-modules postfix ethtool htop apt-transport-https lm-sensors \
- zfs-auto-snapshot smartmontools hddtemp apcupsd chrony
+ zfs-auto-snapshot smartmontools hddtemp apcupsd chrony mailutils
 
 ## Bonded Trunk 802.3ad Network Config
 cp -f /tmp/config/interfaces /etc/network/interfaces
@@ -144,6 +144,15 @@ chown root:root /etc/sensors3.conf
 cp -f /tmp/config/journald.conf /etc/systemd/
 chmod 644 /etc/systemd/journald.conf
 chown root:root /etc/systemd/journald.conf
+
+## Mail Configuration
+cp -f /tmp/config/main.cf /etc/postfix/
+chown root:root /etc/postfix/main.cf
+chmod 644 /etc/postfix/main.cf
+cp -f /tmp/config/sasl_passwd /etc/postfix/
+chmod 600 /etc/postfix/sasl_passwd
+postmap hash:/etc/postfix/sasl_passwd
+postfix reload
 
 ## Drives List
 cp -f /tmp/config/drives.txt /usr/lib/

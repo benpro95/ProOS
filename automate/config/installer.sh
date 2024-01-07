@@ -21,10 +21,20 @@ apt-get --yes update
 ## Install Packages
 apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates bpytop \
  apt-transport-https wget unzip gnupg rsync curl screen parallel ethtool avahi-daemon \
- libdbus-1-dev libdbus-glib-1-dev locales aptitude sudo gnupg scrub binutils ffmpeg pip
+ libdbus-1-dev libdbus-glib-1-dev locales aptitude sudo gnupg scrub binutils ffmpeg pip npm
 
 ## Remove Packages
 apt-get remove -y --purge cron anacron postfix apache2 apache2-data htop
+
+## CSS Minifier
+apt-get install -y --no-upgrade --ignore-missing yui-compressor default-jre-headless
+mkdir -p /usr/lib/jvm/java-8-openjdk-amd64
+ln -sf /usr/lib/jvm/default-java /usr/lib/jvm/java-8-openjdk-amd64/jre
+
+if [ ! -e /usr/local/bin/uglifyjs ]; then
+  ## Minify JS
+  npm install uglify-js -g
+fi  
 
 if [ ! -e /opt/pyatv/bin/atvremote ]; then
   ## Apple TV Control
@@ -37,7 +47,7 @@ if [ ! -e /opt/pyatv/bin/atvremote ]; then
   deactivate
   echo "Use this command to pair Apple TV:"
   echo "'/opt/pyatv/bin/atvremote wizard'"
-fi  
+fi
 
 ## Process Monitor
 if [ ! -e /usr/local/bin/htop ]; then
@@ -110,6 +120,18 @@ chown -R www-data:www-data /var/www/sessions
 mkdir -p /var/www/uploads
 chmod -R g+rx /var/www/uploads
 chown -R www-data:www-data /var/www/uploads
+
+## Minify JS/CSS
+uglifyjs --verbose --compress --output /var/www/html/main.min.js -- /var/www/html/main.js
+yui-compressor /var/www/html/main.css > /var/www/html/main.min.css
+cp -fv /var/www/html/main.min.js /var/www/html/main.js
+cp -fv /var/www/html/main.min.css /var/www/html/main.css
+chown www-data:www-data /var/www/html/main.css
+chmod 644 /var/www/html/main.css
+chown www-data:www-data /var/www/html/main.js
+chmod 644 /var/www/html/main.js
+rm -f /var/www/html/main.min.css
+rm -f /var/www/html/main.min.js
 
 ## WWW Permissions (Network Web UI)
 rm -f /etc/sudoers.d/www-perms

@@ -1,1 +1,1 @@
-Cameras         -fstype=cifs,rw,gid=1005,uid=1005,credentials=/etc/auto.creds ://10.177.1.4/Cameras
+Cameras   -fstype=cifs,vers=3.0,rw,file_mode=0777,dir_mode=0777,nounix,credentials=/etc/auto.creds ://10.177.1.4/Cameras

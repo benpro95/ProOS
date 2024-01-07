@@ -22,15 +22,20 @@ let device;
 document.addEventListener('click', function handleClickOutsideBox(event) {
   //console.log('user clicked: ', event.target);
   // don't hide when clicking these elements
-  if (!event.target.classList.contains('button') &&
-      !event.target.classList.contains('button__text') &&
-      !event.target.classList.contains('fa-regular') &&
-      !event.target.classList.contains('fa-solid') &&
-      !event.target.classList.contains('dropbtn') &&  
-      !event.target.classList.contains('mainmenu__anchor')) {
+  if (! event.target.classList.contains('button') &&
+      ! event.target.classList.contains('button__text') &&
+      ! event.target.classList.contains('fa-regular') &&
+      ! event.target.classList.contains('fa-solid') &&
+      ! event.target.classList.contains('dropbtn') &&  
+      ! event.target.classList.contains('mainmenu__anchor')) {
     hideDropdowns();
   }
 });
+
+// resize event
+window.onresize = function(event) {
+  resizeEvent();
+};
 
 // runs on page load
 function loadPage() {
@@ -60,7 +65,7 @@ function loadPage() {
   // read theme from local storage or choose default
   currentTheme = localStorage.getItem("styledata") || "darkblue-theme";
   setTheme(currentTheme);
-};
+}
 
 function showLEDsPage() {
   hidePages();
@@ -95,18 +100,13 @@ function setTheme(newTheme) {
   localStorage.setItem("styledata", newTheme);
 }
 
-// resize event
-window.onresize = function(event) {
-  resizeEvent();
-};
-
 function resizeEvent() {
   if (window.innerWidth < 860) {
     classDisplay('parsplit','block');
   } else {
     classDisplay('parsplit','none');
   }
-};
+}
 
 // show / hide multiple classes
 function classDisplay(_elem, _state) {
@@ -120,16 +120,16 @@ function classDisplay(_elem, _state) {
 // hide all drop down menus
 function hideDropdowns() {
   classDisplay("dropdown-content","none");
-};
+}
 
 function detectMobile() {
-  if (navigator.userAgent.match(/Android/i)
-    || navigator.userAgent.match(/webOS/i)
-    || navigator.userAgent.match(/iPhone/i)
-    || navigator.userAgent.match(/iPad/i)) {
-      console.log("Mobile Browser");
+  if (navigator.userAgent.match(/Android/i) ||
+      navigator.userAgent.match(/webOS/i)   ||
+      navigator.userAgent.match(/iPhone/i)  || 
+      navigator.userAgent.match(/iPad/i)) {
+        console.log("Mobile Browser");
   }
-};
+}
 
 // toggle dropdown menu's
 function showMenu(_menu) {
@@ -140,12 +140,12 @@ function showMenu(_menu) {
     hideDropdowns();
     _elem.style.display = 'block';
   }
-};
+}
 
 // timer
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
-};
+}
 
 // back to home page 
 function GoToHomePage() {
@@ -156,19 +156,18 @@ function GoToHomePage() {
   } else {
     window.location = 'https://'+defaultSite+'.home';   
   }
-};
+}
 
 function GoToExtPage(_path) {
   window.location = "https://"+_path;   
-};
+}
 
 function GotoSubURL(_path) {
   closePopup();
   window.location = location.protocol+"//"+location.hostname+"/"+_path;
-};
+}
 
 function show_vmsPrompt(text){
-  arcState = 0;	
   selectedVM = "";
   clearPendingCmd();
   let vms_prompt = document.createElement("div"); //creates the div to be used as a prompt
@@ -242,20 +241,13 @@ function show_vmsPrompt(text){
   vms_prompt.appendChild(vms_startbtn);
   //append the prompt so it gets visible
   document.body.appendChild(vms_prompt); 
-  new Promise(function(resolve, reject) {
-	  function arcSend() {
-		serverAction('files-arc_region');
-		serverSend();
-		document.body.removeChild(vms_prompt); 
-		clearPendingCmd();       
-	  }
+  new Promise(function(resolve, reject) { 
 	  vms_prompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
 	    if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else      
 	      if (e.target === vms_cancelb) { //click on cancel-button
 	        vms_prompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
 	        document.body.removeChild(vms_prompt);  //as we are done clean up by removing the password-prompt
-	        // clear any pending command
-	        clearPendingCmd();
+	        clearPendingCmd(); // clear any pending command
 	      }
 	      // selection buttons
 	      if (e.target === vms_devbtn) { 
@@ -264,15 +256,26 @@ function show_vmsPrompt(text){
 	      if (e.target === vms_unifibtn) { 
 	        vmPromptSelect('unifi');
 	      }  
-	      if (e.target === vms_cifsbtn) { 
+	      if (e.target === vms_cifsbtn) {
 	        vmPromptSelect('legacy');
 	      }  
 	      if (e.target === vms_xanabtn) {
-	        if (arcState === 1 ) {
-	          arcSend();       
-	        } else {
-	          vmPromptSelect('xana');
-	        }
+          if (arcState > 0) {
+            if (arcState === 1) {
+              serverAction('files-arc_region');
+              serverSend();
+              document.body.removeChild(vms_prompt); 
+              clearPendingCmd();
+            }
+            if (arcState === 2) {
+              serverAction('files-priv_region');
+              serverSend();
+              document.body.removeChild(vms_prompt); 
+              clearPendingCmd();
+            }            
+          } else {  
+            vmPromptSelect('xana');
+          }
 	      }
 	      // action buttons
 	      if (e.target === vms_startbtn) { 
@@ -385,14 +388,13 @@ function piWiFiPrompt(){
         }else if(e.keyCode==27){ //user enters "Escape" on password-field
           cancelWiFi();
         }
-    });      
-
+    });
   }); 
 }
 
 async function showPiWiFiPrompt(){
   let result;
-  try{
+  try {
     hideDropdowns();
     result = await piWiFiPrompt();
     if (result != null) {  
@@ -534,7 +536,7 @@ function savePOST(data) {
       body: data
   })
   data = "";
-};
+}
 
 // switch volume controls on main page
 function volMode() {   
@@ -546,7 +548,7 @@ function volMode() {
      id.textContent = "Bedroom";
      toggledState = 1;
   }
-};
+}
 
 // switch volume controls on bedroom page
 function relaxMode() {   
@@ -558,7 +560,7 @@ function relaxMode() {
      id.textContent = "Bedroom";
      toggledState = 1;
   }
-};
+}
 
 function relaxSend(_cmd) {
   let _mode;
@@ -580,7 +582,7 @@ function relaxSend(_cmd) {
     } 
   }
   sendCmd('main',_mode,_cmd);
-};
+}
 
 
 function toggledVol(_mode) {
@@ -590,7 +592,7 @@ function toggledVol(_mode) {
     _cmd = 'bedroom';
   } 
   sendCmd('main',_mode,_cmd);
-};
+}
 
 
 // send server action
@@ -615,7 +617,7 @@ async function serverSend() {
     txtArea.scrollTop = txtArea.scrollHeight;    
   }  
   serverCmdData = null;
-};
+}
 
 // clear a pending server command 
 function clearPendingCmd() {
@@ -630,11 +632,11 @@ function sendCmd(act, arg1, arg2) {
   // animation
   loadBar(0.3);
   sendGET(act,arg1,arg2);
-};
+}
 
 function sendCmdNoBar(act, arg1, arg2) {
   sendGET(act,arg1,arg2);
-};
+}
 
 function sendGET(act, arg1, arg2) {
   // construct API string
@@ -643,7 +645,7 @@ function sendGET(act, arg1, arg2) {
   fetch(url, {
       method: 'GET',
     })
-};
+}
 
 // load entire text file
 async function loadLog(file) {
@@ -666,19 +668,22 @@ async function loadLog(file) {
   }
   consoleData = null;
   serverCmdData = null;
-};
+}
 
 
 // load server action 
 function serverAction(cmd) {
-  if (cmd === 'files-priv_region') {
+  if (cmd === 'files-ext_region') {
     arcState = 1;
+  }
+  if (cmd === 'files-snap_region') {
+    arcState = 2;
   }
   serverCmdData = cmd;
   // change color of send button 
   let _elem = document.getElementById("sendButton");
    _elem.classList.add("button-alert");
-};
+}
 
 
 function openLogWindow() {
@@ -687,7 +692,7 @@ function openLogWindow() {
   // show log form window
   document.getElementById("logTextBox").value = "select an option.";
   document.getElementById("logForm").style.display = "block";
-};
+}
 
 
 function openCamWindow() {
@@ -695,28 +700,27 @@ function openCamWindow() {
   // show camera form window
   document.getElementById("camForm").style.display = "block";
   document.getElementById("cam-iframe").src = "/cam1";
-};
+}
 
 
 function closePopup() {
   // close all popup windows
-  arcState = 0;
   document.getElementById("logForm").style.display = "none";
   document.getElementById("camForm").style.display = "none";
   document.getElementById("cam-iframe").src = "about:blank";
-};
+}
 
 
 function closeSendbox() {
   // close all popup windows
   document.getElementById("sendForm").style.display = "none";
-};
+}
 
 function openSendWindow() {
   // open send text window
   closeSendbox();
   document.getElementById("sendForm").style.display = "block";
-};
+}
 
 
 function sendText() {
@@ -742,11 +746,12 @@ function sendText() {
     xhr.send(data);
   }
   loadBar(0.3);
-};
+}
+
 function clearText() {
   // celar text window
   document.getElementById("lcdTextBox").value = "";
-};
+}
 
 // loading bar animation 
 async function loadBar(_interval) {
@@ -770,7 +775,7 @@ async function loadBar(_interval) {
       }
     }
   }
-};
+}
 
 function hexToRgb(hex) {
   // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
@@ -796,14 +801,14 @@ function updateSettings(_hexin) {
   // Connect to a Fadecandy server
   socket = new WebSocket(_host);
   socket.onopen = function(event) {
-      color = hexToRgb(_hexin);
-      let rounds = 32;
-      for (let i = 0; i < rounds; i++) {
-          writeFrame(
-          color.r,
-          color.g,
-          color.b);
-      }           
+    color = hexToRgb(_hexin);
+    let rounds = 32;
+    for (let i = 0; i < rounds; i++) {
+        writeFrame(
+        color.r,
+        color.g,
+        color.b);
+    }           
   }
 }
 

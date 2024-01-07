@@ -498,13 +498,11 @@ if (systemctl is-active --quiet relaxloop.service); then
   ## Turn off Apple TV
   ##systemctl set-environment rpi_relaxmode=off
   ##systemctl start relaxloop
-else
-  CALLAPI   
+else  
   echo "Service not runnning starting sleep mode..."
   /opt/system/main relax waterfall
-  /opt/system/main pcoff
   /opt/system/main alloff
-  XMITCMD="hifioff" ; XMIT 
+  XMITCMD="hifioff" ; XMIT
   LCDPI_MSG="sleep mode" 
   CALL_LCDPI  
 fi
@@ -530,6 +528,24 @@ else
   ## Dresser Lamp
   XMITCMD="rfa2" ; XMITARG="off" ; XMIT 
 fi
+exit
+;;
+
+mainon)
+## Main Lamp
+XMITCMD="rfc1" ; XMITARG="on" ; XMIT 
+## LCDpi message
+LCDPI_MSG="lights on"
+CALL_LCDPI
+exit
+;;
+
+mainoff)
+## Main Lamp
+XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
+## LCDpi message
+LCDPI_MSG="lights off"
+CALL_LCDPI
 exit
 ;;
 

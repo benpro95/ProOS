@@ -84,7 +84,7 @@ apt-get install -y --no-upgrade --ignore-missing locales console-setup \
  rsync screen parallel sudo sed nano curl insserv wireless-regdb wireless-tools \
  iw wpasupplicant dirmngr autofs triggerhappy apt-utils build-essential \
  git autoconf make libtool binutils i2c-tools cmake yasm libmariadb3 \
- texi2html socat nmap autoconf automake pkg-config \
+ texi2html socat nmap autoconf automake pkg-config cifs-utils \
  keyboard-configuration ncftp inxi gnucobol4 cryptsetup cryptsetup-bin
 
 ## Developer Packages 
@@ -123,19 +123,12 @@ if [ "$CPUTYPE" = "Raspberry Pi Zero W Rev 1.1" ]; then
   apt-get remove -y ca-certificates-java default-jre-headless default-jre \
    openjdk-11-jre nodejs arduino avrdude 
 else
-  echo "ARMv7 CPU detected, installing Java, Arduino, Node.js..."
+  echo "ARMv7 CPU detected, installing Java, Arduino, Node, Rclone..."
   ## Note: Tested Node.js version 14.17.1
   apt-get install -y --no-upgrade --ignore-missing nodejs arduino avrdude \
    openjdk-11-jre
   ## Cloud Drive Support
-  echo "Installing rclone..."
-  apt-get install -y --no-upgrade fuse
-  if [ "$REINSTALL" = "yes" ]; then
-    rm -f /usr/bin/rclone
-  fi 
-  if [ ! -e /usr/bin/rclone ]; then
-    apt-get install -y --no-upgrade --ignore-missing rclone
-  fi
+  apt-get install -y --no-upgrade --ignore-missing rclone fuse
 fi
 
 ## Python Libraries

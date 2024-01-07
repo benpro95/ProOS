@@ -49,6 +49,9 @@ if [ "$rpi_relaxmode" == "boot" ]; then
   echo "time is between 9pm-9am"
 fi
 
+## Pause media and return to home screen
+/opt/pyatv/bin/atvremote --id "$ATV_ID" --storage-filename /root/.pyatv.conf pause home
+
 ## Capitialize first letter of argument
 FILE="${rpi_relaxmode^}"
 

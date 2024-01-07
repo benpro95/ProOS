@@ -3,23 +3,26 @@
 #### Camera Video Copy Script by Ben Provenzano III v3 ####
 ###########################################################
 
+## 4MB file chunk copy timeout in seconds
+TIMEOUT="60"
+
 function COPYFILE {
-    blocksize=2048
+    blocksize=4096
     count=256
     blocks_read=0
     # check if the file exists on source, remove if found
     if [ -e $destfile ]; then
-	  timeout 500 rm -f "$destfile"
-	  # check the status after command is finished
-	  status=$?
-	  # if command was killed by timeout or rm returned error (I/O error)
-	  if [[ ("$status" -gt 100 ) || ("$status" -eq 1) ]]
-	  then
-	    # log path to the source file into log
-	    echo "Timeout exceeded could not delete, $destfile $(date)" >> $LOGFILE
-	    # exit function
-	    return
-	  fi      
+  	  timeout 500 rm -f "$destfile"
+  	  # check the status after command is finished
+  	  status=$?
+  	  # if command was killed by timeout or rm returned error (I/O error)
+  	  if [[ ("$status" -gt 100 ) || ("$status" -eq 1) ]]
+  	  then
+  	    # log path to the source file into log
+  	    echo "Timeout exceeded could not delete, $destfile $(date)" >> $LOGFILE
+  	    # exit function
+  	    return
+  	  fi      
     fi  
     # check the size of source file in bytes
     filesize=$(stat -c%s "$sourcefile")
@@ -28,21 +31,21 @@ function COPYFILE {
     while [ "$((blocks_read*blocksize))" -lt "$filesize" ]
     do
 	# copy 2048 bytes to destination file with timeout in seconds
-	timeout 60 dd if="$sourcefile" iflag=nofollow status=none \
+	timeout "$TIMEOUT" dd if="$sourcefile" iflag=nofollow status=none \
 	  bs=$blocksize count=$count skip=$blocks_read  >> "$destfile"
 	# check the status after command is finished
 	status=$?
 	# if command was killed by timeout or dd returned error (I/O error)
 	if [[ ("$status" -eq 124 ) || ("$status" -eq 1) ]]
 	then
-	    # delete destination file
-	    rm -f "$destfile"
-	    # log path to the source file into log
-	    echo "Timeout exceeded $destfile not copied, $(date)" >> $LOGFILE
-	    # copy video to flash drive if server or google drive copy fails
-	    FLASHDRV="yes" 
-	    # exit function
-	    return
+    # delete destination file
+    rm -f "$destfile"
+    # log path to the source file into log
+    echo "$TIMEOUT(s) copy timeout exceeded $destfile not copied, $(date)" >> $LOGFILE
+    # copy video to flash drive if server or google drive copy fails
+    FLASHDRV="yes" 
+    # exit function
+    return
 	fi
 	# update number of bytes copied
 	blocks_read=$((blocks_read+count))
@@ -88,23 +91,19 @@ fi
 mkdir -p /mnt/ramdisk/"$CAM_NAME"
 
 ## Server copy (I)
-if [ ! -e $SERVER_PATH ]; then
+if [ ! -e $SERVER_PATH/$CAM_NAME ]; then
   SERVER="na"	
   echo "Server not connected, $(date)" >> $LOGFILE
 else
-  DEST_PATH="$SERVER_PATH/$CAM_NAME"
-  if [ ! -e "$DEST_PATH" ]; then
-    mkdir -p "$DEST_PATH"
-  fi
   sourcefile="$FILE_NAME.mp4"
-  destfile="$DEST_PATH/$(basename $FILE_NAME.mp4)"
+  destfile="$SERVER_PATH/$CAM_NAME/$(basename $FILE_NAME.mp4)"
   if [ -e "$sourcefile" ]; then
     COPYFILE
   fi
 fi
 
 ## Google drive copy (II)
-if ping -W 25 -c 1 1.1.1.1 > /dev/null 2> /dev/null
+if ping -W 10 -c 1 8.8.8.8 > /dev/null 2> /dev/null
 then
   DEST_PATH="$GDRIVE_PATH/$CAM_NAME"
   if [ ! -e "$DEST_PATH" ]; then

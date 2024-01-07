@@ -44,6 +44,8 @@ chown root:root /etc/motion/motion.conf
 cp -fr $BIN/modconf/camera*.conf /etc/motion/
 chmod -R 644 /etc/motion/camera*.conf
 chown -R root:root /etc/motion/camera*.conf
+
+## Cameras USB Drive
 if [ ! -e /media/usb0/cameras ]; then
   echo "Cameras folder on USB drive not found, creating..."
   mkdir -p /media/usb0/cameras

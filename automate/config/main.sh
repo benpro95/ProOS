@@ -542,8 +542,12 @@ exit
 ;;
 
 mainoff)
+## Turn all lights off
+rm -f $LOCKFOLDER/lights.save
 ## Main Lamp
 XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
+## Dresser Lamp
+XMITCMD="rfa2" ; XMITARG="off" ; XMIT 
 ## LCDpi message
 LCDPI_MSG="lights off"
 CALL_LCDPI

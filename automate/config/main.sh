@@ -32,8 +32,9 @@ return
 }
 
 CALL_LCDPI(){
-  /usr/bin/curl $CURLARGS -X POST http://lcdpi.home/upload.php \
-   -H "Content-Type: text/plain" -d "$LCDPI_MSG"
+  echo "Disabled."
+  #/usr/bin/curl $CURLARGS -X POST http://lcdpi.home/upload.php \
+  # -H "Content-Type: text/plain" -d "$LCDPI_MSG"
 }
 
 XMIT(){

@@ -34,6 +34,7 @@ fi
 if [ "$1" == "server" ]; then
 	if [ "$2" == "clearlog" ]; then
 	  truncate -s 0 $LOGFILE
+    neofetch | sed 's/\x1B[@A-Z\\\]^_]\|\x1B\[[0-9:;<=>?]*[-!"#$%&'"'"'()*+,.\/]*[][\\@A-Z^_`a-z{|}~]//g' &>> $LOGFILE
     EXIT_ROUTINE
 	fi
   if [ "$2" == "showwpa" ]; then

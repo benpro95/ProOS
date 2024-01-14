@@ -84,7 +84,7 @@ apt-get install -y --no-upgrade --ignore-missing locales console-setup \
  rsync screen parallel sudo sed nano curl insserv wireless-regdb wireless-tools \
  iw wpasupplicant dirmngr autofs triggerhappy apt-utils build-essential \
  git autoconf make libtool binutils i2c-tools cmake yasm libmariadb3 \
- texi2html socat nmap autoconf automake pkg-config cifs-utils \
+ texi2html socat nmap autoconf automake pkg-config cifs-utils neofetch\
  keyboard-configuration ncftp inxi gnucobol4 cryptsetup cryptsetup-bin
 
 ## Developer Packages 

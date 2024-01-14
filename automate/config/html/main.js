@@ -16,6 +16,7 @@ let serverCmdData = null;
 let socket = null;
 let fileData = [];
 let device = null;
+let menusActive = 0;
 
 //////////////////////////
 
@@ -28,8 +29,15 @@ document.addEventListener('click', function handleClickOutsideBox(event) {
       ! event.target.classList.contains('fa-regular') &&
       ! event.target.classList.contains('fa-solid') &&
       ! event.target.classList.contains('dropbtn') &&  
+      ! event.target.classList.contains('chkbox') &&  
       ! event.target.classList.contains('mainmenu__anchor')) {
     hideDropdowns();
+  }
+});
+
+document.addEventListener('click', function handleClickCheckbox(event) {
+  if (event.target.classList.contains('chkbox')) {
+    boxChanged();
   }
 });
 
@@ -124,6 +132,8 @@ function classDisplay(_elem, _state) {
 // hide all drop down menus
 function hideDropdowns() {
   classDisplay("dropdown-content","none");
+  // remove any current dynamic menus
+  removeMenus();
 }
 
 function detectMobile() {
@@ -142,6 +152,10 @@ function showMenu(_menu) {
     _elem.style.display = 'none';
   } else {
     hideDropdowns();
+    // dynamic LED selection menu
+    if (_menu == 'mainmenu') {
+      updateFile('ledsync','read');
+    }
     _elem.style.display = 'block';
   }
 }
@@ -671,29 +685,64 @@ function fileLoadAction(menu) {
   }  
 }
 
+function removeMenus() {
+  if (menusActive == 1) {
+    for (var i = 0; i < fileData.length; i++) {
+      let line = fileData[i].toString();
+      if (i != 0) { // skip menu ID
+        const item = line.split("|");
+        if (item) {
+          let navItem = "menu-" + item[2].toString();
+          var menuRemove = document.getElementById(navItem);
+          menuRemove.remove();
+          menusActive = 0;
+        }
+      }
+    }
+  }
+}
+
+function boxChanged() {
+  if (menusActive == 1) {
+    for (var i = 0; i < fileData.length; i++) {
+      let line = fileData[i].toString();
+      if (i != 0) { // skip menu ID
+        const item = line.split("|");
+        if (item) {
+          //let navItem = "menu-" + item[2].toString();
+         // var menuRemove = document.getElementById(navItem);
+         // menuRemove.remove();
+         // menusActive = 0;
+        }
+      }
+    }
+  }
+}
 
 function drawMenu(url,state,navItem) {
-  //document.getElementById("element_id").remove(); 
   const navElement = document.getElementById("mainmenu");
   const createListItem = (navItem,url) => {
     const li = document.createElement('a');
+    li.id = "menu-" + navItem;
     li.innerText = navItem;
     li.href = 'http://' + url;
+    // draw checkbox's
     var checkbox = document.createElement('input');
     checkbox.type = "checkbox";
     checkbox.className = "chkbox";
-    checkbox.id = "checkbox-"+navItem;
+    checkbox.id = "chkbox-" + navItem;
     li.appendChild(checkbox);
     return li;
   };
   navElement.appendChild(createListItem(navItem,url));
   // read LED's current state from file
   if (state == '0' || state == '2') {
-    document.getElementById("checkbox-"+navItem).checked = false;
+    document.getElementById("chkbox-"+navItem).checked = false;
   }
   if (state == '1') {
-    document.getElementById("checkbox-"+navItem).checked = true;
-  }  
+    document.getElementById("chkbox-"+navItem).checked = true;
+  }
+  menusActive = 1;
 }
 
 

@@ -171,8 +171,10 @@ body {
   display: block;
 }
 
-.chkbox { 
-  right: 1px;
+input.chkbox {
+  float: right;
+  width: 22px; 
+  height: 22px;
 }
 
 .grid {

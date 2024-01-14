@@ -1,3 +1,4 @@
-ledstrip.home:80
-ledwall.home:80
-ledgrid.home:80
+ledstrip.home:80|1|LEDstrip
+ledwall.home:80|1|LEDwall
+ledgrid.home:80|1|LEDgrid
+lcdpi.home:80|1|LCDpi

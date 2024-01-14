@@ -26,12 +26,28 @@ CALL_LCDPI(){
 VARA=$1
 VARB=$2
 
-if [ -e /opt/system/ledsync.txt ]; then
-  ## Send command to all LED Pi's
-  cat /opt/system/ledsync.txt | xargs -P 5 -I % \
-    /usr/bin/curl --silent --fail --ipv4 --no-buffer \
-     --max-time 5 --retry 1 --no-keepalive \
-     --data "var=$VARB&arg=$VARA&action=leds" http://%/exec.php
+if [ -e /var/www/html/ram/ledsync.txt ]; then
+  ## Read file into array
+  readarray LED_ARRAY < /var/www/html/ram/ledsync.txt
+  NEWLINE=$'\n'
+  for ELM in ${LED_ARRAY[@]}; do
+    ## Split data by delimiter
+    LINE=( ${ELM//|/ } )
+    HOST="${LINE[0]}"  
+    STATE="${LINE[1]}"
+    ## Append active hosts to array
+    if [ "$STATE" == "1" ]; then
+      DATA+="${HOST}"
+      DATA+="${NEWLINE}"
+    fi  
+  done
+  ## Dispatch command to active hosts
+  if [ "$DATA" != "" ]; then
+    echo "$DATA" | xargs -P 5 -I % \
+      /usr/bin/curl --fail --ipv4 --no-buffer \
+      --max-time 5 --retry 1 --no-keepalive \
+       --data "var=$VARB&arg=$VARA&action=leds" http://%/exec.php
+  fi
   #CALL_LCDPI     
 else
   echo "ledsync.txt not found."    

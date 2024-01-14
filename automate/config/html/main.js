@@ -16,13 +16,13 @@ let serverCmdData = null;
 let socket = null;
 let fileData = [];
 let device = null;
-let menusActive = 0;
+let dynMenuActive = 0;
+let dynChkboxChanged = 0;
 
 //////////////////////////
 
 // hide menu's when clicking outside
 document.addEventListener('click', function handleClickOutsideBox(event) {
-  //console.log('user clicked: ', event.target);
   // don't hide when clicking these elements
   if (! event.target.classList.contains('button') &&
       ! event.target.classList.contains('button__text') &&
@@ -35,9 +35,10 @@ document.addEventListener('click', function handleClickOutsideBox(event) {
   }
 });
 
+// a checkbox was clicked
 document.addEventListener('click', function handleClickCheckbox(event) {
   if (event.target.classList.contains('chkbox')) {
-    boxChanged();
+    dynChkboxChanged = 1;
   }
 });
 
@@ -45,6 +46,13 @@ document.addEventListener('click', function handleClickCheckbox(event) {
 window.onresize = function(event) {
   resizeEvent();
 };
+
+// hide all drop down menus
+function hideDropdowns() {
+  classDisplay("dropdown-content","none");
+  // remove any current dynamic menus
+  removeDynMenus();
+}
 
 // runs on page load
 function loadPage() {
@@ -129,13 +137,6 @@ function classDisplay(_elem, _state) {
   }
 }
 
-// hide all drop down menus
-function hideDropdowns() {
-  classDisplay("dropdown-content","none");
-  // remove any current dynamic menus
-  removeMenus();
-}
-
 function detectMobile() {
   if (navigator.userAgent.match(/Android/i) ||
       navigator.userAgent.match(/webOS/i)   ||
@@ -154,7 +155,7 @@ function showMenu(_menu) {
     hideDropdowns();
     // dynamic LED selection menu
     if (_menu == 'mainmenu') {
-      updateFile('ledsync','read');
+      readMenuData('ledsync');
     }
     _elem.style.display = 'block';
   }
@@ -545,15 +546,23 @@ async function getPassword(){
 
 // save file
 function savePOST(data) {
-  fetch(location.protocol+"//"+location.hostname+"/upload.php", {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: data
-  })
-  data = "";
+  const url = location.protocol+"//"+location.hostname+"/update.php?file=pwd&action=update"; 
+  // convert data to JSON object
+  const _json = JSON.stringify([data]);
+  // convert JSON to Base64
+  const encoded = btoa(_json);
+  // Send Base64 data as HTTP POST request
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", url);
+  xhr.setRequestHeader("Content-Type", "text/plain");
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      if (xhr.status != 200) {
+          console.log("failed to send POST: savePOST()");
+      }
+    }
+  }
+  xhr.send(encoded);
 }
 
 // switch volume controls on main page
@@ -665,6 +674,37 @@ function sendGET(act, arg1, arg2) {
     })
 }
 
+//// Dynamic Menus ////
+
+function readMenuData(menu) {
+  // build URL / append data
+  const url = location.protocol+"//"+location.hostname+"/update.php?file="+menu+"&action=read";
+  // read file action
+  fetch(url, {
+      method: 'GET'
+    })
+    .then(res => {
+      return res.json()
+    })
+    .then((response) => {
+      // clear global data
+      while (fileData.length) { fileData.pop(); }
+      // load JSON to global data
+      fileData[0] = menu;
+      for(var i in response) {
+        let _line = response[i].toString();
+        // ignore empty lines
+        if (_line) {
+          if (_line !== "") {
+            fileData.push(_line);
+          }
+        }
+      }
+      // action after loading
+      fileLoadAction(menu);
+    })
+}
+
 function fileLoadAction(menu) {
   // LED options menu
   let _id = null;
@@ -685,40 +725,6 @@ function fileLoadAction(menu) {
   }  
 }
 
-function removeMenus() {
-  if (menusActive == 1) {
-    for (var i = 0; i < fileData.length; i++) {
-      let line = fileData[i].toString();
-      if (i != 0) { // skip menu ID
-        const item = line.split("|");
-        if (item) {
-          let navItem = "menu-" + item[2].toString();
-          var menuRemove = document.getElementById(navItem);
-          menuRemove.remove();
-          menusActive = 0;
-        }
-      }
-    }
-  }
-}
-
-function boxChanged() {
-  if (menusActive == 1) {
-    for (var i = 0; i < fileData.length; i++) {
-      let line = fileData[i].toString();
-      if (i != 0) { // skip menu ID
-        const item = line.split("|");
-        if (item) {
-          //let navItem = "menu-" + item[2].toString();
-         // var menuRemove = document.getElementById(navItem);
-         // menuRemove.remove();
-         // menusActive = 0;
-        }
-      }
-    }
-  }
-}
-
 function drawMenu(url,state,navItem) {
   const navElement = document.getElementById("mainmenu");
   const createListItem = (navItem,url) => {
@@ -735,74 +741,109 @@ function drawMenu(url,state,navItem) {
     return li;
   };
   navElement.appendChild(createListItem(navItem,url));
-  // read LED's current state from file
+  // read checkbox state from file
   if (state == '0' || state == '2') {
     document.getElementById("chkbox-"+navItem).checked = false;
   }
   if (state == '1') {
     document.getElementById("chkbox-"+navItem).checked = true;
   }
-  menusActive = 1;
+  dynMenuActive = 1;
 }
 
+function removeDynMenus() {
+  // only if menu is on-screen 
+  if (dynMenuActive == 1) {
+    // checkbox changed action (I)
+    if (dynChkboxChanged == 1) {
+      boxChanged();
+    }
+    // remove dynamic menu elements (II)
+    for (var i = 0; i < fileData.length; i++) {
+      let line = fileData[i].toString();
+      if (i != 0) { // skip menu ID
+        const item = line.split("|");
+        if (item) {
+          let navItem = "menu-" + item[2].toString();
+          var menuRemove = document.getElementById(navItem);
+          menuRemove.remove();
+        }
+      }
+    }
+    if (dynChkboxChanged == 1) {
+      // write checkbox changes to file (III)
+      const id = fileData[0];
+      updateMenuData(id);
+      dynChkboxChanged = 0;
+    }  
+    dynMenuActive = 0;
+  }
+}
 
-function updateFile(menu,action) {
-  var values = new Array();
+function boxChanged() {
+  // loop through checkbox's state
+  let id = null;
+  for (var i = 0; i < fileData.length; i++) {
+    let line = fileData[i].toString();
+    if (i == 0) { // store menu ID
+      id = line;
+    } else {  
+      // split up into array (host,state,name)
+      const linearr = line.split("|");
+      if (linearr) {
+        // read elements checkbox then write state
+        const boxitem=linearr[2].toString();
+        const box = "chkbox-"+boxitem;
+        var boxelm = document.getElementById(box);
+        if (boxelm.checked == true) {
+          linearr[1] = '1';
+        } else {
+          linearr[1] = '0';
+        }
+        // build new data
+        let _outstr = linearr.join('|')
+        // replace existing data
+        fileData[i] = _outstr;
+      }
+    }
+  }
+}
+
+function updateMenuData(menu) {
   let file = null;
   let idver = null;
   let encoded = "";
   let id = "";
-  // re-write file action
-  if (action === 'update') {
-    // store ID object
-    id = fileData[0];
-    // remove first ID object
-    fileData.shift();
-    // convert array to JSON object
-    let _json = JSON.stringify(fileData);
-    // convert JSON to Base64
-    encoded = btoa(_json);
-    // clear global data
-    while (fileData.length) { fileData.pop(); }    
-  }
+  // store ID object
+  id = fileData[0];
+  // remove first ID object
+  fileData.shift();
+  // convert array to JSON object
+  let _json = JSON.stringify(fileData);
+  // convert JSON to Base64
+  encoded = btoa(_json);
+  // clear global data
+  while (fileData.length) { fileData.pop(); }    
   // build URL / append data
-  const url = location.protocol+"//"+location.hostname+"/update.php?file="+menu+"&action="+action+"&data="+encoded;
-  // read file action
-  if (action === 'read') {  
-    fetch(url, {
-        method: 'GET'
-      })
-      .then(res => {
-        return res.json()
-      })
-      .then((response) => {
-        // clear global data
-        while (fileData.length) { fileData.pop(); }
-        // load JSON to global data
-        fileData[0] = menu;
-        for(var i in response) {
-          let _line = response[i].toString();
-          // ignore empty lines
-          if (_line) {
-            if (_line !== "") {
-              fileData.push(_line);
-            }
-          }
+  const url = location.protocol+"//"+location.hostname+"/update.php?file="+menu+"&action=update"; 
+  // verify correct menu is in array
+  if (id === menu) {
+    // Send Base64 data as HTTP POST request
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", url);
+    xhr.setRequestHeader("Content-Type", "text/plain");
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        if (xhr.status != 200) {
+          console.log("failed to send POST: updateMenuData()");
         }
-        // action after loading
-        fileLoadAction(menu);
-      })
-  }
-  if (action === 'update') {
-    // verify correct menu is in array
-    if (id === menu) {
-      // send data
-      fetch(url, {
-        method: 'GET',
-      })
-    }  
-  }
+      }
+    }
+    xhr.send(encoded);
+  }  
 }
+
+//// End Dynamic Menus ////
 
 // load entire text file
 async function loadLog(file) {

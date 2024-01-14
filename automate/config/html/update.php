@@ -1,13 +1,16 @@
 <?php
 header("Content-Type: application/json");
+
 // read and update a common file (API)
-if (isset($_REQUEST['file'], $_REQUEST['action'], $_REQUEST['data'])) {
+
+if (isset($_REQUEST['file'], $_REQUEST['action'])) {
     $file = $_REQUEST['file'];
     $action = $_REQUEST['action'];
-    $data = $_REQUEST['data'];
+
     // build paths
     $basepath = '/var/www/html/ram/';
     $filepath = $basepath . $file . '.txt';
+
     // read file action
     if ($action === 'read') {
 	    // text data to JSON response
@@ -17,16 +20,18 @@ if (isset($_REQUEST['file'], $_REQUEST['action'], $_REQUEST['data'])) {
 		}
 		$json_out = json_encode($array);
 		if ($json_out === false) {
-		    $json_out = json_encode(["jsonError" => json_last_error_msg()]);
-		    http_response_code(500);
+		  $json_out = json_encode(["jsonError" => json_last_error_msg()]);
+		  http_response_code(500);
 		}
 		echo $json_out;
 		return;
 	}
+
 	// update file actions
 	if ($action === 'update') {
 		// Base64 -> JSON -> File
-		$json_in = base64_decode($data);
+		$body = file_get_contents('php://input');
+		$json_in = base64_decode($body);
 		$table = json_decode($json_in);
 		$text = "";
 		foreach($table as $key => $value) {
@@ -38,6 +43,8 @@ if (isset($_REQUEST['file'], $_REQUEST['action'], $_REQUEST['data'])) {
 		http_response_code(200);
 		return;
     }
+
+// catch errors
     http_response_code(500);
 } else {
   http_response_code(500);

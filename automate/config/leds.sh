@@ -26,9 +26,9 @@ CALL_LCDPI(){
 VARA=$1
 VARB=$2
 
-if [ -e /var/www/html/ram/ledsync.txt ]; then
+if [ -e /var/www/html/ram/mainmenu.txt ]; then
   ## Read file into array
-  readarray LED_ARRAY < /var/www/html/ram/ledsync.txt
+  readarray LED_ARRAY < /var/www/html/ram/mainmenu.txt
   NEWLINE=$'\n'
   for ELM in ${LED_ARRAY[@]}; do
     ## Split data by delimiter
@@ -50,6 +50,6 @@ if [ -e /var/www/html/ram/ledsync.txt ]; then
   fi
   #CALL_LCDPI     
 else
-  echo "ledsync.txt not found."    
+  echo "mainmenu.txt not found."    
 fi
 exit

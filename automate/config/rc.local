@@ -27,9 +27,6 @@ mkdir -p $RAMDISK/locks
 chmod 777 $RAMDISK/locks
 touch $RAMDISK/sysout.txt
 chmod 777 $RAMDISK/sysout.txt
-## LEDsync configuration
-cp -fv /opt/system/ledsync.txt $RAMDISK/
-chmod 777 $RAMDISK/ledsync.txt
 
 ## Light Web Server
 systemctl restart lighttpd

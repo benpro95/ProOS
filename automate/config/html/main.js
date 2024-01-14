@@ -155,7 +155,7 @@ function showMenu(_menu) {
     hideDropdowns();
     // dynamic LED selection menu
     if (_menu == 'mainmenu') {
-      readMenuData('ledsync');
+      readMenuData('mainmenu');
     }
     _elem.style.display = 'block';
   }
@@ -716,7 +716,7 @@ function readMenuData(menu) {
 function fileLoadAction(menu) {
   // LED options menu
   let _id = null;
-  if (menu === 'ledsync') {
+  if (menu === 'mainmenu') {
     // loop through menu items
     for (var i = 0; i < fileData.length; i++) {
       let line = fileData[i].toString();
@@ -738,22 +738,24 @@ function fileLoadAction(menu) {
 
 function drawMenu(url,state,navItem) {
   const navElement = document.getElementById("mainmenu");
-  const createListItem = (navItem,url) => {
+  const createListItem = (navItem,url,state) => {
     const li = document.createElement('a');
     li.id = "menu-" + navItem;
-    li.innerText = navItem + '   ';
+    li.innerText = navItem;
     li.href = 'http://' + url;
     // draw checkbox's
-    var checkbox = document.createElement('input');
-    checkbox.type = "checkbox";
-    checkbox.className = "chkbox";
-    checkbox.id = "chkbox-" + navItem;
-    li.appendChild(checkbox);
+    if (state == '0' || state == '1') {
+      var checkbox = document.createElement('input');
+      checkbox.type = "checkbox";
+      checkbox.className = "chkbox";
+      checkbox.id = "chkbox-" + navItem;
+      li.appendChild(checkbox);
+    }  
     return li;
   };
-  navElement.appendChild(createListItem(navItem,url));
+  navElement.appendChild(createListItem(navItem,url,state));
   // read checkbox state from file
-  if (state == '0' || state == '2') {
+  if (state == '0') {
     document.getElementById("chkbox-"+navItem).checked = false;
   }
   if (state == '1') {
@@ -802,13 +804,16 @@ function boxChanged() {
       // split up into array (host,state,name)
       const linearr = line.split("|");
       if (linearr) {
-        // read elements checkbox then write state
-        const box = "chkbox-" + linearr[2].toString();
-        var boxelm = document.getElementById(box);
-        if (boxelm.checked === true) {
-          linearr[1] = '1';
-        } else {
-          linearr[1] = '0';
+        // only write box state on 0/1 state items
+        if (linearr[1] == '0' || linearr[1] == '1') {
+          // read elements checkbox then write state
+          const box = "chkbox-" + linearr[2].toString();
+          var boxelm = document.getElementById(box);
+          if (boxelm.checked === true) {
+            linearr[1] = '1';
+          } else {
+            linearr[1] = '0';
+          }
         }
         // build new data
         let _outstr = linearr.join('|')
@@ -938,9 +943,9 @@ function sendText() {
   } else {
   // Create the HTTP POST request
     savePOST('message',data);
-    loadBar(0.3);
+    loadBar(0.25);
+    clearText();
   }
-  clearText();
 }
 
 function clearText() {

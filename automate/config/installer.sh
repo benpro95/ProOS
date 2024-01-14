@@ -86,11 +86,15 @@ mkdir -p /opt/system
 cp /tmp/config/leds.sh /opt/system/leds
 cp /tmp/config/main.sh /opt/system/main
 cp /tmp/config/relaxloop.sh /opt/system/relaxloop
-cp /tmp/config/ledsync.txt /opt/system/
+cp /tmp/config/mainmenu.txt /opt/system/
+cp -v /opt/system/mainmenu.txt /var/www/html/ram/
+chmod 777 /var/www/html/ram/mainmenu.txt
+chown www-data:www-data /var/www/html/ram/mainmenu.txt
 chmod -R 755 /opt/system/*
 chown -R root:root /opt/system
 ln -sf /opt/system/main /opt/system/xmit
 ln -sf /opt/system /opt/rpi
+rm -fv /opt/system/system
 
 ## Light Web Server
 apt-get install -y --no-upgrade lighttpd php-cgi php php-common

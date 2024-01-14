@@ -57,8 +57,8 @@ tr -d '\n' < /tmp/weather.raw > /tmp/weather.txt
 ex -sc '%s/\(\pressure:\).*/\1/ | x' /tmp/weather.txt
 sed -i 's/pressure://g' /tmp/weather.txt
 ## Send Message
-curl -X POST 127.0.0.1/update.php --data "file=message&action=update" \
- -H "Content-Type: text/plain" -d "$(cat /tmp/weather.txt)"
+WEATHER=$(cat /tmp/weather.txt)
+echo "$WEATHER" > /dev/zterm
 exit
 ;;
 

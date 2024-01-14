@@ -135,7 +135,7 @@ body {
 }
 
 .parsplit {
-  display: none;
+  display: block;
 }
 
 .led-grid {

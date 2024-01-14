@@ -257,6 +257,11 @@
               <span class="button__text"><i class="fa-solid fa-volume-high"></i></span>
           </button>
 
+
+          <button type="button" class="button" onclick="testGET()">   
+            <span class="button__text"><i class="fa-solid fa-door-open"></i> testGET</span>
+          </button>  
+
         <p class="body__text">by Ben Provenzano III</p>
         <p class="parend"></p>  
     </div>
@@ -783,10 +788,10 @@
             <a onclick="sendCmd('main','backlight','2')">High</a>
             <a onclick="sendCmd('main','backlight','1')">Low</a>
           </div>
-        </div>    
-        <button type="button" class="button" onclick="sendCmd('main','stop','')">
-            <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
-        </button>
+        </div>
+        <button type="button" class="button" onclick="sendCmd('main','weather','')">
+            <span class="button__text"><i class="fa-solid fa-temperature-three-quarters"></i> Weather</span>
+        </button>              
 
       <div class="parsplit"><p class="parstd"></p></div>  
 
@@ -809,12 +814,12 @@
 
       <p class="parstd"></p>   
 
+        <button type="button" class="button" onclick="sendCmd('main','stop','')">
+            <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
+        </button>
         <button type="button" class="button button__lgr" onclick="sendCmd('main','clear','')">
             <span class="button__text"><i class="fa-solid fa-eraser"></i> Erase</span>
         </button>
-        <button type="button" class="button" onclick="sendCmd('main','weather','')">
-            <span class="button__text"><i class="fa-solid fa-temperature-three-quarters"></i> Weather</span>
-        </button>        
 
       <p class="body__text">by Ben Provenzano III</p>
       <p class="parend-fb"></p>     

@@ -14,7 +14,8 @@ let consoleData = null;
 let currentTheme = null;
 let serverCmdData = null;
 let socket = null;
-let device;
+let menuData = [];
+let device = null;
 
 //////////////////////////
 
@@ -101,10 +102,13 @@ function setTheme(newTheme) {
 }
 
 function resizeEvent() {
-  if (window.innerWidth < 860) {
-    classDisplay('parsplit','block');
-  } else {
-    classDisplay('parsplit','none');
+  if (device != 'LCDpi') {
+    // auto re-size on all other devices
+    if (window.innerWidth < 860) {
+      classDisplay('parsplit','block');
+    } else {
+      classDisplay('parsplit','none');
+    }
   }
 }
 
@@ -647,6 +651,62 @@ function sendGET(act, arg1, arg2) {
     })
 }
 
+
+function testGET() {
+  updateMenu('ledsync','read');
+  updateMenu('ledsync','write');
+}
+
+function updateMenu(menu,action) {
+  let file = null;
+  let idver = null;
+  let _encoded = null;
+  if (action === 'write') {
+    // store ID object
+    idver = menuData[0];
+    // remove first ID object
+    menuData.shift();
+    // convert array to JSON object
+    let _json = JSON.stringify(menuData);
+    // convert JSON to Base64
+    _encoded = btoa(_json);
+    // clear global data
+    while (menuData.length) { menuData.pop(); }    
+  } else {
+    // set object to select
+    file = menu;
+  }
+  // build URL / append data
+  const url = location.protocol+"//"+location.hostname+"/update.php?file="+file+"&action="+action+"&data="+_encoded;
+  if (action === 'read') {  
+    fetch(url, {
+        method: 'GET'
+      })
+      .then(res => {
+        return res.json()
+      })
+      .then((response) => {
+        // clear global data
+        while (menuData.length) { menuData.pop(); }
+        // load JSON to global data
+        menuData[0] = menu;
+        for(var i in response) { menuData.push(response[i]); }
+        // draw menu objects  
+        console.log(menuData);
+      })
+  }
+  if (action === 'write') {
+    // verify correct menu is in array
+    if (idver === menu) {
+      // send data
+      fetch(url, {
+        method: 'GET',
+      })
+    }  
+  }
+
+}
+
 // load entire text file
 async function loadLog(file) {
   try {
@@ -721,7 +781,6 @@ function openSendWindow() {
   closeSendbox();
   document.getElementById("sendForm").style.display = "block";
 }
-
 
 function sendText() {
   const data = document.getElementById("lcdTextBox").value;

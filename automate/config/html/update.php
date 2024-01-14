@@ -27,7 +27,7 @@ if (isset($_REQUEST['file'], $_REQUEST['action'])) {
 		return;
 	}
 
-	// update file actions
+	// update file action
 	if ($action === 'update') {
 		// Base64 -> JSON -> File
 		$body = file_get_contents('php://input');

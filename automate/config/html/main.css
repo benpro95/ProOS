@@ -172,6 +172,7 @@ body {
 }
 
 input.chkbox {
+  margin-left: 16px;
   float: right;
   width: 22px; 
   height: 22px;

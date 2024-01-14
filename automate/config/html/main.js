@@ -533,9 +533,7 @@ async function getPassword(){
     result = await passwordPrompt("Enter password:");
     if (result != null) {  
       if (result != '') {  
-        savePOST(result);
-        serverAction('attach_bkps');
-        serverSend(0);
+        savePOST('pwd',result);
       }
     } 
     result = "";
@@ -545,8 +543,8 @@ async function getPassword(){
 }
 
 // save file
-function savePOST(data) {
-  const url = location.protocol+"//"+location.hostname+"/update.php?file=pwd&action=update"; 
+function savePOST(file,data) {
+  const url = location.protocol+"//"+location.hostname+"/update.php?file="+file+"&action=update"; 
   // convert data to JSON object
   const _json = JSON.stringify([data]);
   // convert JSON to Base64
@@ -557,8 +555,18 @@ function savePOST(data) {
   xhr.setRequestHeader("Content-Type", "text/plain");
   xhr.onreadystatechange = function() {
     if (xhr.readyState === XMLHttpRequest.DONE) {
+      if (xhr.status == 200) {
+        // action on successful transmit
+        if (file === 'message') {
+          sendCmd('main','message','');
+        }
+        if (file === 'pwd') {
+          serverAction('attach_bkps');
+          serverSend(0);
+        }
+      }
       if (xhr.status != 200) {
-          console.log("failed to send POST: savePOST()");
+        console.log("failed to send POST: savePOST("+file+")");
       }
     }
   }
@@ -795,10 +803,9 @@ function boxChanged() {
       const linearr = line.split("|");
       if (linearr) {
         // read elements checkbox then write state
-        const boxitem=linearr[2].toString();
-        const box = "chkbox-"+boxitem;
+        const box = "chkbox-" + linearr[2].toString();
         var boxelm = document.getElementById(box);
-        if (boxelm.checked == true) {
+        if (boxelm.checked === true) {
           linearr[1] = '1';
         } else {
           linearr[1] = '0';
@@ -925,27 +932,15 @@ function openSendWindow() {
 
 function sendText() {
   const data = document.getElementById("lcdTextBox").value;
-  if (data.trim() === "") {
-    document.getElementById("lcdTextBox").value = "enter a message before sending.";
+  const sendtext = "enter a message before sending.";
+  if (data.trim() === "" || data === sendtext) {
+    document.getElementById("lcdTextBox").value = sendtext;
   } else {
   // Create the HTTP POST request
-    const xhr = new XMLHttpRequest();
-    const url = location.protocol+"//"+location.hostname+"/upload.php";
-    xhr.open("POST", url);
-    xhr.setRequestHeader("Content-Type", "text/plain");
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === XMLHttpRequest.DONE) {
-        if (xhr.status === 200) {
-          // message sent
-          clearText();
-        } else {
-          document.getElementById("lcdTextBox").value = "failed to transmit message.";
-        }
-      }
-    }
-    xhr.send(data);
+    savePOST('message',data);
+    loadBar(0.3);
   }
-  loadBar(0.3);
+  clearText();
 }
 
 function clearText() {

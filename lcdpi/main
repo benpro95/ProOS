@@ -9,6 +9,9 @@ CLEARLCD(){
 echo "${SIG}c3" > /dev/zterm
 }
 
+## Message File Basepath
+MSG_PATH="/var/www/html/ram/message"
+
 SIG='$?-|'
 
 ARG="$2"
@@ -18,16 +21,18 @@ case "$1" in
 boot)
 ## Start Z-Terminal Service
 systemctl stop serial-getty@ttyS0
-sleep 1.5
 systemctl start ztermcom
-## Delete messages
-rm -rfv /tmp/message*.txt
+## Initialize Message Service
+rm -rfv "$MSG_PATH*.txt"
+touch /var/www/html/ram/message.txt
+chmod 777 /var/www/html/ram/message.txt
+chown www-data:www-data /var/www/html/ram/message.txt
 ## Turn off power LED
 echo 0 > /sys/class/leds/ACT/brightness
 ## Disable HDMI (saves 30mA)
 tvservice -o
 ## Set Default Character Delay
-ARG="300"
+ARG="250"
 DELAYSET
 sleep 1
 ## Clear Display
@@ -52,26 +57,26 @@ tr -d '\n' < /tmp/weather.raw > /tmp/weather.txt
 ex -sc '%s/\(\pressure:\).*/\1/ | x' /tmp/weather.txt
 sed -i 's/pressure://g' /tmp/weather.txt
 ## Send Message
-curl -X POST 127.0.0.1/upload.php \
+curl -X POST 127.0.0.1/update.php --data "file=message&action=update" \
  -H "Content-Type: text/plain" -d "$(cat /tmp/weather.txt)"
 exit
 ;;
 
 message)
 ## add space to EOF
-echo ' ' >> /tmp/message.txt
-## retain archived messages
+echo ' ' >> "$MSG_PATH.txt"
+## rotate archived messages
 for i in {5..1}
 do
-   mv -f /tmp/message-$i.txt /tmp/message-$((i+1)).txt
+   mv -f "$MSG_PATH-$i.txt" "$MSG_PATH-$((i+1)).txt"
 done
-mv -f /tmp/message.txt /tmp/message-1.txt
-cat /tmp/message-1.txt > /dev/zterm
+mv -f "$MSG_PATH.txt" "$MSG_PATH-1.txt"
+cat "$MSG_PATH-1.txt" > /dev/zterm
 exit
 ;;
 
 msgarchive)
-cat /tmp/message-$ARG.txt > /dev/zterm
+cat "$MSG_PATH-$ARG.txt" > /dev/zterm
 exit
 ;;
 

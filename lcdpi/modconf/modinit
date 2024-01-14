@@ -42,17 +42,13 @@ chown root:root /usr/bin/ztermcom
 systemctl disable ztermcom.service
 systemctl restart ztermcom.service
 
-## Remove archived messages
-rm -rfv /tmp/message*.txt
-
 ## Web Interface
 cp -v /opt/rpi/device.js /var/www/html/
 chmod -R 777 /var/www/html/device.js
 chown -R www-data:www-data /var/www/html/device.js
-cp -v /opt/rpi/upload.php /var/www/html/
-chmod -R 777 /var/www/html/upload.php
-chown -R www-data:www-data /var/www/html/upload.php
 
+## Delete Archived Messages
+rm -rfv /var/www/html/ram/message*.txt
 
 ## Link RPi to global commands library
 ln -sf /opt/rpi/main /usr/bin/main

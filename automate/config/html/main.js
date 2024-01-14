@@ -717,8 +717,11 @@ function fileLoadAction(menu) {
       } else { // verify data matches
         if (_id == menu) {
           const item = line.split("|");
+          const _host = item[0];
+          const _state = item[1];
+          const _name = item[2].trim();
           // 0=Host,1=State,2=Name
-          drawMenu(item[0],item[1],item[2]);
+          drawMenu(_host,_state,_name);
         }
       }
     }
@@ -730,7 +733,7 @@ function drawMenu(url,state,navItem) {
   const createListItem = (navItem,url) => {
     const li = document.createElement('a');
     li.id = "menu-" + navItem;
-    li.innerText = navItem;
+    li.innerText = navItem + '   ';
     li.href = 'http://' + url;
     // draw checkbox's
     var checkbox = document.createElement('input');

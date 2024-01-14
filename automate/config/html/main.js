@@ -651,17 +651,12 @@ function sendGET(act, arg1, arg2) {
     })
 }
 
-
-function testGET() {
-  updateMenu('ledsync','read');
-  updateMenu('ledsync','write');
-}
-
 function updateMenu(menu,action) {
   let file = null;
   let idver = null;
-  let _encoded = null;
-  if (action === 'write') {
+  let encoded = null;
+  // re-write file action
+  if (action === 'update') {
     // store ID object
     idver = menuData[0];
     // remove first ID object
@@ -669,15 +664,13 @@ function updateMenu(menu,action) {
     // convert array to JSON object
     let _json = JSON.stringify(menuData);
     // convert JSON to Base64
-    _encoded = btoa(_json);
+    encoded = btoa(_json);
     // clear global data
     while (menuData.length) { menuData.pop(); }    
-  } else {
-    // set object to select
-    file = menu;
   }
   // build URL / append data
-  const url = location.protocol+"//"+location.hostname+"/update.php?file="+file+"&action="+action+"&data="+_encoded;
+  const url = location.protocol+"//"+location.hostname+"/update.php?file="+menu+"&action="+action+"&data="+encoded;
+  // read file action
   if (action === 'read') {  
     fetch(url, {
         method: 'GET'
@@ -695,7 +688,7 @@ function updateMenu(menu,action) {
         console.log(menuData);
       })
   }
-  if (action === 'write') {
+  if (action === 'update') {
     // verify correct menu is in array
     if (idver === menu) {
       // send data

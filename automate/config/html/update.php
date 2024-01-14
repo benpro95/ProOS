@@ -1,6 +1,6 @@
 <?php
 header("Content-Type: application/json");
-
+// read and update a common file (API)
 if (isset($_REQUEST['file'], $_REQUEST['action'], $_REQUEST['data'])) {
 	// build paths
     $file = $_REQUEST['file'];
@@ -8,6 +8,7 @@ if (isset($_REQUEST['file'], $_REQUEST['action'], $_REQUEST['data'])) {
     $data = $_REQUEST['data'];
     $basepath = '/var/www/html/ram/';
     $filepath = $basepath . $file . '.txt';
+    // read file action
     if ($action === 'read') {
 	    // text data to JSON response
 		$fp = @fopen($filepath, 'r'); 
@@ -22,12 +23,19 @@ if (isset($_REQUEST['file'], $_REQUEST['action'], $_REQUEST['data'])) {
 		echo $json_out;
 		return;
 	}
-	if ($action === 'write') {
+	// update file actions
+	if ($action === 'update') {
 		$base64 = $_REQUEST['data'];
 		$json_in = base64_decode($base64);
 		$table = json_decode($json_in);
-		echo $table[0];
-        file_put_contents($filepath, var_export($table, true));
+		$text = "";
+		foreach($table as $key => $value)
+		{
+		    $text .= $value."\n";
+		}
+		$fh = fopen($filepath, "w");
+		fwrite($fh, $text);
+		fclose($fh);
 		http_response_code(200);
 		return;
     }

@@ -167,6 +167,14 @@ body {
   justify-content: space-around;
 }
 
+.dynamic-menus {
+  display: block;
+}
+
+.chkbox { 
+  right: 1px;
+}
+
 .grid {
   overflow: hidden;
   white-space: nowrap;

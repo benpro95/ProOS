@@ -14,7 +14,7 @@ let consoleData = null;
 let currentTheme = null;
 let serverCmdData = null;
 let socket = null;
-let menuData = [];
+let fileData = [];
 let device = null;
 
 //////////////////////////
@@ -651,22 +651,70 @@ function sendGET(act, arg1, arg2) {
     })
 }
 
-function updateMenu(menu,action) {
+function fileLoadAction(menu) {
+  // LED options menu
+  let _id = null;
+  if (menu === 'ledsync') {
+    // loop through menu items
+    for (var i = 0; i < fileData.length; i++) {
+      let line = fileData[i].toString();
+      if (i == 0) { // store first line (ID)
+        _id = line;
+      } else { // verify data matches
+        if (_id == menu) {
+          const item = line.split("|");
+          // 0=Host,1=State,2=Name
+          drawMenu(item[0],item[1],item[2]);
+        }
+      }
+    }
+  }  
+}
+
+
+function drawMenu(url,state,navItem) {
+  //document.getElementById("element_id").remove(); 
+  const navElement = document.getElementById("mainmenu");
+  const createListItem = (navItem,url) => {
+    const li = document.createElement('a');
+    li.innerText = navItem;
+    li.href = 'http://' + url;
+    var checkbox = document.createElement('input');
+    checkbox.type = "checkbox";
+    checkbox.className = "chkbox";
+    checkbox.id = "checkbox-"+navItem;
+    li.appendChild(checkbox);
+    return li;
+  };
+  navElement.appendChild(createListItem(navItem,url));
+  // read LED's current state from file
+  if (state == '0' || state == '2') {
+    document.getElementById("checkbox-"+navItem).checked = false;
+  }
+  if (state == '1') {
+    document.getElementById("checkbox-"+navItem).checked = true;
+  }  
+}
+
+
+function updateFile(menu,action) {
+  var values = new Array();
   let file = null;
   let idver = null;
-  let encoded = null;
+  let encoded = "";
+  let id = "";
   // re-write file action
   if (action === 'update') {
     // store ID object
-    idver = menuData[0];
+    id = fileData[0];
     // remove first ID object
-    menuData.shift();
+    fileData.shift();
     // convert array to JSON object
-    let _json = JSON.stringify(menuData);
+    let _json = JSON.stringify(fileData);
     // convert JSON to Base64
     encoded = btoa(_json);
     // clear global data
-    while (menuData.length) { menuData.pop(); }    
+    while (fileData.length) { fileData.pop(); }    
   }
   // build URL / append data
   const url = location.protocol+"//"+location.hostname+"/update.php?file="+menu+"&action="+action+"&data="+encoded;
@@ -680,24 +728,31 @@ function updateMenu(menu,action) {
       })
       .then((response) => {
         // clear global data
-        while (menuData.length) { menuData.pop(); }
+        while (fileData.length) { fileData.pop(); }
         // load JSON to global data
-        menuData[0] = menu;
-        for(var i in response) { menuData.push(response[i]); }
-        // draw menu objects  
-        console.log(menuData);
+        fileData[0] = menu;
+        for(var i in response) {
+          let _line = response[i].toString();
+          // ignore empty lines
+          if (_line) {
+            if (_line !== "") {
+              fileData.push(_line);
+            }
+          }
+        }
+        // action after loading
+        fileLoadAction(menu);
       })
   }
   if (action === 'update') {
     // verify correct menu is in array
-    if (idver === menu) {
+    if (id === menu) {
       // send data
       fetch(url, {
         method: 'GET',
       })
     }  
   }
-
 }
 
 // load entire text file

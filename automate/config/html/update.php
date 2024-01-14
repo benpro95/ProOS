@@ -2,10 +2,10 @@
 header("Content-Type: application/json");
 // read and update a common file (API)
 if (isset($_REQUEST['file'], $_REQUEST['action'], $_REQUEST['data'])) {
-	// build paths
     $file = $_REQUEST['file'];
     $action = $_REQUEST['action'];
     $data = $_REQUEST['data'];
+    // build paths
     $basepath = '/var/www/html/ram/';
     $filepath = $basepath . $file . '.txt';
     // read file action
@@ -25,13 +25,12 @@ if (isset($_REQUEST['file'], $_REQUEST['action'], $_REQUEST['data'])) {
 	}
 	// update file actions
 	if ($action === 'update') {
-		$base64 = $_REQUEST['data'];
-		$json_in = base64_decode($base64);
+		// Base64 -> JSON -> File
+		$json_in = base64_decode($data);
 		$table = json_decode($json_in);
 		$text = "";
-		foreach($table as $key => $value)
-		{
-		    $text .= $value."\n";
+		foreach($table as $key => $value) {
+		  $text .= $value."\n";
 		}
 		$fh = fopen($filepath, "w");
 		fwrite($fh, $text);

@@ -37,10 +37,6 @@
   <div class="main_dropdown">
   <div class="dropdown-content" id="mainmenu">
     <a onclick="GoToHomePage()"><i class="fa fa-home"></i>  Home</a>
-    <a href="http://ledwall.home"><i class="fa-regular fa-lightbulb"></i> LEDwall</a>
-    <a href="http://ledgrid.home"><i class="fa-regular fa-lightbulb"></i> LEDgrid</a>    
-    <a href="http://ledstrip.home"><i class="fa-regular fa-lightbulb"></i> LEDstrip</a>
-    <a href="http://lcdpi.home"><i class="fa-solid fa-pager"></i> LCDpi</a>
   </div>
   </div>
 </div>
@@ -257,10 +253,10 @@
               <span class="button__text"><i class="fa-solid fa-volume-high"></i></span>
           </button>
 
-          <button type="button" class="button" onclick="updateMenu('ledsync','read')">   
-            <span class="button__text"><i class="fa-solid fa-door-open"></i> Read</span>
+          <button type="button" class="button" onclick="updateFile('ledsync','read')">   
+            <span class="button__text"><i class="fa-solid fa-door-open"></i> Load</span>
           </button> 
-          <button type="button" class="button" onclick="updateMenu('ledsync','update')">   
+          <button type="button" class="button" onclick="updateFile('ledsync','update')">   
             <span class="button__text"><i class="fa-solid fa-door-open"></i> Update</span>
           </button>  
 

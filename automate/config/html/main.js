@@ -825,8 +825,6 @@ function boxChanged() {
 
 // API call POST (update menu file)
 function updateMenuData(menu) {
-  let file = null;
-  let idver = null;
   let encoded = "";
   let id = "";
   // store ID object
@@ -863,7 +861,6 @@ function updateMenuData(menu) {
 // load entire text file
 async function loadLog(file) {
   try {
-    const err = null;
     // build url and force cache reload
     const time = new Date();
     const timestamp = (time.getTime());   

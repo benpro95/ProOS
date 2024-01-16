@@ -3,9 +3,10 @@
 
 // globals
 let defaultSite = "Automate";
+let device = null;
 let selectedVM = "";
 let colorPromptActive = 0;
-let toggledState = 0;
+let toggledPageMode = 0;
 let loadBarState = 0;
 let promptCount = 0;
 let rowState = 0;
@@ -15,7 +16,6 @@ let currentTheme = null;
 let serverCmdData = null;
 let socket = null;
 let fileData = [];
-let device = null;
 let dynMenuActive = 0;
 let dynChkboxChanged = 0;
 
@@ -90,7 +90,7 @@ function showLEDsPage() {
 }
 
 function showSoundsPage() {
-  toggledState = 0;
+  toggledPageMode = 0;
   hidePages();
   relaxMode();
   classDisplay('sounds-grid','block');
@@ -154,8 +154,9 @@ function showMenu(_menu) {
   } else {
     hideDropdowns();
     // dynamic LED selection menu
-    if (_menu == 'mainmenu') {
-      readMenuData('mainmenu');
+    const _selmenu = 'mainmenu';
+    if (_menu === _selmenu) {
+      readMenuData(_selmenu);
     }
     _elem.style.display = 'block';
   }
@@ -170,7 +171,7 @@ function sleep(ms) {
 function GoToHomePage() {
   if (device === defaultSite) {
     hidePages();
-    toggledState = 0;
+    toggledPageMode = 0;
     loadPage();
   } else {
     window.location = 'https://'+defaultSite+'.home';   
@@ -438,10 +439,10 @@ function vmPromptSelect(_vm){
   // show actions buttons after selection
   document.getElementById("vms__startbtn").style.display = "inline-block";
   document.getElementById("vms__stopbtn").style.display = "inline-block";
-  if (_vm === "xana" ) { 
+  if ( _vm === "xana" ) { 
     document.getElementById("vms__restorebtn").style.display = "inline-block";
   }
-  if (_vm === "unifi" ) { 
+  if ( _vm === "unifi" ) { 
     document.getElementById("vms__openbtn").style.display = "inline-block";
   }    
   selectedVM = _vm;
@@ -542,7 +543,7 @@ async function getPassword(){
   }
 }
 
-// save file
+// save file API POST call
 function savePOST(file,data) {
   const url = location.protocol+"//"+location.hostname+"/update.php?file="+file+"&action=update"; 
   // convert data to JSON object
@@ -576,24 +577,24 @@ function savePOST(file,data) {
 // switch volume controls on main page
 function volMode() {   
   let id = document.getElementById("sub__text");
-  if (toggledState === 1) {
+  if (toggledPageMode === 1) {
      id.textContent = "Subwoofers";
-     toggledState = 0;
+     toggledPageMode = 0;
   } else {  
      id.textContent = "Bedroom";
-     toggledState = 1;
+     toggledPageMode = 1;
   }
 }
 
 // switch volume controls on bedroom page
 function relaxMode() {   
   let id = document.getElementById("relax__text");
-  if (toggledState === 1) {
+  if (toggledPageMode === 1) {
      id.textContent = "HiFi";
-     toggledState = 0;
+     toggledPageMode = 0;
   } else {  
      id.textContent = "Bedroom";
-     toggledState = 1;
+     toggledPageMode = 1;
   }
 }
 
@@ -604,7 +605,7 @@ function relaxSend(_cmd) {
    || _cmd === 'vdwn'
    || _cmd === 'vmute') {
     _mode = _cmd;
-    if (toggledState === 0) {
+    if (toggledPageMode === 0) {
       _cmd = 'hifi';
     } else {
       _cmd = 'bedroom';
@@ -612,23 +613,21 @@ function relaxSend(_cmd) {
   } else {
     // relax mode
     _mode = 'relax';
-    if (toggledState === 0) {
+    if (toggledPageMode === 0) {
       _cmd = _cmd+"-hifi";
     } 
   }
   sendCmd('main',_mode,_cmd);
 }
 
-
 function toggledVol(_mode) {
-  if (toggledState === 0) {
+  if (toggledPageMode === 0) {
     _cmd = 'subs';
   } else {
     _cmd = 'bedroom';
   } 
   sendCmd('main',_mode,_cmd);
 }
-
 
 // send server action
 async function serverSend() {
@@ -673,6 +672,7 @@ function sendCmdNoBar(act, arg1, arg2) {
   sendGET(act,arg1,arg2);
 }
 
+// API GET call
 function sendGET(act, arg1, arg2) {
   // construct API string
   const url = location.protocol+"//"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
@@ -684,6 +684,7 @@ function sendGET(act, arg1, arg2) {
 
 //// Dynamic Menus ////
 
+// build menu
 function readMenuData(menu) {
   // build URL / append data
   const url = location.protocol+"//"+location.hostname+"/update.php?file="+menu+"&action=read";
@@ -716,28 +717,26 @@ function readMenuData(menu) {
 function fileLoadAction(menu) {
   // LED options menu
   let _id = null;
-  if (menu === 'mainmenu') {
-    // loop through menu items
-    for (var i = 0; i < fileData.length; i++) {
-      let line = fileData[i].toString();
-      if (i == 0) { // store first line (ID)
-        _id = line;
-      } else { // verify data matches
-        if (_id == menu) {
-          const item = line.split("|");
-          const _host = item[0];
-          const _state = item[1];
-          const _name = item[2].trim();
-          // 0=Host,1=State,2=Name
-          drawMenu(_host,_state,_name);
-        }
+  // loop through menu items
+  for (var i = 0; i < fileData.length; i++) {
+    let line = fileData[i].toString();
+    if (i == 0) { // store first line (ID)
+      _id = line;
+    } else { // verify data matches
+      if (_id == menu) {
+        const item = line.split("|");
+        const _host = item[0];
+        const _state = item[1];
+        const _name = item[2].trim();
+        // 0=Host,1=State,2=Name,Menu ID
+        drawMenu(_host,_state,_name,menu);
       }
     }
   }  
 }
 
-function drawMenu(url,state,navItem) {
-  const navElement = document.getElementById("mainmenu");
+function drawMenu(url,state,navItem,menu) {
+  const navElement = document.getElementById(menu);
   const createListItem = (navItem,url,state) => {
     const li = document.createElement('a');
     li.id = "menu-" + navItem;
@@ -824,6 +823,7 @@ function boxChanged() {
   }
 }
 
+// API call POST (update menu file)
 function updateMenuData(menu) {
   let file = null;
   let idver = null;
@@ -877,12 +877,11 @@ async function loadLog(file) {
     let txtArea = document.getElementById("logTextBox");
     txtArea.scrollTop = txtArea.scrollHeight;
   } catch (err) {
-    console.error(err);
+    console.log(err);
   }
   consoleData = null;
   serverCmdData = null;
 }
-
 
 // load server action 
 function serverAction(cmd) {
@@ -898,7 +897,6 @@ function serverAction(cmd) {
    _elem.classList.add("button-alert");
 }
 
-
 function openLogWindow() {
   // open server log window
   closePopup();
@@ -907,7 +905,6 @@ function openLogWindow() {
   document.getElementById("logForm").style.display = "block";
 }
 
-
 function openCamWindow() {
   closePopup();
   // show camera form window
@@ -915,14 +912,12 @@ function openCamWindow() {
   document.getElementById("cam-iframe").src = "/cam1";
 }
 
-
 function closePopup() {
   // close all popup windows
   document.getElementById("logForm").style.display = "none";
   document.getElementById("camForm").style.display = "none";
   document.getElementById("cam-iframe").src = "about:blank";
 }
-
 
 function closeSendbox() {
   // close all popup windows
@@ -1096,4 +1091,3 @@ function show_colorPrompt(text){
       });
   });   
 }
-

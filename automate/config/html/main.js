@@ -9,7 +9,6 @@ let colorPromptActive = 0;
 let toggledPageMode = 0;
 let loadBarState = 0;
 let promptCount = 0;
-let rowState = 0;
 let arcState = 0;
 let consoleData = null;
 let currentTheme = null;
@@ -417,8 +416,8 @@ async function showPiWiFiPrompt(){
   try {
     hideDropdowns();
     result = await piWiFiPrompt();
-    if (result != null) {  
-      if (result != '') {  
+    if (result !== null) {  
+      if (result !== '') {  
         sendCmd('main-www','confwpa',result);
         document.getElementById("logTextBox").value = "Wi-Fi configuration updated, select client mode to apply changes.";
       }
@@ -532,8 +531,8 @@ async function getPassword(){
   try{
     hideDropdowns();
     result = await passwordPrompt("Enter password:");
-    if (result != null) {  
-      if (result != '') {  
+    if (result !== null) {  
+      if (result !== '') {  
         savePOST('pwd',result);
       }
     } 
@@ -566,7 +565,7 @@ function savePOST(file,data) {
           serverSend(0);
         }
       }
-      if (xhr.status != 200) {
+      if (xhr.status !== 200) {
         console.log("failed to send POST: savePOST("+file+")");
       }
     }
@@ -773,7 +772,7 @@ function removeDynMenus() {
     // remove dynamic menu elements (II)
     for (var i = 0; i < fileData.length; i++) {
       let line = fileData[i].toString();
-      if (i != 0) { // skip menu ID
+      if (i !== 0) { // skip menu ID
         const item = line.split("|");
         if (item) {
           let navItem = "menu-" + item[2].toString();

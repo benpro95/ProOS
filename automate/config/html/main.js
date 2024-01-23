@@ -281,13 +281,13 @@ function show_vmsPrompt(text){
 	      if (e.target === vms_xanabtn) {
           if (arcState > 0) {
             if (arcState === 1) {
-              serverAction('files-arc_region');
+              serverAction('files-priv_region');
               serverSend();
               document.body.removeChild(vms_prompt); 
               clearPendingCmd();
             }
             if (arcState === 2) {
-              serverAction('files-priv_region');
+              serverAction('files-arc_region');
               serverSend();
               document.body.removeChild(vms_prompt); 
               clearPendingCmd();
@@ -862,7 +862,7 @@ async function loadLog(file) {
   try {
     // build url and force cache reload
     const time = new Date();
-    const timestamp = (time.getTime());   
+    const timestamp = time.getTime();   
     const url = location.protocol+"//"+location.hostname+"/ram/sysout.txt"+"?ver="+timestamp;
     // parse incoming text file
     const response = await fetch(url);

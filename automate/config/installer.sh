@@ -87,9 +87,14 @@ cp /tmp/config/leds.sh /opt/system/leds
 cp /tmp/config/main.sh /opt/system/main
 cp /tmp/config/relaxloop.sh /opt/system/relaxloop
 cp /tmp/config/mainmenu.txt /opt/system/
-cp -v /opt/system/mainmenu.txt /var/www/html/ram/
-chmod 777 /var/www/html/ram/mainmenu.txt
-chown www-data:www-data /var/www/html/ram/mainmenu.txt
+if [ -e /var/www/html/ram/sysout.txt ]; then
+  if [ ! -e /var/www/html/ram/mainmenu.txt ]; then
+    echo "Restoring menu settings..."
+    cp -v /opt/system/mainmenu.txt /var/www/html/ram/
+    chmod 777 /var/www/html/ram/mainmenu.txt
+    chown www-data:www-data /var/www/html/ram/mainmenu.txt
+  fi
+fi
 chmod -R 755 /opt/system/*
 chown -R root:root /opt/system
 ln -sf /opt/system/main /opt/system/xmit

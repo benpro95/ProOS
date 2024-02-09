@@ -32,9 +32,7 @@ return
 }
 
 CALL_LCDPI(){
-  echo "Disabled."
-  #/usr/bin/curl $CURLARGS -X POST http://lcdpi.home/upload.php \
-  # -H "Content-Type: text/plain" -d "$LCDPI_MSG"
+  /opt/rpi/lcdpi "$LCDPI_MSG" &
 }
 
 XMIT(){
@@ -282,14 +280,12 @@ if [[ "$XMITCMD" == "rfa3on" ]]; then
    XMITCALL="1|0|734735"
    LCDPI_MSG="accessory on"
    CALLAPI   
-   CALL_LCDPI
    return
 fi
 if [[ "$XMITCMD" == "rfa3off" ]]; then
    XMITCALL="1|0|734736"
    LCDPI_MSG="accessory off"
    CALLAPI   
-   CALL_LCDPI
    return
 fi
 ##
@@ -431,6 +427,8 @@ exit
 relaxstop)
 echo "Stopping playback on Apple TV..."
 systemctl stop relaxloop
+LCDPI_MSG="paused Apple TV"
+CALL_LCDPI 
 ## Turn off Apple TV
 ##systemctl set-environment rpi_relaxmode=off
 ##systemctl start relaxloop
@@ -535,9 +533,6 @@ exit
 mainon)
 ## Main Lamp
 XMITCMD="rfc1" ; XMITARG="on" ; XMIT 
-## LCDpi message
-LCDPI_MSG="lights on"
-CALL_LCDPI
 exit
 ;;
 
@@ -548,9 +543,6 @@ rm -f $LOCKFOLDER/lights.save
 XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
 ## Dresser Lamp
 XMITCMD="rfa2" ; XMITARG="off" ; XMIT 
-## LCDpi message
-LCDPI_MSG="lights off"
-CALL_LCDPI
 exit
 ;;
 
@@ -561,9 +553,6 @@ touch $LOCKFOLDER/lights.save
 XMITCMD="rfc1" ; XMITARG="on" ; XMIT 
 ## Dresser Lamp
 XMITCMD="rfa2" ; XMITARG="on" ; XMIT
-## LCDpi message
-LCDPI_MSG="lights on"
-CALL_LCDPI
 exit
 ;;
 
@@ -574,9 +563,6 @@ rm -f $LOCKFOLDER/lights.save
 XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
 ## Dresser Lamp
 XMITCMD="rfa2" ; XMITARG="off" ; XMIT
-## LCDpi message
-LCDPI_MSG="lights off"
-CALL_LCDPI
 exit
 ;;
 
@@ -592,9 +578,6 @@ XMITCMD="rfb1" ; XMITARG="on" ; XMIT
 /opt/system/leds candle
 sleep 2.5
 /opt/system/leds fc 60
-## LCDpi message
-LCDPI_MSG="all lights on"
-CALL_LCDPI
 exit
 ;;
 
@@ -612,9 +595,6 @@ XMITCMD="rfb1" ; XMITARG="off" ; XMIT
 sleep 1
 ## Blank LEDwalls
 /opt/system/leds stop
-## LCDpi message
-LCDPI_MSG="all lights off"
-CALL_LCDPI
 exit
 ;;
 
@@ -705,7 +685,6 @@ else
 fi
 ## LEDwalls
 /opt/system/leds abstract
-/opt/system/leds fc norm
 ## LCDpi message
 LCDPI_MSG="all power on"
 CALL_LCDPI
@@ -769,9 +748,6 @@ fi
 ## Pass action file to the hypervisor
 echo "action $SERVERARG submitted." &>> $LOGFILE
 touch $RAMDISK/$SERVERARG.txt
-## LCDpi message
-LCDPI_MSG="$SERVERARG cmd sent"
-CALL_LCDPI
 exit
 ;;
 

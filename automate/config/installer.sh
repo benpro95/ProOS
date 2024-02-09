@@ -83,10 +83,11 @@ chown root:root /etc/sysctl.conf
 ## System Resources
 rm -rf /opt/system
 mkdir -p /opt/system
-cp /tmp/config/leds.sh /opt/system/leds
-cp /tmp/config/main.sh /opt/system/main
-cp /tmp/config/relaxloop.sh /opt/system/relaxloop
-cp /tmp/config/mainmenu.txt /opt/system/
+cp -v /tmp/config/leds.sh /opt/system/leds
+cp -v /tmp/config/main.sh /opt/system/main
+cp -v /tmp/config/lcdpi.sh /opt/system/lcdpi
+cp -v /tmp/config/relaxloop.sh /opt/system/relaxloop
+cp -v /tmp/config/mainmenu.txt /opt/system/
 if [ -e /var/www/html/ram/sysout.txt ]; then
   if [ ! -e /var/www/html/ram/mainmenu.txt ]; then
     echo "Restoring menu settings..."

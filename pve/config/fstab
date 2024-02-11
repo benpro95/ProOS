@@ -1,5 +1,5 @@
 ## Filesystems
-# <file system> <mount point> <type> <options> <dump> <pass>
-proc  /proc  proc  defaults  0  0
-ramdisk0  /mnt/ramdisk  tmpfs  defaults,size=128m  0  0
-/dev/disk/by-id/ata-WD_Blue_SA510_2.5_1TB_235060800779-part1  /mnt/pve/scratch  ext4  defaults  0  0
+# <file system>                                                 <mount point>      <type> <options>                                  <dump> <pass>
+proc                                                            /proc              proc   defaults                                    0     0
+ramdisk0                                                        /mnt/ramdisk       tmpfs  defaults,nofail,size=256m                   0     0
+/dev/disk/by-id/ata-WD_Blue_SA510_2.5_1TB_235060800779-part1    /mnt/pve/scratch   ext4   defaults,nofail,errors=remount-ro           0     0

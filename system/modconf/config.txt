@@ -1,7 +1,7 @@
 ## Created by Ben Provenzano III for HiFi Pi
 
 # Automatically load overlays for detected DSI displays
-display_auto_detect=1
+display_auto_detect=0
 
 # Automatically load initramfs files, if found
 auto_initramfs=1
@@ -27,8 +27,8 @@ disable_pvt=1
 disable_splash=1
 
 #-------HiFiBerry Coaxial Out -------
-dtparam=audio=off
-dtparam=i2c_arm=off
+dtparam=i2c_arm=on
+dtparam=i2s=on
 dtoverlay=hifiberry-digi
 dtoverlay=i2s-mmap
 

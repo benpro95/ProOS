@@ -15,6 +15,16 @@ systemctl start rpi-netdetect.service
 /usr/bin/tvservice -o
 ## Turn-off Power LED (boot complete)
 echo none | tee /sys/class/leds/ACT/trigger
+## GPIO 5 (pin 29) 
+/usr/bin/raspi-gpio set 5 op dh 
+exit
+;;
+
+toggletv)
+## Toggle Bedroom Monitor
+raspi-gpio set 5 dl
+sleep 0.25
+raspi-gpio set 5 dh
 exit
 ;;
 

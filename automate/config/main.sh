@@ -623,6 +623,12 @@ fi
 exit
 ;;
 
+## Toggle Bedroom TV
+toggletv)
+ESP32="no"; TARGET="ledgrid.home"; XMITCMD="toggletv"; CALLAPI
+exit
+;;
+
 autodac)
 ## Reset volume tokens
 rm -f $LOCKFOLDER/subs.enabled

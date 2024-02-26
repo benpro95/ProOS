@@ -35,11 +35,6 @@ chmod 644 /etc/default/console-setup
 chown root:root /etc/default/console-setup
 service console-setup restart
 
-## Access Point
-cp -rv $BIN/modconf/hostapd.conf /etc/hostapd/hostapd.conf
-chmod 644 /etc/hostapd/hostapd.conf
-chown root:root /etc/hostapd/hostapd.conf
-
 ## Start Emulationstation on Boot
 cp -rv $BIN/modconf/bashrc /home/pi/.bashrc
 chmod +x /home/pi/.bashrc

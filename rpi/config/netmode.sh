@@ -66,7 +66,7 @@ if [ -e /sys/class/net/wlan0 ] ; then
   fi
   nmcli device wifi hotspot ifname wlan0 con-name RPiHotspot ssid "$APD_SSID" password "$APD_PWD"
   nmcli con modify RPiHotspot 802-11-wireless-security.key-mgmt wpa-psk
-  nmcli con modify RPiHotspot 802-11-wireless-security.pairwise tkip
+  nmcli con modify RPiHotspot 802-11-wireless-security.pairwise ccmp
   nmcli con modify RPiHotspot 802-11-wireless-security.proto wpa
   nmcli con modify RPiHotspot autoconnect no
   nmcli con down RPiHotspot

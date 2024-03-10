@@ -429,9 +429,6 @@ echo "Stopping playback on Apple TV..."
 systemctl stop relaxloop
 LCDPI_MSG="paused Apple TV"
 CALL_LCDPI 
-## Turn off Apple TV
-##systemctl set-environment rpi_relaxmode=off
-##systemctl start relaxloop
 exit
 ;;
 
@@ -626,6 +623,9 @@ exit
 ## Toggle Bedroom TV
 toggletv)
 ESP32="no"; TARGET="ledgrid.home"; XMITCMD="toggletv"; CALLAPI
+## Turn off Apple TV
+systemctl set-environment rpi_relaxmode=off
+systemctl start relaxloop
 exit
 ;;
 

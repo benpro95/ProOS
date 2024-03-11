@@ -48,5 +48,7 @@ chmod 777 /mnt/ramdisk/drives.txt
 
 ## Light Web Server
 systemctl start lighttpd
+## Crontab
+systemctl start cron
 
 exit 0

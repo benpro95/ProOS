@@ -14,7 +14,7 @@ WWW_URL="http://files.home/WWW/Relaxation"
 ATV_ID="C869CD3A8484"
 
 ## Turn off Apple TV
-if [ "$rpi_relaxmode" = "off" ]; then
+if [ "$rpi_relaxmode" == "off" ]; then
   ATVSTATE=$(/opt/pyatv/bin/atvremote --id "$ATV_ID" --storage-filename /root/.pyatv.conf power_state)
   ## Only turn-off if Apple TV is on  
   if [ "$ATVSTATE" == "PowerState.On" ]; then
@@ -25,7 +25,8 @@ if [ "$rpi_relaxmode" = "off" ]; then
 fi
 
 ## Pause Apple TV
-if [ "$rpi_relaxmode" = "pause" ]; then
+if [ "$rpi_relaxmode" == "pause" ]; then
+  ATVSTATE=$(/opt/pyatv/bin/atvremote --id "$ATV_ID" --storage-filename /root/.pyatv.conf power_state)
   if [ "$ATVSTATE" == "PowerState.On" ]; then
     /opt/pyatv/bin/atvremote --id "$ATV_ID" --storage-filename /root/.pyatv.conf pause
   fi  

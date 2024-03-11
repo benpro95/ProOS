@@ -80,7 +80,7 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           echo "'Regions' share not found!"
         else
           echo "syncing 'Regions' share to $POOL drive..."
-          rsync $CHECKSUM -aP --exclude="Archive/" \
+          rsync $CHECKSUM -aP --exclude="Archive/Movies/" \
           /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
         fi
         ##### END BACKUP #####

@@ -427,6 +427,8 @@ exit
 relaxstop)
 echo "Stopping playback on Apple TV..."
 systemctl stop relaxloop
+systemctl set-environment rpi_relaxmode="pause"
+systemctl start relaxloop
 LCDPI_MSG="paused Apple TV"
 CALL_LCDPI 
 exit
@@ -491,9 +493,8 @@ sleep)
 if (systemctl is-active --quiet relaxloop.service); then
   echo "Stopping playback on Apple TV..."
   systemctl stop relaxloop
-  ## Turn off Apple TV
-  ##systemctl set-environment rpi_relaxmode=off
-  ##systemctl start relaxloop
+  systemctl set-environment rpi_relaxmode="pause"
+  systemctl start relaxloop
 else  
   echo "Service not runnning starting sleep mode..."
   /opt/system/main relax waterfall
@@ -623,9 +624,16 @@ exit
 ## Toggle Bedroom TV
 toggletv)
 ESP32="no"; TARGET="ledgrid.home"; XMITCMD="toggletv"; CALLAPI
-## Turn off Apple TV
-systemctl set-environment rpi_relaxmode=off
+## Pause Apple TV
+systemctl stop relaxloop
+systemctl set-environment rpi_relaxmode="pause"
 systemctl start relaxloop
+## Turn off Apple TV
+#systemctl set-environment rpi_relaxmode=off
+#systemctl start relaxloop
+## LCDpi message
+LCDPI_MSG="toggled bedroom TV"
+CALL_LCDPI
 exit
 ;;
 

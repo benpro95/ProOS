@@ -24,6 +24,14 @@ if [ "$rpi_relaxmode" = "off" ]; then
   exit
 fi
 
+## Pause Apple TV
+if [ "$rpi_relaxmode" = "pause" ]; then
+  if [ "$ATVSTATE" == "PowerState.On" ]; then
+    /opt/pyatv/bin/atvremote --id "$ATV_ID" --storage-filename /root/.pyatv.conf pause
+  fi  
+  exit
+fi
+
 ## Loop on startup / time trigger
 if [ "$rpi_relaxmode" == "boot" ]; then
   ## Set default mode from settings

@@ -890,7 +890,7 @@ function serverAction(cmd) {
   serverCmdData = cmd;
   // change color of send button 
   let _elem = document.getElementById("sendButton");
-   _elem.classList.add("button-alert");
+  _elem.classList.add("button-alert");
 }
 
 function openLogWindow() {
@@ -913,11 +913,13 @@ function closePopup() {
   document.getElementById("logForm").style.display = "none";
   document.getElementById("camForm").style.display = "none";
   document.getElementById("cam-iframe").src = "about:blank";
+  clearPendingCmd();
 }
 
 function closeSendbox() {
   // close all popup windows
   document.getElementById("sendForm").style.display = "none";
+  clearPendingCmd();
 }
 
 function openSendWindow() {
@@ -940,8 +942,9 @@ function sendText() {
 }
 
 function clearText() {
-  // celar text window
+  // clear text window
   document.getElementById("lcdTextBox").value = "";
+  clearPendingCmd();
 }
 
 // loading bar animation 

@@ -102,10 +102,25 @@ if [ -e $TRIGGERS_DIR/detach_bkps.txt ]; then
   echo "unmounted ZFS backup volumes"
   EXIT_ROUTINE
 fi
-if [ -e $TRIGGERS_DIR/listsnaps.txt ]; then
+## Toggle Proxmox Web Interface
+if [ -e $TRIGGERS_DIR/pve_webui_toggle.txt ]; then
+  echo " "
+  rm -f $TRIGGERS_DIR/pve_webui_toggle.txt
+  SYSDSTAT="$(systemctl is-active pveproxy.service)"
+  if [ "${SYSDSTAT}" == "active" ]; then
+    echo "Proxmox web interface running, stopping service..."
+    systemctl stop pveproxy.service 
+  else 
+    echo "Proxmox web interface not running, starting service..." 
+    systemctl start pveproxy.service
+  fi
+  EXIT_ROUTINE  
+fi
+## List ZFS Snapshots
+if [ -e $TRIGGERS_DIR/pve_listsnaps.txt ]; then
   echo " "
   touch /tmp/actiontrig.lock
-  rm -f $TRIGGERS_DIR/listsnaps.txt
+  rm -f $TRIGGERS_DIR/pve_listsnaps.txt
   echo "Snapshots on ZFS pool (tank/datastore):"
   zfs list -t snapshot tank/datastore | grep -o '^\S*'
   EXIT_ROUTINE  
@@ -281,7 +296,6 @@ if [ -e $TRIGGERS_DIR/pve_vmsbkp.txt ]; then
   echo "Backup Complete."
   EXIT_ROUTINE
 fi
-
 
 exit
 

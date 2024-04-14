@@ -29,19 +29,20 @@ if (isset($_REQUEST['file'], $_REQUEST['action'])) {
 
 	// update file action
 	if ($action === 'update') {
-		// Base64 -> JSON -> File
-		$body = file_get_contents('php://input');
-		$json_in = base64_decode($body);
+		// JSON -> File
+		$json_in  = file_get_contents('php://input');
 		$table = json_decode($json_in);
-		$text = "";
-		foreach($table as $key => $value) {
-		  $text .= $value."\n";
-		}
-		$fh = fopen($filepath, "w");
-		fwrite($fh, $text);
-		fclose($fh);
-		http_response_code(200);
-		return;
+        if (!empty($table)) {
+			$text = "";
+			foreach($table as $key => $value) {
+			  $text .= $value."\n";
+			}
+			$fh = fopen($filepath, "w");
+			fwrite($fh, $text);
+			fclose($fh);
+			http_response_code(200);
+			return;
+        }
     }
 
 // catch errors

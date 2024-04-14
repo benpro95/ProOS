@@ -145,22 +145,6 @@ function detectMobile() {
   }
 }
 
-// toggle dropdown menu's
-function showMenu(_menu) {
-  let _elem = document.getElementById(_menu);
-  if (_elem.style.display === 'block') {
-    _elem.style.display = 'none';
-  } else {
-    hideDropdowns();
-    // dynamic LED selection menu
-    const _selmenu = 'mainmenu';
-    if (_menu === _selmenu) {
-      readMenuData(_selmenu);
-    }
-    _elem.style.display = 'block';
-  }
-}
-
 // timer
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -546,9 +530,7 @@ async function getPassword(){
 function savePOST(file,data) {
   const url = location.protocol+"//"+location.hostname+"/update.php?file="+file+"&action=update"; 
   // convert data to JSON object
-  const _json = JSON.stringify([data]);
-  // convert JSON to Base64
-  const encoded = btoa(_json);
+  let _json = JSON.stringify([data]);
   // Send Base64 data as HTTP POST request
   const xhr = new XMLHttpRequest();
   xhr.open("POST", url);
@@ -570,7 +552,7 @@ function savePOST(file,data) {
       }
     }
   }
-  xhr.send(encoded);
+  xhr.send(_json);
 }
 
 // switch volume controls on main page
@@ -635,7 +617,13 @@ async function serverSend() {
   } else {
     // animations
     loadBar(3.0);
-    let _elem = document.getElementById("sendButton");
+    let _elmid;
+    if (device === 'LCDpi') {
+      _elmid = "sendButtonLCDpi";
+    } else {
+      _elmid = "sendButton";
+    }
+    let _elem = document.getElementById(_elmid);
     _elem.classList.remove("button-alert");
     // send command
     if (device === defaultSite) {
@@ -654,7 +642,13 @@ async function serverSend() {
 
 // clear a pending server command 
 function clearPendingCmd() {
-  let _elem = document.getElementById("sendButton");
+  let _elmid;
+  if (device === 'LCDpi') {
+    _elmid = "sendButtonLCDpi";
+  } else {
+    _elmid = "sendButton";
+  }
+  let _elem = document.getElementById(_elmid);
   _elem.classList.remove("button-alert");
   serverCmdData = null;
   arcState = 0;
@@ -682,6 +676,22 @@ function sendGET(act, arg1, arg2) {
 }
 
 //// Dynamic Menus ////
+
+// toggle dropdown menu's
+function showMenu(_menu) {
+  let _elem = document.getElementById(_menu);
+  if (_elem.style.display === 'block') {
+    _elem.style.display = 'none';
+  } else {
+    hideDropdowns();
+    // dynamic LED selection menu
+    const _selmenu = 'mainmenu';
+    if (_menu === _selmenu) {
+      readMenuData(_selmenu);
+    }
+    _elem.style.display = 'block';
+  }
+}
 
 // build menu
 function readMenuData(menu) {
@@ -832,8 +842,6 @@ function updateMenuData(menu) {
   fileData.shift();
   // convert array to JSON object
   let _json = JSON.stringify(fileData);
-  // convert JSON to Base64
-  encoded = btoa(_json);
   // clear global data
   while (fileData.length) { fileData.pop(); }    
   // build URL / append data
@@ -851,7 +859,7 @@ function updateMenuData(menu) {
         }
       }
     }
-    xhr.send(encoded);
+    xhr.send(_json);
   }  
 }
 
@@ -888,8 +896,14 @@ function serverAction(cmd) {
     arcState = 2;
   }
   serverCmdData = cmd;
-  // change color of send button 
-  let _elem = document.getElementById("sendButton");
+  // change color of send button
+  let _elmid;
+    if (device === 'LCDpi') {
+      _elmid = "sendButtonLCDpi";
+    } else {
+      _elmid = "sendButton";
+    }
+  let _elem = document.getElementById(_elmid);
   _elem.classList.add("button-alert");
 }
 

@@ -617,14 +617,7 @@ async function serverSend() {
   } else {
     // animations
     loadBar(3.0);
-    let _elmid;
-    if (device === 'LCDpi') {
-      _elmid = "sendButtonLCDpi";
-    } else {
-      _elmid = "sendButton";
-    }
-    let _elem = document.getElementById(_elmid);
-    _elem.classList.remove("button-alert");
+    sendBtnAlert("off");
     // send command
     if (device === defaultSite) {
       sendCmdNoBar('main','server',serverCmdData);
@@ -640,8 +633,7 @@ async function serverSend() {
   serverCmdData = null;
 }
 
-// clear a pending server command 
-function clearPendingCmd() {
+function sendBtnAlert(state) {
   let _elmid;
   if (device === 'LCDpi') {
     _elmid = "sendButtonLCDpi";
@@ -649,7 +641,17 @@ function clearPendingCmd() {
     _elmid = "sendButton";
   }
   let _elem = document.getElementById(_elmid);
-  _elem.classList.remove("button-alert");
+  if (state === 'off') {
+    _elem.classList.remove("button-alert");
+  }
+  if (state === 'on') {  
+    _elem.classList.add("button-alert");
+  }
+}
+
+// clear a pending server command 
+function clearPendingCmd() {
+  sendBtnAlert("off");
   serverCmdData = null;
   arcState = 0;
 }
@@ -897,14 +899,7 @@ function serverAction(cmd) {
   }
   serverCmdData = cmd;
   // change color of send button
-  let _elmid;
-    if (device === 'LCDpi') {
-      _elmid = "sendButtonLCDpi";
-    } else {
-      _elmid = "sendButton";
-    }
-  let _elem = document.getElementById(_elmid);
-  _elem.classList.add("button-alert");
+  sendBtnAlert("on");
 }
 
 function openLogWindow() {

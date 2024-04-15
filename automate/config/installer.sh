@@ -88,13 +88,13 @@ cp -v /tmp/config/main.sh /opt/system/main
 cp -v /tmp/config/lcdpi.sh /opt/system/lcdpi
 cp -v /tmp/config/relaxloop.sh /opt/system/relaxloop
 cp -v /tmp/config/mainmenu.txt /opt/system/
+cp -v /tmp/config/statsmenu.txt /opt/system/
 if [ -e /var/www/html/ram/sysout.txt ]; then
-  if [ ! -e /var/www/html/ram/mainmenu.txt ]; then
-    echo "Restoring menu settings..."
-    cp -v /opt/system/mainmenu.txt /var/www/html/ram/
-    chmod 777 /var/www/html/ram/mainmenu.txt
-    chown www-data:www-data /var/www/html/ram/mainmenu.txt
-  fi
+  echo "Restoring menu settings..."
+  cp -v /opt/system/mainmenu.txt /var/www/html/ram/
+  cp -v /opt/system/statsmenu.txt /var/www/html/ram/
+  chmod 777 /var/www/html/ram/*menu.txt
+  chown www-data:www-data /var/www/html/ram/*menu.txt
 fi
 chmod -R 755 /opt/system/*
 chown -R root:root /opt/system

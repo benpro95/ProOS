@@ -16,7 +16,7 @@
 
 <div class="topnav">
   <div class="server-grid sounds-grid led-grid">
-    <a onclick="showMenu('mainmenu')" class="mainmenu__anchor">
+    <a onclick="showDynMenu('mainmenu')" class="mainmenu__anchor">
       <i class="fa-solid fa-list"></i>
     </a>
   </div>  
@@ -166,8 +166,9 @@
 
         <div class="parsplit"><p class="parstd"></p></div> 
 
-          <button type="button" class="button" onclick="sendCmd('main','sleep','')">
-              <span class="button__text"><i class="fa-regular fa-moon"></i> Sleep</span>
+          <button type="button" class="button" onclick="showDynMenu('statsmenu')">
+              <span class="button__text"><i class="fa-solid fa-list"></i> Status</span>
+              <div class="dropdown-content dd-button" id="statsmenu"></div>
           </button>
           <button type="button" class="button" onclick="showSoundsPage()">
             <span class="button__text"><i class="fa-regular fa-headphones"></i> Sounds</span>

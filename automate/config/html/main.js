@@ -10,7 +10,6 @@ let toggledPageMode = 0;
 let loadBarState = 0;
 let promptCount = 0;
 let arcState = 0;
-let consoleData = null;
 let currentTheme = null;
 let serverCmdData = null;
 let socket = null;
@@ -686,11 +685,18 @@ function showMenu(_menu) {
     _elem.style.display = 'none';
   } else {
     hideDropdowns();
+    _elem.style.display = 'block';
+  }
+}
+
+function showDynMenu(_menu) {
+  let _elem = document.getElementById(_menu);
+  if (_elem.style.display === 'block') {
+    _elem.style.display = 'none';
+  } else {
+    hideDropdowns();
     // dynamic LED selection menu
-    const _selmenu = 'mainmenu';
-    if (_menu === _selmenu) {
-      readMenuData(_selmenu);
-    }
+    readMenuData(_menu);
     _elem.style.display = 'block';
   }
 }
@@ -725,7 +731,7 @@ function readMenuData(menu) {
     })
 }
 
-function fileLoadAction(menu) {
+function fileLoadAction(_menu) {
   // LED options menu
   let _id = null;
   // loop through menu items
@@ -734,25 +740,32 @@ function fileLoadAction(menu) {
     if (i == 0) { // store first line (ID)
       _id = line;
     } else { // verify data matches
-      if (_id == menu) {
+      if (_id == _menu) {
         const item = line.split("|");
         const _host = item[0];
         const _state = item[1];
         const _name = item[2].trim();
         // 0=Host,1=State,2=Name,Menu ID
-        drawMenu(_host,_state,_name,menu);
+        drawMenu(_host,_state,_name,_menu);
       }
     }
   }  
 }
 
-function drawMenu(url,state,navItem,menu) {
+function drawMenu(url,state,name,menu) {
   const navElement = document.getElementById(menu);
   const createListItem = (navItem,url,state) => {
+    const _menuid = navItem
+      .trim()
+      .split(" ")
+      .join("");
     const li = document.createElement('a');
-    li.id = "menu-" + navItem;
+    const _elmname = "menu-" + _menuid;
+    li.id = _elmname;
     li.innerText = navItem;
-    li.href = 'http://' + url;
+    if (state != '4') {
+      li.href = url;
+    }
     // draw checkbox's
     if (state == '0' || state == '1') {
       var checkbox = document.createElement('input');
@@ -763,13 +776,13 @@ function drawMenu(url,state,navItem,menu) {
     }  
     return li;
   };
-  navElement.appendChild(createListItem(navItem,url,state));
+  navElement.appendChild(createListItem(name,url,state));
   // read checkbox state from file
   if (state == '0') {
-    document.getElementById("chkbox-"+navItem).checked = false;
+    document.getElementById("chkbox-" + name).checked = false;
   }
   if (state == '1') {
-    document.getElementById("chkbox-"+navItem).checked = true;
+    document.getElementById("chkbox-" + name).checked = true;
   }
   dynMenuActive = 1;
 }
@@ -787,9 +800,16 @@ function removeDynMenus() {
       if (i !== 0) { // skip menu ID
         const item = line.split("|");
         if (item) {
-          let navItem = "menu-" + item[2].toString();
+          const _menuid = item[2].toString()
+            .trim()
+            .split(" ")
+            .join("");
+          const navItem = "menu-" + _menuid;
+          //console.log(navItem);
           var menuRemove = document.getElementById(navItem);
-          menuRemove.remove();
+          if (menuRemove != null) {
+            menuRemove.remove();
+          }
         }
       }
     }
@@ -871,21 +891,43 @@ function updateMenuData(menu) {
 async function loadLog(file) {
   try {
     // build url and force cache reload
-    const time = new Date();
-    const timestamp = time.getTime();   
-    const url = location.protocol+"//"+location.hostname+"/ram/sysout.txt"+"?ver="+timestamp;
+    //const time = new Date();
+    //const timestamp = time.getTime();   
+    //const url = location.protocol+"//"+location.hostname+"/ram/sysout.txt"+"?ver="+timestamp;
     // parse incoming text file
-    const response = await fetch(url);
-    consoleData = await response.text(); 
-    // display text on page 
-    document.getElementById("logTextBox").value = consoleData;
-    // scroll to bottom of page
-    let txtArea = document.getElementById("logTextBox");
-    txtArea.scrollTop = txtArea.scrollHeight;
+    //const response = await fetch(url);
+//consoleData = await response.text(); 
+ // build URL / append data
+  let _textData = " ";
+  const url = location.protocol+"//"+location.hostname+"/update.php?file=sysout&action=read";
+  // read file action
+  fetch(url, {
+      method: 'GET'
+    })
+    .then(res => {
+      return res.json()
+    })
+    .then((response) => {
+      // load JSON to text buffer
+      for(var i in response) {
+        let _line = response[i].toString();
+        // ignore empty lines
+        if (_line) {
+          if (_line !== "") {
+             _textData += _line; 
+             _textData += '\n'; 
+          }
+        }
+      }
+      // display text on page
+      document.getElementById("logTextBox").value = _textData;
+      // scroll to bottom of page
+      let txtArea = document.getElementById("logTextBox");
+      txtArea.scrollTop = txtArea.scrollHeight;
+    })
   } catch (err) {
     console.log(err);
   }
-  consoleData = null;
   serverCmdData = null;
 }
 

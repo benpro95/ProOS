@@ -28,10 +28,10 @@ chmod 777 $RAMDISK/locks
 touch $RAMDISK/sysout.txt
 chmod 777 $RAMDISK/sysout.txt
 
-cp -v /opt/system/mainmenu.txt /var/www/html/ram/
-chmod 777 /var/www/html/ram/mainmenu.txt
-chown www-data:www-data /var/www/html/ram/mainmenu.txt
-
+## Menu Files
+cp -v /opt/system/*menu.txt /var/www/html/ram/
+chmod -R 777 /var/www/html/ram/*menu.txt
+chown -R www-data:www-data /var/www/html/ram/*menu.txt
 
 ## Light Web Server
 systemctl restart lighttpd

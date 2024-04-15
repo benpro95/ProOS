@@ -890,40 +890,33 @@ function updateMenuData(menu) {
 // load entire text file
 async function loadLog(file) {
   try {
-    // build url and force cache reload
-    //const time = new Date();
-    //const timestamp = time.getTime();   
-    //const url = location.protocol+"//"+location.hostname+"/ram/sysout.txt"+"?ver="+timestamp;
-    // parse incoming text file
-    //const response = await fetch(url);
-//consoleData = await response.text(); 
- // build URL / append data
-  let _textData = " ";
-  const url = location.protocol+"//"+location.hostname+"/update.php?file=sysout&action=read";
-  // read file action
-  fetch(url, {
-      method: 'GET'
-    })
-    .then(res => {
-      return res.json()
-    })
-    .then((response) => {
-      // load JSON to text buffer
-      for(var i in response) {
-        let _line = response[i].toString();
-        // ignore empty lines
-        if (_line) {
-          if (_line !== "") {
-             _textData += _line; 
-             _textData += '\n'; 
+    // build URL / append data
+    let _textData = " ";
+    const url = location.protocol+"//"+location.hostname+"/update.php?file=sysout&action=read";
+    // read file action
+    fetch(url, {
+        method: 'GET'
+      })
+      .then(res => {
+        return res.json()
+      })
+      .then((response) => {
+        // load JSON to text buffer
+        for(var i in response) {
+          let _line = response[i].toString();
+          // ignore empty lines
+          if (_line) {
+            if (_line !== "") {
+               _textData += _line; 
+               _textData += '\n'; 
+            }
           }
         }
-      }
-      // display text on page
-      document.getElementById("logTextBox").value = _textData;
-      // scroll to bottom of page
-      let txtArea = document.getElementById("logTextBox");
-      txtArea.scrollTop = txtArea.scrollHeight;
+        // display text on page
+        document.getElementById("logTextBox").value = _textData;
+        // scroll to bottom of page
+        let txtArea = document.getElementById("logTextBox");
+        txtArea.scrollTop = txtArea.scrollHeight;
     })
   } catch (err) {
     console.log(err);

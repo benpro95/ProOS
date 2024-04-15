@@ -21,7 +21,7 @@ if (isset($_REQUEST['file'], $_REQUEST['action'])) {
 		// Rewind to first line to get header
 		$file->rewind();
 		// selecting the line limit
-		$line_limit = 1800;
+		$line_limit = 2000;
 		if ($last_line > $line_limit) {
 		  // selecting the last lines using the limit
 		  $file = new LimitIterator($file, ($last_line - $line_limit), $last_line);

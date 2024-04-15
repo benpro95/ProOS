@@ -895,28 +895,29 @@ async function loadLog(file) {
     const url = location.protocol+"//"+location.hostname+"/update.php?file=sysout&action=read";
     // read file action
     fetch(url, {
-        method: 'GET'
-      })
-      .then(res => {
-        return res.json()
-      })
-      .then((response) => {
-        // load JSON to text buffer
-        for(var i in response) {
-          let _line = response[i].toString();
-          // ignore empty lines
-          if (_line) {
-            if (_line !== "") {
-               _textData += _line; 
-               _textData += '\n'; 
-            }
+      method: 'GET'
+    })
+    .then(res => {
+      return res.json()
+    })
+    .then((response) => {
+      // load JSON to text buffer
+      for(var i in response) {
+        let _line = response[i].toString();
+        // ignore empty lines
+        if (_line) {
+          if (_line !== "") {
+             _textData += _line; 
+             _textData += '\n'; 
           }
         }
-        // display text on page
-        document.getElementById("logTextBox").value = _textData;
-        // scroll to bottom of page
-        let txtArea = document.getElementById("logTextBox");
-        txtArea.scrollTop = txtArea.scrollHeight;
+      }
+      // display text on page
+      const elmid = "logTextBox";
+      document.getElementById(elmid).value = _textData;
+      // scroll to bottom of page
+      let txtArea = document.getElementById(elmid);
+      txtArea.scrollTop = txtArea.scrollHeight;
     })
   } catch (err) {
     console.log(err);

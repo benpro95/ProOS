@@ -15,30 +15,34 @@ if (isset($_REQUEST['file'], $_REQUEST['action'])) {
     if ($action === 'read') {
 		// open the file in read mode
 		$file = new SplFileObject($filepath, 'r');
-			// get the total lines
-			$file->seek(PHP_INT_MAX);
-			$last_line = $file->key();
-			// Rewind to first line to get header
-			$file->rewind();
-			// selecting the limit
-			$limit = 6;
-			// selecting the last lines using the $limit
-			$lines = new LimitIterator($file, $last_line - $limit, $last_line);
-
-            $array = array(); 
-			foreach ($lines as $line) {
-			    $array[] = $line;
-			}
-			
+		// get the total lines
+		$file->seek(PHP_INT_MAX);
+		$last_line = $file->key();
+		// Rewind to first line to get header
+		$file->rewind();
+		// selecting the line limit
+		$limit = 500;
+		if ($last_line >= $limit) {
+		  // selecting the last lines using the limit
+		  $file = new LimitIterator($file, ($last_line - $limit), $last_line);
+		}
+		// new array
+        $array = array();
+        // write each line to array
+		foreach ($file as $line) {
+		    $array[] = rtrim($line, "\n\r\t\v\x00");
+		}
+		if (!empty($array)) {
 			// convert array to JSON object
 		    $json_out = json_encode($array);
+		    // valid object has data
 			if ($json_out === false) {
 			  $json_out = json_encode(["jsonError" => json_last_error_msg()]);
 			  http_response_code(500);
 			}
 			echo $json_out;
 			return;
-
+	    }
     }
 
 	// update file action
@@ -64,4 +68,4 @@ if (isset($_REQUEST['file'], $_REQUEST['action'])) {
 } else {
   http_response_code(500);
 }
-?>
+?>dev

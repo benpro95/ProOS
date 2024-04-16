@@ -783,10 +783,10 @@ function drawMenu(url,state,name,menu) {
       var dot = document.createElement('span');
       dot.className = "ind_dot";
       if (state == '4'){
-        dot.className = "ind_dot ind_dot_green";
+        dot.className += " ind_dot_green";
       }
       if (state == '5'){
-        dot.className = "ind_dot ind_dot_red";
+        dot.className += " ind_dot_red";
       }
       dot.id = "ind-" + navItem;
       li.appendChild(dot);

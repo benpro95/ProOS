@@ -1,4 +1,4 @@
-// Home Automation Website
+// Automate Website - JavaScript Frontend
 // by Ben Provenzano III
 
 // globals
@@ -527,7 +527,7 @@ async function getPassword(){
 
 // save file API POST call
 function savePOST(file,data) {
-  const url = location.protocol+"//"+location.hostname+"/update.php?file="+file+"&action=update"; 
+  const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+file+"&action=update";
   // convert data to JSON object
   let _json = JSON.stringify([data]);
   // Send Base64 data as HTTP POST request
@@ -704,7 +704,7 @@ function showDynMenu(_menu) {
 // build menu
 function readMenuData(menu) {
   // build URL / append data
-  const url = location.protocol+"//"+location.hostname+"/update.php?file="+menu+"&action=read";
+  const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+menu+"&action=read";
   // read file action
   fetch(url, {
       method: 'GET'
@@ -884,7 +884,7 @@ function updateMenuData(menu) {
   // clear global data
   while (fileData.length) { fileData.pop(); }    
   // build URL / append data
-  const url = location.protocol+"//"+location.hostname+"/update.php?file="+menu+"&action=update"; 
+  const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+menu+"&action=update";
   // verify correct menu is in array
   if (id === menu) {
     // Send Base64 data as HTTP POST request

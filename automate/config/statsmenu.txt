@@ -1,6 +1,4 @@
-action|4|Sleep
-ben|4|Fan
-ben|4|Audio
-ben|4|Monitor
-ben|4|System
-ben|4|Lamps
+action|4|System
+ben|3|Apple TV
+ben|4|PC
+ben|5|Monitor

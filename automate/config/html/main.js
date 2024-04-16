@@ -763,17 +763,34 @@ function drawMenu(url,state,name,menu) {
     const _elmname = "menu-" + _menuid;
     li.id = _elmname;
     li.innerText = navItem;
-    if (state != '4') {
-      li.href = url;
-    }
-    // draw checkbox's
+    // draw menus
     if (state == '0' || state == '1') {
+      // URL on click
+      li.href = url;
+      // add checkbox
       var checkbox = document.createElement('input');
       checkbox.type = "checkbox";
       checkbox.className = "chkbox";
       checkbox.id = "chkbox-" + navItem;
       li.appendChild(checkbox);
-    }  
+    }
+    if (state == '2') {
+      // URL on click, no checkbox
+      li.href = url;
+    }
+    if (state == '3' || state == '4' || state == '5') {
+      // add indicator dot
+      var dot = document.createElement('span');
+      dot.className = "ind_dot";
+      if (state == '4'){
+        dot.className = "ind_dot ind_dot_green";
+      }
+      if (state == '5'){
+        dot.className = "ind_dot ind_dot_red";
+      }
+      dot.id = "ind-" + navItem;
+      li.appendChild(dot);
+    }
     return li;
   };
   navElement.appendChild(createListItem(name,url,state));

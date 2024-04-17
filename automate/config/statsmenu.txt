@@ -1,3 +1,5 @@
 hi-fi.home|3|Hi-Fi|ping
-bedroom.home|3|Apple TV|atv
+bedroom.home|3|Apple TV|ping
 wkst.home|3|Computer|ping
+aptcam.home|3|Aptcam|ping
+xana.home|3|Xana|ping

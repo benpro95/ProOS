@@ -506,6 +506,11 @@ fi
 exit
 ;;
 
+status)
+/opt/system/status > /dev/null 2> /dev/null
+exit
+;;
+
 ####################################
 ## Automated Multi-Functions
 

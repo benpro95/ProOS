@@ -63,6 +63,8 @@ function loadPage() {
     volMode();
     // server home
     classDisplay('server-grid','block');
+    // update devices status
+    sendCmd('main','status','')
   } else { // pi's
     if (device === 'Pi') {
       classDisplay('pi-grid','block');

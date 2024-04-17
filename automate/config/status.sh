@@ -9,14 +9,16 @@ NAME=""
 ACTION=""
 OUT=""
 
-WRITE_FILE () {
-  exec 3<> /var/www/html/ram/statsmenu-1.txt
-  OUT+="${HOST}|${STATE}|${NAME}|${ACTION}"
-  OUT+=$(printf "\n")
+UPDATE_STATES () {
+  STATE="4"
 }
 
 ## read file into memory
 if [ -e "$FILE" ]; then
+  ## open new file
+  rm -rf "${FILE}.new"
+  touch "${FILE}.new"
+  exec 3<> "${FILE}.new"
   ## read each line
   while read -r LINE
   do
@@ -37,12 +39,16 @@ if [ -e "$FILE" ]; then
         if [ "$ROWCOUNT" == 3 ]; then
           ACTION="$FIELD"
           ## trigger update process
-          WRITE_FILE
+          UPDATE_STATES
+          ## write changes to new file
+          echo "${HOST}|${STATE}|${NAME}|${ACTION}" >&3
         fi        
         ROWCOUNT=$((ROWCOUNT + 1))  
       done
     done <<< "$LINE"
   done < "$FILE"
-  echo $OUT
+  ## replace existing file
+  rm -rf "$FILE"
+  mv -f "${FILE}.new" "$FILE"
 fi
 exit

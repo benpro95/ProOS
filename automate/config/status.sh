@@ -5,8 +5,8 @@
 FILE="/var/www/html/ram/statsmenu.txt"
 HOST=""
 STATE=""
-NAME=""
 ACTION=""
+NAME=""
 OUT=""
 
 UPDATE_STATES () {
@@ -15,11 +15,11 @@ UPDATE_STATES () {
       echo "{$HOST} online"
       STATE="4"
     else
-      STATE="5"
+      STATE="3"
     fi
   fi
   if [ "$ACTION" == "atv" ]; then
-    STATE="3"
+    STATE="5"
   fi  
 }
 

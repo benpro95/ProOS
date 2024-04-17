@@ -10,7 +10,17 @@ ACTION=""
 OUT=""
 
 UPDATE_STATES () {
-  STATE="4"
+  if [ "$ACTION" == "ping" ]; then
+    if ping -c 1 -W 1 "$HOST"; then
+      echo "{$HOST} online"
+      STATE="4"
+    else
+      STATE="5"
+    fi
+  fi
+  if [ "$ACTION" == "atv" ]; then
+    STATE="3"
+  fi  
 }
 
 ## read file into memory

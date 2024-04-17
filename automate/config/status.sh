@@ -3,6 +3,7 @@
 ##### Device Status Updater by Ben Provenzano III v1.0 #####
 ############################################################
 FILE="/var/www/html/ram/statsmenu.txt"
+LOCK="/var/www/html/ram/status.lock"
 HOST=""
 STATE=""
 ACTION=""
@@ -23,8 +24,17 @@ UPDATE_STATES () {
   fi  
 }
 
+## only allow one instance
+if [ -e "$LOCK" ]; then
+  echo "already running."
+  ## exit if locked
+  exit
+fi
+
 ## read file into memory
 if [ -e "$FILE" ]; then
+  ## create lock file
+  touch "$LOCK"
   ## open new file
   rm -rf "${FILE}.new"
   touch "${FILE}.new"
@@ -60,5 +70,8 @@ if [ -e "$FILE" ]; then
   ## replace existing file
   rm -rf "$FILE"
   mv -f "${FILE}.new" "$FILE"
+  ## remove lock file
+  rm -rf "$LOCK"
 fi
+
 exit

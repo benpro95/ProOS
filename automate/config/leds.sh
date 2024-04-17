@@ -42,11 +42,8 @@ if [ -e /var/www/html/ram/mainmenu.txt ]; then
   if [ "$DATA" != "" ]; then
     echo "$DATA" | xargs -P 5 -I % \
       /usr/bin/curl --fail --ipv4 --no-buffer \
-      --max-time 5 --retry 1 --no-keepalive \
-       --data "var=$VARB&arg=$VARA&action=leds" http://%/exec.php
-    ##DATAECHO="sending $VARA:$VARB $DATA..."  
-    ##DATAECHO=$(echo $DATAECHO|tr -d '\n')
-    ##echo "$DATAECHO"
+       --max-time 5 --retry 1 --no-keepalive \
+       --data "var=$VARB&arg=$VARA&action=leds" %/exec.php
   fi
   CALL_LCDPI     
 else

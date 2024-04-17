@@ -1,4 +1,3 @@
-action|4|System
-ben|3|Apple TV
-ben|4|PC
-ben|5|Monitor
+hifi.home|3|Hi-Fi|ping
+bedroom.home|3|Apple TV|atv
+wkst.home|3|Computer|ping

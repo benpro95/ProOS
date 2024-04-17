@@ -86,6 +86,8 @@ mkdir -p /opt/system
 cp -v /tmp/config/leds.sh /opt/system/leds
 cp -v /tmp/config/main.sh /opt/system/main
 cp -v /tmp/config/lcdpi.sh /opt/system/lcdpi
+cp -v /tmp/config/status.sh /opt/system/status
+ln -sf /opt/system/status /usr/bin/update-status
 cp -v /tmp/config/relaxloop.sh /opt/system/relaxloop
 cp -v /tmp/config/mainmenu.txt /opt/system/
 cp -v /tmp/config/statsmenu.txt /opt/system/

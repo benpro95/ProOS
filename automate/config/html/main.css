@@ -413,7 +413,7 @@ input.chkbox {
 .ind_dot {
   height: 25px;
   width: 25px;
-  background-color: #bbb;
+  background-color: #000;
   border-radius: 50%;
   right: 3px;
   margin-right: 10px;

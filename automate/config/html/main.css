@@ -41,8 +41,7 @@ html {
 body {
     margin: 0 5px;
     height: 100%;
-    min-height: 100%
-    background-color: black; 
+    min-height: 100%;
 }
 
 .blue-theme {
@@ -385,7 +384,12 @@ input.chkbox {
   background-color: #000;
 }
 
-/* position the dropdown content */
+
+/*
+ *  Dropdowns Style
+ */
+
+
 .dropdown {
   position: relative;
   display: inline-block;
@@ -399,7 +403,6 @@ input.chkbox {
   z-index: 8;
 }
 
-/* Dropdown Content (Hidden by Default) */
 .dropdown-content {
   cursor: pointer;
   display: none;
@@ -431,7 +434,7 @@ input.chkbox {
 
 .dd-button {
   position: absolute;
-  min-width: 100px;
+  min-width: 130px;
 }
 
 .ind-button {

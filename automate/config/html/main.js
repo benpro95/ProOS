@@ -1,34 +1,32 @@
 // Automate Website - JavaScript Frontend
 // by Ben Provenzano III
 
-// globals
-let defaultSite = "Automate";
+/////////////////
 let device = null;
 let selectedVM = "";
+let dynMenuActive = 0;
+let dynChkboxChanged = 0;
 let colorPromptActive = 0;
+let defaultSite = "Automate";
+let serverCmdData = null;
 let toggledPageMode = 0;
 let loadBarState = 0;
 let promptCount = 0;
-let arcState = 0;
-let currentTheme = null;
-let serverCmdData = null;
 let socket = null;
 let fileData = [];
-let dynMenuActive = 0;
-let dynChkboxChanged = 0;
-
-//////////////////////////
+let arcState = 0;
+/////////////////
 
 // hide menu's when clicking outside
 document.addEventListener('click', function handleClickOutsideBox(event) {
   // don't hide when clicking these elements
-  if (! event.target.classList.contains('button') &&
-      ! event.target.classList.contains('button__text') &&
-      ! event.target.classList.contains('fa-regular') &&
-      ! event.target.classList.contains('fa-solid') &&
-      ! event.target.classList.contains('dropbtn') &&  
-      ! event.target.classList.contains('chkbox') &&  
-      ! event.target.classList.contains('mainmenu__anchor')) {
+  if (!(event.target.classList.contains('button') ||
+        event.target.classList.contains('button__text') ||
+        event.target.classList.contains('mainmenu__anchor') ||
+        event.target.classList.contains('fa-regular') ||
+        event.target.classList.contains('fa-solid') ||
+        event.target.classList.contains('dropbtn') || 
+        event.target.classList.contains('chkbox'))) {
     hideDropdowns();
   }
 });
@@ -77,11 +75,22 @@ function loadPage() {
     }
   }
   // set title
+  let currentTheme;
   let elem = document.getElementById("load__bar");
-  elem.textContent = defaultSite; 
-  // read theme from local storage or choose default
-  currentTheme = localStorage.getItem("styledata") || "darkblue-theme";
+  elem.textContent = defaultSite;
+  let _theme = localStorage.getItem("main-color")
+  if (_theme === null || _theme === undefined || _theme === "") {
+    currentTheme = "#0d3d23";
+  } else {
+    currentTheme = localStorage.getItem("main-color");
+  }  
   setTheme(currentTheme);
+}
+
+function setTheme(newTheme) {
+  let body = document.getElementsByTagName("html")[0];
+  body.style.setProperty('--main-color', newTheme);
+  localStorage.setItem("main-color", newTheme);
 }
 
 function showLEDsPage() {
@@ -103,18 +112,6 @@ function hidePages() {
   classDisplay('lcdpi-grid','none');
   classDisplay('ledpi-grid','none');
   classDisplay('led-grid','none');
-}
-
-function setTheme(newTheme) {
-  let body = document.getElementsByTagName("html")[0];
-  // Remove old theme scope from body's class list
-  body.classList.remove(currentTheme);
-  // Add new theme scope to body's class list
-  body.classList.add(newTheme);
-  // Set it as current theme
-  currentTheme = newTheme;
-  // Store the new theme in local storage
-  localStorage.setItem("styledata", newTheme);
 }
 
 function resizeEvent() {
@@ -674,8 +671,8 @@ function sendGET(act, arg1, arg2) {
   const url = location.protocol+"//"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
   // send data
   fetch(url, {
-      method: 'GET',
-    })
+    method: 'GET',
+  })
 }
 
 //// Dynamic Menus ////
@@ -745,16 +742,16 @@ function fileLoadAction(_menu) {
       if (_id == _menu) {
         const item = line.split("|");
         const _host = item[0];
-        const _state = item[1];
+        const _type = item[1];
         const _name = item[2].trim();
-        // 0=Host,1=State,2=Name,Menu ID
-        drawMenu(_host,_state,_name,_menu);
+        // 0=Host,1=Type,2=Name,Menu ID
+        drawMenu(_host,_type,_name,_menu);
       }
     }
   }  
 }
 
-function drawMenu(url,state,name,menu) {
+function drawMenu(url,type,name,menu) {
   const navElement = document.getElementById(menu);
   const createListItem = (navItem,url,state) => {
     const _menuid = navItem
@@ -765,42 +762,51 @@ function drawMenu(url,state,name,menu) {
     const _elmname = "menu-" + _menuid;
     li.id = _elmname;
     li.innerText = navItem;
-    // draw menus
-    if (state == '0' || state == '1') {
-      // URL on click
-      li.href = url;
-      // add checkbox
+    // add elements to menu
+    if (type == '0' || type == '1') {
+      // checkbox menu
       var checkbox = document.createElement('input');
       checkbox.type = "checkbox";
       checkbox.className = "chkbox";
       checkbox.id = "chkbox-" + navItem;
       li.appendChild(checkbox);
-    }
-    if (state == '2') {
-      // URL on click, no checkbox
+      // URL on click
       li.href = url;
     }
-    if (state == '3' || state == '4' || state == '5') {
-      // add indicator dot
+    if (type == '2') {
+      // link menu
+      li.href = url;
+    }
+    if (type == '3' || type == '4' || type == '5') {
+      // indicator / status menu
       var dot = document.createElement('span');
       dot.className = "ind_dot";
-      if (state == '4'){
+      if (type == '4'){
         dot.className += " ind_dot_green";
       }
-      if (state == '5'){
+      if (type == '5'){
         dot.className += " ind_dot_red";
       }
       dot.id = "ind-" + navItem;
       li.appendChild(dot);
     }
+    if (type == '8') {
+      // theme menu
+      const _color = url;
+      li.classList.add('theme-colorbox');
+      li.style.setProperty('background-color', _color);
+      li.addEventListener("click", function(event) {
+        setTheme(_color);
+      });
+    }
     return li;
   };
-  navElement.appendChild(createListItem(name,url,state));
-  // read checkbox state from file
-  if (state == '0') {
+  navElement.appendChild(createListItem(name,url,type));
+  // read checkbox type from file
+  if (type == '0') {
     document.getElementById("chkbox-" + name).checked = false;
   }
-  if (state == '1') {
+  if (type == '1') {
     document.getElementById("chkbox-" + name).checked = true;
   }
   dynMenuActive = 1;

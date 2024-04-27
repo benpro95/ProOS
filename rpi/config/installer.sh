@@ -347,6 +347,7 @@ mv -f $BIN/html-base/* /var/www/html
 mv -f $BIN/html/* /var/www/html
 mkdir -p /var/www/html/ram
 touch /var/www/html/ram/sysout.txt
+cp -vf $BIN/thememenu.txt /var/www/html/ram/
 chmod -R 775 /var/www/html
 chown -R www-data:www-data /var/www/html
 mkdir -p /var/www/sessions

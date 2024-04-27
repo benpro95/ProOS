@@ -12,16 +12,7 @@
     box-sizing: border-box;
     font-family: JosefinSans,system-ui,-apple-system,system-ui,"Segoe UI","Helvetica Neue";
     font-size: 24px; /* page default font size */
-    /* theme colors */
-    --darkblue-color: #1f2051; 
-    --lightblue-color: #063a9d;
-    --turquoise-color: #133d61;
-    --red-color: #4b0606;
-    --green-color: #0d3d23;
-    --purple-color: #3d0c63;
-    --dark-color: #1c1822;
-    --orange-color: #a03401;
-}  
+}
 
 html {
     height: 100%;
@@ -42,78 +33,6 @@ body {
     margin: 0 5px;
     height: 100%;
     min-height: 100%;
-}
-
-.blue-theme {
-  --main-color: var(--blue-color);
-}
-.blue-menu {
-  margin: 8px;
-  background-color: var(--blue-color);
-}
-
-.darkblue-theme {
-  --main-color: var(--darkblue-color);
-}
-.darkblue-menu {
-  margin: 8px;
-  background-color: var(--darkblue-color);
-}
-
-.lightblue-theme {
-  --main-color: var(--lightblue-color);
-}
-.lightblue-menu {
-  margin: 8px;
-  background-color: var(--lightblue-color);
-}
-
-.turquoise-theme {
-  --main-color: var(--turquoise-color);
-}
-.turquoise-menu {
-  margin: 8px;
-  background-color: var(--turquoise-color);
-}
-
-.red-theme {
-  --main-color: var(--red-color);
-}
-.red-menu {
-  margin: 8px;
-  background-color: var(--red-color);
-}
-
-.green-theme {
-  --main-color: var(--green-color);
-}
-.green-menu {
-  margin: 8px;
-  background-color: var(--green-color);
-}
-
-.purple-theme {
-  --main-color: var(--purple-color);
-}
-.purple-menu {
-  margin: 8px;
-  background-color: var(--purple-color);
-}
-
-.dark-theme {
-  --main-color: var(--dark-color);
-}
-.dark-menu {
-  margin: 8px;
-  background-color: var(--dark-color);
-}
-
-.orange-theme {
-  --main-color: var(--orange-color);
-}
-.orange-menu {
-  margin: 8px;
-  background-color: var(--orange-color);
 }
 
 .parstd {
@@ -440,6 +359,10 @@ input.chkbox {
 .ind-button {
   position: absolute;
   min-width: 160px;
+}
+
+.theme-colorbox {
+  margin: 8px;
 }
 
 /* Links inside the dropdown */

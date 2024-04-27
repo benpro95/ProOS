@@ -295,6 +295,8 @@ if [ "$SYNCSTATE" == "start" ]; then
   rsync -e "ssh -i $KEYS/rpi.rsa" --progress --checksum -rtv \
    --exclude=photos --exclude=sources $ROOTDIR/rpi root@$HOST:/opt/
   rsync -e "ssh -i $KEYS/rpi.rsa" --progress --checksum -rtv \
+   $ROOTDIR/automate/config/thememenu.txt root@$HOST:/opt/rpi/config/
+  rsync -e "ssh -i $KEYS/rpi.rsa" --progress --checksum -rtv \
    --mkpath $ROOTDIR/automate/config/html/* root@$HOST:/opt/rpi/config/html-base/ 
   ## Install module-specific software
   rsync -e "ssh -i $KEYS/rpi.rsa" --progress --checksum -rtv \

@@ -917,7 +917,7 @@ async function loadLog(file) {
   try {
     // build URL / append data
     let _textData = " ";
-    const url = location.protocol+"//"+location.hostname+"/update.php?file=sysout&action=read";
+    const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+file+"&action=read";
     // read file action
     fetch(url, {
       method: 'GET'

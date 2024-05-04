@@ -78,9 +78,10 @@ function loadPage() {
   let currentTheme;
   let elem = document.getElementById("load__bar");
   elem.textContent = defaultSite;
+  // set theme
   let _theme = localStorage.getItem("main-color")
   if (_theme === null || _theme === undefined || _theme === "") {
-    currentTheme = "#0d3d23";
+    currentTheme = "#1f2051"; // dark blue
   } else {
     currentTheme = localStorage.getItem("main-color");
   }  
@@ -614,13 +615,13 @@ async function serverSend() {
     document.getElementById("logTextBox").value = "select an option.";
   } else {
     // animations
-    loadBar(3.0);
+    loadBar(2.5);
     sendBtnAlert("off");
     // send command
     if (device === defaultSite) {
-      sendCmdNoBar('main','server',serverCmdData);
+      sendCmd('main','server',serverCmdData);
     } else {
-      sendCmdNoBar('main-www','server',serverCmdData);
+      sendCmd('main-www','server',serverCmdData);
     }
     // display command sent
     document.getElementById("logTextBox").value += "\ncommand sent, click load to refresh log.";
@@ -654,19 +655,8 @@ function clearPendingCmd() {
   arcState = 0;
 }
 
-// transmit command for server
+// transmit command
 function sendCmd(act, arg1, arg2) {
-  // animation
-  loadBar(0.3);
-  sendGET(act,arg1,arg2);
-}
-
-function sendCmdNoBar(act, arg1, arg2) {
-  sendGET(act,arg1,arg2);
-}
-
-// API GET call
-function sendGET(act, arg1, arg2) {
   // construct API string
   const url = location.protocol+"//"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
   // send data

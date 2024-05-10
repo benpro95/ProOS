@@ -614,9 +614,6 @@ async function serverSend() {
   if (serverCmdData === null) {
     document.getElementById("logTextBox").value = "select an option.";
   } else {
-    // animations
-    loadBar(2.5);
-    sendBtnAlert("off");
     // send command
     if (device === defaultSite) {
       sendCmd('main','server',serverCmdData);
@@ -624,10 +621,13 @@ async function serverSend() {
       sendCmd('main-www','server',serverCmdData);
     }
     // display command sent
-    document.getElementById("logTextBox").value += "\ncommand sent, click load to refresh log.";
+    document.getElementById("logTextBox").value += "\n"+ serverCmdData + " command sent, click load to refresh log.";
     // scroll to bottom of page
     let txtArea = document.getElementById("logTextBox");
-    txtArea.scrollTop = txtArea.scrollHeight;    
+    txtArea.scrollTop = txtArea.scrollHeight;
+    // animations
+    loadBar(2.5);
+    sendBtnAlert("off");
   }  
   serverCmdData = null;
 }

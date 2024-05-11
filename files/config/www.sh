@@ -305,13 +305,6 @@ then
   exit
 fi
 
-if [[ $REPLY == "podget" ]]
-then
-  echo "syncing podcasts..."
-  nohup sudo -u media '/usr/bin/podget.sh' &
-  exit
-fi
-
 if [[ $REPLY == "netscan" ]]
 then
   echo "** network scan **"

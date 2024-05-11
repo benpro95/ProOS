@@ -11,7 +11,7 @@ apt-get --yes update
 apt-get install -y --no-upgrade --ignore-missing unzip wget \
  rsync curl screen scrub ethtool aptitude sudo samba sshpass \
  libdbus-1-dev libdbus-glib-1-dev bc git locales mailutils \
- neofetch apt-transport-https nmap bpytop binutils iperf3 podget
+ neofetch apt-transport-https nmap bpytop binutils iperf3
 
 ## Process Monitor
 if [ ! -e /usr/local/bin/htop ]; then
@@ -90,7 +90,6 @@ chown root:root /home/server/.html/exec.php
 rm -f /etc/sudoers.d/www-perms
 sh -c "touch /etc/sudoers.d/www-perms"
 sh -c "echo \"www-data ALL=(server) NOPASSWD:/usr/bin/wwwrun\" >> /etc/sudoers.d/www-perms"
-sh -c "echo \"server ALL=(media) NOPASSWD:/usr/bin/podget.sh\" >> /etc/sudoers.d/www-perms"
 chown root:root /etc/sudoers.d/www-perms
 chmod u=rwx,g=rx,o=rx /etc/sudoers.d/www-perms
 chmod u=r,g=r,o= /etc/sudoers.d/www-perms
@@ -181,16 +180,6 @@ chmod 644 /opt/drives.txt
 chown root:root /opt/drives.txt
 cp -v /opt/drives.txt /mnt/ramdisk/
 chmod 777 /mnt/ramdisk/drives.txt
-
-##  Podcast Support
-mkdir -p /home/media
-mkdir -p /home/media/.podget
-cp -f /tmp/config/podgetrc /home/media/.podget/podgetrc
-cp -f /tmp/config/podcasts.conf /home/media/.podget/serverlist
-chown media:shared -R /home/media
-cp /tmp/config/podget.sh /usr/bin/
-chmod 755 /usr/bin/podget.sh
-chown root:root /usr/bin/podget.sh
 
 ## Clean-up
 systemctl daemon-reload

@@ -621,7 +621,7 @@ async function serverSend() {
       sendCmd('main-www','server',serverCmdData);
     }
     // display command sent
-    document.getElementById("logTextBox").value += "\n"+ serverCmdData + " command sent, click load to refresh log.";
+    document.getElementById("logTextBox").value += "\n"+ serverCmdData + " command sent.";
     // scroll to bottom of page
     let txtArea = document.getElementById("logTextBox");
     txtArea.scrollTop = txtArea.scrollHeight;

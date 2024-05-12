@@ -19,7 +19,7 @@ if [[ "$ESP32" == "no" ]]; then
   /usr/bin/curl $CURLARGS --data "var=$CMDARG&arg=$XMITCMD&action=main" http://$TARGET/exec.php
   CMDARG=""
 else ## ESP32 Xmit URL
-  /usr/bin/curl $CURLARGS http://xmit.home -H "Accept: ####?|$XMITCALL"
+  /usr/bin/curl $CURLARGS http://10.177.1.12 -H "Accept: ####?|$XMITCALL"
 fi
 ## Clear Data
 TARGET=""
@@ -399,28 +399,13 @@ CMD=$1
 case "$1" in
 
 relax)
-RELAX_MODE=${CMDARG%-*}
-RELAX_HOST=${CMDARG#*-}
-CMDARG="$RELAX_MODE"
-### Relax Sounds Playback
-if [ $RELAX_HOST == "hifi" ]; then
-  echo "playing $CMDARG on HiFi"
-  ## Optical Decoder Input
-  XMITCMD="coaxial" ; XMIT
-  sleep 0.25
-  ## Preamp DAC Input
-  XMITCMD="dac" ; XMIT 
-  ## Play Audio on System
-  ESP32="no"; TARGET="hifi.home"; XMITCMD="relax"; CALLAPI
-else
-  ## Play Audio on Apple TV
-  echo "$LCDPI_MSG"
-  systemctl stop relaxloop
-  systemctl set-environment rpi_relaxmode=$CMDARG
-  systemctl start relaxloop
-  LCDPI_MSG="playing $CMDARG"
-  CALL_LCDPI  
-fi
+## Play Audio on Apple TV
+echo "$LCDPI_MSG"
+systemctl stop relaxloop
+systemctl set-environment rpi_relaxmode=$CMDARG
+systemctl start relaxloop
+LCDPI_MSG="playing $CMDARG"
+CALL_LCDPI  
 exit
 ;;
 
@@ -440,16 +425,7 @@ if [ "$CMDARG" == "bedroom" ]; then
 fi
 if [ "$CMDARG" == "subs" ]; then
   XMITCMD="subpwr" ; XMIT
-fi  
-RELAX_MODE=${CMDARG%-*}
-RELAX_HOST=${CMDARG#*-}
-CMDARG="$RELAX_HOST"
-if [ "$CMDARG" == "hifi" ]; then
-  ## Stop Audio on System
-  ESP32="no"; TARGET="hifi.home"; XMITCMD="stoprelax"; CALLAPI  
-  ## Auto Decoder Input
-  XMITCMD="autodac" ; XMIT
-fi  
+fi
 exit
 ;;
 
@@ -461,12 +437,6 @@ fi
 if [ "$CMDARG" == "subs" ]; then
   XMITCMD="subup" ; XMIT
 fi   
-RELAX_MODE=${CMDARG%-*}
-RELAX_HOST=${CMDARG#*-}
-CMDARG="$RELAX_HOST"
-if [ "$CMDARG" == "hifi" ]; then
-  XMITCMD="upc" ; XMIT
-fi
 exit
 ;;
 
@@ -478,12 +448,17 @@ fi
 if [ "$CMDARG" == "subs" ]; then
   XMITCMD="subdwn" ; XMIT
 fi
-RELAX_MODE=${CMDARG%-*}
-RELAX_HOST=${CMDARG#*-}
-CMDARG="$RELAX_HOST"
-if [ "$CMDARG" == "hifi" ]; then
-  XMITCMD="dwnc" ; XMIT
-fi
+exit
+;;
+
+pauseatv)
+## Pause Apple TV
+systemctl stop relaxloop
+systemctl set-environment rpi_relaxmode="pause"
+systemctl start relaxloop
+## Turn off Apple TV
+#systemctl set-environment rpi_relaxmode=off
+#systemctl start relaxloop
 exit
 ;;
 
@@ -629,13 +604,6 @@ exit
 ## Toggle Bedroom TV
 toggletv)
 ESP32="no"; TARGET="ledgrid.home"; XMITCMD="toggletv"; CALLAPI
-## Pause Apple TV
-systemctl stop relaxloop
-systemctl set-environment rpi_relaxmode="pause"
-systemctl start relaxloop
-## Turn off Apple TV
-#systemctl set-environment rpi_relaxmode=off
-#systemctl start relaxloop
 ## LCDpi message
 LCDPI_MSG="toggled bedroom TV"
 CALL_LCDPI
@@ -730,9 +698,6 @@ XMITCMD="hifioff" ; XMIT
 /opt/system/leds stop
 ## Stop playback on Apple TV
 systemctl stop relaxloop
-## Turn off Apple TV
-##systemctl set-environment rpi_relaxmode=off
-##systemctl start relaxloop
 ## LCDpi message
 LCDPI_MSG="all power off"
 CALL_LCDPI
@@ -751,19 +716,6 @@ if [ "$SERVERARG" == "files" ]; then
   fi  
   exit
 fi
-#if [ "$SERVERARG" == "unifi" ]; then
-#  ## Toggle Unifi Controller
-#  SYSDSTAT="$(systemctl is-active unifi.service)"
-#  if [ "${SYSDSTAT}" = "active" ]; then
-#    echo "UniFi running, stopping service..." &>> $LOGFILE
-#    systemctl stop unifi &>> $LOGFILE
-#  else 
-#    echo "UniFi not running, starting service..." &>> $LOGFILE 
-#    systemctl start unifi &>> $LOGFILE
-#    echo "access at 'https://automate.home:8443/' " &>> $LOGFILE
-#  fi
-#  exit
-#fi
 ## Pass action file to the hypervisor
 echo "action $SERVERARG submitted." &>> $LOGFILE
 touch $RAMDISK/$SERVERARG.txt

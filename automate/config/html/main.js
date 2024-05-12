@@ -15,6 +15,7 @@ let promptCount = 0;
 let socket = null;
 let fileData = [];
 let arcState = 0;
+let soundMode = 0;
 /////////////////
 
 // hide menu's when clicking outside
@@ -50,12 +51,12 @@ function loadPage() {
   // read device type
   device = deviceType(); 
   if (device === defaultSite) {
+    // load room menu state
+    roomMenu();
     // server home
     classDisplay('server-grid','block');
     // update devices status
     sendCmd('main','status','')
-    // load sound buttons
-    soundMenu();
   } else { // pi's
     if (device === 'Pi') {
       classDisplay('pi-grid','block');
@@ -92,29 +93,49 @@ function showLEDsPage() {
   classDisplay('led-grid','block');
 }
 
-function soundMenu() {
-  //hidePages();
-  //relaxMode();
+function roomMenu() {
   if (toggledPageMode === 0) {
     classDisplay('bedroom-grid','none');
     classDisplay('hifi-grid','block');
     toggledPageMode = 1;
+    soundMode = 0;
   } else {
-    classDisplay('bedroom-grid','block');
     classDisplay('hifi-grid','none');
+    classDisplay('bedroom-grid','block');
     toggledPageMode = 0;
+    soundMode = 1;
   }
 }
 
-// switch volume controls on main page
-function volMode() {   
-  let id = document.getElementById("sub__text");
-  if (toggledPageMode === 1) {
-     id.textContent = "Subwoofers";
-     toggledPageMode = 0;
-  } else {  
-     id.textContent = "Bedroom";
-     toggledPageMode = 1;
+function sendVol(_cmd) {
+  let _mode;
+  // volume mode
+  if ((_cmd === 'up' ) && (soundMode === 0 )){
+    sendCmd('main','upf','');
+  }
+  if ((_cmd === 'up' ) && (soundMode === 1 )){
+    sendCmd('main','vup','bedroom');
+  }
+  if ((_cmd === 'up' ) && (soundMode === 2 )){
+    sendCmd('main','vup','subs');
+  }
+  if ((_cmd === 'dwn' ) && (soundMode === 0 )){
+    sendCmd('main','dwnf','');
+  }
+  if ((_cmd === 'dwn' ) && (soundMode === 1 )){
+    sendCmd('main','vdwn','bedroom');
+  }
+  if ((_cmd === 'dwn' ) && (soundMode === 2 )){
+    sendCmd('main','vdwn','subs');
+  }
+  if ((_cmd === 'mute' ) && (soundMode === 0 )){
+    sendCmd('main','mute','');
+  }
+  if ((_cmd === 'mute' ) && (soundMode === 1 )){
+    sendCmd('main','vmute','bedroom');
+  }
+  if ((_cmd === 'mute' ) && (soundMode === 2 )){
+    sendCmd('main','vmute','subs');
   }
 }
 

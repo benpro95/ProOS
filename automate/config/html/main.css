@@ -89,7 +89,7 @@ input.chkbox {
 
 .grid {
   display: flex;
-  overflow: hidden;
+  overflow: auto;
   flex-wrap: nowrap;
   flex-direction: row;
   align-items: flex-start;
@@ -102,18 +102,25 @@ input.chkbox {
   -ms-animation: fadeIn 0.5s;
 }
 
-@media screen and (max-width: 900px) {
-  .grid {
-     flex-direction: column;
-     align-items: center;
-  }
+.grid::-webkit-scrollbar {
+  display: none;
 }
 
 .column {
   padding-left: 8px;
 }
 
-.header_text {
+@media screen and (max-width: 900px) {
+  .grid {
+    flex-direction: column;
+    align-items: center;
+  }
+  .column {
+    padding-left: 0px;
+  }
+}
+
+.trailer {
   margin: 20px;
   padding-bottom: 30px;
   text-align: center;
@@ -122,11 +129,6 @@ input.chkbox {
   z-index: -1;
   color: #6c7177; /* header font color */
   font-size: 16px;
-  animation: fadeIn 1s;
-  -webkit-animation: fadeIn 1s;
-  -moz-animation: fadeIn 1s;
-  -o-animation: fadeIn 1s;
-  -ms-animation: fadeIn 1s;
 }
 
 .button {
@@ -643,3 +645,28 @@ input.chkbox {
   100% { opacity: 1; }
 }
 
+
+@keyframes fadeOut {
+  100% { opacity: 0; }
+  0% { opacity: 1; }
+}
+
+@-moz-keyframes fadeOut {
+  100% { opacity: 0; }
+  0% { opacity: 1; }
+}
+
+@-webkit-keyframes fadeOut {
+  100% { opacity: 0; }
+  0% { opacity: 1; }
+}
+
+@-o-keyframes fadeOut {
+  100% { opacity: 0; }
+  0% { opacity: 1; }
+}
+
+@-ms-keyframes fadeOut {
+  100% { opacity: 0; }
+  0% { opacity: 1; }
+}

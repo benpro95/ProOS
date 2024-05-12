@@ -76,7 +76,7 @@
           <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Bedroom</span>
         </button>  
         <div class="dropdown-content dd-button" id="dresser-menu">
-          <a onclick="sendCmd('main','toggletv','')"><i class="fa-solid fa-tv"></i> Monitor</a>
+          <a onclick="sendCmd('main','toggletv','')"><i class="fa-solid fa-tv"></i> TV</a>
           <a onclick="sendCmd('main','rfa2','on')"><i class="fa-solid fa-toggle-on"></i> Light On</a>
           <a onclick="sendCmd('main','rfa2','off')"><i class="fa-solid fa-toggle-off"></i> Light Off</a>
         </div>
@@ -134,7 +134,7 @@
 
       <div class="dropdown">
         <button type="button" class="button" onclick="showMenu('acc-menu')">
-          <span class="button__text"><i class="fa-solid fa-tv"></i> Accessory</span>
+          <span class="button__text"><i class="fa-solid fa-tv"></i> RetroPi</span>
         </button>  
         <div class="dropdown-content dd-button" id="acc-menu">
           <a onclick="sendCmd('main','rfa3','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
@@ -165,8 +165,8 @@
           <span class="button__text"><i class="fa-solid fa-list"></i> Status</span>
           <div class="dropdown-content ind-button" id="statsmenu"></div>
       </button>
-      <button type="button" class="button" onclick="soundMenu()">
-        <span class="button__text"><i class="fa-regular fa-headphones"></i> Sound</span>
+      <button type="button" class="button" onclick="roomMenu()">
+        <span class="button__text"><i class="fa-regular fa-headphones"></i> Room</span>
       </button>   
       <button type="button" class="button" onclick="openLogWindow()">
           <span class="button__text"><i class="fa-solid fa-terminal"></i> Server</span>
@@ -174,40 +174,40 @@
 
       <p class="parstd"></p>  
 
-      <button type="button" class="button" onclick="sendCmd('main','dwnf','')">
+      <button type="button" class="button" onclick="sendVol('dwn')">
           <span class="button__text"><i class="fa-solid fa-volume-low"></i></span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','mute','')">
+      <button type="button" class="button" onclick="sendVol('mute')">
           <span class="button__text"><i class="fa-solid fa-volume-xmark"></i></span>
       </button>
-      <button type="button" class="button" onclick="sendCmd('main','upf','')">
+      <button type="button" class="button" onclick="sendVol('up')">
           <span class="button__text"><i class="fa-solid fa-volume-high"></i></span>
       </button>   
 
       <div class="bedroom-grid">
 
-          <p class="parstd"></p>  
+        <p class="parstd"></p>  
 
-          <button type="button" class="button">
-              <span class="button__text"> TBD</span>
-          </button>    
-          <button type="button" class="button" onclick="relaxSend('waterfall')">
-              <span class="button__text"></i>Waterfall</span>
-          </button>
-          <button type="button" class="button" onclick="relaxSend('fan')">
-              <span class="button__text"></i>Fan</span>
-          </button>
-          <p class="parstd"></p>   
+        <button type="button" class="button" onclick="relaxSend('waterfall')">
+            <span class="button__text"></i>Waterfall</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('main','relaxstop','')">
+            <span class="button__text"><i class="fa-solid fa-stop"></i></span>
+        </button>   
+        <button type="button" class="button" onclick="relaxSend('fan')">
+            <span class="button__text"></i>Fan</span>
+        </button>
+        <p class="parstd"></p>   
 
-          <button type="button" class="button" onclick="relaxSend('campfire')">
-              <span class="button__text"></i>Campfire</span>
-          </button>
-          <button type="button" class="button" onclick="relaxSend('forest')">
-              <span class="button__text"></i>Forest</span>
-          </button>  
-          <button type="button" class="button" onclick="relaxSend('harbour')">
-              <span class="button__text"></i>Harbour</span>
-          </button>
+        <button type="button" class="button" onclick="relaxSend('campfire')">
+            <span class="button__text"></i>Campfire</span>
+        </button>
+        <button type="button" class="button" onclick="relaxSend('forest')">
+            <span class="button__text"></i>Forest</span>
+        </button>  
+        <button type="button" class="button" onclick="relaxSend('harbour')">
+            <span class="button__text"></i>Harbour</span>
+        </button>
 
       </div> 
 
@@ -269,13 +269,13 @@
 
         <p class="parstd"></p>   
 
-        <button type="button" class="button">
-            <span class="button__text"></i> TBD</span>
+        <button type="button" class="button" onclick="sendCmd('main','sleep','')">
+            <span class="button__text"><i class="fa-solid fa-moon"></i> Sleep</span>
         </button>
-        <button type="button" class="button" onclick="sendCmd('main','stop','')">
-            <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
+        <button type="button" class="button" onclick="sendCmd('main','pauseatv','')">
+            <span class="button__text"><i class="fa-solid fa-pause"></i> TV</span>
         </button>
-        <button type="button" class="button" onclick="sendCmd('main','clear','')">
+        <button type="button" class="button" onclick="sendCmd('main','clear-lcdpi','')">
             <span class="button__text"><i class="fa-solid fa-eraser"></i> Erase</span>
         </button>
 
@@ -935,7 +935,7 @@
   </form>
 </div>
 
-<p class="header_text">by Ben Provenzano III</p>
+<p class="trailer">by Ben Provenzano III</p>
 </body>
 </html>
 

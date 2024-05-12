@@ -49,22 +49,18 @@ body {
 }
 
 .led-grid {
-  --col-width: 33.33%; /* 3-columns of 3x icons*/
   display: none; 
 }
 
 .bedroom-grid {
-  --col-width: 50%; /* 2-columns of 3x icons*/
   display: none;
 }
 
 .hifi-grid {
-  --col-width: 50%; /* 2-columns of 3x icons*/
   display: none;
 }
 
 .lcdpi-grid {
-  --col-width: 100%; /* 1-column of 3x icons*/
   display: none;
 }
 
@@ -80,11 +76,6 @@ body {
   display: none;
 }
 
-.container {
-  display: flex;
-  justify-content: space-around;
-}
-
 .dynamic-menus {
   display: block;
 }
@@ -97,7 +88,12 @@ input.chkbox {
 }
 
 .grid {
+  display: flex;
   overflow: hidden;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
   white-space: nowrap;
   animation: fadeIn 0.5s;
   -webkit-animation: fadeIn 0.5s;
@@ -106,23 +102,15 @@ input.chkbox {
   -ms-animation: fadeIn 0.5s;
 }
 
-.grid:after {
-  content: "";
-  display: table;
-  clear: both;
+@media screen and (max-width: 900px) {
+  .grid {
+     flex-direction: column;
+     align-items: center;
+  }
 }
 
 .column {
-  width: var(--col-width);
-  padding-left: 7px;
-  float: left;
-}
-
-@media screen and (max-width: 900px) {
-  .column {
-    width: 100%;
-    float: none;
-  }
+  padding-left: 8px;
 }
 
 .header_text {
@@ -131,9 +119,9 @@ input.chkbox {
   text-align: center;
   margin: auto;
   width: 50%;
-  z-index: -99;
+  z-index: -1;
   color: #6c7177; /* header font color */
-  font-size: 20px;
+  font-size: 16px;
   animation: fadeIn 1s;
   -webkit-animation: fadeIn 1s;
   -moz-animation: fadeIn 1s;

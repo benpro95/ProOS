@@ -57,325 +57,319 @@
 
 <p></p>
 
-<div class="container">
 
-  <div class="pi-grid">
-    <div class="grid">
-        <p class="body__text">Layout not found.</p> 
-    </div>
+
+<div class="pi-grid">
+  <div class="grid">
+      <p class="body__text">Layout not found.</p> 
   </div>
+</div>
 
-  <div class="server-grid">
+<div class="server-grid">
 
-    <div class="grid">
+  <div class="grid">
 
-      <div class="column">  
+    <div class="column">  
 
-        <div class="dropdown">
-          <button type="button" class="button" onclick="showMenu('dresser-menu')">
-            <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Bedroom</span>
-          </button>  
-          <div class="dropdown-content dd-button" id="dresser-menu">
-            <a onclick="sendCmd('main','toggletv','')"><i class="fa-solid fa-tv"></i> Monitor</a>
-            <a onclick="sendCmd('main','rfa2','on')"><i class="fa-solid fa-toggle-on"></i> Light On</a>
-            <a onclick="sendCmd('main','rfa2','off')"><i class="fa-solid fa-toggle-off"></i> Light Off</a>
-          </div>
-        </div>
-        <div class="dropdown">
-          <button type="button" class="button" onclick="showMenu('lightmenu')">
-            <span class="button__text"><i class="fa-regular fa-lightbulb"></i> All Lights</span>
-          </button>  
-          <div class="dropdown-content dd-button" id="lightmenu">
-            <a onclick="sendCmd('main','allon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-            <a onclick="sendCmd('main','alloff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-          </div>
-        </div> 
-        <div class="dropdown">
-          <button type="button" class="button" onclick="showMenu('main-menu')">
-            <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Main</span>
-          </button>  
-          <div class="dropdown-content dd-button" id="main-menu">
-            <a onclick="sendCmd('main','rfc1','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
-            <a onclick="sendCmd('main','rfc1','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-          </div>
-        </div>
-
-        <p class="parstd"></p>  
-
-        <div class="dropdown">
-          <button type="button" class="button" onclick="showMenu('macs-menu')">
-            <span class="button__text"><i class="fa-solid fa-floppy-disk"></i> Macs</span>
-          </button>  
-          <div class="dropdown-content dd-button" id="macs-menu">
-            <a onclick="sendCmd('main','rfa1','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
-            <a onclick="sendCmd('main','rfa1','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-          </div>
-        </div>    
-        <div class="dropdown">
-          <button type="button" class="button" onclick="showMenu('allmenu')">
-            <span class="button__text"><i class="fa-solid fa-power-off"></i> Power</span>
-          </button>  
-          <div class="dropdown-content dd-button" id="allmenu">
-            <a onclick="sendCmd('main','roomon','')"><i class="fa-solid fa-toggle-on"></i> All On</a>
-            <a onclick="sendCmd('main','roomoff','')"><i class="fa-solid fa-toggle-off"></i> All Off</a>
-          </div>
-        </div>      
-        <div class="dropdown">
-          <button type="button" class="button" onclick="showMenu('pcmenu')">
-            <span class="button__text"><i class="fa-solid fa-computer"></i> PC</span>
-          </button>  
-          <div class="dropdown-content dd-button" id="pcmenu">
-            <a onclick="sendCmd('main','pcon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-            <a onclick="sendCmd('main','pcoff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-          </div>
-        </div> 
-
-        <p class="parstd"></p>   
-
-        <div class="dropdown">
-          <button type="button" class="button" onclick="showMenu('acc-menu')">
-            <span class="button__text"><i class="fa-solid fa-tv"></i> Accessory</span>
-          </button>  
-          <div class="dropdown-content dd-button" id="acc-menu">
-            <a onclick="sendCmd('main','rfa3','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
-            <a onclick="sendCmd('main','rfa3','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-          </div>
-        </div>  
-        <div class="dropdown">
-          <button type="button" class="button" onclick="showMenu('led-menu')">
-            <span class="button__text"><i class="fa-regular fa-sun"></i> Lighting</span>
-          </button>  
-          <div class="dropdown-content dd-button" id="led-menu">
-            <a onclick="showLEDsPage()"><i class="fa-solid fa-sliders"></i> More...</a>
-            <a onclick="sendCmd('leds','pause','')"><i class="fa-solid fa-pause"></i> Pause</a>
-            <a onclick="sendCmd('leds','stop','')"><i class="fa-solid fa-stop"></i> Stop</a>
-            <a onclick="sendCmd('leds','shuffle','')"><i class="fa-solid fa-shuffle"></i> Shuffle</a>
-            <a onclick="sendCmd('leds','abstract','')"><i></i> Abstract</a>
-            <a onclick="sendCmd('leds','flames','')"><i></i> Flames</a>
-            <a onclick="sendCmd('leds','prism','')"><i></i> Prism</a>
-          </div>
-        </div>
-        <button type="button" class="button" onclick="openCamWindow()">   
-          <span class="button__text"><i class="fa-solid fa-door-open"></i> Doorway</span>
+      <div class="dropdown">
+        <button type="button" class="button" onclick="showMenu('dresser-menu')">
+          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Bedroom</span>
         </button>  
-
-        <p class="parstd"></p> 
-
-        <button type="button" class="button" onclick="showDynMenu('statsmenu')">
-            <span class="button__text"><i class="fa-solid fa-list"></i> Status</span>
-            <div class="dropdown-content ind-button" id="statsmenu"></div>
-        </button>
-        <button type="button" class="button" onclick="soundMenu()">
-          <span class="button__text"><i class="fa-regular fa-headphones"></i> Sound</span>
-        </button>   
-        <button type="button" class="button" onclick="openLogWindow()">
-            <span class="button__text"><i class="fa-solid fa-terminal"></i> Server</span>
-        </button>
-
-        <p class="parstd"></p>  
-
-        <button type="button" class="button" onclick="sendCmd('main','dwnf','')">
-            <span class="button__text"><i class="fa-solid fa-volume-low"></i></span>
-        </button>
-        <button type="button" class="button" onclick="sendCmd('main','mute','')">
-            <span class="button__text"><i class="fa-solid fa-volume-xmark"></i></span>
-        </button>
-        <button type="button" class="button" onclick="sendCmd('main','upf','')">
-            <span class="button__text"><i class="fa-solid fa-volume-high"></i></span>
-        </button>   
-
-        <div class="bedroom-grid">
-
-            <p class="parstd"></p>  
-
-            <button type="button" class="button">
-                <span class="button__text"> TBD</span>
-            </button>    
-            <button type="button" class="button" onclick="relaxSend('waterfall')">
-                <span class="button__text"></i>Waterfall</span>
-            </button>
-            <button type="button" class="button" onclick="relaxSend('fan')">
-                <span class="button__text"></i>Fan</span>
-            </button>
-            <p class="parstd"></p>   
-
-            <button type="button" class="button" onclick="relaxSend('campfire')">
-                <span class="button__text"></i>Campfire</span>
-            </button>
-            <button type="button" class="button" onclick="relaxSend('forest')">
-                <span class="button__text"></i>Forest</span>
-            </button>  
-            <button type="button" class="button" onclick="relaxSend('harbour')">
-                <span class="button__text"></i>Harbour</span>
-            </button>
-
-        </div> 
-
+        <div class="dropdown-content dd-button" id="dresser-menu">
+          <a onclick="sendCmd('main','toggletv','')"><i class="fa-solid fa-tv"></i> Monitor</a>
+          <a onclick="sendCmd('main','rfa2','on')"><i class="fa-solid fa-toggle-on"></i> Light On</a>
+          <a onclick="sendCmd('main','rfa2','off')"><i class="fa-solid fa-toggle-off"></i> Light Off</a>
+        </div>
+      </div>
+      <div class="dropdown">
+        <button type="button" class="button" onclick="showMenu('lightmenu')">
+          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> All Lights</span>
+        </button>  
+        <div class="dropdown-content dd-button" id="lightmenu">
+          <a onclick="sendCmd('main','allon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
+          <a onclick="sendCmd('main','alloff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+        </div>
       </div> 
-      <div class="column">  
+      <div class="dropdown">
+        <button type="button" class="button" onclick="showMenu('main-menu')">
+          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Main</span>
+        </button>  
+        <div class="dropdown-content dd-button" id="main-menu">
+          <a onclick="sendCmd('main','rfc1','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
+          <a onclick="sendCmd('main','rfc1','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+        </div>
+      </div>
 
-        <div class="hifi-grid">
+      <p class="parstd"></p>  
+
+      <div class="dropdown">
+        <button type="button" class="button" onclick="showMenu('macs-menu')">
+          <span class="button__text"><i class="fa-solid fa-floppy-disk"></i> Macs</span>
+        </button>  
+        <div class="dropdown-content dd-button" id="macs-menu">
+          <a onclick="sendCmd('main','rfa1','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
+          <a onclick="sendCmd('main','rfa1','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+        </div>
+      </div>    
+      <div class="dropdown">
+        <button type="button" class="button" onclick="showMenu('allmenu')">
+          <span class="button__text"><i class="fa-solid fa-power-off"></i> Power</span>
+        </button>  
+        <div class="dropdown-content dd-button" id="allmenu">
+          <a onclick="sendCmd('main','roomon','')"><i class="fa-solid fa-toggle-on"></i> All On</a>
+          <a onclick="sendCmd('main','roomoff','')"><i class="fa-solid fa-toggle-off"></i> All Off</a>
+        </div>
+      </div>      
+      <div class="dropdown">
+        <button type="button" class="button" onclick="showMenu('pcmenu')">
+          <span class="button__text"><i class="fa-solid fa-computer"></i> PC</span>
+        </button>  
+        <div class="dropdown-content dd-button" id="pcmenu">
+          <a onclick="sendCmd('main','pcon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
+          <a onclick="sendCmd('main','pcoff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+        </div>
+      </div> 
+
+      <p class="parstd"></p>   
+
+      <div class="dropdown">
+        <button type="button" class="button" onclick="showMenu('acc-menu')">
+          <span class="button__text"><i class="fa-solid fa-tv"></i> Accessory</span>
+        </button>  
+        <div class="dropdown-content dd-button" id="acc-menu">
+          <a onclick="sendCmd('main','rfa3','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
+          <a onclick="sendCmd('main','rfa3','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+        </div>
+      </div>  
+      <div class="dropdown">
+        <button type="button" class="button" onclick="showMenu('led-menu')">
+          <span class="button__text"><i class="fa-regular fa-sun"></i> Lighting</span>
+        </button>  
+        <div class="dropdown-content dd-button" id="led-menu">
+          <a onclick="showLEDsPage()"><i class="fa-solid fa-sliders"></i> More...</a>
+          <a onclick="sendCmd('leds','pause','')"><i class="fa-solid fa-pause"></i> Pause</a>
+          <a onclick="sendCmd('leds','stop','')"><i class="fa-solid fa-stop"></i> Stop</a>
+          <a onclick="sendCmd('leds','shuffle','')"><i class="fa-solid fa-shuffle"></i> Shuffle</a>
+          <a onclick="sendCmd('leds','abstract','')"><i></i> Abstract</a>
+          <a onclick="sendCmd('leds','flames','')"><i></i> Flames</a>
+          <a onclick="sendCmd('leds','prism','')"><i></i> Prism</a>
+        </div>
+      </div>
+      <button type="button" class="button" onclick="openCamWindow()">   
+        <span class="button__text"><i class="fa-solid fa-door-open"></i> Doorway</span>
+      </button>  
+
+      <p class="parstd"></p> 
+
+      <button type="button" class="button" onclick="showDynMenu('statsmenu')">
+          <span class="button__text"><i class="fa-solid fa-list"></i> Status</span>
+          <div class="dropdown-content ind-button" id="statsmenu"></div>
+      </button>
+      <button type="button" class="button" onclick="soundMenu()">
+        <span class="button__text"><i class="fa-regular fa-headphones"></i> Sound</span>
+      </button>   
+      <button type="button" class="button" onclick="openLogWindow()">
+          <span class="button__text"><i class="fa-solid fa-terminal"></i> Server</span>
+      </button>
+
+      <p class="parstd"></p>  
+
+      <button type="button" class="button" onclick="sendCmd('main','dwnf','')">
+          <span class="button__text"><i class="fa-solid fa-volume-low"></i></span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','mute','')">
+          <span class="button__text"><i class="fa-solid fa-volume-xmark"></i></span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('main','upf','')">
+          <span class="button__text"><i class="fa-solid fa-volume-high"></i></span>
+      </button>   
+
+      <div class="bedroom-grid">
 
           <p class="parstd"></p>  
 
-          <button type="button" class="button" onclick="sendCmd('main','dwnc','')">
-              <span class="button__text"><i class="fa-solid fa-volume-low"></i> -5dB</span>
+          <button type="button" class="button">
+              <span class="button__text"> TBD</span>
+          </button>    
+          <button type="button" class="button" onclick="relaxSend('waterfall')">
+              <span class="button__text"></i>Waterfall</span>
           </button>
-          <div class="dropdown">
-            <button type="button" class="button" onclick="showMenu('hifi-menu')">
-              <span class="button__text"><i class="fa-solid fa-music"></i> Hi-Fi</span>
-            </button>  
-            <div class="dropdown-content dd-button" id="hifi-menu">
-              <a onclick="sendCmd('main','hifion','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-              <a onclick="sendCmd('main','hifioff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-            </div>
+          <button type="button" class="button" onclick="relaxSend('fan')">
+              <span class="button__text"></i>Fan</span>
+          </button>
+          <p class="parstd"></p>   
+
+          <button type="button" class="button" onclick="relaxSend('campfire')">
+              <span class="button__text"></i>Campfire</span>
+          </button>
+          <button type="button" class="button" onclick="relaxSend('forest')">
+              <span class="button__text"></i>Forest</span>
+          </button>  
+          <button type="button" class="button" onclick="relaxSend('harbour')">
+              <span class="button__text"></i>Harbour</span>
+          </button>
+
+      </div> 
+
+    </div>
+    <div class="hifi-grid">
+     
+      <div class="column"> 
+
+        <button type="button" class="button" onclick="sendCmd('main','dwnc','')">
+            <span class="button__text"><i class="fa-solid fa-volume-low"></i> -5dB</span>
+        </button>
+        <div class="dropdown">
+          <button type="button" class="button" onclick="showMenu('hifi-menu')">
+            <span class="button__text"><i class="fa-solid fa-music"></i> Hi-Fi</span>
+          </button>  
+          <div class="dropdown-content dd-button" id="hifi-menu">
+            <a onclick="sendCmd('main','hifion','')"><i class="fa-solid fa-toggle-on"></i> On</a>
+            <a onclick="sendCmd('main','hifioff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
           </div>
-          <button type="button" class="button" onclick="sendCmd('main','upc','')">   
-              <span class="button__text"><i class="fa-solid fa-volume-high"></i> +5dB</span>
-          </button>      
+        </div>
+        <button type="button" class="button" onclick="sendCmd('main','upc','')">   
+            <span class="button__text"><i class="fa-solid fa-volume-high"></i> +5dB</span>
+        </button>      
+
+        <p class="parstd"></p>    
+
+        <button type="button" class="button" onclick="sendCmd('main','phono','')">
+            <span class="button__text"><i class="fa-solid fa-compact-disc"></i> Phono</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('main','aux','')">
+            <span class="button__text"><i class="fa-solid fa-microphone"></i> Aux</span> 
+        </button>
+        <button type="button" class="button" onclick="sendCmd('main','usb','')">
+            <span class="button__text"><i class="fa-brands fa-usb"></i> USB</span>
+        </button>
+        <p class="parstd"></p>        
+
+        <button type="button" class="button" onclick="sendCmd('main','coax','')">   
+            <span class="button__text"><i class="fa-brands fa-apple"></i> AirPlay</span>
+        </button>      
+        <button type="button" class="button" onclick="sendCmd('main','opt','')">
+            <span class="button__text"><i class="fa-solid fa-wave-square"></i> Optical</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('main','autodac','')">
+            <span class="button__text"><i class="fa-solid fa-arrows-rotate"></i> Auto In</span>
+        </button>
+
+        <p class="parstd"></p>           
+
+        <button type="button" class="button" onclick="sendCmd('main','vlimit','')">
+            <span class="button__text"><i class="fa-solid fa-volume-off"></i> vLimit</span>
+        </button> 
+        <button type="button" class="button" onclick="sendCmd('main','togglehpf','')">
+            <span class="button__text"> Bass Filter</span>
+        </button>
+        <button type="button" class="button" onclick="openSendWindow()">
+          <span class="button__text"><i class="fa-solid fa-envelope-open-text"></i> Message</span>
+        </button>
+
+        <p class="parstd"></p>   
+
+        <button type="button" class="button">
+            <span class="button__text"></i> TBD</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('main','stop','')">
+            <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('main','clear','')">
+            <span class="button__text"><i class="fa-solid fa-eraser"></i> Erase</span>
+        </button>
+
+        <p style="padding-bottom: 100px;"></p>  
+
+      </div>  
+
+    </div>
+    <div class="bedroom-grid">
+
+      <div class="column">
+
+          <button type="button" class="button" onclick="relaxSend('wind')">
+              <span class="button__text"></i>Wind</span>
+          </button>
+          <button type="button" class="button" onclick="relaxSend('jungle')">
+              <span class="button__text"></i>Jungle</span>
+          </button>
+          <button type="button" class="button" onclick="relaxSend('meadow')">
+              <span class="button__text"></i>Meadow</span>
+          </button>
 
           <p class="parstd"></p>    
 
-          <button type="button" class="button" onclick="sendCmd('main','phono','')">
-              <span class="button__text"><i class="fa-solid fa-compact-disc"></i> Phono</span>
+          <button type="button" class="button" onclick="relaxSend('stream')">
+              <span class="button__text"></i>Stream</span>
+          </button>  
+          <button type="button" class="button" onclick="relaxSend('ocean')">
+              <span class="button__text"></i>Ocean</span>
           </button>
-          <button type="button" class="button" onclick="sendCmd('main','aux','')">
-              <span class="button__text"><i class="fa-solid fa-microphone"></i> Aux</span> 
+          <button type="button" class="button" onclick="relaxSend('river')">
+              <span class="button__text"></i>River</span>
           </button>
-          <button type="button" class="button" onclick="sendCmd('main','usb','')">
-              <span class="button__text"><i class="fa-brands fa-usb"></i> USB</span>
-          </button>
-          <p class="parstd"></p>        
+          <p class="parstd"></p>    
 
-          <button type="button" class="button" onclick="sendCmd('main','coax','')">   
-              <span class="button__text"><i class="fa-brands fa-apple"></i> AirPlay</span>
-          </button>      
-          <button type="button" class="button" onclick="sendCmd('main','opt','')">
-              <span class="button__text"><i class="fa-solid fa-wave-square"></i> Optical</span>
+          <button type="button" class="button" onclick="relaxSend('rain')">
+              <span class="button__text"></i>Rain</span>
           </button>
-          <button type="button" class="button" onclick="sendCmd('main','autodac','')">
-              <span class="button__text"><i class="fa-solid fa-arrows-rotate"></i> Auto In</span>
+          <button type="button" class="button" onclick="relaxSend('rain-2')">
+              <span class="button__text"></i>Rain II</span>
+          </button>
+          <button type="button" class="button" onclick="relaxSend('storm')">
+              <span class="button__text"></i>Storm</span>
+          </button>  
+
+          <p class="parstd"></p>
+
+          <button type="button" class="button" onclick="relaxSend('thunder')">
+              <span class="button__text"></i>Thunder</span>
+          </button>
+          <button type="button" class="button" onclick="relaxSend('traffic')">
+              <span class="button__text"></i>Traffic</span>
+          </button>
+          <button type="button" class="button" onclick="relaxSend('beach')">
+              <span class="button__text"></i>Beach</span>
           </button>
 
-          <p class="parstd"></p>           
+          <p class="parstd"></p>       
 
-          <button type="button" class="button" onclick="sendCmd('main','vlimit','')">
-              <span class="button__text"><i class="fa-solid fa-volume-off"></i> vLimit</span>
-          </button> 
-          <button type="button" class="button" onclick="sendCmd('main','togglehpf','')">
-              <span class="button__text"> Bass Filter</span>
+          <button type="button" class="button" onclick="relaxSend('ambient1')">
+              <span class="button__text"></i>Ambient I</span>
+          </button>  
+          <button type="button" class="button" onclick="relaxSend('ambient2')">
+              <span class="button__text"></i>Ambient II</span>
           </button>
-          <button type="button" class="button" onclick="openSendWindow()">
-            <span class="button__text"><i class="fa-solid fa-envelope-open-text"></i> Message</span>
-          </button>
+          <button type="button" class="button" onclick="relaxSend('ambient3')">
+              <span class="button__text"></i>Ambient III</span>
+          </button>    
 
           <p class="parstd"></p>   
 
-          <button type="button" class="button">
-              <span class="button__text"></i> TBD</span>
+          <button type="button" class="button" onclick="relaxSend('classical')">
+              <span class="button__text"></i>Classical</span>
           </button>
-          <button type="button" class="button" onclick="sendCmd('main','stop','')">
-              <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
+          <button type="button" class="button" onclick="relaxSend('amazon')">
+              <span class="button__text"></i>Amazon</span>
           </button>
-          <button type="button" class="button" onclick="sendCmd('main','clear','')">
-              <span class="button__text"><i class="fa-solid fa-eraser"></i> Erase</span>
+          <button type="button" class="button" onclick="relaxSend('warp')">
+              <span class="button__text"></i>Warp</span>
+          </button>      
+
+          <p class="parstd"></p>     
+
+          <button type="button" class="button" onclick="relaxSend('islands')">
+              <span class="button__text"></i>Islands</span>
+          </button>  
+          <button type="button" class="button" onclick="relaxSend('fields')">
+              <span class="button__text"></i>Fields</span>
+          </button>
+          <button type="button" class="button" onclick="relaxSend('garden')">
+              <span class="button__text"></i>Garden</span>
           </button>
 
-          <p style="padding-bottom: 100px;"></p>  
-
-        </div>  
-
-      </div>
-      <div class="column">
-
-        <div class="bedroom-grid">
-
-            <p class="parstd"></p>   
-
-            <button type="button" class="button" onclick="relaxSend('wind')">
-                <span class="button__text"></i>Wind</span>
-            </button>
-            <button type="button" class="button" onclick="relaxSend('jungle')">
-                <span class="button__text"></i>Jungle</span>
-            </button>
-            <button type="button" class="button" onclick="relaxSend('meadow')">
-                <span class="button__text"></i>Meadow</span>
-            </button>
-
-            <p class="parstd"></p>    
-
-            <button type="button" class="button" onclick="relaxSend('stream')">
-                <span class="button__text"></i>Stream</span>
-            </button>  
-            <button type="button" class="button" onclick="relaxSend('ocean')">
-                <span class="button__text"></i>Ocean</span>
-            </button>
-            <button type="button" class="button" onclick="relaxSend('river')">
-                <span class="button__text"></i>River</span>
-            </button>
-            <p class="parstd"></p>    
-
-            <button type="button" class="button" onclick="relaxSend('rain')">
-                <span class="button__text"></i>Rain</span>
-            </button>
-            <button type="button" class="button" onclick="relaxSend('rain-2')">
-                <span class="button__text"></i>Rain II</span>
-            </button>
-            <button type="button" class="button" onclick="relaxSend('storm')">
-                <span class="button__text"></i>Storm</span>
-            </button>  
-
-            <p class="parstd"></p>
-
-            <button type="button" class="button" onclick="relaxSend('thunder')">
-                <span class="button__text"></i>Thunder</span>
-            </button>
-            <button type="button" class="button" onclick="relaxSend('traffic')">
-                <span class="button__text"></i>Traffic</span>
-            </button>
-            <button type="button" class="button" onclick="relaxSend('beach')">
-                <span class="button__text"></i>Beach</span>
-            </button>
-
-            <p class="parstd"></p>       
-
-            <button type="button" class="button" onclick="relaxSend('ambient1')">
-                <span class="button__text"></i>Ambient I</span>
-            </button>  
-            <button type="button" class="button" onclick="relaxSend('ambient2')">
-                <span class="button__text"></i>Ambient II</span>
-            </button>
-            <button type="button" class="button" onclick="relaxSend('ambient3')">
-                <span class="button__text"></i>Ambient III</span>
-            </button>    
-
-            <p class="parstd"></p>   
-
-            <button type="button" class="button" onclick="relaxSend('classical')">
-                <span class="button__text"></i>Classical</span>
-            </button>
-            <button type="button" class="button" onclick="relaxSend('amazon')">
-                <span class="button__text"></i>Amazon</span>
-            </button>
-            <button type="button" class="button" onclick="relaxSend('warp')">
-                <span class="button__text"></i>Warp</span>
-            </button>      
-
-            <p class="parstd"></p>     
-
-            <button type="button" class="button" onclick="relaxSend('islands')">
-                <span class="button__text"></i>Islands</span>
-            </button>  
-            <button type="button" class="button" onclick="relaxSend('fields')">
-                <span class="button__text"></i>Fields</span>
-            </button>
-            <button type="button" class="button" onclick="relaxSend('garden')">
-                <span class="button__text"></i>Garden</span>
-            </button>
-
-            <p style="padding-bottom: 75px;"></p>  
-
-        </div>
+          <p style="padding-bottom: 75px;"></p>  
 
       </div>
 
@@ -383,380 +377,380 @@
 
   </div>
 
-  <div class="led-grid ledpi-grid">
-
-    <div class="grid">
-
-      <div class="column">
-
-        <p class="parstd"></p> 
-
-          <button type="button" class="button" onclick="sendCmd('leds','fc','10')">
-              <span class="button__text"><i class=""></i>10%</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','fc','20')">
-              <span class="button__text"><i class=""></i>20%</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','fc','30')">
-              <span class="button__text"><i class=""></i>30%</span>
-          </button>
-
-        <p class="parstd"></p>  
-
-          <button type="button" class="button" onclick="sendCmd('leds','fc','40')">   
-              <span class="button__text"><i class=""></i>40%</span>
-          </button>      
-          <button type="button" class="button" onclick="sendCmd('leds','fc','50')">
-              <span class="button__text"><i class=""></i>50%</span>
-          </button>      
-          <button type="button" class="button" onclick="sendCmd('leds','fc','60')">
-              <span class="button__text"><i class=""></i>60%</span>
-          </button>
-
-        <p class="parstd"></p>   
-
-          <button type="button" class="button" onclick="sendCmd('leds','fc','70')">
-              <span class="button__text"><i class=""></i>70%</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','fc','80')">
-              <span class="button__text"><i class=""></i>80%</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','fc','90')">   
-              <span class="button__text"><i class=""></i>90%</span>
-          </button>  
-
-        <p class="parstd"></p>   
-
-          <button type="button" class="button" onclick="sendCmd('leds','fc','100')">   
-              <span class="button__text"><i class=""></i>100%</span>
-          </button>  
-          <button type="button" class="button" onclick="colorPrompt()">
-              <span class="button__text"><i class="fa-solid fa-brush"></i> Colors</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','shuffle','')">
-              <span class="button__text"><i class="fa-solid fa-shuffle"></i> Shuffle</span>
-          </button>
-
-        <p class="parstd"></p> 
-
-          <button type="button" class="button" onclick="sendCmd('leds','stop','')">
-              <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
-          </button>
-          <button type="button" class="button button__lgr" onclick="sendCmd('leds','pause','')">
-              <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
-          </button>
-
-        <p class="parstd"></p>  
-
-          <button type="button" class="button" onclick="sendCmd('leds','abstract','')">
-              <span class="button__text"><i class=""></i>Abstract</span>
-          </button>     
-          <button type="button" class="button" onclick="sendCmd('leds','flames','')">
-              <span class="button__text"><i class=""></i>Flames</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','tunnel','')">
-              <span class="button__text"><i class=""></i>Tunnel</span>
-          </button>
-
-        <p class="parstd"></p>   
-
-          <button type="button" class="button" onclick="sendCmd('leds','ink','')">
-              <span class="button__text"><i class=""></i>Ink</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','plasma','')">
-              <span class="button__text"><i class=""></i>Plasma</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','prism','')">
-              <span class="button__text"><i class=""></i>Prism</span>
-          </button>
-
-        <p class="parstd"></p>    
-
-          <button type="button" class="button" onclick="sendCmd('leds','paint','')">
-              <span class="button__text"><i class=""></i>Paint</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','beachball','')">
-              <span class="button__text"><i class=""></i>Beachball</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','blur','')">
-              <span class="button__text"><i class=""></i>Blur</span>
-          </button>
-
-        <p class="parstd"></p> 
-
-          <button type="button" class="button" onclick="sendCmd('leds','gas','')">
-              <span class="button__text"><i class=""></i>Gas</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','vibrant','')">
-              <span class="button__text"><i class=""></i>Vibrant</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','voltage','')">
-              <span class="button__text"><i class=""></i>Voltage</span>
-          </button>
-
-        <p class="parstd"></p>   
-
-          <button type="button" class="button" onclick="sendCmd('leds','8bit','')">
-              <span class="button__text"><i class=""></i>8-Bit</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','rings','')">
-              <span class="button__text"><i class=""></i>Rings</span>
-          </button>    
-          <button type="button" class="button" onclick="sendCmd('leds','bubbles','')">
-              <span class="button__text"><i class=""></i>Bubbles</span>
-          </button>    
-
-      </div>
-      <div class="column">
-        <p class="parstd"></p> 
-
-          <button type="button" class="button" onclick="sendCmd('leds','ripple','')">
-              <span class="button__text"><i class=""></i>Ripple</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','blocks','')">
-              <span class="button__text"><i class=""></i>Blocks</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','fuse','')">
-              <span class="button__text"><i class=""></i>Fuse</span>
-          </button>
-
-        <p class="parstd"></p>    
-
-          <button type="button" class="button" onclick="sendCmd('leds','lumin','')">
-              <span class="button__text"><i class=""></i>Lumin</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','pixel','')">
-              <span class="button__text"><i class=""></i>Pixel</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','fireworks','')">
-              <span class="button__text"><i class=""></i>Fireworks</span>
-          </button>    
-
-        <p class="parstd"></p> 
-
-          <button type="button" class="button" onclick="sendCmd('leds','rays','')">
-              <span class="button__text"><i class=""></i>Rays</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','spectrum','')">
-              <span class="button__text"><i class=""></i>Spectrum</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','warp','')">
-              <span class="button__text"><i class=""></i>Warp</span>
-          </button>   
-
-        <p class="parstd"></p>     
-
-          <button type="button" class="button" onclick="sendCmd('leds','gold','')">
-              <span class="button__text"><i class=""></i>Flames</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','noise1','')">
-              <span class="button__text"><i class=""></i>Tunnel</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','noise2','')">
-              <span class="button__text"><i class=""></i>8-Bit</span>
-          </button>
-
-        <p class="parstd"></p>    
-
-          <button type="button" class="button" onclick="sendCmd('leds','noise3','')">
-              <span class="button__text"><i class=""></i>Ink</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','spotlight','')">
-              <span class="button__text"><i class=""></i>Spotlight</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','lava','')">
-              <span class="button__text"><i class=""></i>Lava</span>
-          </button>
-
-        <p class="parstd"></p> 
-
-          <button type="button" class="button" onclick="sendCmd('leds','rave','')">
-              <span class="button__text"><i class=""></i>Rave</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','stripes','')">
-              <span class="button__text"><i class=""></i>Stripes</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','miami','')">
-              <span class="button__text"><i class=""></i>Miami</span>
-          </button>
-
-        <p class="parstd"></p>   
-
-          <button type="button" class="button" onclick="sendCmd('leds','spark','')">
-              <span class="button__text"><i class=""></i>Spark</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','particle','')">
-              <span class="button__text"><i class=""></i>Particle</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','chase','')">
-              <span class="button__text"><i class=""></i>Chase</span>
-          </button>
-
-        <p class="parstd"></p>  
-
-          <button type="button" class="button" onclick="sendCmd('leds','rainbow','')">
-              <span class="button__text"><i class=""></i>Rainbow</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','orbits','')">
-              <span class="button__text"><i class=""></i>Orbits</span>
-          </button>  
-          <button type="button" class="button" onclick="sendCmd('leds','clouds','')">
-              <span class="button__text"><i class=""></i>Clouds</span>
-          </button>
-
-        <p class="parstd"></p> 
-
-          <button type="button" class="button" onclick="sendCmd('leds','water','')">
-              <span class="button__text"><i class=""></i>Water</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','flash','')">
-              <span class="button__text"><i class=""></i>Flash</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','strobe','')">
-              <span class="button__text"><i class=""></i>Strobe</span>
-          </button>
-
-        <p class="parstd"></p>   
-
-          <button type="button" class="button" onclick="sendCmd('leds','mandelbrot','')">
-              <span class="button__text"><i class=""></i>Mandelbrot</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','spectro','')">
-              <span class="button__text"><i class=""></i>Spectro</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','gold','')">
-              <span class="button__text"><i class=""></i>Gold</span>
-          </button>
-
-      </div>
-
-      <div class="column">
-        <p class="parstd"></p>  
-
-          <button type="button" class="button" onclick="sendCmd('leds','candle','')">
-              <span class="button__text"><i class=""></i>Candle</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','tungsten','')">
-              <span class="button__text"><i class=""></i>Tungsten</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','halogen','')">
-              <span class="button__text"><i class=""></i>Halogen</span>
-          </button>
-
-        <p class="parstd"></p>   
-
-          <button type="button" class="button" onclick="sendCmd('leds','sunlight','')">
-              <span class="button__text"><i class=""></i>Sunlight</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','overcast','')">
-              <span class="button__text"><i class=""></i>Overcast</span>
-          </button>  
-          <button type="button" class="button" onclick="sendCmd('leds','sky','')">
-              <span class="button__text"><i class=""></i>Sky</span>
-          </button>
-
-        <p class="parstd"></p> 
-
-          <button type="button" class="button" onclick="sendCmd('leds','purple','')">
-              <span class="button__text"><i class=""></i>Purple</span>
-          </button>   
-          <button type="button" class="button" onclick="sendCmd('leds','violet','')">
-              <span class="button__text"><i class=""></i>Violet</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','indigo','')">
-              <span class="button__text"><i class=""></i>Indigo</span>
-          </button>
-
-        <p class="parstd"></p>    
-
-          <button type="button" class="button" onclick="sendCmd('leds','red','')">
-              <span class="button__text"><i class=""></i>Red</span>
-          </button> 
-          <button type="button" class="button" onclick="sendCmd('leds','pink','')">
-              <span class="button__text"><i class=""></i>Pink</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','lavender','')">
-              <span class="button__text"><i class=""></i>Lavender</span>
-          </button>
-
-        <p class="parstd"></p>    
-
-          <button type="button" class="button" onclick="sendCmd('leds','forest','')">
-              <span class="button__text"><i class=""></i>Forest</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','green','')">
-              <span class="button__text"><i class=""></i>Green</span>
-          </button>         
-          <button type="button" class="button" onclick="sendCmd('leds','plum','')">
-              <span class="button__text"><i class=""></i>Plum</span>
-          </button>
-
-        <p class="parstd"></p>    
-
-          <button type="button" class="button" onclick="sendCmd('leds','salmon','')">
-              <span class="button__text"><i class=""></i>Salmon</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','yellow','')">
-              <span class="button__text"><i class=""></i>Yellow</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','orange','')">
-              <span class="button__text"><i class=""></i>Orange</span>
-          </button>
-
-        <p class="parstd"></p>   
-
-          <button type="button" class="button" onclick="sendCmd('leds','blue','')">
-              <span class="button__text"><i class=""></i>Blue</span>
-          </button>    
-          <button type="button" class="button" onclick="sendCmd('leds','orchid1','')">
-              <span class="button__text"><i class=""></i>Orchid</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','coral3','')">
-              <span class="button__text"><i class=""></i>Coral</span>
-          </button>
-
-        <p class="parstd"></p>    
-
-          <button type="button" class="button" onclick="sendCmd('leds','tomato1','')">
-              <span class="button__text"><i class=""></i>Tomato</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','tan1','')">
-              <span class="button__text"><i class=""></i>Tan</span>
-          </button>  
-          <button type="button" class="button" onclick="sendCmd('leds','olivedrab1','')">
-              <span class="button__text"><i class=""></i>Olive</span>
-          </button>    
-
-        <p class="parstd"></p> 
-
-          <button type="button" class="button" onclick="sendCmd('leds','aquamarine2','')">
-              <span class="button__text"><i class=""></i>Aquamarine</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','orangered','')">
-              <span class="button__text"><i class=""></i>Orange-Red</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','turquoise','')">
-              <span class="button__text"><i class=""></i>Turquoise</span>
-          </button>
-
-        <p class="parstd"></p>   
-
-          <button type="button" class="button" onclick="sendCmd('leds','azure2','')">
-              <span class="button__text"><i class=""></i>Azure</span>
-          </button> 
-          <button type="button" class="button" onclick="sendCmd('leds','gray','')">
-              <span class="button__text"><i class=""></i>Gray</span>
-          </button>
-          <button type="button" class="button" onclick="sendCmd('leds','cyan3','')">
-              <span class="button__text"><i class=""></i>Cyan</span>
-          </button>
-
-          <p style="padding-bottom: 100px;"></p>  
-
-      </div>
-      
+</div>
+
+<div class="led-grid ledpi-grid">
+
+  <div class="grid">
+
+    <div class="column">
+
+      <p class="parstd"></p> 
+
+        <button type="button" class="button" onclick="sendCmd('leds','fc','10')">
+            <span class="button__text"><i class=""></i>10%</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','fc','20')">
+            <span class="button__text"><i class=""></i>20%</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','fc','30')">
+            <span class="button__text"><i class=""></i>30%</span>
+        </button>
+
+      <p class="parstd"></p>  
+
+        <button type="button" class="button" onclick="sendCmd('leds','fc','40')">   
+            <span class="button__text"><i class=""></i>40%</span>
+        </button>      
+        <button type="button" class="button" onclick="sendCmd('leds','fc','50')">
+            <span class="button__text"><i class=""></i>50%</span>
+        </button>      
+        <button type="button" class="button" onclick="sendCmd('leds','fc','60')">
+            <span class="button__text"><i class=""></i>60%</span>
+        </button>
+
+      <p class="parstd"></p>   
+
+        <button type="button" class="button" onclick="sendCmd('leds','fc','70')">
+            <span class="button__text"><i class=""></i>70%</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','fc','80')">
+            <span class="button__text"><i class=""></i>80%</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','fc','90')">   
+            <span class="button__text"><i class=""></i>90%</span>
+        </button>  
+
+      <p class="parstd"></p>   
+
+        <button type="button" class="button" onclick="sendCmd('leds','fc','100')">   
+            <span class="button__text"><i class=""></i>100%</span>
+        </button>  
+        <button type="button" class="button" onclick="colorPrompt()">
+            <span class="button__text"><i class="fa-solid fa-brush"></i> Colors</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','shuffle','')">
+            <span class="button__text"><i class="fa-solid fa-shuffle"></i> Shuffle</span>
+        </button>
+
+      <p class="parstd"></p> 
+
+        <button type="button" class="button" onclick="sendCmd('leds','stop','')">
+            <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
+        </button>
+        <button type="button" class="button button__lgr" onclick="sendCmd('leds','pause','')">
+            <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
+        </button>
+
+      <p class="parstd"></p>  
+
+        <button type="button" class="button" onclick="sendCmd('leds','abstract','')">
+            <span class="button__text"><i class=""></i>Abstract</span>
+        </button>     
+        <button type="button" class="button" onclick="sendCmd('leds','flames','')">
+            <span class="button__text"><i class=""></i>Flames</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','tunnel','')">
+            <span class="button__text"><i class=""></i>Tunnel</span>
+        </button>
+
+      <p class="parstd"></p>   
+
+        <button type="button" class="button" onclick="sendCmd('leds','ink','')">
+            <span class="button__text"><i class=""></i>Ink</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','plasma','')">
+            <span class="button__text"><i class=""></i>Plasma</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','prism','')">
+            <span class="button__text"><i class=""></i>Prism</span>
+        </button>
+
+      <p class="parstd"></p>    
+
+        <button type="button" class="button" onclick="sendCmd('leds','paint','')">
+            <span class="button__text"><i class=""></i>Paint</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','beachball','')">
+            <span class="button__text"><i class=""></i>Beachball</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','blur','')">
+            <span class="button__text"><i class=""></i>Blur</span>
+        </button>
+
+      <p class="parstd"></p> 
+
+        <button type="button" class="button" onclick="sendCmd('leds','gas','')">
+            <span class="button__text"><i class=""></i>Gas</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','vibrant','')">
+            <span class="button__text"><i class=""></i>Vibrant</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','voltage','')">
+            <span class="button__text"><i class=""></i>Voltage</span>
+        </button>
+
+      <p class="parstd"></p>   
+
+        <button type="button" class="button" onclick="sendCmd('leds','8bit','')">
+            <span class="button__text"><i class=""></i>8-Bit</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','rings','')">
+            <span class="button__text"><i class=""></i>Rings</span>
+        </button>    
+        <button type="button" class="button" onclick="sendCmd('leds','bubbles','')">
+            <span class="button__text"><i class=""></i>Bubbles</span>
+        </button>    
+
+    </div>
+    <div class="column">
+      <p class="parstd"></p> 
+
+        <button type="button" class="button" onclick="sendCmd('leds','ripple','')">
+            <span class="button__text"><i class=""></i>Ripple</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','blocks','')">
+            <span class="button__text"><i class=""></i>Blocks</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','fuse','')">
+            <span class="button__text"><i class=""></i>Fuse</span>
+        </button>
+
+      <p class="parstd"></p>    
+
+        <button type="button" class="button" onclick="sendCmd('leds','lumin','')">
+            <span class="button__text"><i class=""></i>Lumin</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','pixel','')">
+            <span class="button__text"><i class=""></i>Pixel</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','fireworks','')">
+            <span class="button__text"><i class=""></i>Fireworks</span>
+        </button>    
+
+      <p class="parstd"></p> 
+
+        <button type="button" class="button" onclick="sendCmd('leds','rays','')">
+            <span class="button__text"><i class=""></i>Rays</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','spectrum','')">
+            <span class="button__text"><i class=""></i>Spectrum</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','warp','')">
+            <span class="button__text"><i class=""></i>Warp</span>
+        </button>   
+
+      <p class="parstd"></p>     
+
+        <button type="button" class="button" onclick="sendCmd('leds','gold','')">
+            <span class="button__text"><i class=""></i>Flames</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','noise1','')">
+            <span class="button__text"><i class=""></i>Tunnel</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','noise2','')">
+            <span class="button__text"><i class=""></i>8-Bit</span>
+        </button>
+
+      <p class="parstd"></p>    
+
+        <button type="button" class="button" onclick="sendCmd('leds','noise3','')">
+            <span class="button__text"><i class=""></i>Ink</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','spotlight','')">
+            <span class="button__text"><i class=""></i>Spotlight</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','lava','')">
+            <span class="button__text"><i class=""></i>Lava</span>
+        </button>
+
+      <p class="parstd"></p> 
+
+        <button type="button" class="button" onclick="sendCmd('leds','rave','')">
+            <span class="button__text"><i class=""></i>Rave</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','stripes','')">
+            <span class="button__text"><i class=""></i>Stripes</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','miami','')">
+            <span class="button__text"><i class=""></i>Miami</span>
+        </button>
+
+      <p class="parstd"></p>   
+
+        <button type="button" class="button" onclick="sendCmd('leds','spark','')">
+            <span class="button__text"><i class=""></i>Spark</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','particle','')">
+            <span class="button__text"><i class=""></i>Particle</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','chase','')">
+            <span class="button__text"><i class=""></i>Chase</span>
+        </button>
+
+      <p class="parstd"></p>  
+
+        <button type="button" class="button" onclick="sendCmd('leds','rainbow','')">
+            <span class="button__text"><i class=""></i>Rainbow</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','orbits','')">
+            <span class="button__text"><i class=""></i>Orbits</span>
+        </button>  
+        <button type="button" class="button" onclick="sendCmd('leds','clouds','')">
+            <span class="button__text"><i class=""></i>Clouds</span>
+        </button>
+
+      <p class="parstd"></p> 
+
+        <button type="button" class="button" onclick="sendCmd('leds','water','')">
+            <span class="button__text"><i class=""></i>Water</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','flash','')">
+            <span class="button__text"><i class=""></i>Flash</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','strobe','')">
+            <span class="button__text"><i class=""></i>Strobe</span>
+        </button>
+
+      <p class="parstd"></p>   
+
+        <button type="button" class="button" onclick="sendCmd('leds','mandelbrot','')">
+            <span class="button__text"><i class=""></i>Mandelbrot</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','spectro','')">
+            <span class="button__text"><i class=""></i>Spectro</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','gold','')">
+            <span class="button__text"><i class=""></i>Gold</span>
+        </button>
+
     </div>
 
+    <div class="column">
+      <p class="parstd"></p>  
+
+        <button type="button" class="button" onclick="sendCmd('leds','candle','')">
+            <span class="button__text"><i class=""></i>Candle</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','tungsten','')">
+            <span class="button__text"><i class=""></i>Tungsten</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','halogen','')">
+            <span class="button__text"><i class=""></i>Halogen</span>
+        </button>
+
+      <p class="parstd"></p>   
+
+        <button type="button" class="button" onclick="sendCmd('leds','sunlight','')">
+            <span class="button__text"><i class=""></i>Sunlight</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','overcast','')">
+            <span class="button__text"><i class=""></i>Overcast</span>
+        </button>  
+        <button type="button" class="button" onclick="sendCmd('leds','sky','')">
+            <span class="button__text"><i class=""></i>Sky</span>
+        </button>
+
+      <p class="parstd"></p> 
+
+        <button type="button" class="button" onclick="sendCmd('leds','purple','')">
+            <span class="button__text"><i class=""></i>Purple</span>
+        </button>   
+        <button type="button" class="button" onclick="sendCmd('leds','violet','')">
+            <span class="button__text"><i class=""></i>Violet</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','indigo','')">
+            <span class="button__text"><i class=""></i>Indigo</span>
+        </button>
+
+      <p class="parstd"></p>    
+
+        <button type="button" class="button" onclick="sendCmd('leds','red','')">
+            <span class="button__text"><i class=""></i>Red</span>
+        </button> 
+        <button type="button" class="button" onclick="sendCmd('leds','pink','')">
+            <span class="button__text"><i class=""></i>Pink</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','lavender','')">
+            <span class="button__text"><i class=""></i>Lavender</span>
+        </button>
+
+      <p class="parstd"></p>    
+
+        <button type="button" class="button" onclick="sendCmd('leds','forest','')">
+            <span class="button__text"><i class=""></i>Forest</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','green','')">
+            <span class="button__text"><i class=""></i>Green</span>
+        </button>         
+        <button type="button" class="button" onclick="sendCmd('leds','plum','')">
+            <span class="button__text"><i class=""></i>Plum</span>
+        </button>
+
+      <p class="parstd"></p>    
+
+        <button type="button" class="button" onclick="sendCmd('leds','salmon','')">
+            <span class="button__text"><i class=""></i>Salmon</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','yellow','')">
+            <span class="button__text"><i class=""></i>Yellow</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','orange','')">
+            <span class="button__text"><i class=""></i>Orange</span>
+        </button>
+
+      <p class="parstd"></p>   
+
+        <button type="button" class="button" onclick="sendCmd('leds','blue','')">
+            <span class="button__text"><i class=""></i>Blue</span>
+        </button>    
+        <button type="button" class="button" onclick="sendCmd('leds','orchid1','')">
+            <span class="button__text"><i class=""></i>Orchid</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','coral3','')">
+            <span class="button__text"><i class=""></i>Coral</span>
+        </button>
+
+      <p class="parstd"></p>    
+
+        <button type="button" class="button" onclick="sendCmd('leds','tomato1','')">
+            <span class="button__text"><i class=""></i>Tomato</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','tan1','')">
+            <span class="button__text"><i class=""></i>Tan</span>
+        </button>  
+        <button type="button" class="button" onclick="sendCmd('leds','olivedrab1','')">
+            <span class="button__text"><i class=""></i>Olive</span>
+        </button>    
+
+      <p class="parstd"></p> 
+
+        <button type="button" class="button" onclick="sendCmd('leds','aquamarine2','')">
+            <span class="button__text"><i class=""></i>Aquamarine</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','orangered','')">
+            <span class="button__text"><i class=""></i>Orange-Red</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','turquoise','')">
+            <span class="button__text"><i class=""></i>Turquoise</span>
+        </button>
+
+      <p class="parstd"></p>   
+
+        <button type="button" class="button" onclick="sendCmd('leds','azure2','')">
+            <span class="button__text"><i class=""></i>Azure</span>
+        </button> 
+        <button type="button" class="button" onclick="sendCmd('leds','gray','')">
+            <span class="button__text"><i class=""></i>Gray</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','cyan3','')">
+            <span class="button__text"><i class=""></i>Cyan</span>
+        </button>
+
+        <p style="padding-bottom: 100px;"></p>  
+
+    </div>
+    
   </div>
 
   <div class="lcdpi-grid">

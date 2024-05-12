@@ -59,7 +59,7 @@ body {
 }
 
 .hifi-grid {
-  --col-width: 100%; /* 1-column of 3x icons*/
+  --col-width: 50%; /* 2-columns of 3x icons*/
   display: none;
 }
 

@@ -819,7 +819,6 @@ function boxChanged() {
 
 // API call POST (update menu file)
 function updateMenuData(menu) {
-  let encoded = "";
   let id = "";
   // store ID object
   id = fileData[0];

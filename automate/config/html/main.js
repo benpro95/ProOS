@@ -9,13 +9,14 @@ let dynChkboxChanged = 0;
 let colorPromptActive = 0;
 let defaultSite = "Automate";
 let serverCmdData = null;
-let toggledPageMode = 0;
 let loadBarState = 0;
 let promptCount = 0;
 let socket = null;
 let fileData = [];
 let arcState = 0;
 let soundMode = 0;
+let ctlState = 0;
+let ctlMode;
 /////////////////
 
 // hide menu's when clicking outside
@@ -51,8 +52,14 @@ function loadPage() {
   // read device type
   device = deviceType(); 
   if (device === defaultSite) {
-    // load room menu state
-    roomMenu();
+    // load control menu
+    let _mode = localStorage.getItem("ctls-mode")
+    if (_mode === null || _mode === undefined || _mode === "") {
+      ctlMode = 'lr'; // living room 
+    } else {
+      ctlMode = localStorage.getItem("ctls-mode");
+    }  
+    ctlsMenu(ctlMode);
     // server home
     classDisplay('server-grid','block');
     // update devices status
@@ -93,49 +100,37 @@ function showLEDsPage() {
   classDisplay('led-grid','block');
 }
 
-function roomMenu() {
-  if (toggledPageMode === 0) {
+function ctlsMenu(_mode) {
+  if ((_mode === 'lr') || (_mode === 'subs')) { // living room
     classDisplay('bedroom-grid','none');
     classDisplay('hifi-grid','block');
-    toggledPageMode = 1;
-    soundMode = 0;
-  } else {
+    if (_mode === 'lr') {
+      ctlState = 0; 
+    }
+    if (_mode === 'subs') {
+      ctlState = 2; 
+    }
+  } 
+  if (_mode === 'br') { // bedroom
     classDisplay('hifi-grid','none');
     classDisplay('bedroom-grid','block');
-    toggledPageMode = 0;
-    soundMode = 1;
+    ctlState = 1;
   }
+  // save state 
+  localStorage.setItem("ctls-mode", _mode);
 }
 
 function sendVol(_cmd) {
   let _mode;
   // volume mode
-  if ((_cmd === 'up' ) && (soundMode === 0 )){
-    sendCmd('main','upf','');
+  if (ctlState === 0 ){
+    sendCmd('main',_cmd+'f',''); // living room system 
   }
-  if ((_cmd === 'up' ) && (soundMode === 1 )){
-    sendCmd('main','vup','bedroom');
+  if (ctlState === 1 ){
+    sendCmd('main','v'+_cmd,'bedroom'); // bedroom system
   }
-  if ((_cmd === 'up' ) && (soundMode === 2 )){
-    sendCmd('main','vup','subs');
-  }
-  if ((_cmd === 'dwn' ) && (soundMode === 0 )){
-    sendCmd('main','dwnf','');
-  }
-  if ((_cmd === 'dwn' ) && (soundMode === 1 )){
-    sendCmd('main','vdwn','bedroom');
-  }
-  if ((_cmd === 'dwn' ) && (soundMode === 2 )){
-    sendCmd('main','vdwn','subs');
-  }
-  if ((_cmd === 'mute' ) && (soundMode === 0 )){
-    sendCmd('main','mute','');
-  }
-  if ((_cmd === 'mute' ) && (soundMode === 1 )){
-    sendCmd('main','vmute','bedroom');
-  }
-  if ((_cmd === 'mute' ) && (soundMode === 2 )){
-    sendCmd('main','vmute','subs');
+  if (ctlState === 2 ){
+    sendCmd('main','v'+_cmd,'subs'); // living room subwoofers
   }
 }
 
@@ -962,10 +957,14 @@ function sendText() {
   if (data.trim() === "" || data === sendtext) {
     document.getElementById("lcdTextBox").value = sendtext;
   } else {
-  // Create the HTTP POST request
-    savePOST('message',data);
+    if (device === defaultSite) {
+      sendCmd('main','lcdpimsg',data);
+    } else {
+      // Create the HTTP POST request
+      savePOST('message',data);  
+    }
     loadBar(0.25);
-    clearText();
+    clearText();   
   }
 }
 

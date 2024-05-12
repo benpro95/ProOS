@@ -409,16 +409,6 @@ CALL_LCDPI
 exit
 ;;
 
-relaxstop)
-echo "Stopping playback on Apple TV..."
-systemctl stop relaxloop
-systemctl set-environment rpi_relaxmode="pause"
-systemctl start relaxloop
-LCDPI_MSG="paused Apple TV"
-CALL_LCDPI 
-exit
-;;
-
 vmute)
 if [ "$CMDARG" == "bedroom" ]; then
   XMITCMD="minimute" ; XMITARG="toggle" ; XMIT 
@@ -459,6 +449,8 @@ systemctl start relaxloop
 ## Turn off Apple TV
 #systemctl set-environment rpi_relaxmode=off
 #systemctl start relaxloop
+LCDPI_MSG="paused Apple TV"
+CALL_LCDPI 
 exit
 ;;
 
@@ -483,6 +475,18 @@ exit
 
 status)
 /opt/system/status > /dev/null 2> /dev/null
+exit
+;;
+
+clearlcdpi)
+LCDPI_MSG="clear"
+CALL_LCDPI  
+exit
+;;
+
+lcdpimsg)
+LCDPI_MSG="$CMDARG"
+CALL_LCDPI  
 exit
 ;;
 

@@ -3,6 +3,14 @@ LCDPI_MSG=$1
 ## Send message to LCDpi
 LCD_HOST="lcdpi.home"
 
+if [ "$LCDPI_MSG" == "clear" ]; then
+  ## Clear Message
+  /usr/bin/curl -silent --fail --ipv4 \
+   --max-time 5 --retry 1 --no-keepalive \
+   --data "var=&arg=clear&action=main" "http://$LCD_HOST/exec.php"
+  exit
+fi
+
 ## Convert Text to JSON 
 JSONDATA=$(echo "$LCDPI_MSG" | jq -Rsc '. / "\n" - [""]')
 ## Send Message

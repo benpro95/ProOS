@@ -44,40 +44,40 @@ body {
 	line-height: 0;
 }
 
-.parend {
-  margin-bottom: 100px;
-}
-
 .parend-fb {
   margin-bottom: 700px;
 }
 
-.parsplit {
-  display: block;
-}
-
 .led-grid {
+  --col-width: 33.33%; /* 3-columns of 3x icons*/
   display: none; 
 }
 
-.sounds-grid {
+.bedroom-grid {
+  --col-width: 50%; /* 2-columns of 3x icons*/
   display: none;
 }
 
-.server-grid {
+.hifi-grid {
+  --col-width: 100%; /* 1-column of 3x icons*/
   display: none;
+}
+
+.lcdpi-grid {
+  --col-width: 100%; /* 1-column of 3x icons*/
+  display: none;
+}
+
+.ledpi-grid {
+  display: none; 
 }
 
 .pi-grid {
   display: none;
 }
 
-.lcdpi-grid {
+.server-grid {
   display: none;
-}
-
-.ledpi-grid {
-  display: none; 
 }
 
 .container {
@@ -99,19 +99,41 @@ input.chkbox {
 .grid {
   overflow: hidden;
   white-space: nowrap;
-  animation: fadeIn 0.3s;
-  -webkit-animation: fadeIn 0.3s;
-  -moz-animation: fadeIn 0.3s;;
-  -o-animation: fadeIn 0.3s;
-  -ms-animation: fadeIn 0.3s;
+  animation: fadeIn 0.5s;
+  -webkit-animation: fadeIn 0.5s;
+  -moz-animation: fadeIn 0.5s;;
+  -o-animation: fadeIn 0.5s;
+  -ms-animation: fadeIn 0.5s;
 }
 
-.body__text {
+.grid:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.column {
+  width: var(--col-width);
+  padding-left: 7px;
+  float: left;
+}
+
+@media screen and (max-width: 1000px) {
+  .column {
+    width: 100%;
+    float: none;
+  }
+}
+
+.header_text {
+  margin: 20px;
+  padding-bottom: 30px;
+  text-align: center;
+  margin: auto;
+  width: 50%;
+  z-index: -99;
   color: #6c7177; /* header font color */
-  padding-left: 8px;
   font-size: 20px;
-  text-align: left;
-  min-height: 50px;
   animation: fadeIn 1s;
   -webkit-animation: fadeIn 1s;
   -moz-animation: fadeIn 1s;

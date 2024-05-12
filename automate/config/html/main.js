@@ -38,11 +38,6 @@ document.addEventListener('click', function handleClickCheckbox(event) {
   }
 });
 
-// resize event
-window.onresize = function(event) {
-  resizeEvent();
-};
-
 // hide all drop down menus
 function hideDropdowns() {
   classDisplay("dropdown-content","none");
@@ -54,15 +49,13 @@ function hideDropdowns() {
 function loadPage() {
   // read device type
   device = deviceType(); 
-  // resize button grid
-  resizeEvent();
   if (device === defaultSite) {
-    // volume mode switch
-    volMode();
     // server home
     classDisplay('server-grid','block');
     // update devices status
     sendCmd('main','status','')
+    // load sound buttons
+    soundMenu();
   } else { // pi's
     if (device === 'Pi') {
       classDisplay('pi-grid','block');
@@ -99,31 +92,38 @@ function showLEDsPage() {
   classDisplay('led-grid','block');
 }
 
-function showSoundsPage() {
-  toggledPageMode = 0;
-  hidePages();
-  relaxMode();
-  classDisplay('sounds-grid','block');
+function soundMenu() {
+  //hidePages();
+  //relaxMode();
+  if (toggledPageMode === 0) {
+    classDisplay('bedroom-grid','none');
+    classDisplay('hifi-grid','block');
+    toggledPageMode = 1;
+  } else {
+    classDisplay('bedroom-grid','block');
+    classDisplay('hifi-grid','none');
+    toggledPageMode = 0;
+  }
+}
+
+// switch volume controls on main page
+function volMode() {   
+  let id = document.getElementById("sub__text");
+  if (toggledPageMode === 1) {
+     id.textContent = "Subwoofers";
+     toggledPageMode = 0;
+  } else {  
+     id.textContent = "Bedroom";
+     toggledPageMode = 1;
+  }
 }
 
 function hidePages() {
-  classDisplay('server-grid','none');  
-  classDisplay('sounds-grid','none');
   classDisplay('pi-grid','none'); 
   classDisplay('lcdpi-grid','none');
+  classDisplay('server-grid','none');
   classDisplay('ledpi-grid','none');
   classDisplay('led-grid','none');
-}
-
-function resizeEvent() {
-  if (device != 'LCDpi') {
-    // auto re-size on all other devices
-    if (window.innerWidth < 860) {
-      classDisplay('parsplit','block');
-    } else {
-      classDisplay('parsplit','none');
-    }
-  }
 }
 
 // show / hide multiple classes
@@ -153,7 +153,6 @@ function sleep(ms) {
 function GoToHomePage() {
   if (device === defaultSite) {
     hidePages();
-    toggledPageMode = 0;
     loadPage();
   } else {
     window.location = 'https://'+defaultSite+'.home';   
@@ -554,59 +553,8 @@ function savePOST(file,data) {
   xhr.send(_json);
 }
 
-// switch volume controls on main page
-function volMode() {   
-  let id = document.getElementById("sub__text");
-  if (toggledPageMode === 1) {
-     id.textContent = "Subwoofers";
-     toggledPageMode = 0;
-  } else {  
-     id.textContent = "Bedroom";
-     toggledPageMode = 1;
-  }
-}
-
-// switch volume controls on bedroom page
-function relaxMode() {   
-  let id = document.getElementById("relax__text");
-  if (toggledPageMode === 1) {
-     id.textContent = "HiFi";
-     toggledPageMode = 0;
-  } else {  
-     id.textContent = "Bedroom";
-     toggledPageMode = 1;
-  }
-}
-
 function relaxSend(_cmd) {
-  let _mode;
-  // volume mode
-  if (_cmd === 'vup' 
-   || _cmd === 'vdwn'
-   || _cmd === 'vmute') {
-    _mode = _cmd;
-    if (toggledPageMode === 0) {
-      _cmd = 'hifi';
-    } else {
-      _cmd = 'bedroom';
-    } 
-  } else {
-    // relax mode
-    _mode = 'relax';
-    if (toggledPageMode === 0) {
-      _cmd = _cmd+"-hifi";
-    } 
-  }
-  sendCmd('main',_mode,_cmd);
-}
-
-function toggledVol(_mode) {
-  if (toggledPageMode === 0) {
-    _cmd = 'subs';
-  } else {
-    _cmd = 'bedroom';
-  } 
-  sendCmd('main',_mode,_cmd);
+  sendCmd('main','relax',_cmd);
 }
 
 // send server action

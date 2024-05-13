@@ -14,7 +14,6 @@ let promptCount = 0;
 let socket = null;
 let fileData = [];
 let arcState = 0;
-let soundMode = 0;
 let ctlState = 0;
 let ctlMode;
 /////////////////
@@ -101,13 +100,15 @@ function showLEDsPage() {
 }
 
 function ctlsMenu(_mode) {
+  classDisplay('submode','none');
   if ((_mode === 'lr') || (_mode === 'subs')) { // living room
     classDisplay('bedroom-grid','none');
     classDisplay('hifi-grid','block');
-    if (_mode === 'lr') {
+    if (_mode === 'lr') { // normal mode
       ctlState = 0; 
     }
-    if (_mode === 'subs') {
+    if (_mode === 'subs') { // subwoofer mode
+      classDisplay('submode','inline-block');
       ctlState = 2; 
     }
   } 

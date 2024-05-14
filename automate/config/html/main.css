@@ -115,17 +115,6 @@ input.chkbox {
   }
 }
 
-.trailer {
-  margin: 20px;
-  padding-bottom: 30px;
-  text-align: center;
-  margin: auto;
-  width: 50%;
-  z-index: -1;
-  color: #6c7177; /* trailer font color */
-  font-size: 16px;
-}
-
 .submode {
   display: none;
   margin-top: 6px;
@@ -501,8 +490,47 @@ input.chkbox {
 
 
 /*
+ *  About Prompt Style
+ */
+
+#about__prompt {
+  background-color: black;
+  border: 1px solid white;
+  text-align: center;
+  text-decoration: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -125px;
+  margin-top: -180px;
+  width: 250px;
+  height: 320px;
+  padding: 15px; 
+  color: #fff;
+  z-index: 999; 
+}
+
+#about__btn {
+  position: absolute;
+  margin-left: -75px;
+  width: 150px;
+  height: 45px;
+  bottom: 20px;
+  left: 50%;
+}
+
+.about__text {
+  padding-bottom: 1px;
+  text-align: center;
+  margin: auto;
+  color: #a6a9ad;
+  font-size: 18px;
+}
+
+/*
  *  VM Control Style
  */
+
 #vms__prompt {
   background-color: black;
   border: 1px solid white;

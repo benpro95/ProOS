@@ -410,6 +410,51 @@ function piWiFiPrompt(){
   }); 
 }
 
+function show_aboutPrompt(){
+  let aboutprompt = document.createElement("div"); 
+  aboutprompt.id= "about__prompt";
+  // title
+  let abouttext = document.createElement("div");
+  abouttext.innerHTML = "Automate Controller";
+  aboutprompt.appendChild(abouttext); 
+  // logo
+  let img = document.createElement("img");
+  img.src = "img/automate.png";
+  img.id = "about__img";
+  aboutprompt.appendChild(img);
+  // version details
+  let currentDate = new Date();
+  let currentYear = currentDate.getFullYear();
+  let aboutdets2 = document.createElement("div"); 
+  aboutdets2.innerHTML = "Version: 3.7 (" + currentYear + ")";
+  aboutdets2.className = "about__text";
+  aboutprompt.appendChild(aboutdets2);
+  // author details
+  let aboutdets1 = document.createElement("div"); 
+  aboutdets1.innerHTML = "by Ben Provenzano III";
+  aboutdets1.className = "about__text";
+  aboutprompt.appendChild(aboutdets1); 
+  // cancel button
+  let aboutcancelb = document.createElement("button");
+  aboutcancelb.innerHTML = "Close";
+  aboutcancelb.className ="button"; 
+  aboutcancelb.id = "about__btn";
+  aboutcancelb.type="button"; 
+  aboutprompt.appendChild(aboutcancelb); //append cancel-button
+  document.body.appendChild(aboutprompt); //append the password-prompt so it gets visible
+  new Promise(function(resolve, reject) {
+      aboutprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
+        if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
+          aboutprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
+          document.body.removeChild(aboutprompt);  //as we are done clean up by removing the password-prompt
+      });
+  });   
+}
+
+async function aboutPrompt(){
+  await show_aboutPrompt();
+}
+
 async function showPiWiFiPrompt(){
   let result;
   try {

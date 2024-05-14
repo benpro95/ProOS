@@ -123,6 +123,12 @@ input.chkbox {
   font-size: 20px;
 }
 
+.nolayout {
+  margin: auto;
+  color: #a6a9ad;
+  font-size: 20px;
+}
+
 .button {
     transition: all 0.2s;
 	  width: 150px;

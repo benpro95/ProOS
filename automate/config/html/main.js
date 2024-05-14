@@ -1,7 +1,7 @@
 // Automate Website - JavaScript Frontend
 // by Ben Provenzano III
 
-/////////////////
+//////////////////
 let device = null;
 let selectedVM = "";
 let dynMenuActive = 0;
@@ -16,7 +16,7 @@ let fileData = [];
 let arcState = 0;
 let ctlState = 0;
 let ctlMode;
-/////////////////
+////////////
 
 // hide menu's when clicking outside
 document.addEventListener('click', function handleClickOutsideBox(event) {
@@ -415,7 +415,7 @@ function show_aboutPrompt(){
   aboutprompt.id= "about__prompt";
   // title
   let abouttext = document.createElement("div");
-  abouttext.innerHTML = "Automate Controller";
+  abouttext.innerHTML = device + " Controller";
   aboutprompt.appendChild(abouttext); 
   // logo
   let img = document.createElement("img");

@@ -164,6 +164,7 @@ then
   rm -f $REGROOT/External  
   rm -f $REGROOT/Private
   rm -f $REGROOT/Archive
+  rm -f $REGROOT/ArchiveII
   rm -f $REGROOT/WWW
   rm -f $REGROOT/RAM
   exit
@@ -204,7 +205,7 @@ then
   fi
   exit
 fi
-## Archive Share
+## Archive Shares
 if [[ $REPLY == "arc_region" ]]
 then
   if [ -e "$REGROOT/Archive" ]; then
@@ -213,6 +214,17 @@ then
   else
     echo "attaching archive region..."
     ln -s /mnt/.regions/Archive $REGROOT/Archive
+  fi
+  exit
+fi
+if [[ $REPLY == "arc2_region" ]]
+then
+  if [ -e "$REGROOT/ArchiveII" ]; then
+    echo "detaching archive II region..."   
+    rm $REGROOT/ArchiveII
+  else
+    echo "attaching archive II region..."
+    ln -s /mnt/.regions/ArchiveII $REGROOT/ArchiveII
   fi
   exit
 fi

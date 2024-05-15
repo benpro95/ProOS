@@ -290,7 +290,13 @@ function show_vmsPrompt(text){
               serverSend();
               document.body.removeChild(vms_prompt); 
               clearPendingCmd();
-            }            
+            }
+            if (arcState === 3) {
+              serverAction('files-arc2_region');
+              serverSend();
+              document.body.removeChild(vms_prompt); 
+              clearPendingCmd();
+            }             
           } else {  
             vmPromptSelect('xana');
           }
@@ -956,6 +962,9 @@ function serverAction(cmd) {
   }
   if (cmd === 'files-snap_region') {
     arcState = 2;
+  }
+  if (cmd === 'files-www_region') {
+    arcState = 3;
   }
   serverCmdData = cmd;
   // change color of send button

@@ -122,7 +122,6 @@ function ctlsMenu(_mode) {
 }
 
 function sendVol(_cmd) {
-  let _mode;
   // volume mode
   if (ctlState === 0 ){
     sendCmd('main',_cmd+'f',''); // living room system 

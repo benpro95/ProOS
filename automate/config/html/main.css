@@ -110,6 +110,9 @@ input.chkbox {
 }
 
 @media screen and (max-width: 900px) {
+  .column-right {
+    padding-left: 0px;
+  }
   .grid {
     flex-direction: column;
     align-items: center;

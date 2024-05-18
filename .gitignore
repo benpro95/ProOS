@@ -6,6 +6,7 @@ pve/vmbkps
 pve/photos
 retropi/retropie-setup
 automate/config/html/img/wifi.png
+automate/config/html/wifi.js
 xana
 *authorized_keys*
 *Thumbs.db*

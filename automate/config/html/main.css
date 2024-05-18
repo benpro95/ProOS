@@ -478,26 +478,44 @@ input.chkbox {
 
 
 /*
- *  WiFi Prompt Style
+ *  WiFi SSID Display Prompt Style
  */
 
 #wifi__prompt {
   background-color: black;
   border: 1px solid white;
+  text-align: center;
+  text-decoration: none;
   position: fixed;
-  top: 15%;
+  top: 25%;
   left: 15%;
   width: 267px;  
   height: auto;
   padding: 16px; 
   color: #fff;
-  z-index: 999; 
+  z-index: 999;
 }
 
 #wifi__img {
   margin: 10px;
 } 
 
+#wifi__pwdtxt {
+  text-align: center;
+  margin: auto;
+  color: #a6a9ad;
+  font-size: 18px;
+  margin-bottom: 55px;
+}
+
+#wifipmt__btn {
+  position: absolute;
+  margin-left: -60px;
+  width: 120px;
+  height: 35px;
+  bottom: 15px;
+  left: 50%;
+}
 
 /*
  *  About Prompt Style
@@ -607,9 +625,11 @@ input.chkbox {
   height: 30px;
   width: 295px;  
 }
+
 #color__box::-webkit-color-swatch-wrapper {
   padding: 0;
 }
+
 #color__box::-webkit-color-swatch {
   border: solid 1px #000; /*change color of the swatch border here*/
   border-radius: 0px;

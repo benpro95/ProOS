@@ -500,33 +500,38 @@ async function vmsPrompt(){
   await show_vmsPrompt("Select Virtual Machine:");
 }
 
-function show_wifiPrompt(text){
-  let wifiprompt = document.createElement("div"); //creates the div to be used as a prompt
-  wifiprompt.id= "wifi__prompt"; //gives the prompt an id - not used in my example but good for styling with css-file
-  let wifitext = document.createElement("div"); //create the div for the password-text
-  wifitext.innerHTML = text; //put inside the text
-  wifiprompt.appendChild(wifitext); //append the text-div to the password-prompt   wifi__img
+function show_wifiPrompt(){
+  let wifiprompt = document.createElement("div");
+  wifiprompt.id = "wifi__prompt";
+  let wifitext = document.createElement("div");
+  wifitext.innerHTML = "Scan for WiFi Access:"; 
+  wifiprompt.appendChild(wifitext);
   let img = document.createElement("img");
   img.src = "img/wifi.png";
   img.id = "wifi__img";
   wifiprompt.appendChild(img);
-  let wificancelb = document.createElement("button"); //the cancel-button
+  let wifipwd = document.createElement("div");
+  wifipwd.id = "wifi__pwdtxt";
+  wifipwd.innerHTML = atob(SSIDpwd());
+  wifiprompt.appendChild(wifipwd);
+  let wificancelb = document.createElement("button");
   wificancelb.innerHTML = "Close";
-  wificancelb.className ="button"; 
-  wificancelb.type="button"; 
-  wifiprompt.appendChild(wificancelb); //append cancel-button
-  document.body.appendChild(wifiprompt); //append the password-prompt so it gets visible
+  wificancelb.className = "button"; 
+  wificancelb.type = "button"; 
+  wificancelb.id = "wifipmt__btn";
+  wifiprompt.appendChild(wificancelb);
+  document.body.appendChild(wifiprompt);
   new Promise(function(resolve, reject) {
-      wifiprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
-        if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
-	        wifiprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
-	        document.body.removeChild(wifiprompt);  //as we are done clean up by removing the password-prompt
+      wifiprompt.addEventListener('click', function handleButtonClicks(e) {
+        if (e.target.tagName !== 'BUTTON') { return; }
+	        wifiprompt.removeEventListener('click', handleButtonClicks);
+	        document.body.removeChild(wifiprompt);
       });
   });   
 }
 
 async function wifiPrompt(){
-  await show_wifiPrompt("Scan for WiFi Access:");
+  await show_wifiPrompt();
 }
 
 function passwordPrompt(text){

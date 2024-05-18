@@ -500,7 +500,7 @@ async function vmsPrompt(){
   await show_vmsPrompt("Select Virtual Machine:");
 }
 
-function show_wifiPrompt(){
+function show_wifiPwdPrompt(){
   let wifiprompt = document.createElement("div");
   wifiprompt.id = "wifi__prompt";
   let wifitext = document.createElement("div");
@@ -531,7 +531,7 @@ function show_wifiPrompt(){
 }
 
 async function wifiPrompt(){
-  await show_wifiPrompt();
+  await show_wifiPwdPrompt();
 }
 
 function passwordPrompt(text){

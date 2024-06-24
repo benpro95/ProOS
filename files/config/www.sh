@@ -160,6 +160,7 @@ if [ -f "$STATUSFILE" ]; then
   ## Write array to new file
   for NEWSTATFILE_ITEM in "${STATFILEARR[@]}"; do
     echo "$NEWSTATFILE_ITEM" >> "$STATUSFILE"
+    echo "$NEWSTATFILE_ITEM"
   done
 fi
 

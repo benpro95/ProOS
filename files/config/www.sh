@@ -10,7 +10,16 @@ LOGFILE="$4"
 REGROOT="/home/server/.regions"
 
 
-function BACKUPSVR {
+CURBKPDTES=()
+function SAVEBKPDATES () {
+  local _POOL="$1"
+  touch /mnt/extbkps/$_POOL/Ben/LastSynced.txt
+  local _LASTSYNC=$(date -r /mnt/extbkps/$_POOL/Ben/LastSynced.txt '+%F %r')
+  local _CURBKPLNE=$(echo "$_POOL|$_LASTSYNC" | sed -e 's/ /_/g')
+  CURBKPDTES+=( $_CURBKPLNE )
+}
+
+function BACKUPSVR () {
 ############################################
 #### Server Backup Program #################
 
@@ -59,11 +68,6 @@ for _POOL in "${ZFSPOOLS[@]}"; do
       if [ ! -e /mnt/extbkps/$POOL/Ben ]; then
         echo "flash drive not connected $POOL"
       else
-        ##### BEGIN BACKUP #####
-        if [ -e /mnt/extbkps/$POOL/Ben/LastSynced.txt ]; then
-          LASTSYNC=$(date -r /mnt/extbkps/$POOL/Ben/LastSynced.txt -R)
-          echo "*** flash drive $POOL last synced on $LASTSYNC ***"
-        fi  
         #### Ben Share ####
         if [ ! -e /mnt/ben/ProOS ]; then
           echo "Ben' share not found!"
@@ -84,7 +88,7 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
         fi
         ##### END BACKUP #####
-        touch /mnt/extbkps/$POOL/Ben/LastSynced.txt
+        SAVEBKPDATES "$POOL"
       fi  
     fi
     ## Hard Drives
@@ -92,12 +96,7 @@ for _POOL in "${ZFSPOOLS[@]}"; do
       #################################
       if [ ! -e /mnt/extbkps/$POOL/Ben ]; then
         echo "hard drive not connected $POOL"
-      else
-        ##### BEGIN BACKUP #####
-        if [ -e /mnt/extbkps/$POOL/Ben/LastSynced.txt ]; then
-          LASTSYNC=$(date -r /mnt/extbkps/$POOL/Ben/LastSynced.txt -R)
-          echo "*** hard drive $POOL last synced on $LASTSYNC ***"
-        fi        
+      else      
         #### Ben Share ####
         if [ ! -e /mnt/ben/ProOS ]; then
           echo "Ben' share not found!"
@@ -122,12 +121,47 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           rsync -aP /mnt/media/ /mnt/extbkps/$POOL/Media/ -delete --delete-excluded
         fi
         ##### END BACKUP #####
-        touch /mnt/extbkps/$POOL/Ben/LastSynced.txt 
+        SAVEBKPDATES "$POOL"
       fi
     fi
     echo "" 
   fi  
 done
+
+STATUSFILE="/mnt/extbkps/status.txt"
+if [ -f "$STATUSFILE" ]; then
+  ## Read status file into array
+  readarray -t STATFILEARR < "$STATUSFILE"
+  ## Delete status files content
+  truncate -s 0 "$STATUSFILE"
+  ## Read through each item in current drive status array
+  for CURBKP_ITEM in ${CURBKPDTES[@]}; do
+    ENTRY_FOUND=""
+    CURBKP_DRIVE=${CURBKP_ITEM%|*}
+    CURBKP_DATE=${CURBKP_ITEM#*|}
+    ## Read through each item in status file array
+    for STATIDX in "${!STATFILEARR[@]}"; do
+      STATFILE_ITEM=${STATFILEARR[$STATIDX]}
+      STATFILE_DRIVE=${STATFILE_ITEM%|*}
+      STATFILE_DATE=${STATFILE_ITEM#*|}
+      ## Scan for matching drive entry
+      if [[ "$STATFILE_DRIVE" == "$CURBKP_DRIVE" ]]; then
+        ## Update existing entry
+        STATFILEARR[$STATIDX]="$STATFILE_DRIVE|$CURBKP_DATE"
+        ENTRY_FOUND="yes"
+        break
+      fi
+    done
+    ## Add new entry if no match found
+    if [[ "$ENTRY_FOUND" == "" ]]; then
+      STATFILEARR+=("$CURBKP_DRIVE|$CURBKP_DATE")
+    fi
+  done
+  ## Write array to new file
+  for NEWSTATFILE_ITEM in "${STATFILEARR[@]}"; do
+    echo "$NEWSTATFILE_ITEM" >> "$STATUSFILE"
+  done
+fi
 
 ################################
 ## Wait for drives to settle after backup complete

@@ -158,13 +158,13 @@ if [ -f "$STATUSFILE" ]; then
     fi
   done
   ## Write array to new file
+  echo " " 
+  echo "last backup dates: "
   for NEWSTATFILE_ITEM in "${STATFILEARR[@]}"; do
     echo "$NEWSTATFILE_ITEM" >> "$STATUSFILE"
-    echo " " 
-    echo "last backup dates: "
     echo "$NEWSTATFILE_ITEM"
-    echo " "
   done
+  echo " "
 fi
 
 ################################

@@ -99,41 +99,6 @@ function showLEDsPage() {
   classDisplay('led-grid','block');
 }
 
-function ctlsMenu(_mode) {
-  classDisplay('submode','none');
-  if ((_mode === 'lr') || (_mode === 'subs')) { // living room
-    classDisplay('bedroom-grid','none');
-    classDisplay('hifi-grid','block');
-    if (_mode === 'lr') { // normal mode
-      ctlState = 0; 
-    }
-    if (_mode === 'subs') { // subwoofer mode
-      classDisplay('submode','inline-block');
-      ctlState = 2; 
-    }
-  } 
-  if (_mode === 'br') { // bedroom
-    classDisplay('hifi-grid','none');
-    classDisplay('bedroom-grid','block');
-    ctlState = 1;
-  }
-  // save state 
-  localStorage.setItem("ctls-mode", _mode);
-}
-
-function sendVol(_cmd) {
-  // volume mode
-  if (ctlState === 0 ){
-    sendCmd('main',_cmd+'f',''); // living room system 
-  }
-  if (ctlState === 1 ){
-    sendCmd('main','v'+_cmd,'bedroom'); // bedroom system
-  }
-  if (ctlState === 2 ){
-    sendCmd('main','v'+_cmd,'subs'); // living room subwoofers
-  }
-}
-
 function hidePages() {
   classDisplay('pi-grid','none'); 
   classDisplay('lcdpi-grid','none');
@@ -285,12 +250,6 @@ function show_vmsPrompt(text){
               clearPendingCmd();
             }
             if (arcState === 2) {
-              serverAction('files-arc_region');
-              serverSend();
-              document.body.removeChild(vms_prompt); 
-              clearPendingCmd();
-            }
-            if (arcState === 3) {
               serverAction('files-arc2_region');
               serverSend();
               document.body.removeChild(vms_prompt); 
@@ -685,7 +644,52 @@ function sendCmd(act, arg1, arg2) {
   })
 }
 
-//// Dynamic Menus ////
+// volume controls
+function sendVol(_cmd) {
+  // volume mode
+  if (ctlState === 0 ){
+    sendCmd('main',_cmd+'f',''); // living room system 
+  }
+  if (ctlState === 1 ){
+    sendCmd('main','v'+_cmd,'bedroom'); // bedroom system
+  }
+  if (ctlState === 2 ){
+    sendCmd('main','v'+_cmd,'subs'); // living room subwoofers
+  }
+}
+
+// controls menu actions
+function ctlsMenu(_mode) {
+  classDisplay('submode','none');
+  if ((_mode === 'lr') || (_mode === 'subs')) { // living room
+    classDisplay('bedroom-grid','none');
+    classDisplay('hifi-grid','block');
+    if (_mode === 'lr') { // normal mode
+      ctlState = 0; 
+    }
+    if (_mode === 'subs') { // subwoofer mode
+      classDisplay('submode','inline-block');
+      ctlState = 2; 
+    }
+  } 
+  if (_mode === 'br') { // bedroom
+    classDisplay('hifi-grid','none');
+    classDisplay('bedroom-grid','block');
+    ctlState = 1;
+  }
+  // save state 
+  localStorage.setItem("ctls-mode", _mode);
+}
+
+// controls menu dropdown
+function showCtlsMenu() {
+  if ((ctlState === 0 ) || (ctlState === 2)) { // living room / subwoofers
+    showMenu('ctls-menu-lr');
+  }
+  if (ctlState === 1 ) { // bedroom
+    showMenu('ctls-menu-br');
+  }
+}
 
 // toggle dropdown menu's
 function showMenu(_menu) {
@@ -697,6 +701,8 @@ function showMenu(_menu) {
     _elem.style.display = 'block';
   }
 }
+
+//// Dynamic Menus ////
 
 function showDynMenu(_menu) {
   let _elem = document.getElementById(_menu);
@@ -966,9 +972,6 @@ function serverAction(cmd) {
   }
   if (cmd === 'files-snap_region') {
     arcState = 2;
-  }
-  if (cmd === 'files-www_region') {
-    arcState = 3;
   }
   serverCmdData = cmd;
   // change color of send button

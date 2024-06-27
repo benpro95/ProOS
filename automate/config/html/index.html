@@ -166,12 +166,15 @@
           <div class="dropdown-content ind-button" id="statsmenu"></div>
       </button>
       <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('ctls-menu')">
+        <button type="button" class="button" onclick="showCtlsMenu()">
           <span class="button__text"><i class="fa-solid fa-gears"></i> Controls</span>
         </button>  
-        <div class="dropdown-content dd-button" id="ctls-menu">
-          <a onclick="ctlsMenu('br')"><i></i> Bedroom</a>
+        <div class="dropdown-content dd-button" id="ctls-menu-br">
           <a onclick="ctlsMenu('lr')"><i></i> Living Room</a>
+          <a onclick="ctlsMenu('subs')"><i></i> Subwoofers</a>
+        </div>
+        <div class="dropdown-content dd-button" id="ctls-menu-lr">
+          <a onclick="ctlsMenu('br')"><i></i> Bedroom</a>
           <a onclick="ctlsMenu('subs')"><i></i> Subwoofers</a>
         </div>
       </div>
@@ -886,8 +889,9 @@
 	      <div class="dropdown"> 
           <a class="dropbtn" onclick="showMenu('regionsmenu')">Regions</a>
           <div class="dropdown-content" id="regionsmenu">
+            <a onclick="serverAction('files-arc_region')">Archive</a>
             <a onclick="serverAction('files-ext_region')">External</a>
-            <a onclick="serverAction('files-snap_region')">Snapshots</a>                  	
+            <a onclick="serverAction('files-snap_region')">Snapshots</a>               	
             <a onclick="serverAction('files-www_region')">Web Root</a>
             <a onclick="serverAction('files-ram_region')">RAM Disk</a>
             <a onclick="serverAction('files-detach_all_regions')">Detach All</a>

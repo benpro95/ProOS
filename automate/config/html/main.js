@@ -690,7 +690,7 @@ function showCtlsMenu() {
     showMenu('ctls-menu-br');
   }
   if (ctlState === 2 ) { // subwoofers
-    showMenu('ctls-menu-lr');
+    showMenu('ctls-menu-sub');
   }
 }
 

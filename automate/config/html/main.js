@@ -683,11 +683,14 @@ function ctlsMenu(_mode) {
 
 // controls menu dropdown
 function showCtlsMenu() {
-  if ((ctlState === 0 ) || (ctlState === 2)) { // living room / subwoofers
+  if (ctlState === 0 ) { // living room 
     showMenu('ctls-menu-lr');
   }
   if (ctlState === 1 ) { // bedroom
     showMenu('ctls-menu-br');
+  }
+  if (ctlState === 2 ) { // subwoofers
+    showMenu('ctls-menu-lr');
   }
 }
 

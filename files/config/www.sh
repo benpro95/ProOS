@@ -8,7 +8,7 @@ ARG="$2"
 RAMDISK="$3"
 LOGFILE="$4"
 REGROOT="/home/server/.regions"
-
+STATUSFILE="/mnt/extbkps/status.txt"
 
 CURBKPDTES=()
 function SAVEBKPDATES () {
@@ -128,10 +128,16 @@ for _POOL in "${ZFSPOOLS[@]}"; do
   fi  
 done
 
-STATUSFILE="/mnt/extbkps/status.txt"
 if [ -f "$STATUSFILE" ]; then
   ## Read status file into array
+  echo " " 
+  echo "last backup dates: "
   readarray -t STATFILEARR < "$STATUSFILE"
+  for STATFILE_LAST in "${STATFILEARR[@]}"; do
+    echo "$STATFILE_LAST"
+  done
+  ## Backup last file
+  cp -f "$STATUSFILE" "$STATUSFILE.bak"
   ## Delete status files content
   truncate -s 0 "$STATUSFILE"
   ## Read through each item in current drive status array
@@ -152,14 +158,14 @@ if [ -f "$STATUSFILE" ]; then
         break
       fi
     done
-    ## Add new entry if no match found
-    if [[ "$ENTRY_FOUND" == "" ]]; then
+    ## Add new entry if no exisiting data found
+    if [[ "$ENTRY_FOUND" != "yes" ]]; then
       STATFILEARR+=("$CURBKP_DRIVE|$CURBKP_DATE")
     fi
   done
   ## Write array to new file
   echo " " 
-  echo "last backup dates: "
+  echo "current backup dates: "
   for NEWSTATFILE_ITEM in "${STATFILEARR[@]}"; do
     echo "$NEWSTATFILE_ITEM" >> "$STATUSFILE"
     echo "$NEWSTATFILE_ITEM"
@@ -191,6 +197,17 @@ echo "****************** backup complete **********************"
 ### Only run if server user
 if [ "$USER" != "server" ]; then
   echo "this script should only be ran by 'server' user, exiting..."
+  exit
+fi
+
+if [[ $REPLY == "last_backup_dates" ]]
+then
+  echo " " 
+  echo "last backup dates: "
+  readarray -t LSTBKPARR < "$STATUSFILE"
+  for LSTBKPLINE in "${LSTBKPARR[@]}"; do
+    echo "$LSTBKPLINE"
+  done
   exit
 fi
 

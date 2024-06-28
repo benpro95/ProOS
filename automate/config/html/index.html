@@ -16,6 +16,7 @@
 <script src="main.js"></script>
 
 <div class="topnav">
+
   <div class="server-grid sounds-grid led-grid">
     <a onclick="showDynMenu('mainmenu')" class="mainmenu__anchor">
       <i class="fa-solid fa-list"></i>
@@ -878,10 +879,11 @@
 	      <div class="dropdown">
           <a class="dropbtn" onclick="showMenu('backupmenu')">Backup</a>
           <div class="dropdown-content" id="backupmenu">
+            <a onclick="serverAction('pve_vmsbkp')">VM's Snapshot</a>
             <a onclick="serverAction('pve_listsnaps')">List Snapshots</a>
-            <a onclick="serverAction('pve_vmsbkp')">VM's / LXC's</a>
+            <a onclick="serverAction('files-last_backup_dates')">Backup Dates</a>
             <a onclick="serverAction('files-backupchk')">Checksum</a>
-            <a onclick="serverAction('files-backupstd')">Standard</a>             
+            <a onclick="serverAction('files-backupstd')">Standard</a>
             <a onclick="serverAction('detach_bkps')">Detach</a>
             <a onclick="getPassword()">Unlock</a>  
           </div>
@@ -961,6 +963,5 @@
 </div>
 
 </body>
+
 </html>
-
-

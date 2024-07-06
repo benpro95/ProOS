@@ -16,12 +16,6 @@
 <script src="main.js"></script>
 
 <div class="bg">
-  <div class="z-4">
-    <div class="tile top-left animate-opacity freq-5"></div>
-    <div class="tile top-right animate-opacity freq-9"></div>
-    <div class="tile bottom-left animate-opacity freq-7"></div>
-    <div class="tile bottom-right animate-opacity freq-10"></div>
-  </div>
   <div class="z-3">
     <div class="tile top-left animate-opacity freq-5"></div>
     <div class="tile top-right animate-opacity freq-9"></div>
@@ -38,7 +32,7 @@
     <div class="tile top-left animate-opacity freq-7 delay-2"></div>
     <div class="tile top-right animate-opacity freq-5 delay-4"></div>
     <div class="tile bottom-left animate-opacity freq-9 delay-2"></div>
-    <div class="tile bottom-right animate-opacity freq-5 delay"></div>
+    <div class="tile bottom-right animate-opacity freq-5 delay-1"></div>
   </div>
 </div>
 
@@ -159,7 +153,7 @@
         </button>  
         <div class="dropdown-content dd-button" id="pcmenu">
           <a onclick="sendCmd('main','pcon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-          <a onclick="sendCmd('main','pcoff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+          <a onclick="sendCmd('main','pcoff','')"><i class="fa-solid fa-moon"></i> Sleep</a>
         </div>
       </div> 
 
@@ -198,12 +192,12 @@
           <span class="button__text"><i class="fa-solid fa-gears"></i> Controls</span>
         </button>  
         <div class="dropdown-content dd-button" id="ctls-menu-br">
-          <a onclick="ctlsMenu('lr')"><i></i> Living Room</a>
+          <a onclick="ctlsMenu('lr')"><i></i> Main Room</a>
           <a onclick="ctlsMenu('subs')"><i></i> Subwoofers</a>
         </div>
         <div class="dropdown-content dd-button" id="ctls-menu-sub">
           <a onclick="ctlsMenu('br')"><i></i> Bedroom</a>
-          <a onclick="ctlsMenu('lr')"><i></i> Living Room</a>
+          <a onclick="ctlsMenu('lr')"><i></i> Main Room</a>
         </div>
         <div class="dropdown-content dd-button" id="ctls-menu-lr">
           <a onclick="ctlsMenu('br')"><i></i> Bedroom</a>

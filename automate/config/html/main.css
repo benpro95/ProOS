@@ -1,32 +1,28 @@
 @font-face {
     font-family: 'JosefinSans';
     src: url('../fonts/JosefinSans-SemiBold-webfont.eot?v=4.3.0');
-    src: url('../fonts/JosefinSans-SemiBold-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/JosefinSans-SemiBold-webfont.woff2?v=4.3.0') format('woff2'), url('../fonts/JosefinSans-SemiBold-webfont.woff') format('woff'), url('../fonts/JosefinSans-SemiBold-webfont.ttf') format('truetype'), url('../fonts/JosefinSans-SemiBold-webfont.svg') format('svg');
+    src: url('../fonts/JosefinSans-SemiBold-webfont.eot?#iefix') format('embedded-opentype');
+    src: url('../fonts/JosefinSans-SemiBold-webfont.woff2?v=4.3.0') format('woff2'); 
+    src: url('../fonts/JosefinSans-SemiBold-webfont.woff') format('woff'); 
+    src: url('../fonts/JosefinSans-SemiBold-webfont.ttf') format('truetype');
+    src: url('../fonts/JosefinSans-SemiBold-webfont.svg') format('svg');
     font-weight: normal;
     font-style: normal;
 }
 
 * {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    font-family: JosefinSans,system-ui,-apple-system,system-ui,"Segoe UI","Helvetica Neue";
-    font-size: 24px; /* page default font size */
-}
-
-html {
-  height: 100%;
-  -webkit-overflow-scrolling: touch;
-}
-
-img {
-  background: transparent;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  font-family: JosefinSans,system-ui,-apple-system,system-ui,"Segoe UI","Helvetica Neue";
+  font-size: 24px; /* page default font size */
 }
 
 body {
-    margin: 0 5px;
-    height: 100%;
-    min-height: 100%;
+  margin: 0 5px;
+  height: 100%;
+  min-height: 100%;
+  background: black;
 }
 
 @keyframes slide-transparency {
@@ -70,8 +66,12 @@ body {
   animation-duration: 10.17s;
 }
 
+.delay-1 {
+  animation-delay: 0.5s;
+}
+
 .delay-2 {
-  animation-delay: 0.75s;
+  animation-delay: 1.11s;
 }
 
 .delay-4 {
@@ -90,8 +90,7 @@ body {
 
 .z-1,
 .z-2,
-.z-3
-.z-4 {
+.z-3 {
   position: absolute;
   width: 150vw;
   height: 150vw;

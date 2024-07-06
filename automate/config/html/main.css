@@ -66,10 +66,6 @@ body {
   animation-duration: 10.17s;
 }
 
-.delay-1 {
-  animation-delay: 0.5s;
-}
-
 .delay-2 {
   animation-delay: 1.11s;
 }
@@ -92,8 +88,8 @@ body {
 .z-2,
 .z-3 {
   position: absolute;
-  width: 150vw;
-  height: 150vw;
+  width: 200vw;
+  height: 200vw;
   left: -50vw;
   top: -50vw;
   transform-origin: center;
@@ -202,6 +198,12 @@ input.chkbox {
 }
 
 @media screen and (max-width: 900px) {
+  .z-1,
+  .z-2,
+  .z-3 {
+    width: 350vw;
+    height: 350vw;
+  }
   .column-right {
     padding-left: 0px;
   }

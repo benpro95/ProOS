@@ -19,10 +19,11 @@
 }
 
 body {
-  margin: 0 5px;
+  margin: 0;
+  color: black;
+  overflow: hidden;
+  min-height: 100%;  
   height: 100%;
-  min-height: 100%;
-  background: black;
 }
 
 @keyframes slide-transparency {
@@ -67,7 +68,7 @@ body {
 }
 
 .delay-2 {
-  animation-delay: 1.11s;
+  animation-delay: 1.33s;
 }
 
 .delay-4 {
@@ -88,8 +89,8 @@ body {
 .z-2,
 .z-3 {
   position: absolute;
-  width: 200vw;
-  height: 200vw;
+  width: 512px;
+  height: 512px;
   left: -50vw;
   top: -50vw;
   transform-origin: center;
@@ -198,12 +199,6 @@ input.chkbox {
 }
 
 @media screen and (max-width: 900px) {
-  .z-1,
-  .z-2,
-  .z-3 {
-    width: 350vw;
-    height: 350vw;
-  }
   .column-right {
     padding-left: 0px;
   }

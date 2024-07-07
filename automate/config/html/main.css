@@ -14,14 +14,14 @@
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  font-family: JosefinSans,system-ui,-apple-system,system-ui,"Segoe UI","Helvetica Neue";
+  font-family: JosefinSans,system-ui,"Helvetica Neue";
   font-size: 24px; /* page default font size */
 }
 
 body {
   margin: 0;
-  color: black;
-  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+  background-color: black;
   min-height: 100%;  
   height: 100%;
 }
@@ -88,11 +88,6 @@ body {
 .z-1,
 .z-2,
 .z-3 {
-  position: absolute;
-  width: 512px;
-  height: 512px;
-  left: -50vw;
-  top: -50vw;
   transform-origin: center;
 }
 

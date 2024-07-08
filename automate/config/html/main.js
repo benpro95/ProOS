@@ -158,36 +158,43 @@ function show_vmsPrompt(text){
   vms_text.innerHTML = text; //put inside the text
   vms_text.id="vms__text"; 
   vms_prompt.appendChild(vms_text); //append the text-div
-  //the cancel-button
+  // the cancel-button
   let vms_cancelb = document.createElement("button"); 
   vms_cancelb.innerHTML = "Close";
   vms_cancelb.className ="button button_vmctrls_close"; 
   vms_cancelb.type="button"; 
   vms_prompt.appendChild(vms_cancelb); //append cancel-button
-  //the dev-button 
+  // the dev-button 
   let vms_devbtn = document.createElement("button"); 
   vms_devbtn.innerHTML = "Development";
   vms_devbtn.className ="button button_vmctrls"; 
   vms_devbtn.type="button"; 
   vms_prompt.appendChild(vms_devbtn); 
-  //the unifi-button 
+  // the unifi-button 
   let vms_unifibtn = document.createElement("button"); 
   vms_unifibtn.innerHTML = "UniFi Controller";
   vms_unifibtn.className ="button button_vmctrls"; 
   vms_unifibtn.type="button"; 
   vms_prompt.appendChild(vms_unifibtn); 
-  //the cifs-button 
+  // the cifs-button 
   let vms_cifsbtn = document.createElement("button"); 
   vms_cifsbtn.innerHTML = "Legacy CIFS";
   vms_cifsbtn.className ="button button_vmctrls"; 
   vms_cifsbtn.type="button"; 
   vms_prompt.appendChild(vms_cifsbtn); 
-  //the xana-button 
+  // the xana-button 
   let vms_xanabtn = document.createElement("button"); 
   vms_xanabtn.innerHTML = "Xana";
   vms_xanabtn.className ="button button_vmctrls"; 
   vms_xanabtn.type="button"; 
-  vms_prompt.appendChild(vms_xanabtn); 
+  vms_prompt.appendChild(vms_xanabtn);
+  // erase button (hidden)
+  let vms_restorebtn = document.createElement("button"); 
+  vms_restorebtn.innerHTML = "Erase";
+  vms_restorebtn.className ="button button_vmactions";
+  vms_restorebtn.id = "vms__restorebtn";
+  vms_restorebtn.type="button";
+  vms_restorebtn.style.display = "none";
   // start button (hidden)
   let vms_startbtn = document.createElement("button"); 
   vms_startbtn.innerHTML = "Start";
@@ -202,13 +209,6 @@ function show_vmsPrompt(text){
   vms_stopbtn.id = "vms__stopbtn";
   vms_stopbtn.type="button";
   vms_stopbtn.style.display = "none";
-  // restore button (hidden)
-  let vms_restorebtn = document.createElement("button"); 
-  vms_restorebtn.innerHTML = "Erase";
-  vms_restorebtn.className ="button button_vmactions";
-  vms_restorebtn.id = "vms__restorebtn";
-  vms_restorebtn.type="button";
-  vms_restorebtn.style.display = "none";
   // open button (hidden)
   let vms_openbtn = document.createElement("button"); 
   vms_openbtn.innerHTML = "Open";
@@ -217,11 +217,11 @@ function show_vmsPrompt(text){
   vms_openbtn.type="button";
   vms_openbtn.style.display = "none";
   // button order
-  vms_prompt.appendChild(vms_restorebtn);
-  vms_prompt.appendChild(vms_openbtn);
   vms_prompt.appendChild(vms_stopbtn); 
   vms_prompt.appendChild(vms_startbtn);
-  //append the prompt so it gets visible
+  vms_prompt.appendChild(vms_restorebtn);
+  vms_prompt.appendChild(vms_openbtn);
+  // append the prompt so it gets visible
   document.body.appendChild(vms_prompt); 
   new Promise(function(resolve, reject) { 
 	  vms_prompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
@@ -280,7 +280,7 @@ function show_vmsPrompt(text){
 	      if (e.target === vms_restorebtn) { 
 	        if (selectedVM !==  ""){
 	          serverAction('restore' + selectedVM);
-	          let _text = "Click send to confirm restore of " + selectedVM;
+	          let _text = "Click send to confirm erase of " + selectedVM;
 	          document.getElementById('vms__text').innerHTML = _text;
 	        }           
 	      }                        

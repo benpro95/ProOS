@@ -276,10 +276,10 @@ if [[ $REPLY == "arc2_region" ]]
 then
   if [ -e "$REGROOT/ArchiveII" ]; then
     echo "detaching archive II region..."   
-    rm $REGROOT/.ArchiveII
+    rm $REGROOT/ArchiveII
   else
     echo "attaching archive II region..."
-    ln -s /mnt/.regions/ArchiveII $REGROOT/.ArchiveII
+    ln -s /mnt/.regions/ArchiveII $REGROOT/ArchiveII
   fi
   exit
 fi

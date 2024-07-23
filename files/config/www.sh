@@ -219,7 +219,7 @@ then
   rm -f $REGROOT/External  
   rm -f $REGROOT/Private
   rm -f $REGROOT/Archive
-  rm -f $REGROOT/.ArchiveII
+  rm -f $REGROOT/ArchiveII
   rm -f $REGROOT/WWW
   rm -f $REGROOT/RAM
   exit

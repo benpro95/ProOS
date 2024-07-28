@@ -766,3 +766,19 @@ input.chkbox {
   -webkit-transform: scale(0.37);
   -webkit-transform-origin: 0 0;
 }
+
+
+.sortable-list {
+    max-width: 300px;
+    margin: 0 auto;
+}
+ 
+.favmenu-container {
+    list-style-type: none;
+    padding: 0;
+}
+ 
+.favmenu-item {
+    margin: 5px;
+    cursor: grab;
+}

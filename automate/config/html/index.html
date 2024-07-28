@@ -15,6 +15,8 @@
 <script src="wifi.js"></script>
 <script src="main.js"></script>
 
+<!-- animated background -->
+
 <div class="bg">
   <div class="z-3">
     <div class="tile top-left animate-opacity freq-5"></div>
@@ -36,8 +38,11 @@
   </div>
 </div>
 
-<div class="topnav">
+<!-- homepage navigation bar -->
 
+<div class="topnav">
+  
+  <!-- hamburger icon -->
   <div class="server-grid sounds-grid led-grid">
     <a onclick="showDynMenu('mainmenu')" class="mainmenu__anchor">
       <i class="fa-solid fa-list"></i>
@@ -47,20 +52,31 @@
     <a onclick="showMenu('pi-mainmenu')" class="mainmenu__anchor">
       <i class="fa-solid fa-list"></i>
     </a>
-  </div>  
+  </div> 
+
   <a onclick="showDynMenu('thememenu')" class="dropbtn">
     <i class="fa-solid fa-palette"></i>
   </a>
+
+  <a onclick="showMenu('favsmenu')" class="dropbtn">
+    <i class="fa-solid fa-microphone"></i>
+  </a>
+
   <div class="led-grid">
     <a onclick="GoToHomePage()">
       <i class="fa fa-arrow-left"></i>
     </a>
-  </div> 
+  </div>
+
   <a class="submode">Subwoofer Control Mode</a>
+
   <a onclick="GoToHomePage()" id="load__progress">
      <div id="load__bar"></div>
   </a>
+
 </div>
+
+<!-- hompage dropdown menus -->
 
 <div class="server-grid sounds-grid led-grid">
   <div class="main_dropdown">
@@ -84,6 +100,20 @@
   <div class="dropdown-content" id="thememenu">
   </div>
 </div>
+
+<div class="main_dropdown">
+  <div class="dropdown-content" id="favsmenu">
+    <div class="sortable-list">
+      <ul class="favmenu-container" id="sortable">
+        <a class="favmenu-item" draggable="true">Item 1</a>
+        <a class="favmenu-item" draggable="true">Item 2</a>
+        <a class="favmenu-item" draggable="true">Item 3</a>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- main grid -->
 
 <p></p>
 

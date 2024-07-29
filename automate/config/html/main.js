@@ -74,7 +74,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
       ) => {
           const draggableElements = [
               ...container.querySelectorAll(
-                  "li:not(.dragging)"
+                  "a:not(.dragging)"
               ),];
        
           return draggableElements.reduce(

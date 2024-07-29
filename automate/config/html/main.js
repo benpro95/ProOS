@@ -23,13 +23,14 @@ window.addEventListener("DOMContentLoaded", (event) => {
   // runs after DOM loads
   const sortableList = document.getElementById("sortable");
   let draggedItem = null;
-  
+
   if (sortableList) {
 
 
       sortableList.addEventListener(
           "dragstart",
           (e) => {
+              e.dataTransfer.setData('text/plain', null);
               draggedItem = e.target;
               setTimeout(() => {
                   e.target.style.display =

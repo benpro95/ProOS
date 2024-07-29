@@ -151,6 +151,11 @@ chown www-data:www-data /var/www/html/main.js
 chmod 644 /var/www/html/main.js
 rm -f /var/www/html/main.min.css
 rm -f /var/www/html/main.min.js
+uglifyjs --verbose --compress --output /var/www/html/iosdd.min.js -- /var/www/html/iosdd.js
+rm -f /var/www/html/iosdd.js
+mv -f /var/www/html/iosdd.min.js /var/www/html/iosdd.js
+chown www-data:www-data /var/www/html/iosdd.js
+chmod 644 /var/www/html/iosdd.js
 
 ## WWW Permissions (Network Web UI)
 rm -f /etc/sudoers.d/www-perms

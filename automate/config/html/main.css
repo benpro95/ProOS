@@ -767,18 +767,18 @@ input.chkbox {
   -webkit-transform-origin: 0 0;
 }
 
-
 .sortable-list {
-    max-width: 300px;
-    margin: 0 auto;
+  width: 300px;
+  margin: 0 auto;
 }
  
 .favmenu-container {
-    list-style-type: none;
-    padding: 0;
+  list-style-type: none;
+  padding: 0;
 }
  
 .favmenu-item {
-    margin: 5px;
-    cursor: grab;
+  background: #f0f0f0;
+  padding: 10px;
+  cursor: grab;
 }

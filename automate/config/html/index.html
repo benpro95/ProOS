@@ -2,7 +2,7 @@
 <html lang="en-US" class="notranslate" translate="no">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=0.75">
+  <meta name="viewport" content="width=device-width, initial-scale=0.75, minimum-scale=0.75, maximum-scale=0.75 shrink-to-fit=no" />
   <title id="title">Automate</title>
     <link href="img/automate.png" rel="icon" type="image/x-icon" >
     <link href="fa/css/fontawesome.min.css" rel="stylesheet">
@@ -11,33 +11,13 @@
     <link href="main.css" rel="stylesheet">
 </head>
 <body onload="loadPage()" class="scroll-bar">
-<script src="iosdd.js"></script>
+
+<!-- load JavaScript -->
+
 <script src="device.js"></script>
+<script src="iosdd.js"></script>
 <script src="wifi.js"></script>
 <script src="main.js"></script>
-
-<!-- animated background -->
-
-<div class="bg">
-  <div class="z-3">
-    <div class="tile top-left animate-opacity freq-5"></div>
-    <div class="tile top-right animate-opacity freq-9"></div>
-    <div class="tile bottom-left animate-opacity freq-7"></div>
-    <div class="tile bottom-right animate-opacity freq-10"></div>
-  </div>
-  <div class="z-2">
-    <div class="tile top-left animate-opacity freq-9 delay-2"></div>
-    <div class="tile top-right animate-opacity freq-5 delay-2"></div>
-    <div class="tile bottom-left animate-opacity freq-6 delay-4"></div>
-    <div class="tile bottom-right animate-opacity freq-10 delay-4"></div>
-  </div>
-  <div class="z-1">
-    <div class="tile top-left animate-opacity freq-7 delay-2"></div>
-    <div class="tile top-right animate-opacity freq-5 delay-4"></div>
-    <div class="tile bottom-left animate-opacity freq-9 delay-2"></div>
-    <div class="tile bottom-right animate-opacity freq-5"></div>
-  </div>
-</div>
 
 <!-- homepage navigation bar -->
 
@@ -1019,6 +999,29 @@
       <span class="button__textsmall"></i> Fullscreen</span>
     </button>   
   </form>
+</div>
+
+<!-- animated background -->
+
+<div class="star-bg">
+  <div class="star-z-3">
+    <div id="star-1" class="star-tile"></div>
+    <div id="star-2" class="star-tile"></div>
+    <div id="star-3" class="star-tile"></div>
+    <div id="star-4" class="star-tile"></div>
+  </div>
+  <div class="star-z-2">
+    <div id="star-5" class="star-tile"></div>
+    <div id="star-6" class="star-tile"></div>
+    <div id="star-7" class="star-tile"></div>
+    <div id="star-8" class="star-tile"></div>
+  </div>
+  <div class="star-z-1">
+    <div id="star-9" class="star-tile"></div>
+    <div id="star-10" class="star-tile"></div>
+    <div id="star-11" class="star-tile"></div>
+    <div id="star-12" class="star-tile"></div>
+  </div>
 </div>
 
 </body>

@@ -26,7 +26,6 @@ window.addEventListener("DOMContentLoaded", (event) => {
 
   if (sortableList) {
 
-
       sortableList.addEventListener(
           "dragstart",
           (e) => {
@@ -159,6 +158,7 @@ function loadPage() {
       classDisplay('lcdpi-grid','block');
     }
   }
+  detectMobile();
   // set title
   let currentTheme;
   let elem = document.getElementById("load__bar");
@@ -197,7 +197,7 @@ function classDisplay(_elem, _state) {
   let _itr;
   let _class = document.getElementsByClassName(_elem);
   for (_itr = 0; _itr < _class.length; _itr++) {
-      _class[_itr].style.display = _state;
+    _class[_itr].style.display = _state;
   }
 }
 
@@ -207,6 +207,22 @@ function detectMobile() {
       navigator.userAgent.match(/iPhone/i)  || 
       navigator.userAgent.match(/iPad/i)) {
         console.log("Mobile Browser");
+  } else {
+    // PC browser
+    starsAnimation(true);
+  }
+}
+
+function starsAnimation(_state) {
+  let _itr;
+  var elem;
+  for (_itr = 1; _itr <= 12; _itr++) {
+    elem = document.getElementById("star-" + _itr);
+    if (_state == true) {
+      elem.classList.add("animate-stars");
+    } else {
+      elem.classList.remove("animate-stars");
+    }
   }
 }
 

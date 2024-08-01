@@ -21,7 +21,7 @@ let ctlMode;
 
 window.addEventListener("DOMContentLoaded", (event) => {
   // runs after DOM loads
-  const sortableList = document.getElementById("sortable");
+  const sortableList = document.getElementById("bookmarks");
   let draggedItem = null;
 
   if (sortableList) {
@@ -861,73 +861,79 @@ function fileLoadAction(_menu) {
     } else { // verify data matches
       if (_id == _menu) {
         const item = line.split("|");
-        const _host = item[0];
-        const _type = item[1];
-        const _name = item[2].trim();
+        const _col0 = item[0];
+        const _col1 = item[1];
+        const _col2 = item[2].trim();
         // 0=Host,1=Type,2=Name,Menu ID
-        drawMenu(_host,_type,_name,_menu);
+        drawMenu(_col0,_col1,_col2,_menu);
       }
     }
   }  
 }
 
-function drawMenu(url,type,name,menu) {
+function drawMenu(col0,col1,col2,menu) {
   const navElement = document.getElementById(menu);
-  const createListItem = (navItem,url,state) => {
-    const _menuid = navItem
+  const createListItem = (_col0,_col1,_col2) => {
+    const _menuid = _col2
       .trim()
       .split(" ")
       .join("");
-    const li = document.createElement('a');
+    const _elm = document.createElement('a');
     const _elmname = "menu-" + _menuid;
-    li.id = _elmname;
-    li.innerText = navItem;
+    _elm.id = _elmname;
+    _elm.innerText = _col2;
     // add elements to menu
-    if (type == '0' || type == '1') {
+    if (_col1 == '0' || _col1 == '1') {
       // checkbox menu
       var checkbox = document.createElement('input');
       checkbox.type = "checkbox";
       checkbox.className = "chkbox";
-      checkbox.id = "chkbox-" + navItem;
-      li.appendChild(checkbox);
+      checkbox.id = "chkbox-" + _col2;
+      _elm.appendChild(checkbox);
       // URL on click
-      li.href = url;
+      _elm.href = _col0;
     }
-    if (type == '2') {
+    if (_col1 == '2') {
       // link menu
-      li.href = url;
+      _elm.href = _col0;
     }
-    if (type == '3' || type == '4' || type == '5') {
+    if (_col1 == '3' || _col1 == '4' || _col1 == '5') {
       // indicator / status menu
       var dot = document.createElement('span');
       dot.className = "ind_dot";
-      if (type == '4'){
+      if (_col1 == '4'){
         dot.className += " ind_dot_green";
       }
-      if (type == '5'){
+      if (_col1 == '5'){
         dot.className += " ind_dot_red";
       }
-      dot.id = "ind-" + navItem;
-      li.appendChild(dot);
+      dot.id = "ind-" + _col2;
+      _elm.appendChild(dot);
     }
-    if (type == '8') {
+    if (_col1 == '8') {
       // theme menu
-      const _color = url;
-      li.classList.add('theme-colorbox');
-      li.style.setProperty('background-color', _color);
-      li.addEventListener("click", function(event) {
+      const _color = _col0;
+      _elm.classList.add('theme-colorbox');
+      _elm.style.setProperty('background-color', _color);
+      _elm.addEventListener("click", function(event) {
         setTheme(_color);
       });
     }
-    return li;
+    if (_col1 == '9') {
+      // bookmarks menu
+      _elm.href = _col0;
+      _elm.setAttribute('draggable', true);
+      _elm.classList.add('favmenu-item');
+    }
+    return _elm;
   };
-  navElement.appendChild(createListItem(name,url,type));
+  navElement.appendChild(createListItem(col0,col1,col2));
   // read checkbox type from file
-  if (type == '0') {
-    document.getElementById("chkbox-" + name).checked = false;
+  if (col1 == '0') {
+    document.getElementById("chkbox-" + col2).checked = false;
   }
-  if (type == '1') {
-    document.getElementById("chkbox-" + name).checked = true;
+  if (col1 == '1') {
+    document.getElementById("chkbox-" + col2).checked = true;
   }
   dynMenuActive = 1;
 }

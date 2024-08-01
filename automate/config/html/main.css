@@ -674,20 +674,16 @@ input.chkbox {
   -webkit-transform: scale(0.37);
   -webkit-transform-origin: 0 0;
 }
-
-.sortable-list {
-  width: 300px;
-  margin: 0 auto;
-}
- 
-.favmenu-container {
-  list-style-type: none;
-  padding: 0;
-}
  
 .favmenu-item {
   padding: 10px;
   cursor: grab;
+}
+
+#bookmarks {
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 90vh;
 }
 
 .animate-stars {

@@ -114,7 +114,15 @@ input.chkbox {
   }
 }
 
+.favedit {
+  display: none;
+}
+
 .submode {
+  display: none;
+}
+
+.banner__text {
   display: none;
   margin-top: 6px;
   text-align: left;

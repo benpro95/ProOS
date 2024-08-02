@@ -40,10 +40,8 @@ window.addEventListener("DOMContentLoaded", (event) => {
 function hideDropdowns() {
   // hide all dropdown menus
   classDisplay("dd-content","none");
-  // hide bookmark edit/add buttons
-  classDisplay("bookmark-buttons","none");
-  // reset bookmarks state flag 
-  bookmarkState = 0;
+  // hide all bookmark menu elements
+  hideBookmarks();
   // remove any current dynamic menus
   removeDynMenus();
 }
@@ -76,6 +74,7 @@ function loadPage() {
       classDisplay('lcdpi-grid','block');
     }
   }
+  // mobile device setup
   detectMobile();
   // set title
   let currentTheme;
@@ -726,8 +725,17 @@ function showMenu(_menu) {
 
 //// Bookmarks Menu ////
 
+function hideBookmarks() {
+  // remove banner text
+  classDisplay('favedit','none');
+  // hide bookmark edit/add buttons
+  classDisplay("bookmark-buttons","none");
+  // reset bookmarks state flag 
+  bookmarkState = 0;
+}
+
 function showBookmarks() {
-  if (bookmarkState != '0') {
+  if (bookmarkState != 0) {
     hideDropdowns();
     return;
   }
@@ -737,20 +745,33 @@ function showBookmarks() {
 }
 
 function clickBookmark(url, name) {
-  if (bookmarkState == '1') {
+  if (bookmarkState == 1) {
     window.open(url, "_blank");
   }
-  if (bookmarkState == '2') {
+  if (bookmarkState == 2) {
     console.log("Edit Mode: " + url + " " + name);
   }  
 }
 
 function editBookmark() {
   bookmarkState = 2; // edit mode
+  classDisplay('favedit','inline-block'); // banner text
 }
 
 function addBookmark() {
-  hideDropdowns();
+  //hideDropdowns();
+}
+
+function bookmarkUp(elmname) {
+ const element = document.getElementById(elmname);
+  if(element.previousElementSibling)
+    element.parentNode.insertBefore(element, element.previousElementSibling);
+}
+
+function bookmarkDown(elmname) {
+const element = document.getElementById(elmname);
+  if(element.nextElementSibling)
+    element.parentNode.insertBefore(element.nextElementSibling, element);
 }
 
 //// Dynamic Menus ////
@@ -761,7 +782,7 @@ function showDynMenu(_menu) {
     _elem.style.display = 'none';
   } else {
     hideDropdowns();
-    // dynamic LED selection menu
+    // read menu data from file
     readMenuData(_menu);
     _elem.style.display = 'block';
   }
@@ -801,9 +822,9 @@ function fileLoadAction(_menu) {
   // LED options menu
   let _id = null;
   // loop through menu items
-  for (var i = 0; i < fileData.length; i++) {
-    let line = fileData[i].toString();
-    if (i == 0) { // store first line (ID)
+  for (var idx = 0; idx < fileData.length; idx++) {
+    let line = fileData[idx].toString();
+    if (idx == 0) { // store first line (ID)
       _id = line;
     } else { // verify data matches
       if (_id == _menu) {
@@ -811,83 +832,80 @@ function fileLoadAction(_menu) {
         const _col0 = item[0];
         const _col1 = item[1];
         const _col2 = item[2].trim();
-        // 0=Host,1=Type,2=Name,Menu ID
-        drawMenu(_col0,_col1,_col2,_menu);
+        // 0=Host, 1=Type, 2=Name, Menu Name, Item Index
+        drawMenu(_col0,_col1,_col2,_menu,idx);
       }
     }
   }  
 }
 
 // draws each menu item
-function drawMenu(col0,col1,col2,menu) {
+function drawMenu(col0,col1,col2,menu,id) {
   const navElement = document.getElementById(menu);
-  const createListItem = (_col0,_col1,_col2) => {
-    const _menuid = _col2
-      .trim()
-      .split(" ")
-      .join("");
-    const _elm = document.createElement('a');
-    _elm.id = "menu-" + _menuid;
-    _elm.innerText = _col2;
-    // add elements to menu
-    if (_col1 == '0' || _col1 == '1') {
-      // checkbox menu
-      const _cbox = document.createElement('input');
-      _cbox.type = "checkbox";
-      _cbox.className = "chkbox";
-      _cbox.id = "chkbox-" + _col2;
-      // read checkbox state from file
-      if (col1 == '0') {
-        _cbox.checked = false;
-      }
-      if (col1 == '1') {
-        _cbox.checked = true;
-      }
-      _elm.appendChild(_cbox);
-      // URL on click
-      _elm.href = _col0;
-      // a checkbox was clicked
-      _elm.addEventListener('click', function handleClickCheckbox(event) {
-        if (event.target.classList.contains('chkbox')) {
-          dynChkboxChanged = 1;
-        }
-      });
-    }
-    if (_col1 == '2') {
-      // bookmarks menu
-      _elm.setAttribute('draggable', false);
-      _elm.classList.add("bookmarked__item");
-      _elm.addEventListener("click", function(event) {
-        clickBookmark(_col0,_col2); // URL & link name
-      });
-    }
-    if (_col1 == '3' || _col1 == '4' || _col1 == '5') {
-      // indicator / status menu
-      const _dot = document.createElement('span');
-      _dot.classList.add('ind_dot');
-      if (_col1 == '4'){
-        _dot.classList.add('ind_dot_green');
-      }
-      if (_col1 == '5'){
-        _dot.classList.add('ind_dot_red');
-      }
-      _dot.id = "ind-" + _col2;
-      _elm.appendChild(_dot);
-    }
-    if (_col1 == '8') {
-      // theme menu
-      const _color = _col0;
-      _elm.classList.add('theme-colorbox');
-      _elm.style.setProperty('background-color', _color);
-      _elm.addEventListener("click", function(event) {
-        setTheme(_color);
-      });
-    }
-    return _elm;
-  };
   // draw menu item
-  navElement.appendChild(createListItem(col0,col1,col2));
+  navElement.appendChild(createListItem(col0,col1,col2,id));
   dynMenuActive = 1;
+}
+
+function createListItem(_col0,_col1,_col2,_id) {
+  const _elm = document.createElement('a');
+  _elm.id = "menu-" + _id.toString();
+  _elm.innerText = _col2;
+  // add elements to menu
+  if (_col1 == '0' || _col1 == '1') {
+    // checkbox menu
+    const _cbox = document.createElement('input');
+    _cbox.type = "checkbox";
+    _cbox.className = "chkbox";
+    _cbox.id = "chkbox-" + _col2;
+    // read checkbox state from file
+    if (_col1 == '0') {
+      _cbox.checked = false;
+    }
+    if (_col1 == '1') {
+      _cbox.checked = true;
+    }
+    _elm.appendChild(_cbox);
+    // URL on click
+    _elm.href = _col0;
+    // a checkbox was clicked
+    _elm.addEventListener('click', function handleClickCheckbox(event) {
+      if (event.target.classList.contains('chkbox')) {
+        dynChkboxChanged = 1;
+      }
+    });
+  }
+  if (_col1 == '2') {
+    // bookmarks menu
+    _elm.setAttribute('draggable', false);
+    _elm.classList.add("bookmarked__item");
+    _elm.addEventListener("click", function(event) {
+      clickBookmark(_col0,_col2); // URL & link name
+    });
+  }
+  if (_col1 == '3' || _col1 == '4' || _col1 == '5') {
+    // indicator / status menu
+    const _dot = document.createElement('span');
+    _dot.classList.add('ind_dot');
+    if (_col1 == '4'){
+      _dot.classList.add('ind_dot_green');
+    }
+    if (_col1 == '5'){
+      _dot.classList.add('ind_dot_red');
+    }
+    _dot.id = "ind-" + _col2;
+    _elm.appendChild(_dot);
+  }
+  if (_col1 == '8') {
+    // theme menu
+    const _color = _col0;
+    _elm.classList.add('theme-colorbox');
+    _elm.style.setProperty('background-color', _color);
+    _elm.addEventListener("click", function(event) {
+      setTheme(_color);
+    });
+  }
+  return _elm;
 }
 
 function removeDynMenus() {
@@ -898,18 +916,13 @@ function removeDynMenus() {
       boxChanged();
     }
     // remove dynamic menu elements (II)
-    for (var i = 0; i < fileData.length; i++) {
-      let line = fileData[i].toString();
-      if (i !== 0) { // skip menu ID
+    for (var idx = 0; idx < fileData.length; idx++) {
+      let line = fileData[idx].toString();
+      if (idx !== 0) { // skip menu ID
         const item = line.split("|");
         if (item) {
-          const _menuid = item[2].toString()
-            .trim()
-            .split(" ")
-            .join("");
-          const navItem = "menu-" + _menuid;
-          //console.log(navItem);
-          var menuRemove = document.getElementById(navItem);
+          const _menuid = "menu-" + idx.toString();
+          const menuRemove = document.getElementById(_menuid);
           if (menuRemove != null) {
             menuRemove.remove();
           }

@@ -9,6 +9,7 @@ let dynChkboxChanged = 0;
 let colorPromptActive = 0;
 let defaultSite = "Automate";
 let serverCmdData = null;
+let bookmarkState = 0;
 let loadBarState = 0;
 let promptCount = 0;
 let socket = null;
@@ -22,22 +23,27 @@ let ctlMode;
 window.addEventListener("DOMContentLoaded", (event) => {
   // hide menu's when clicking outside
   document.addEventListener('click', function handleClickOutsideBox(event) {
-    // don't hide when clicking these elements
-    if (!(event.target.classList.contains('button') ||
-          event.target.classList.contains('button__text') ||
-          event.target.classList.contains('mainmenu__anchor') ||
-          event.target.classList.contains('fa-regular') ||
-          event.target.classList.contains('fa-solid') ||
-          event.target.classList.contains('dropbtn') || 
-          event.target.classList.contains('chkbox'))) {
+    // don't hide menus when clicking these elements
+    if (!(event.target.classList.contains('button') || // button click
+          event.target.classList.contains('button__text') || // button text click
+          event.target.classList.contains('mainmenu__anchor') || // main menu click
+          event.target.classList.contains('bookmarked__item') || // bookmark menu click
+          event.target.classList.contains('fa-regular') || // icon click
+          event.target.classList.contains('fa-solid') || // icon click
+          event.target.classList.contains('dropbtn') || // dropdown menu
+          event.target.classList.contains('chkbox'))) { // checkbox click
       hideDropdowns();
     }
   }); 
 });
 
-// hide all drop down menus
 function hideDropdowns() {
+  // hide all dropdown menus
   classDisplay("dd-content","none");
+  // hide bookmark edit/add buttons
+  classDisplay("bookmark-buttons","none");
+  // reset bookmarks state flag 
+  bookmarkState = 0;
   // remove any current dynamic menus
   removeDynMenus();
 }
@@ -718,6 +724,35 @@ function showMenu(_menu) {
   }
 }
 
+//// Bookmarks Menu ////
+
+function showBookmarks() {
+  if (bookmarkState != '0') {
+    hideDropdowns();
+    return;
+  }
+  showDynMenu('bookmarks');
+  classDisplay("bookmark-buttons","block");
+  bookmarkState = 1; // link open mode
+}
+
+function clickBookmark(url, name) {
+  if (bookmarkState == '1') {
+    window.open(url, "_blank");
+  }
+  if (bookmarkState == '2') {
+    console.log("Edit Mode: " + url + " " + name);
+  }  
+}
+
+function editBookmark() {
+  bookmarkState = 2; // edit mode
+}
+
+function addBookmark() {
+  hideDropdowns();
+}
+
 //// Dynamic Menus ////
 
 function showDynMenu(_menu) {
@@ -783,6 +818,7 @@ function fileLoadAction(_menu) {
   }  
 }
 
+// draws each menu item
 function drawMenu(col0,col1,col2,menu) {
   const navElement = document.getElementById(menu);
   const createListItem = (_col0,_col1,_col2) => {
@@ -819,8 +855,11 @@ function drawMenu(col0,col1,col2,menu) {
     }
     if (_col1 == '2') {
       // bookmarks menu
-      _elm.href = _col0; // URL
       _elm.setAttribute('draggable', false);
+      _elm.classList.add("bookmarked__item");
+      _elm.addEventListener("click", function(event) {
+        clickBookmark(_col0,_col2); // URL & link name
+      });
     }
     if (_col1 == '3' || _col1 == '4' || _col1 == '5') {
       // indicator / status menu

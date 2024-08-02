@@ -22,7 +22,7 @@
 
 <div class="topnav">
   
-  <!-- hamburger icon -->
+  <!-- hamburger button -->
   <div class="server-grid sounds-grid led-grid">
     <a onclick="showDynMenu('mainmenu')" class="mainmenu__anchor">
       <i class="fa-solid fa-list"></i>
@@ -34,14 +34,25 @@
     </a>
   </div> 
 
+  <!-- themes button -->
   <a onclick="showDynMenu('thememenu')" class="dropbtn">
     <i class="fa-solid fa-palette"></i>
   </a>
 
-  <a onclick="showDynMenu('bookmarks')" class="dropbtn">
+  <!-- bookmark buttons -->
+  <a onclick="showBookmarks()" class="dropbtn">
     <i class="fa-solid fa-star"></i>
   </a>
+  <div class="bookmark-buttons">
+    <a onclick="editBookmark()" class="dropbtn">
+      <i class="fa-solid fa-gear"></i>
+    </a>   
+    <a onclick="addBookmark()" class="dropbtn">
+      <i class="fa-solid fa-plus"></i>
+    </a> 
+  </div>
 
+  <!-- back button -->
   <div class="led-grid">
     <a onclick="GoToHomePage()">
       <i class="fa fa-arrow-left"></i>

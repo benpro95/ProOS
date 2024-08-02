@@ -397,6 +397,10 @@ input.chkbox {
 
 /* Bookmarks Menu */
 
+.bookmark-buttons {
+  display: none;
+}
+
 #bookmarks {
   overflow-x: hidden;
   overflow-y: scroll;
@@ -405,15 +409,14 @@ input.chkbox {
 
 #bookmarks::-webkit-scrollbar-track
 {
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
   background-color: #2d353d;
   border-radius: 5px;
 }
 
 #bookmarks::-webkit-scrollbar-thumb
 {
+  background-color: color-mix(in srgb, var(--main-color) 70%, white);
   border-radius: 5px;
-  background-color: color-mix(in srgb, var(--main-color) 90%, white);
 }
 
 #bookmarks::-webkit-scrollbar
@@ -427,15 +430,14 @@ input.chkbox {
 
 .scroll-bar::-webkit-scrollbar-track
 {
-  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
   background-color: #000;
   border-radius: 6px;
 }
 
 .scroll-bar::-webkit-scrollbar-thumb
 {
-  border-radius: 6px;
-  background-color: color-mix(in srgb, var(--main-color) 90%, white);
+  background-color: color-mix(in srgb, var(--main-color) 70%, white);
+  border-radius: 6px;  
 }
 
 .scroll-bar::-webkit-scrollbar

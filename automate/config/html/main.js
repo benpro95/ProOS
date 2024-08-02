@@ -818,8 +818,9 @@ function drawMenu(col0,col1,col2,menu) {
       });
     }
     if (_col1 == '2') {
-      // link only menu
-      _elm.href = _col0;
+      // bookmarks menu
+      _elm.href = _col0; // URL
+      _elm.setAttribute('draggable', false);
     }
     if (_col1 == '3' || _col1 == '4' || _col1 == '5') {
       // indicator / status menu
@@ -842,12 +843,6 @@ function drawMenu(col0,col1,col2,menu) {
       _elm.addEventListener("click", function(event) {
         setTheme(_color);
       });
-    }
-    if (_col1 == '9') {
-      // bookmarks menu
-      _elm.href = _col0; // URL
-      _elm.setAttribute('draggable', false);
-      _elm.classList.add('bookmarked-item');
     }
     return _elm;
   };

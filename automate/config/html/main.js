@@ -18,114 +18,26 @@ let ctlState = 0;
 let ctlMode;
 ////////////
 
-
+// runs after DOM finishes loading
 window.addEventListener("DOMContentLoaded", (event) => {
-  // runs after DOM loads
-  const sortableList = document.getElementById("bookmarks");
-  let draggedItem = null;
-
-  if (sortableList) {
-
-      sortableList.addEventListener(
-          "dragstart",
-          (e) => {
-              e.dataTransfer.setData('text/plain', null);
-              draggedItem = e.target;
-              setTimeout(() => {
-                  e.target.style.display =
-                      "none";
-              }, 0);
-      });
-       
-      sortableList.addEventListener(
-          "dragend",
-          (e) => {
-              setTimeout(() => {
-                  e.target.style.display = "";
-                  draggedItem = null;
-              }, 0);
-      });
-       
-      sortableList.addEventListener(
-          "dragover",
-          (e) => {
-              e.preventDefault();
-              const afterElement =
-                  getDragAfterElement(
-                      sortableList,
-                      e.clientY);
-              const currentElement =
-                  document.querySelector(
-                      ".dragging");
-              if (afterElement == null) {
-                  sortableList.appendChild(
-                      draggedItem
-                  );} 
-              else {
-                  sortableList.insertBefore(
-                      draggedItem,
-                      afterElement
-                  );}
-      });
-       
-      const getDragAfterElement = (
-          container, y
-      ) => {
-          const draggableElements = [
-              ...container.querySelectorAll(
-                  "a:not(.dragging)"
-              ),];
-       
-          return draggableElements.reduce(
-              (closest, child) => {
-                  const box =
-                      child.getBoundingClientRect();
-                  const offset =
-                      y - box.top - box.height / 2;
-                  if (
-                      offset < 0 &&
-                      offset > closest.offset) {
-                      return {
-                          offset: offset,
-                          element: child,
-                      };} 
-                  else {
-                      return closest;
-                  }},
-              {
-                  offset: Number.NEGATIVE_INFINITY,
-              }
-          ).element;
-      };
-
-  }
-});
-
-
-// hide menu's when clicking outside
-document.addEventListener('click', function handleClickOutsideBox(event) {
-  // don't hide when clicking these elements
-  if (!(event.target.classList.contains('button') ||
-        event.target.classList.contains('button__text') ||
-        event.target.classList.contains('mainmenu__anchor') ||
-        event.target.classList.contains('fa-regular') ||
-        event.target.classList.contains('fa-solid') ||
-        event.target.classList.contains('dropbtn') || 
-        event.target.classList.contains('chkbox'))) {
-    hideDropdowns();
-  }
-});
-
-// a checkbox was clicked
-document.addEventListener('click', function handleClickCheckbox(event) {
-  if (event.target.classList.contains('chkbox')) {
-    dynChkboxChanged = 1;
-  }
+  // hide menu's when clicking outside
+  document.addEventListener('click', function handleClickOutsideBox(event) {
+    // don't hide when clicking these elements
+    if (!(event.target.classList.contains('button') ||
+          event.target.classList.contains('button__text') ||
+          event.target.classList.contains('mainmenu__anchor') ||
+          event.target.classList.contains('fa-regular') ||
+          event.target.classList.contains('fa-solid') ||
+          event.target.classList.contains('dropbtn') || 
+          event.target.classList.contains('chkbox'))) {
+      hideDropdowns();
+    }
+  }); 
 });
 
 // hide all drop down menus
 function hideDropdowns() {
-  classDisplay("dropdown-content","none");
+  classDisplay("dd-content","none");
   // remove any current dynamic menus
   removeDynMenus();
 }
@@ -879,36 +791,48 @@ function drawMenu(col0,col1,col2,menu) {
       .split(" ")
       .join("");
     const _elm = document.createElement('a');
-    const _elmname = "menu-" + _menuid;
-    _elm.id = _elmname;
+    _elm.id = "menu-" + _menuid;
     _elm.innerText = _col2;
     // add elements to menu
     if (_col1 == '0' || _col1 == '1') {
       // checkbox menu
-      var checkbox = document.createElement('input');
-      checkbox.type = "checkbox";
-      checkbox.className = "chkbox";
-      checkbox.id = "chkbox-" + _col2;
-      _elm.appendChild(checkbox);
+      const _cbox = document.createElement('input');
+      _cbox.type = "checkbox";
+      _cbox.className = "chkbox";
+      _cbox.id = "chkbox-" + _col2;
+      // read checkbox state from file
+      if (col1 == '0') {
+        _cbox.checked = false;
+      }
+      if (col1 == '1') {
+        _cbox.checked = true;
+      }
+      _elm.appendChild(_cbox);
       // URL on click
       _elm.href = _col0;
+      // a checkbox was clicked
+      _elm.addEventListener('click', function handleClickCheckbox(event) {
+        if (event.target.classList.contains('chkbox')) {
+          dynChkboxChanged = 1;
+        }
+      });
     }
     if (_col1 == '2') {
-      // link menu
+      // link only menu
       _elm.href = _col0;
     }
     if (_col1 == '3' || _col1 == '4' || _col1 == '5') {
       // indicator / status menu
-      var dot = document.createElement('span');
-      dot.className = "ind_dot";
+      const _dot = document.createElement('span');
+      _dot.classList.add('ind_dot');
       if (_col1 == '4'){
-        dot.className += " ind_dot_green";
+        _dot.classList.add('ind_dot_green');
       }
       if (_col1 == '5'){
-        dot.className += " ind_dot_red";
+        _dot.classList.add('ind_dot_red');
       }
-      dot.id = "ind-" + _col2;
-      _elm.appendChild(dot);
+      _dot.id = "ind-" + _col2;
+      _elm.appendChild(_dot);
     }
     if (_col1 == '8') {
       // theme menu
@@ -921,20 +845,14 @@ function drawMenu(col0,col1,col2,menu) {
     }
     if (_col1 == '9') {
       // bookmarks menu
-      _elm.href = _col0;
-      _elm.setAttribute('draggable', true);
-      _elm.classList.add('favmenu-item');
+      _elm.href = _col0; // URL
+      _elm.setAttribute('draggable', false);
+      _elm.classList.add('bookmarked-item');
     }
     return _elm;
   };
+  // draw menu item
   navElement.appendChild(createListItem(col0,col1,col2));
-  // read checkbox type from file
-  if (col1 == '0') {
-    document.getElementById("chkbox-" + col2).checked = false;
-  }
-  if (col1 == '1') {
-    document.getElementById("chkbox-" + col2).checked = true;
-  }
   dynMenuActive = 1;
 }
 

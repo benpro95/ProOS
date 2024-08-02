@@ -15,7 +15,6 @@
 <!-- load JavaScript -->
 
 <script src="device.js"></script>
-<script src="iosdd.js"></script>
 <script src="wifi.js"></script>
 <script src="main.js"></script>
 
@@ -61,7 +60,7 @@
 
 <div class="server-grid sounds-grid led-grid">
   <div class="main_dropdown">
-  <div class="dropdown-content" id="mainmenu">
+  <div class="dd-content dd-menu" id="mainmenu">
     <a onclick="aboutPrompt()"><i class="fa-solid fa-info"></i> About</a>
   </div>
   </div>
@@ -69,7 +68,7 @@
 
 <div class="lcdpi-grid ledpi-grid pi-grid">
   <div class="main_dropdown">
-    <div class="dropdown-content" id="pi-mainmenu">
+    <div class="dd-content dd-menu" id="pi-mainmenu">
       <a onclick="GoToHomePage()"><i class="fa fa-home"></i>  Home</a>
       <a onclick="openLogWindow()"><i class="fa-solid fa-gear"></i> System</a>
       <a onclick="aboutPrompt()"><i class="fa-solid fa-info"></i> About</a>
@@ -78,12 +77,12 @@
 </div>
 
 <div class="main_dropdown">
-  <div class="dropdown-content" id="thememenu">
+  <div class="dd-content dd-menu" id="thememenu">
   </div>
 </div>
 
 <div class="main_dropdown">
-  <div class="dropdown-content" id="bookmarks">
+  <div class="dd-content dd-menu" id="bookmarks">
   </div>
 </div>
 
@@ -108,7 +107,7 @@
         <button type="button" class="button" onclick="showMenu('dresser-menu')">
           <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Bedroom</span>
         </button>  
-        <div class="dropdown-content dd-button" id="dresser-menu">
+        <div class="dd-content dd-button" id="dresser-menu">
           <a onclick="sendCmd('main','rfa2','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
           <a onclick="sendCmd('main','rfa2','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
@@ -117,7 +116,7 @@
         <button type="button" class="button" onclick="showMenu('lightmenu')">
           <span class="button__text"><i class="fa-regular fa-lightbulb"></i> All Lights</span>
         </button>  
-        <div class="dropdown-content dd-button" id="lightmenu">
+        <div class="dd-content dd-button" id="lightmenu">
           <a onclick="sendCmd('main','allon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
           <a onclick="sendCmd('main','alloff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
@@ -126,7 +125,7 @@
         <button type="button" class="button" onclick="showMenu('main-menu')">
           <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Main</span>
         </button>  
-        <div class="dropdown-content dd-button" id="main-menu">
+        <div class="dd-content dd-button" id="main-menu">
           <a onclick="sendCmd('main','rfc1','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
           <a onclick="sendCmd('main','rfc1','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
@@ -138,7 +137,7 @@
         <button type="button" class="button" onclick="showMenu('macs-menu')">
           <span class="button__text"><i class="fa-solid fa-floppy-disk"></i> Macs</span>
         </button>  
-        <div class="dropdown-content dd-button" id="macs-menu">
+        <div class="dd-content dd-button" id="macs-menu">
           <a onclick="sendCmd('main','rfa1','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
           <a onclick="sendCmd('main','rfa1','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
@@ -147,7 +146,7 @@
         <button type="button" class="button" onclick="showMenu('allmenu')">
           <span class="button__text"><i class="fa-solid fa-power-off"></i> Power</span>
         </button>  
-        <div class="dropdown-content dd-button" id="allmenu">
+        <div class="dd-content dd-button" id="allmenu">
           <a onclick="sendCmd('main','roomon','')"><i class="fa-solid fa-toggle-on"></i> All On</a>
           <a onclick="sendCmd('main','roomoff','')"><i class="fa-solid fa-toggle-off"></i> All Off</a>
         </div>
@@ -156,7 +155,7 @@
         <button type="button" class="button" onclick="showMenu('pcmenu')">
           <span class="button__text"><i class="fa-solid fa-computer"></i> PC</span>
         </button>  
-        <div class="dropdown-content dd-button" id="pcmenu">
+        <div class="dd-content dd-button" id="pcmenu">
           <a onclick="sendCmd('main','pcon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
           <a onclick="sendCmd('main','pcoff','')"><i class="fa-solid fa-moon"></i> Sleep</a>
         </div>
@@ -172,7 +171,7 @@
         <button type="button" class="button" onclick="showMenu('led-menu')">
           <span class="button__text"><i class="fa-regular fa-sun"></i> Lights</span>
         </button>  
-        <div class="dropdown-content dd-button" id="led-menu">
+        <div class="dd-content dd-button" id="led-menu">
           <a onclick="showLEDsPage()"><i class="fa-solid fa-sliders"></i> More...</a>
           <a onclick="sendCmd('leds','pause','')"><i class="fa-solid fa-pause"></i> Pause</a>
           <a onclick="sendCmd('leds','stop','')"><i class="fa-solid fa-stop"></i> Stop</a>
@@ -190,21 +189,21 @@
 
       <button type="button" class="button" onclick="showDynMenu('statsmenu')">
           <span class="button__text"><i class="fa-solid fa-list"></i> Status</span>
-          <div class="dropdown-content ind-button" id="statsmenu"></div>
+          <div class="dd-content ind-button" id="statsmenu"></div>
       </button>
       <div class="dropdown">
         <button type="button" class="button" onclick="showCtlsMenu()">
           <span class="button__text"><i class="fa-solid fa-gears"></i> Controls</span>
         </button>  
-        <div class="dropdown-content dd-button" id="ctls-menu-br">
+        <div class="dd-content dd-button" id="ctls-menu-br">
           <a onclick="ctlsMenu('lr')"><i></i> Main Room</a>
           <a onclick="ctlsMenu('subs')"><i></i> Subwoofers</a>
         </div>
-        <div class="dropdown-content dd-button" id="ctls-menu-sub">
+        <div class="dd-content dd-button" id="ctls-menu-sub">
           <a onclick="ctlsMenu('br')"><i></i> Bedroom</a>
           <a onclick="ctlsMenu('lr')"><i></i> Main Room</a>
         </div>
-        <div class="dropdown-content dd-button" id="ctls-menu-lr">
+        <div class="dd-content dd-button" id="ctls-menu-lr">
           <a onclick="ctlsMenu('br')"><i></i> Bedroom</a>
           <a onclick="ctlsMenu('subs')"><i></i> Subwoofers</a>
         </div>
@@ -233,7 +232,7 @@
           <button type="button" class="button" onclick="showMenu('acc-menu')">
             <span class="button__text"><i class="fa-solid fa-gamepad"></i> RetroPi</span>
           </button>
-          <div class="dropdown-content dd-button" id="acc-menu">
+          <div class="dd-content dd-button" id="acc-menu">
             <a onclick="sendCmd('main','rfa3','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
             <a onclick="sendCmd('main','rfa3','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
           </div>
@@ -271,7 +270,7 @@
           <button type="button" class="button" onclick="showMenu('hifi-menu')">
             <span class="button__text"><i class="fa-solid fa-music"></i> Hi-Fi</span>
           </button>  
-          <div class="dropdown-content dd-button" id="hifi-menu">
+          <div class="dd-content dd-button" id="hifi-menu">
             <a onclick="sendCmd('main','hifion','')"><i class="fa-solid fa-toggle-on"></i> On</a>
             <a onclick="sendCmd('main','hifioff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
           </div>
@@ -814,7 +813,7 @@
         <button type="button" class="button" onclick="showMenu('delaymenu')">
           <span class="button__text"><i class="fa-solid fa-forward-fast"></i> Speed</span>
         </button>  
-        <div class="dropdown-content dd-button" id="delaymenu">
+        <div class="dd-content dd-button" id="delaymenu">
           <a onclick="sendCmd('main','delay','2000')">2000 ms</a>
           <a onclick="sendCmd('main','delay','1000')">1000 ms</a>
           <a onclick="sendCmd('main','delay','700')">700 ms</a>
@@ -832,7 +831,7 @@
         <button type="button" class="button" onclick="showMenu('blmenu')">
           <span class="button__text"><i class="fa-solid fa-lightbulb"></i> Backlight</span>
         </button>  
-        <div class="dropdown-content dd-button" id="blmenu">
+        <div class="dd-content dd-button" id="blmenu">
           <a onclick="sendCmd('main','backlight','0')">Auto</a>
           <a onclick="sendCmd('main','backlight','2')">High</a>
           <a onclick="sendCmd('main','backlight','1')">Low</a>
@@ -851,7 +850,7 @@
         <button type="button" class="button" onclick="showMenu('archmenu')">
           <span class="button__text"><i class="fa-solid fa-reply-all"></i> Replay</span>
         </button>  
-        <div class="dropdown-content dd-button" id="archmenu">
+        <div class="dd-content dd-button" id="archmenu">
           <a onclick="sendCmd('main','msgarchive','1')"><i class="fa-regular fa-envelope"></i> Last</a>
           <a onclick="sendCmd('main','msgarchive','2')"><i class="fa-regular fa-envelope"></i> -1</a>
           <a onclick="sendCmd('main','msgarchive','3')"><i class="fa-regular fa-envelope"></i> -2</a>
@@ -889,7 +888,7 @@
       <div class="server-grid">
 	      <div class="dropdown"> 
 	        <a class="dropbtn" onclick="showMenu('options-menu')">Options</a>
-	        <div class="dropdown-content" id="options-menu">  
+	        <div class="dd-content dd-menu" id="options-menu">  
             <a onclick="vmsPrompt()"> VM Control</a> 
             <a onclick="serverAction('pve_webui_toggle')">PVE Web UI</a>
             <a onclick="serverAction('syslog')">System Status</a>
@@ -900,7 +899,7 @@
 	      </div>
 	      <div class="dropdown"> 
 	        <a class="dropbtn" onclick="showMenu('net-menu')">Network</a>
-	        <div class="dropdown-content" id="net-menu">  
+	        <div class="dd-content dd-menu" id="net-menu">  
 	          <a onclick="wifiPrompt()"> WiFi Access</a>
             <a onclick="serverAction('files-netscan')">NetScan</a>
 	          <a onclick="serverAction('files-git_push')">Sync Git</a>
@@ -908,7 +907,7 @@
 	      </div>
 	      <div class="dropdown">
           <a class="dropbtn" onclick="showMenu('backupmenu')">Backup</a>
-          <div class="dropdown-content" id="backupmenu">
+          <div class="dd-content dd-menu" id="backupmenu">
             <a onclick="serverAction('pve_vmsbkp')">Snapshot VM's</a>
             <a onclick="serverAction('pve_listsnaps')">List Snapshots</a>
             <a onclick="serverAction('files-last_backup_dates')">Backup Dates</a>
@@ -920,7 +919,7 @@
 	      </div>
 	      <div class="dropdown"> 
           <a class="dropbtn" onclick="showMenu('regionsmenu')">Regions</a>
-          <div class="dropdown-content" id="regionsmenu">
+          <div class="dd-content dd-menu" id="regionsmenu">
             <a onclick="serverAction('files-arc_region')">Archive</a>
             <a onclick="serverAction('files-ext_region')">External</a>
             <a onclick="serverAction('files-snap_region')">Snapshots</a>               	
@@ -933,7 +932,7 @@
 	  <div class="lcdpi-grid ledpi-grid pi-grid">
       <div class="dropdown"> 
 	      <a class="dropbtn" onclick="showMenu('pi-options-menu')">Options</a>
-	        <div class="dropdown-content" id="pi-options-menu">
+	        <div class="dd-content dd-menu" id="pi-options-menu">
             <a onclick="showPiWiFiPrompt()"> Setup WiFi</a>
             <a onclick="serverAction('temp')"> Temperature</a> 
             <a onclick="serverAction('apd')"> Hotspot Network</a> 

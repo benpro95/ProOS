@@ -726,8 +726,6 @@ function showMenu(_menu) {
 //// Bookmarks Menu ////
 
 function hideBookmarks() {
-  // remove banner text
-  classDisplay('favedit','none');
   // hide bookmark edit/add buttons
   classDisplay("bookmark-buttons","none");
   // reset bookmarks state flag 
@@ -744,34 +742,82 @@ function showBookmarks() {
   bookmarkState = 1; // link open mode
 }
 
-function clickBookmark(url, name) {
+function clickBookmark(url,name,id) {
   if (bookmarkState == 1) {
     window.open(url, "_blank");
   }
   if (bookmarkState == 2) {
     console.log("Edit Mode: " + url + " " + name);
+    editFavPrompt(url,name,id);
   }  
 }
 
 function editBookmark() {
   bookmarkState = 2; // edit mode
-  classDisplay('favedit','inline-block'); // banner text
+}
+
+function editFavPrompt(url,name,id){
+  let editFavPrompt = document.createElement("div"); 
+  editFavPrompt.id= "editFav__prompt";
+  // author details
+  let editFavURL = document.createElement("div"); 
+  editFavURL.innerHTML = url;
+  editFavURL.className = "editFav__text";
+  editFavPrompt.appendChild(editFavURL); 
+  // cancel button
+  let editFavcancelb = document.createElement("button");
+  editFavcancelb.innerHTML = "Close";
+  editFavcancelb.className = "button"; 
+  editFavcancelb.type = "button"; 
+  editFavPrompt.appendChild(editFavcancelb);
+  // up button
+  let editFavUpBtn = document.createElement("button");
+  editFavUpBtn.innerHTML = "Up";
+  editFavUpBtn.className = "button"; 
+  editFavUpBtn.type = "button"; 
+  editFavPrompt.appendChild(editFavUpBtn); 
+  // down button
+  let editFavDownBtn = document.createElement("button");
+  editFavDownBtn.innerHTML = "Down";
+  editFavDownBtn.className = "button"; 
+  editFavDownBtn.type = "button"; 
+  editFavPrompt.appendChild(editFavDownBtn); 
+  document.body.appendChild(editFavPrompt); // append the password-prompt so it gets visible
+  new Promise(function(resolve, reject) {
+      editFavPrompt.addEventListener('click', function handleButtonClicks(e) { // lets handle the buttons
+        if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
+          if (e.target === editFavcancelb) {
+            editFavPrompt.removeEventListener('click', handleButtonClicks);
+            document.body.removeChild(editFavPrompt);
+          }
+          if (e.target === editFavUpBtn) {
+            shiftUp(id);
+          }     
+          if (e.target === editFavDownBtn) {
+            shiftDown(id);
+          }    
+      });
+  });   
 }
 
 function addBookmark() {
-  //hideDropdowns();
+  hideDropdowns();
 }
 
-function bookmarkUp(elmname) {
- const element = document.getElementById(elmname);
-  if(element.previousElementSibling)
-    element.parentNode.insertBefore(element, element.previousElementSibling);
+function shiftUp(id) {
+  const elem = document.getElementById("menu-" + id.toString());
+  if (elem != null) {
+    if(elem.previousElementSibling)
+      elem.parentNode.insertBefore(elem, elem.previousElementSibling);
+  }
 }
 
-function bookmarkDown(elmname) {
-const element = document.getElementById(elmname);
-  if(element.nextElementSibling)
-    element.parentNode.insertBefore(element.nextElementSibling, element);
+function shiftDown(id) {
+  const elem = document.getElementById("menu-" + id.toString());
+  if (elem != null) {
+    if(elem.nextElementSibling)
+      elem.parentNode.insertBefore(elem.nextElementSibling, elem);
+  }
 }
 
 //// Dynamic Menus ////
@@ -880,7 +926,7 @@ function createListItem(_col0,_col1,_col2,_id) {
     _elm.setAttribute('draggable', false);
     _elm.classList.add("bookmarked__item");
     _elm.addEventListener("click", function(event) {
-      clickBookmark(_col0,_col2); // URL & link name
+      clickBookmark(_col0,_col2,_id); // URL,Name,ID
     });
   }
   if (_col1 == '3' || _col1 == '4' || _col1 == '5') {

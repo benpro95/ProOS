@@ -28,6 +28,8 @@ window.addEventListener("DOMContentLoaded", (event) => {
           event.target.classList.contains('button__text') || // button text click
           event.target.classList.contains('mainmenu__anchor') || // main menu click
           event.target.classList.contains('bookmarked__item') || // bookmark menu click
+          event.target.classList.contains('editfav__window') || // bookmark edit window
+          event.target.classList.contains('editFav__text') || // bookmark window text
           event.target.classList.contains('fa-regular') || // icon click
           event.target.classList.contains('fa-solid') || // icon click
           event.target.classList.contains('dropbtn') || // dropdown menu
@@ -135,7 +137,7 @@ function starsAnimation(_state) {
   var elem;
   for (_itr = 1; _itr <= 12; _itr++) {
     elem = document.getElementById("star-" + _itr);
-    if (_state == true) {
+    if (_state === true) {
       elem.classList.add("animate-stars");
     } else {
       elem.classList.remove("animate-stars");
@@ -511,12 +513,12 @@ async function wifiPrompt(){
   await show_wifiPwdPrompt();
 }
 
-function passwordPrompt(text){
+function passwordPrompt(){
   let pwprompt = document.createElement("div"); //creates the div to be used as a prompt
   pwprompt.id= "pass__prompt"; //gives the prompt an id - not used in my example but good for styling with css-file
-  let pwtext = document.createElement("div"); //create the div for the password-text
-  pwtext.innerHTML = text; //put inside the text
-  pwprompt.appendChild(pwtext); //append the text-div to the password-prompt
+  let pwtextdiv = document.createElement("div"); //create the div for the password-text
+  pwtextdiv.innerHTML = "Enter password:"; //put inside the text
+  pwprompt.appendChild(pwtextdiv); //append the text-div to the password-prompt
   let pwinput = document.createElement("input"); //creates the password-input
   pwinput.id = "pass__textbox"; //give it some id - not really used in this example...
   pwinput.type="password"; // makes the input of type password to not show plain-text
@@ -527,8 +529,8 @@ function passwordPrompt(text){
   pwokbutton.type="button"; 
   let pwcancelb = document.createElement("button"); //the cancel-button
   pwcancelb.innerHTML = "Cancel";
-  pwcancelb.className ="button"; 
-  pwcancelb.type="button"; 
+  pwcancelb.className = "button"; 
+  pwcancelb.type = "button"; 
   pwprompt.appendChild(pwcancelb); //append cancel-button first
   pwprompt.appendChild(pwokbutton); //append the ok-button
   document.body.appendChild(pwprompt); //append the password-prompt so it gets visible
@@ -561,7 +563,7 @@ async function getPassword(){
   let result;
   try{
     hideDropdowns();
-    result = await passwordPrompt("Enter password:");
+    result = await passwordPrompt();
     if (result !== null) {  
       if (result !== '') {  
         savePOST('pwd',result);
@@ -726,98 +728,158 @@ function showMenu(_menu) {
 //// Bookmarks Menu ////
 
 function hideBookmarks() {
+  // close edit / add window
+  closeFavEditPrompt();
   // hide bookmark edit/add buttons
   classDisplay("bookmark-buttons","none");
+  // reset color of menu
+  const elem = document.getElementById("bookmarks");
+  if (elem) {
+    elem.classList.remove("bookmark-editmode");
+  }
   // reset bookmarks state flag 
   bookmarkState = 0;
 }
 
 function showBookmarks() {
+  // hide menu if clicked while open
   if (bookmarkState != 0) {
     hideDropdowns();
     return;
   }
+  // draw menu
   showDynMenu('bookmarks');
+  // show add / edit buttons
   classDisplay("bookmark-buttons","block");
-  bookmarkState = 1; // link open mode
+  // link open mode
+  bookmarkState = 1;
+}
+
+function editBookmark() {
+  // hide menu if clicked while open
+  if (bookmarkState == 2) {
+    hideDropdowns();
+    return;
+  }
+  const elem = document.getElementById("bookmarks");
+  if (elem) { // change color of menu
+    elem.classList.add("bookmark-editmode");
+  } // edit mode
+  bookmarkState = 2;
+}
+
+function addBookmark() {
+  closeFavEditPrompt();
+  showFavEditPrompt('add',null,null,null); // add new window
 }
 
 function clickBookmark(url,name,id) {
   if (bookmarkState == 1) {
+    // open URL in new tab
     window.open(url, "_blank");
   }
   if (bookmarkState == 2) {
-    console.log("Edit Mode: " + url + " " + name);
-    editFavPrompt(url,name,id);
+    // edit bookmark item
+    const elmid = "menu-" + id.toString();
+    const elem = document.getElementById(elmid);
+    closeFavEditPrompt();
+    if (elem) { // edit window
+      elem.classList.add("dd-selected"); // highlight selected item
+      showFavEditPrompt('edit',url,name,elem);
+    }
   }  
 }
 
-function editBookmark() {
-  bookmarkState = 2; // edit mode
+function closeFavEditPrompt() {
+  const favPrompt = document.getElementById("editFav__prompt");
+  if (favPrompt) {
+    favPrompt.remove();
+  }
 }
 
-function editFavPrompt(url,name,id){
+function showFavEditPrompt(type,url,name,elem){
+  // create empty window
   let editFavPrompt = document.createElement("div"); 
-  editFavPrompt.id= "editFav__prompt";
-  // author details
+  editFavPrompt.id = "editFav__prompt";
+  editFavPrompt.className = "editfav__window"; 
+  // Link name edit box
+  let editFavName = document.createElement("div"); 
+  editFavName.innerHTML = name;
+  editFavName.className = "editFav__text";
+  // URL edit box
   let editFavURL = document.createElement("div"); 
   editFavURL.innerHTML = url;
   editFavURL.className = "editFav__text";
-  editFavPrompt.appendChild(editFavURL); 
   // cancel button
-  let editFavcancelb = document.createElement("button");
-  editFavcancelb.innerHTML = "Close";
-  editFavcancelb.className = "button"; 
-  editFavcancelb.type = "button"; 
-  editFavPrompt.appendChild(editFavcancelb);
+  let editFavCancelBtn = document.createElement("button");
+  editFavCancelBtn.innerHTML = "Cancel";
+  editFavCancelBtn.className = "button"; 
+  editFavCancelBtn.type = "button"; 
+  // save button
+  let editFavSaveBtn = document.createElement("button");
+  editFavSaveBtn.innerHTML = "Save";
+  editFavSaveBtn.className = "button"; 
+  editFavSaveBtn.type = "button"; 
   // up button
   let editFavUpBtn = document.createElement("button");
-  editFavUpBtn.innerHTML = "Up";
+  editFavUpBtn.innerHTML = "Move Up";
   editFavUpBtn.className = "button"; 
   editFavUpBtn.type = "button"; 
-  editFavPrompt.appendChild(editFavUpBtn); 
   // down button
   let editFavDownBtn = document.createElement("button");
-  editFavDownBtn.innerHTML = "Down";
+  editFavDownBtn.innerHTML = "Move Down";
   editFavDownBtn.className = "button"; 
   editFavDownBtn.type = "button"; 
-  editFavPrompt.appendChild(editFavDownBtn); 
-  document.body.appendChild(editFavPrompt); // append the password-prompt so it gets visible
+  // append elements to window
+  editFavPrompt.appendChild(editFavName); 
+  editFavPrompt.appendChild(editFavURL); 
+  editFavPrompt.appendChild(editFavCancelBtn);  
+  editFavPrompt.appendChild(editFavSaveBtn); 
+  editFavPrompt.appendChild(editFavUpBtn); 
+  editFavPrompt.appendChild(editFavDownBtn);
+  // display window on page
+  document.body.appendChild(editFavPrompt); 
+  // handle button actions
   new Promise(function(resolve, reject) {
-      editFavPrompt.addEventListener('click', function handleButtonClicks(e) { // lets handle the buttons
-        if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
-          if (e.target === editFavcancelb) {
+      editFavPrompt.addEventListener('click', function handleButtonClicks(e) { 
+        if (e.target.tagName !== 'BUTTON') { return; }
+          // cancel button action
+          if (e.target === editFavCancelBtn) {
             editFavPrompt.removeEventListener('click', handleButtonClicks);
-            document.body.removeChild(editFavPrompt);
+            hideDropdowns();
           }
+          // save button action
+          if (e.target === editFavSaveBtn) {
+            saveBookmarks();
+          }             
+          // move up button action
           if (e.target === editFavUpBtn) {
-            shiftUp(id);
-          }     
+            shiftMenuUp(elem);
+          }
+          // move down button action
           if (e.target === editFavDownBtn) {
-            shiftDown(id);
+            shiftMenuDown(elem);
           }    
       });
   });   
 }
 
-function addBookmark() {
-  hideDropdowns();
-}
-
-function shiftUp(id) {
-  const elem = document.getElementById("menu-" + id.toString());
-  if (elem != null) {
+function shiftMenuUp(elem) {
+  if (elem) {
     if(elem.previousElementSibling)
       elem.parentNode.insertBefore(elem, elem.previousElementSibling);
   }
 }
 
-function shiftDown(id) {
-  const elem = document.getElementById("menu-" + id.toString());
-  if (elem != null) {
+function shiftMenuDown(elem) {
+  if (elem) {
     if(elem.nextElementSibling)
       elem.parentNode.insertBefore(elem.nextElementSibling, elem);
   }
+}
+
+function saveBookmarks() {
+
 }
 
 //// Dynamic Menus ////
@@ -923,8 +985,7 @@ function createListItem(_col0,_col1,_col2,_id) {
   }
   if (_col1 == '2') {
     // bookmarks menu
-    _elm.setAttribute('draggable', false);
-    _elm.classList.add("bookmarked__item");
+    _elm.classList.add('bookmarked__item');
     _elm.addEventListener("click", function(event) {
       clickBookmark(_col0,_col2,_id); // URL,Name,ID
     });

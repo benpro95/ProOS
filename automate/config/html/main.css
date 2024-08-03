@@ -335,6 +335,10 @@ input.chkbox {
   z-index: 8;
 }
 
+.dd-selected {
+  background-color: #000;
+}
+
 .dd-button {
   position: absolute;
   min-width: 130px;
@@ -403,6 +407,10 @@ input.chkbox {
 
 .bookmark-buttons {
   display: none;
+}
+
+.bookmark-editmode {
+  background-color: #6f230f;
 }
 
 #bookmarks {
@@ -563,7 +571,7 @@ input.chkbox {
   z-index: 999; 
 }
 
-#editFav__btn {
+#editFav__Cancelbtn {
   position: absolute;
   margin-left: -75px;
   width: 150px;

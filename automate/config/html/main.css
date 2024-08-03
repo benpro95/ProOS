@@ -565,7 +565,7 @@ input.chkbox {
   margin-left: -125px;
   margin-top: -180px;
   width: 350px;
-  height: 320px;
+  height: auto;
   padding: 15px; 
   color: #fff;
   z-index: 999; 

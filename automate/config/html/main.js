@@ -774,21 +774,23 @@ function addBookmark() {
   showFavEditPrompt('add',null,null,null); // add new window
 }
 
-function clickBookmark(url,name,id) {
-  if (bookmarkState == 1) {
-    // open URL in new tab
-    window.open(url, "_blank");
-  }
-  if (bookmarkState == 2) {
-    // edit bookmark item
-    const elmid = "menu-" + id.toString();
-    const elem = document.getElementById(elmid);
-    closeFavEditPrompt();
-    if (elem) { // edit window
+function clickBookmark(id) {
+  const elmid = "menu-" + id.toString();
+  const elem = document.getElementById(elmid);
+  const url = Object.values(elem.url).join("");
+  const name = elem.innerText;
+  if (elem) { 
+    if (bookmarkState == 1) {
+      // open URL in new tab
+      window.open(url, "_blank");
+    }
+    if (bookmarkState == 2) {
+      // edit bookmark item
+      closeFavEditPrompt();
       elem.classList.add("dd-selected"); // highlight selected item
       showFavEditPrompt('edit',url,name,elem);
     }
-  }  
+  } 
 }
 
 function closeFavEditPrompt() {
@@ -805,8 +807,8 @@ function showFavEditPrompt(type,url,name,elem){
   editFavPrompt.className = "editfav__window"; 
   // window banner text
   let editFavText = document.createElement("div"); 
-  drawFavEditDefaultText(editFavText);
   editFavText.className = "editFav__text";
+  drawFavEditDefaultText(editFavText);
   // Link name edit box
   let editFavName = document.createElement("input"); 
   editFavName.type = "text";
@@ -862,33 +864,43 @@ function showFavEditPrompt(type,url,name,elem){
             editFavPrompt.removeEventListener('click', handleButtonClicks);
             hideDropdowns();
           }
-          // delete button action
-          if (e.target === editFavDeleteBtn) {
-            // reconfigure window
-            editFavPrompt.removeChild(editFavUpBtn); 
-            editFavPrompt.removeChild(editFavDownBtn);
-            editFavPrompt.removeChild(editFavDeleteBtn);
+          // common save / delete actions
+          if (e.target === editFavDeleteBtn || e.target === editFavSaveBtn) {
+            editFavCancelBtn.innerHTML = "Close";
+            if (editFavPrompt.contains(editFavUpBtn)) {
+              editFavPrompt.removeChild(editFavUpBtn); 
+            }
+            if (editFavPrompt.contains(editFavDownBtn)) {
+              editFavPrompt.removeChild(editFavDownBtn); 
+            }
+            if (editFavPrompt.contains(editFavDeleteBtn)) {
+              editFavPrompt.removeChild(editFavDeleteBtn); 
+            }
+            if (editFavPrompt.contains(editFavSaveBtn)) {
+              editFavPrompt.removeChild(editFavSaveBtn); 
+            }
             editFavName.readOnly = true;
             editFavURL.readOnly = true;
-            // display confirm message
-            editFavText.innerHTML = "Are you sure you want to delete?"; 
-            editFavSaveBtn.innerHTML = "Confirm";
-            // remove element from menu
-            elem.remove();
-          }
-          // save button action
-          if (e.target === editFavSaveBtn) {
-            // update changed values
-            if (elem) {
-              elem['url'] = editFavURL.value;
-              elem.innerText = editFavName.value;
+            // delete action
+            if (e.target === editFavDeleteBtn) {
+              editFavText.innerHTML = "Bookmark Deleted."; 
+              editFavName.style.textDecoration = 'line-through';
+              editFavURL.style.textDecoration = 'line-through';
+              // remove element from menu
+              elem.remove();
             }
-            editFavPrompt.removeChild(editFavSaveBtn); 
-            editFavText.innerHTML = "Changes saved."; 
-            editFavCancelBtn.innerHTML = "Close";
+            // save action
+            if (e.target === editFavSaveBtn) {
+              editFavText.innerHTML = "Changes Saved."; 
+              // update changed values
+              if (elem) { // replace pipes
+                elem['url'] = editFavURL.value.replaceAll("|", "-");
+                elem.innerText = editFavName.value.replaceAll("|", "-");
+              }
+            }  
             // save to file
             saveBookmarks();
-          }           
+          }        
           // move up button action
           if (e.target === editFavUpBtn) {
             shiftMenuUp(elem);
@@ -1037,15 +1049,15 @@ function createListItem(_col0,_col1,_col2,_id) {
   // bookmarks menu  
   if (_col1 == '2') {
     _elm.classList.add('bookmarked__item');
-    // define click action
-    _elm.addEventListener("click", function(event) {
-      clickBookmark(_col0,_col2,_id); // URL, Name, ID
-    });
     // store URL
     Object.defineProperty(_elm, "url", {
       enumerable: false,
       writable: true,
       value: _col0
+    });
+    // define click action
+    _elm.addEventListener("click", function(event) {
+      clickBookmark(_id);
     });
   }
   // indicator / status menu  

@@ -820,6 +820,11 @@ function showFavEditPrompt(type,url,name,elem){
   editFavSaveBtn.innerHTML = "Save";
   editFavSaveBtn.className = "button"; 
   editFavSaveBtn.type = "button"; 
+  // delete button
+  let editFavDeleteBtn = document.createElement("button");
+  editFavDeleteBtn.innerHTML = "Delete";
+  editFavDeleteBtn.className = "button"; 
+  editFavDeleteBtn.type = "button";   
   // up button
   let editFavUpBtn = document.createElement("button");
   editFavUpBtn.innerHTML = "Move Up";
@@ -835,6 +840,7 @@ function showFavEditPrompt(type,url,name,elem){
   editFavPrompt.appendChild(editFavURL); 
   editFavPrompt.appendChild(editFavCancelBtn);  
   editFavPrompt.appendChild(editFavSaveBtn); 
+  editFavPrompt.appendChild(editFavDeleteBtn); 
   editFavPrompt.appendChild(editFavUpBtn); 
   editFavPrompt.appendChild(editFavDownBtn);
   // display window on page
@@ -851,7 +857,11 @@ function showFavEditPrompt(type,url,name,elem){
           // save button action
           if (e.target === editFavSaveBtn) {
             saveBookmarks();
-          }             
+          } 
+          // delete button action
+          if (e.target === editFavDeleteBtn) {
+            elem.remove();
+          }
           // move up button action
           if (e.target === editFavUpBtn) {
             shiftMenuUp(elem);
@@ -879,7 +889,15 @@ function shiftMenuDown(elem) {
 }
 
 function saveBookmarks() {
-
+  // loop through edited bookmarks
+  [...document.getElementsByClassName('bookmarked__item')].forEach(elem => {
+    if (elem) {
+      const url = Object.values(elem.url).join("");
+      const name = elem.innerText;
+      const line = url + "|2|" + name;
+      console.log(line);
+    }
+  })
 }
 
 //// Dynamic Menus ////
@@ -957,11 +975,11 @@ function drawMenu(col0,col1,col2,menu,id) {
 
 function createListItem(_col0,_col1,_col2,_id) {
   const _elm = document.createElement('a');
+  // add elements to menu
   _elm.id = "menu-" + _id.toString();
   _elm.innerText = _col2;
-  // add elements to menu
+  // checkbox menu
   if (_col1 == '0' || _col1 == '1') {
-    // checkbox menu
     const _cbox = document.createElement('input');
     _cbox.type = "checkbox";
     _cbox.className = "chkbox";
@@ -977,21 +995,28 @@ function createListItem(_col0,_col1,_col2,_id) {
     // URL on click
     _elm.href = _col0;
     // a checkbox was clicked
-    _elm.addEventListener('click', function handleClickCheckbox(event) {
+    _elm.addEventListener('click', function(event) {
       if (event.target.classList.contains('chkbox')) {
         dynChkboxChanged = 1;
       }
     });
   }
+  // bookmarks menu  
   if (_col1 == '2') {
-    // bookmarks menu
     _elm.classList.add('bookmarked__item');
+    // define click action
     _elm.addEventListener("click", function(event) {
-      clickBookmark(_col0,_col2,_id); // URL,Name,ID
+      clickBookmark(_col0,_col2,_id); // URL, Name, ID
+    });
+    // store URL
+    Object.defineProperty(_elm, "url", {
+      enumerable: false,
+      writable: true,
+      value: _col0
     });
   }
+  // indicator / status menu  
   if (_col1 == '3' || _col1 == '4' || _col1 == '5') {
-    // indicator / status menu
     const _dot = document.createElement('span');
     _dot.classList.add('ind_dot');
     if (_col1 == '4'){
@@ -1003,8 +1028,8 @@ function createListItem(_col0,_col1,_col2,_id) {
     _dot.id = "ind-" + _col2;
     _elm.appendChild(_dot);
   }
+  // theme menu  
   if (_col1 == '8') {
-    // theme menu
     const _color = _col0;
     _elm.classList.add('theme-colorbox');
     _elm.style.setProperty('background-color', _color);

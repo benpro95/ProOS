@@ -29,6 +29,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
           event.target.classList.contains('mainmenu__anchor') || // main menu click
           event.target.classList.contains('bookmarked__item') || // bookmark menu click
           event.target.classList.contains('editfav__window') || // bookmark edit window
+          event.target.classList.contains('editFav__textbox') || // bookmark window textbox
           event.target.classList.contains('editFav__text') || // bookmark window text
           event.target.classList.contains('fa-regular') || // icon click
           event.target.classList.contains('fa-solid') || // icon click
@@ -802,14 +803,20 @@ function showFavEditPrompt(type,url,name,elem){
   let editFavPrompt = document.createElement("div"); 
   editFavPrompt.id = "editFav__prompt";
   editFavPrompt.className = "editfav__window"; 
+  // window banner text
+  let editFavText = document.createElement("div"); 
+  drawFavEditDefaultText(editFavText);
+  editFavText.className = "editFav__text";
   // Link name edit box
-  let editFavName = document.createElement("div"); 
-  editFavName.innerHTML = name;
-  editFavName.className = "editFav__text";
+  let editFavName = document.createElement("input"); 
+  editFavName.type = "text";
+  editFavName.value = name;
+  editFavName.className = "editFav__textbox";
   // URL edit box
-  let editFavURL = document.createElement("div"); 
-  editFavURL.innerHTML = url;
-  editFavURL.className = "editFav__text";
+  let editFavURL = document.createElement("input"); 
+  editFavURL.type = "text";
+  editFavURL.value = url;
+  editFavURL.className = "editFav__textbox";
   // cancel button
   let editFavCancelBtn = document.createElement("button");
   editFavCancelBtn.innerHTML = "Cancel";
@@ -836,13 +843,14 @@ function showFavEditPrompt(type,url,name,elem){
   editFavDownBtn.className = "button"; 
   editFavDownBtn.type = "button"; 
   // append elements to window
+  editFavPrompt.appendChild(editFavText);
   editFavPrompt.appendChild(editFavName); 
   editFavPrompt.appendChild(editFavURL); 
-  editFavPrompt.appendChild(editFavCancelBtn);  
   editFavPrompt.appendChild(editFavSaveBtn); 
   editFavPrompt.appendChild(editFavDeleteBtn); 
   editFavPrompt.appendChild(editFavUpBtn); 
   editFavPrompt.appendChild(editFavDownBtn);
+  editFavPrompt.appendChild(editFavCancelBtn);  
   // display window on page
   document.body.appendChild(editFavPrompt); 
   // handle button actions
@@ -854,24 +862,49 @@ function showFavEditPrompt(type,url,name,elem){
             editFavPrompt.removeEventListener('click', handleButtonClicks);
             hideDropdowns();
           }
-          // save button action
-          if (e.target === editFavSaveBtn) {
-            saveBookmarks();
-          } 
           // delete button action
           if (e.target === editFavDeleteBtn) {
+            // reconfigure window
+            editFavPrompt.removeChild(editFavUpBtn); 
+            editFavPrompt.removeChild(editFavDownBtn);
+            editFavPrompt.removeChild(editFavDeleteBtn);
+            editFavName.readOnly = true;
+            editFavURL.readOnly = true;
+            // display confirm message
+            editFavText.innerHTML = "Are you sure you want to delete?"; 
+            editFavSaveBtn.innerHTML = "Confirm";
+            // remove element from menu
             elem.remove();
           }
+          // save button action
+          if (e.target === editFavSaveBtn) {
+            // update changed values
+            if (elem) {
+              elem['url'] = editFavURL.value;
+              elem.innerText = editFavName.value;
+            }
+            editFavPrompt.removeChild(editFavSaveBtn); 
+            editFavText.innerHTML = "Changes saved."; 
+            editFavCancelBtn.innerHTML = "Close";
+            // save to file
+            saveBookmarks();
+          }           
           // move up button action
           if (e.target === editFavUpBtn) {
             shiftMenuUp(elem);
+            drawFavEditDefaultText(editFavText);
           }
           // move down button action
           if (e.target === editFavDownBtn) {
             shiftMenuDown(elem);
+            drawFavEditDefaultText(editFavText);
           }    
       });
   });   
+}
+
+function drawFavEditDefaultText(editFavText) {
+  editFavText.innerHTML = "Edit Bookmark"; 
 }
 
 function shiftMenuUp(elem) {

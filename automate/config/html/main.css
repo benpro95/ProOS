@@ -580,12 +580,21 @@ input.chkbox {
   left: 50%;
 }
 
+.editFav__textbox {
+  padding-bottom: 5px;
+  text-align: left;
+  margin: auto;
+  color: black;
+  width: 250px;
+  font-size: 20px;
+}
+
 .editFav__text {
-  padding-bottom: 1px;
+  padding-bottom: 5px;
   text-align: center;
   margin: auto;
-  color: #a6a9ad;
-  font-size: 18px;
+  color: #fff;
+  font-size: 20px;
 }
 
 /*

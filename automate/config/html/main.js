@@ -759,10 +759,11 @@ function addBookmark() {
   _elm.addEventListener("click", function(event) {
     clickBookmark(_newid);
   });
-  _elm.classList.add("dd-selected"); // highlight selected item
+  // highlight selected item
+  _elm.classList.add("dd-selected");
   navElement.insertBefore(_elm,navElement.firstChild);
-
-  showFavEditPrompt('add',null,null,_elm); // add new window
+  // add new window
+  showFavEditPrompt('add',null,null,_elm);
 }
 
 function enableEditAddMode () {
@@ -799,6 +800,18 @@ function closeFavEditPrompt() {
   const favPrompt = document.getElementById("editFav__prompt");
   if (favPrompt) {
     favPrompt.remove();
+  }
+  // un-highlight selected item
+  for (var idx = 0; idx < fileData.length; idx++) {
+    if (idx !== 0) { // skip menu ID
+      const _menuid = "menu-" + idx.toString();
+      const elem = document.getElementById(_menuid);
+      if (elem) {
+        if(elem.classList.contains('dd-selected')) {
+          elem.classList.remove("dd-selected");
+        }
+      }
+    }
   }
 }
 

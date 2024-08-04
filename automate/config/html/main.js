@@ -2,16 +2,17 @@
 // by Ben Provenzano III
 
 //////////////////
-let device = null;
+let device;
 let selectedVM = "";
 let dynMenuActive = 0;
 let dynChkboxChanged = 0;
 let colorPromptActive = 0;
 let defaultSite = "Automate";
-let serverCmdData = null;
+let siteVersion = "3.8";
 let bookmarkState = 0;
 let loadBarState = 0;
 let promptCount = 0;
+let serverCmdData;
 let socket = null;
 let fileData = [];
 let arcState = 0;
@@ -28,7 +29,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
           event.target.classList.contains('button__text') || // button text click
           event.target.classList.contains('mainmenu__anchor') || // main menu click
           event.target.classList.contains('bookmarked__item') || // bookmark menu click
-          event.target.classList.contains('editfav__window') || // bookmark edit window
+          event.target.classList.contains('editFav__window') || // bookmark edit window
           event.target.classList.contains('fa-regular') || // icon click
           event.target.classList.contains('fa-solid') || // icon click
           event.target.classList.contains('dropbtn') || // dropdown menu
@@ -409,7 +410,7 @@ function show_aboutPrompt(){
   let currentDate = new Date();
   let currentYear = currentDate.getFullYear();
   let aboutdets2 = document.createElement("div"); 
-  aboutdets2.innerHTML = "Version: 3.7 (" + currentYear + ")";
+  aboutdets2.innerHTML = "Version: " + siteVersion + " (" + currentYear + ")";
   aboutdets2.className = "about__text";
   aboutprompt.appendChild(aboutdets2);
   // author details
@@ -794,6 +795,7 @@ function clickBookmark(id) {
   }
 }
 
+// close add / edit window
 function closeFavEditPrompt() {
   const favPrompt = document.getElementById("editFav__prompt");
   if (favPrompt) {
@@ -814,62 +816,76 @@ function closeFavEditPrompt() {
 }
 
 function showFavEditPrompt(type,url,name,elem){
-  let bannerText;
-  let defaultTextBoxURL;
-  let defaultTextBoxName;
-  if (type === 'edit') { // edit mode 
-    bannerText = "Edit Bookmark";
-  }
-  if (type === 'add') { // add new mode
-    bannerText = "Add Bookmark";
-    defaultTextBoxURL = "Enter URL";
-    defaultTextBoxName = "Enter Name";
-  }
   // create empty window
   let editFavPrompt = document.createElement("div"); 
   editFavPrompt.id = "editFav__prompt";
-  editFavPrompt.className = "editfav__window"; 
-  // window banner text
-  let editFavText = document.createElement("div"); 
-  editFavText.className = "editfav__window editFav__text";
-  editFavText.innerHTML = bannerText; 
+  editFavPrompt.className = "editFav__window"; 
   // Link name edit box
   let editFavName = document.createElement("input"); 
   editFavName.type = "text";
   editFavName.value = name;
-  editFavName.placeholder = defaultTextBoxName;
-  editFavName.className = "editfav__window editFav__textbox";
+  editFavName.classList.add("editFav__textbox");
+  editFavName.classList.add("editFav__window");
   // URL edit box
   let editFavURL = document.createElement("input"); 
   editFavURL.type = "text";
   editFavURL.value = url;
-  editFavURL.placeholder = defaultTextBoxURL;
-  editFavURL.className = "editfav__window editFav__textbox";
+  editFavURL.classList.add("editFav__textbox");
+  editFavURL.classList.add("editFav__window");
+  let bannerText;
+  if (type === 'edit') { // edit mode 
+    bannerText = "Edit Bookmark";
+    editFavName.placeholder = "Enter Name";
+    editFavURL.placeholder = "Enter URL";
+  }
+  if (type === 'add') { // add new mode
+    bannerText = "Add Bookmark";
+  }
+  // window banner text
+  let editFavText = document.createElement("div");
+  editFavText.classList.add("editFav__window");
+  editFavText.classList.add("editFav__text");
+  editFavText.innerHTML = bannerText; 
   // cancel button
   let editFavCancelBtn = document.createElement("button");
-  editFavCancelBtn.innerHTML = '<i class="fa-solid fa-ban"></i>';
-  editFavCancelBtn.className = "button editfav__window editFav__cancelbtn"; 
-  editFavCancelBtn.type = "button"; 
+  editFavCancelBtn.classList.add("editFav__window");
+  editFavCancelBtn.classList.add("editFav__cancelbtn");
+  editFavCancelBtn.classList.add("button");
+  editFavCancelBtn.classList.add("fa-solid");
+  editFavCancelBtn.classList.add("fa-ban");
+  editFavCancelBtn.type = "button";
   // save button
   let editFavSaveBtn = document.createElement("button");
-  editFavSaveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i>';
-  editFavSaveBtn.className = "button editfav__window editFav__button"; 
-  editFavSaveBtn.type = "button"; 
+  editFavSaveBtn.classList.add("editFav__window");
+  editFavSaveBtn.classList.add("editFav__button");
+  editFavSaveBtn.classList.add("button");
+  editFavSaveBtn.classList.add("fa-solid");
+  editFavSaveBtn.classList.add("fa-floppy-disk");
+  editFavSaveBtn.type = "button";
   // delete button
   let editFavDeleteBtn = document.createElement("button");
-  editFavDeleteBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>'  
-  editFavDeleteBtn.className = "button editfav__window editFav__button";
+  editFavDeleteBtn.classList.add("editFav__window");
+  editFavDeleteBtn.classList.add("editFav__button");
+  editFavDeleteBtn.classList.add("button");
+  editFavDeleteBtn.classList.add("fa-solid");
+  editFavDeleteBtn.classList.add("fa-trash-can");
   editFavDeleteBtn.type = "button";
   // up button
   let editFavUpBtn = document.createElement("button");
-  editFavUpBtn.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
-  editFavUpBtn.className = "button editfav__window editFav__button"; 
+  editFavUpBtn.classList.add("editFav__window");
+  editFavUpBtn.classList.add("editFav__button");
+  editFavUpBtn.classList.add("button");
+  editFavUpBtn.classList.add("fa-solid");
+  editFavUpBtn.classList.add("fa-arrow-up");
   editFavUpBtn.type = "button"; 
   // down button
   let editFavDownBtn = document.createElement("button");
-  editFavDownBtn.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
-  editFavDownBtn.className = "button editfav__window editFav__button"; 
-  editFavDownBtn.type = "button"; 
+  editFavDownBtn.classList.add("editFav__window");
+  editFavDownBtn.classList.add("editFav__button");
+  editFavDownBtn.classList.add("button");
+  editFavDownBtn.classList.add("fa-solid");
+  editFavDownBtn.classList.add("fa-arrow-down");
+  editFavDownBtn.type = "button";
   // append elements to window
   editFavPrompt.appendChild(editFavText);
   editFavPrompt.appendChild(editFavName); 
@@ -885,6 +901,14 @@ function showFavEditPrompt(type,url,name,elem){
   new Promise(function(resolve, reject) {
       editFavPrompt.addEventListener('click', function handleButtonClicks(e) { 
         if (e.target.tagName !== 'BUTTON') { return; }
+          // move up button action
+          if (e.target === editFavUpBtn) {
+            shiftMenuUp(elem);
+          }
+          // move down button action
+          if (e.target === editFavDownBtn) {
+            shiftMenuDown(elem);
+          }         
           // cancel button action
           if (e.target === editFavCancelBtn) {
             editFavPrompt.removeEventListener('click', handleButtonClicks);
@@ -904,7 +928,10 @@ function showFavEditPrompt(type,url,name,elem){
             editFavPrompt.removeChild(editFavUpBtn); 
             editFavPrompt.removeChild(editFavDownBtn); 
             editFavPrompt.removeChild(editFavDeleteBtn); 
-            editFavPrompt.removeChild(editFavSaveBtn); 
+            editFavPrompt.removeChild(editFavSaveBtn);
+            // cancel -> close button
+            editFavCancelBtn.classList.remove("fa-solid");
+            editFavCancelBtn.classList.remove("fa-ban");
             editFavCancelBtn.innerHTML = "Close"; 
             // set text read-only
             editFavName.readOnly = true;
@@ -928,14 +955,6 @@ function showFavEditPrompt(type,url,name,elem){
             }
             // save to file
             saveBookmarks();
-          }        
-          // move up button action
-          if (e.target === editFavUpBtn) {
-            shiftMenuUp(elem);
-          }
-          // move down button action
-          if (e.target === editFavDownBtn) {
-            shiftMenuDown(elem);
           }    
       });
   });   

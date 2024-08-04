@@ -567,42 +567,13 @@ async function getPassword(){
     result = await passwordPrompt();
     if (result !== null) {  
       if (result !== '') {  
-        savePOST('pwd',result);
+        savePOST('pwd',[result]);
       }
     } 
     result = "";
   } catch(e){
     result = "";
   }
-}
-
-// save file API POST call
-function savePOST(file,data) {
-  const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+file+"&action=update";
-  // convert data to JSON object
-  let _json = JSON.stringify([data]);
-  // Send Base64 data as HTTP POST request
-  const xhr = new XMLHttpRequest();
-  xhr.open("POST", url);
-  xhr.setRequestHeader("Content-Type", "text/plain");
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState === XMLHttpRequest.DONE) {
-      if (xhr.status == 200) {
-        // action on successful transmit
-        if (file === 'message') {
-          sendCmd('main','message','');
-        }
-        if (file === 'pwd') {
-          serverAction('attach_bkps');
-          serverSend(0);
-        }
-      }
-      if (xhr.status !== 200) {
-        console.log("failed to send POST: savePOST("+file+")");
-      }
-    }
-  }
-  xhr.send(_json);
 }
 
 function relaxSend(_cmd) {
@@ -762,16 +733,45 @@ function editBookmark() {
     hideDropdowns();
     return;
   }
-  const elem = document.getElementById("bookmarks");
-  if (elem) { // change color of menu
-    elem.classList.add("bookmark-editmode");
-  } // edit mode
-  bookmarkState = 2;
+  enableEditAddMode();
 }
 
 function addBookmark() {
   closeFavEditPrompt();
-  showFavEditPrompt('add',null,null,null); // add new window
+  enableEditAddMode();
+  // create new unique menu ID
+  const _id = fileData.length;
+  // add temporary entry to menu array
+  fileData.push("placeholder");
+  // create placeholder menu item
+  const _name = "New Bookmark";
+  const navElement = document.getElementById('bookmarks');
+  const _elm = document.createElement('a');
+  _elm.id = "menu-" + _id;
+  _elm.innerText = _name;
+  _elm.classList.add('bookmarked__item');
+  // store URL
+  Object.defineProperty(_elm, "url", {
+    enumerable: false,
+    writable: true,
+    value: "about:blank"
+  });
+  // define click action
+  _elm.addEventListener("click", function(event) {
+    clickBookmark(_id);
+  });
+  _elm.classList.add("dd-selected"); // highlight selected item
+  navElement.insertBefore(_elm,navElement.firstChild);
+
+  showFavEditPrompt('add',null,null,_elm); // add new window
+}
+
+function enableEditAddMode () {
+  const elem = document.getElementById("bookmarks");
+  if (elem) { // change color of menu
+    elem.classList.add("bookmark-editmode");
+  } 
+  bookmarkState = 2;
 }
 
 function clickBookmark(id) {
@@ -781,8 +781,10 @@ function clickBookmark(id) {
   const name = elem.innerText;
   if (elem) { 
     if (bookmarkState == 1) {
-      // open URL in new tab
-      window.open(url, "_blank");
+      if (!(url == null || url == "" || url == "about:blank")) {
+        // open URL in new tab
+        window.open(url, "_blank");
+      }
     }
     if (bookmarkState == 2) {
       // edit bookmark item
@@ -790,7 +792,7 @@ function clickBookmark(id) {
       elem.classList.add("dd-selected"); // highlight selected item
       showFavEditPrompt('edit',url,name,elem);
     }
-  } 
+  }
 }
 
 function closeFavEditPrompt() {
@@ -801,6 +803,17 @@ function closeFavEditPrompt() {
 }
 
 function showFavEditPrompt(type,url,name,elem){
+  let bannerText;
+  let defaultTextBoxURL;
+  let defaultTextBoxName;
+  if (type === 'edit') { // edit mode 
+    bannerText = "Edit Bookmark";
+  }
+  if (type === 'add') { // add new mode
+    bannerText = "Add Bookmark";
+    defaultTextBoxURL = "Enter Name";
+    defaultTextBoxName = "Enter URL";
+  }  
   // create empty window
   let editFavPrompt = document.createElement("div"); 
   editFavPrompt.id = "editFav__prompt";
@@ -808,50 +821,52 @@ function showFavEditPrompt(type,url,name,elem){
   // window banner text
   let editFavText = document.createElement("div"); 
   editFavText.className = "editFav__text";
-  drawFavEditDefaultText(editFavText);
+  editFavText.innerHTML = bannerText; 
   // Link name edit box
   let editFavName = document.createElement("input"); 
   editFavName.type = "text";
   editFavName.value = name;
+  editFavName.placeholder = defaultTextBoxName;
   editFavName.className = "editFav__textbox";
   // URL edit box
   let editFavURL = document.createElement("input"); 
   editFavURL.type = "text";
   editFavURL.value = url;
+  editFavURL.placeholder = defaultTextBoxURL;
   editFavURL.className = "editFav__textbox";
   // cancel button
   let editFavCancelBtn = document.createElement("button");
   editFavCancelBtn.innerHTML = "Cancel";
-  editFavCancelBtn.className = "button"; 
+  editFavCancelBtn.className = "button editFav__cancelbtn"; 
   editFavCancelBtn.type = "button"; 
   // save button
   let editFavSaveBtn = document.createElement("button");
   editFavSaveBtn.innerHTML = "Save";
-  editFavSaveBtn.className = "button"; 
+  editFavSaveBtn.className = "button editFav__button"; 
   editFavSaveBtn.type = "button"; 
   // delete button
   let editFavDeleteBtn = document.createElement("button");
   editFavDeleteBtn.innerHTML = "Delete";
-  editFavDeleteBtn.className = "button"; 
+  editFavDeleteBtn.className = "button editFav__button"; 
   editFavDeleteBtn.type = "button";   
   // up button
   let editFavUpBtn = document.createElement("button");
   editFavUpBtn.innerHTML = "Move Up";
-  editFavUpBtn.className = "button"; 
+  editFavUpBtn.className = "button editFav__button"; 
   editFavUpBtn.type = "button"; 
   // down button
   let editFavDownBtn = document.createElement("button");
   editFavDownBtn.innerHTML = "Move Down";
-  editFavDownBtn.className = "button"; 
+  editFavDownBtn.className = "button editFav__button"; 
   editFavDownBtn.type = "button"; 
   // append elements to window
   editFavPrompt.appendChild(editFavText);
   editFavPrompt.appendChild(editFavName); 
   editFavPrompt.appendChild(editFavURL); 
-  editFavPrompt.appendChild(editFavSaveBtn); 
-  editFavPrompt.appendChild(editFavDeleteBtn); 
   editFavPrompt.appendChild(editFavUpBtn); 
+  editFavPrompt.appendChild(editFavSaveBtn); 
   editFavPrompt.appendChild(editFavDownBtn);
+  editFavPrompt.appendChild(editFavDeleteBtn); 
   editFavPrompt.appendChild(editFavCancelBtn);  
   // display window on page
   document.body.appendChild(editFavPrompt); 
@@ -866,7 +881,7 @@ function showFavEditPrompt(type,url,name,elem){
           }
           // common save / delete actions
           if (e.target === editFavDeleteBtn || e.target === editFavSaveBtn) {
-            editFavCancelBtn.innerHTML = "Close";
+            // remove buttons
             if (editFavPrompt.contains(editFavUpBtn)) {
               editFavPrompt.removeChild(editFavUpBtn); 
             }
@@ -879,44 +894,50 @@ function showFavEditPrompt(type,url,name,elem){
             if (editFavPrompt.contains(editFavSaveBtn)) {
               editFavPrompt.removeChild(editFavSaveBtn); 
             }
+            editFavCancelBtn.innerHTML = "Close"; 
+            // set text read-only
             editFavName.readOnly = true;
             editFavURL.readOnly = true;
             // delete action
             if (e.target === editFavDeleteBtn) {
-              editFavText.innerHTML = "Bookmark Deleted."; 
               editFavName.style.textDecoration = 'line-through';
               editFavURL.style.textDecoration = 'line-through';
               // remove element from menu
               elem.remove();
+              editFavText.innerHTML = "Bookmark Deleted"; 
             }
             // save action
             if (e.target === editFavSaveBtn) {
-              editFavText.innerHTML = "Changes Saved."; 
+              if (url == null || url == "" || 
+                name == null || name == "") {
+                  editFavText.innerHTML = "Enter URL & Name";
+                  return;
+              } else {
+
+              }
               // update changed values
               if (elem) { // replace pipes
                 elem['url'] = editFavURL.value.replaceAll("|", "-");
                 elem.innerText = editFavName.value.replaceAll("|", "-");
+                editFavText.innerHTML = "Changes Saved"; 
               }
+            }
+            if (!(elem['url'] == null || elem['url'] == "" || 
+              elem.innerText == null || elem.innerText == "")) {
+              // save to file
+              saveBookmarks();
             }  
-            // save to file
-            saveBookmarks();
           }        
           // move up button action
           if (e.target === editFavUpBtn) {
             shiftMenuUp(elem);
-            drawFavEditDefaultText(editFavText);
           }
           // move down button action
           if (e.target === editFavDownBtn) {
             shiftMenuDown(elem);
-            drawFavEditDefaultText(editFavText);
           }    
       });
   });   
-}
-
-function drawFavEditDefaultText(editFavText) {
-  editFavText.innerHTML = "Edit Bookmark"; 
 }
 
 function shiftMenuUp(elem) {
@@ -934,15 +955,18 @@ function shiftMenuDown(elem) {
 }
 
 function saveBookmarks() {
+  let _file = "";
   // loop through edited bookmarks
   [...document.getElementsByClassName('bookmarked__item')].forEach(elem => {
     if (elem) {
       const url = Object.values(elem.url).join("");
       const name = elem.innerText;
-      const line = url + "|2|" + name;
-      console.log(line);
+      // build output file
+      _file += url + "|2|" + name + "\n";
     }
   })
+  // transmit file
+  savePOST('bookmarks',[_file]);
 }
 
 //// Dynamic Menus ////
@@ -1094,15 +1118,11 @@ function removeDynMenus() {
     }
     // remove dynamic menu elements (II)
     for (var idx = 0; idx < fileData.length; idx++) {
-      let line = fileData[idx].toString();
       if (idx !== 0) { // skip menu ID
-        const item = line.split("|");
-        if (item) {
-          const _menuid = "menu-" + idx.toString();
-          const menuRemove = document.getElementById(_menuid);
-          if (menuRemove != null) {
-            menuRemove.remove();
-          }
+        const _menuid = "menu-" + idx.toString();
+        const menuRemove = document.getElementById(_menuid);
+        if (menuRemove != null) {
+          menuRemove.remove();
         }
       }
     }
@@ -1148,36 +1168,50 @@ function boxChanged() {
 }
 
 // API call POST (update menu file)
-function updateMenuData(menu) {
+function updateMenuData(file) {
   let id = "";
   // store ID object
   id = fileData[0];
   // remove first ID object
   fileData.shift();
-  // convert array to JSON object
-  let _json = JSON.stringify(fileData);
-  // clear global data
-  while (fileData.length) { fileData.pop(); }    
-  // build URL / append data
-  const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+menu+"&action=update";
   // verify correct menu is in array
-  if (id === menu) {
-    // Send Base64 data as HTTP POST request
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", url);
-    xhr.setRequestHeader("Content-Type", "text/plain");
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === XMLHttpRequest.DONE) {
-        if (xhr.status != 200) {
-          console.log("failed to send POST: updateMenuData()");
-        }
-      }
-    }
-    xhr.send(_json);
-  }  
+  if (id === file) {
+    savePOST(file,fileData);
+  }
+  // clear global data
+  while (fileData.length) { fileData.pop(); }      
 }
 
 //// End Dynamic Menus ////
+
+// save file API POST call
+function savePOST(file,data) {
+  const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+file+"&action=update";
+  // convert data to JSON object
+  let _json = JSON.stringify(data);
+  // Send data as HTTP POST request
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", url);
+  xhr.setRequestHeader("Content-Type", "text/plain");
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      if (xhr.status == 200) {
+        // action on successful transmit
+        if (file === 'message') {
+          sendCmd('main','message','');
+        }
+        if (file === 'pwd') {
+          serverAction('attach_bkps');
+          serverSend(0);
+        }
+      }
+      if (xhr.status !== 200) {
+        console.log("failed to send POST: savePOST("+file+")");
+      }
+    }
+  }
+  xhr.send(_json);
+}
 
 // load entire text file
 async function loadLog(file) {
@@ -1275,7 +1309,7 @@ function sendText() {
       sendCmd('main','lcdpimsg',data);
     } else {
       // Create the HTTP POST request
-      savePOST('message',data);  
+      savePOST('message',[data]);  
     }
     loadBar(0.25);
     clearText();   

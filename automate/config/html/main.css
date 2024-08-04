@@ -141,7 +141,6 @@ input.chkbox {
     margin-bottom: 5px;
     margin-top: 5px;
     margin-left: 5px;
-    padding: 0px;
     text-align: center;
     color: #fff; /* buttons font color */
     text-shadow: 1px 1px 1px #000;
@@ -460,6 +459,7 @@ input.chkbox {
 /*
  *  Password Prompt Style
  */
+
 #pass__prompt {
   background-color: black;
   border: 1px solid white;
@@ -478,7 +478,6 @@ input.chkbox {
   width: 285px; 
   padding: 5px; 
 }
-
 
 /*
  *  Pi WiFi Connection Manager
@@ -560,37 +559,44 @@ input.chkbox {
   text-align: center;
   text-decoration: none;
   position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-left: -125px;
-  margin-top: -180px;
-  width: 350px;
+  display: inline-block;
+  top: 20%;
+  left: 20%;
   height: auto;
-  padding: 15px; 
+  width: 360px;
   color: #fff;
   z-index: 999; 
 }
 
-#editFav__Cancelbtn {
-  position: absolute;
-  margin-left: -75px;
+.editFav__button {
+  margin-left: 5px;
+  margin-right: 5px;
+  height: 50px;
   width: 150px;
-  height: 45px;
-  bottom: 20px;
-  left: 50%;
+}
+
+.editFav__cancelbtn {
+  margin-bottom: 15px;
+  height: 50px;
+  width: 200px;
 }
 
 .editFav__textbox {
-  padding-bottom: 5px;
+  margin-bottom: 10px;
+  padding-right: 5px;  
+  padding-left: 5px;    
+  padding-bottom: 10px;  
+  padding-top: 10px;  
   text-align: left;
-  margin: auto;
+  font-size: 22px;
   color: black;
-  width: 250px;
-  font-size: 20px;
+  width: 330px;
+  height: auto;
 }
 
 .editFav__text {
-  padding-bottom: 5px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   text-align: center;
   margin: auto;
   color: #fff;

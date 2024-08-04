@@ -737,17 +737,16 @@ function editBookmark() {
 }
 
 function addBookmark() {
-  closeFavEditPrompt();
   enableEditAddMode();
   // create new unique menu ID
-  const _id = fileData.length;
+  const _newid = fileData.length;
   // add temporary entry to menu array
   fileData.push("placeholder");
   // create placeholder menu item
   const _name = "New Bookmark";
   const navElement = document.getElementById('bookmarks');
   const _elm = document.createElement('a');
-  _elm.id = "menu-" + _id;
+  _elm.id = "menu-" + _newid;
   _elm.innerText = _name;
   _elm.classList.add('bookmarked__item');
   // store URL
@@ -758,7 +757,7 @@ function addBookmark() {
   });
   // define click action
   _elm.addEventListener("click", function(event) {
-    clickBookmark(_id);
+    clickBookmark(_newid);
   });
   _elm.classList.add("dd-selected"); // highlight selected item
   navElement.insertBefore(_elm,navElement.firstChild);
@@ -772,6 +771,7 @@ function enableEditAddMode () {
     elem.classList.add("bookmark-editmode");
   } 
   bookmarkState = 2;
+  closeFavEditPrompt();
 }
 
 function clickBookmark(id) {
@@ -881,19 +881,19 @@ function showFavEditPrompt(type,url,name,elem){
           }
           // common save / delete actions
           if (e.target === editFavDeleteBtn || e.target === editFavSaveBtn) {
+            // do not allow empty name or URL
+            if (e.target === editFavSaveBtn) {
+              if (editFavURL.value == null || editFavURL.value == "" || 
+                editFavName.value == null || editFavName.value == "") {
+                  editFavText.innerHTML = "Enter URL & Name";
+                  return;
+              }    
+            }
             // remove buttons
-            if (editFavPrompt.contains(editFavUpBtn)) {
-              editFavPrompt.removeChild(editFavUpBtn); 
-            }
-            if (editFavPrompt.contains(editFavDownBtn)) {
-              editFavPrompt.removeChild(editFavDownBtn); 
-            }
-            if (editFavPrompt.contains(editFavDeleteBtn)) {
-              editFavPrompt.removeChild(editFavDeleteBtn); 
-            }
-            if (editFavPrompt.contains(editFavSaveBtn)) {
-              editFavPrompt.removeChild(editFavSaveBtn); 
-            }
+            editFavPrompt.removeChild(editFavUpBtn); 
+            editFavPrompt.removeChild(editFavDownBtn); 
+            editFavPrompt.removeChild(editFavDeleteBtn); 
+            editFavPrompt.removeChild(editFavSaveBtn); 
             editFavCancelBtn.innerHTML = "Close"; 
             // set text read-only
             editFavName.readOnly = true;
@@ -908,13 +908,6 @@ function showFavEditPrompt(type,url,name,elem){
             }
             // save action
             if (e.target === editFavSaveBtn) {
-              if (url == null || url == "" || 
-                name == null || name == "") {
-                  editFavText.innerHTML = "Enter URL & Name";
-                  return;
-              } else {
-
-              }
               // update changed values
               if (elem) { // replace pipes
                 elem['url'] = editFavURL.value.replaceAll("|", "-");
@@ -922,11 +915,8 @@ function showFavEditPrompt(type,url,name,elem){
                 editFavText.innerHTML = "Changes Saved"; 
               }
             }
-            if (!(elem['url'] == null || elem['url'] == "" || 
-              elem.innerText == null || elem.innerText == "")) {
-              // save to file
-              saveBookmarks();
-            }  
+            // save to file
+            saveBookmarks();
           }        
           // move up button action
           if (e.target === editFavUpBtn) {

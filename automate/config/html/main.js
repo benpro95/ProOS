@@ -29,8 +29,6 @@ window.addEventListener("DOMContentLoaded", (event) => {
           event.target.classList.contains('mainmenu__anchor') || // main menu click
           event.target.classList.contains('bookmarked__item') || // bookmark menu click
           event.target.classList.contains('editfav__window') || // bookmark edit window
-          event.target.classList.contains('editFav__textbox') || // bookmark window textbox
-          event.target.classList.contains('editFav__text') || // bookmark window text
           event.target.classList.contains('fa-regular') || // icon click
           event.target.classList.contains('fa-solid') || // icon click
           event.target.classList.contains('dropbtn') || // dropdown menu
@@ -824,53 +822,53 @@ function showFavEditPrompt(type,url,name,elem){
   }
   if (type === 'add') { // add new mode
     bannerText = "Add Bookmark";
-    defaultTextBoxURL = "Enter Name";
-    defaultTextBoxName = "Enter URL";
-  }  
+    defaultTextBoxURL = "Enter URL";
+    defaultTextBoxName = "Enter Name";
+  }
   // create empty window
   let editFavPrompt = document.createElement("div"); 
   editFavPrompt.id = "editFav__prompt";
   editFavPrompt.className = "editfav__window"; 
   // window banner text
   let editFavText = document.createElement("div"); 
-  editFavText.className = "editFav__text";
+  editFavText.className = "editfav__window editFav__text";
   editFavText.innerHTML = bannerText; 
   // Link name edit box
   let editFavName = document.createElement("input"); 
   editFavName.type = "text";
   editFavName.value = name;
   editFavName.placeholder = defaultTextBoxName;
-  editFavName.className = "editFav__textbox";
+  editFavName.className = "editfav__window editFav__textbox";
   // URL edit box
   let editFavURL = document.createElement("input"); 
   editFavURL.type = "text";
   editFavURL.value = url;
   editFavURL.placeholder = defaultTextBoxURL;
-  editFavURL.className = "editFav__textbox";
+  editFavURL.className = "editfav__window editFav__textbox";
   // cancel button
   let editFavCancelBtn = document.createElement("button");
-  editFavCancelBtn.innerHTML = "Cancel";
-  editFavCancelBtn.className = "button editFav__cancelbtn"; 
+  editFavCancelBtn.innerHTML = '<i class="fa-solid fa-ban"></i>';
+  editFavCancelBtn.className = "button editfav__window editFav__cancelbtn"; 
   editFavCancelBtn.type = "button"; 
   // save button
   let editFavSaveBtn = document.createElement("button");
-  editFavSaveBtn.innerHTML = "Save";
-  editFavSaveBtn.className = "button editFav__button"; 
+  editFavSaveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i>';
+  editFavSaveBtn.className = "button editfav__window editFav__button"; 
   editFavSaveBtn.type = "button"; 
   // delete button
   let editFavDeleteBtn = document.createElement("button");
-  editFavDeleteBtn.innerHTML = "Delete";
-  editFavDeleteBtn.className = "button editFav__button"; 
-  editFavDeleteBtn.type = "button";   
+  editFavDeleteBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>'  
+  editFavDeleteBtn.className = "button editfav__window editFav__button";
+  editFavDeleteBtn.type = "button";
   // up button
   let editFavUpBtn = document.createElement("button");
-  editFavUpBtn.innerHTML = "Move Up";
-  editFavUpBtn.className = "button editFav__button"; 
+  editFavUpBtn.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
+  editFavUpBtn.className = "button editfav__window editFav__button"; 
   editFavUpBtn.type = "button"; 
   // down button
   let editFavDownBtn = document.createElement("button");
-  editFavDownBtn.innerHTML = "Move Down";
-  editFavDownBtn.className = "button editFav__button"; 
+  editFavDownBtn.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
+  editFavDownBtn.className = "button editfav__window editFav__button"; 
   editFavDownBtn.type = "button"; 
   // append elements to window
   editFavPrompt.appendChild(editFavText);
@@ -970,6 +968,8 @@ function saveBookmarks() {
   })
   // transmit file
   savePOST('bookmarks',[_file]);
+  // animations
+  loadBar(1.0);
 }
 
 //// Dynamic Menus ////

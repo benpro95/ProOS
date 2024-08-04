@@ -570,6 +570,7 @@ input.chkbox {
 }
 
 .editFav__button {
+  padding-top: 3px;
   margin-left: 5px;
   margin-right: 5px;
   height: 50px;
@@ -577,6 +578,7 @@ input.chkbox {
 }
 
 .editFav__cancelbtn {
+  padding-top: 3px;
   margin-bottom: 15px;
   height: 50px;
   width: 200px;

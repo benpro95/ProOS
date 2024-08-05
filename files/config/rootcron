@@ -7,4 +7,4 @@
 
 0 11 1 * *      cameras    /usr/bin/camcleanup
 
-
+0 * * * *       ben        /usr/bin/savebookmarks

@@ -43,6 +43,9 @@ iptables -A INPUT -d 10.177.1.10 -j DROP
 cp -f /opt/drives.txt /mnt/ramdisk/
 chmod 777 /mnt/ramdisk/drives.txt
 
+## Restore Bookmarks
+/usr/bin/sudo -u ben /usr/bin/savebookmarks
+
 ## Clear Log File
 /usr/bin/sudo -u server /usr/bin/wwwrun clearlog
 

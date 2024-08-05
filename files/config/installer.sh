@@ -102,6 +102,9 @@ chown root:root /usr/bin/www.sh
 cp -f /tmp/config/wwwrun /usr/bin/
 chmod +x /usr/bin/wwwrun
 chown root:root /usr/bin/wwwrun
+cp -v /tmp/config/savebookmarks.sh /usr/bin/savebookmarks
+chmod +x /usr/bin/savebookmarks
+chown root:root /usr/bin/savebookmarks
 
 ## Server Git Configuration 
 cp /tmp/config/git.config /home/server/.gitconfig

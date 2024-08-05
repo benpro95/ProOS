@@ -985,7 +985,7 @@ function saveBookmarks() {
       const url = Object.values(elem.url).join("");
       const name = elem.innerText;
       // build output file
-      _file += url + "|2|" + name + "\n";
+      _file += url + "|9|" + name + "\n";
     }
   })
   // transmit file
@@ -1095,19 +1095,9 @@ function createListItem(_col0,_col1,_col2,_id) {
       }
     });
   }
-  // bookmarks menu  
+  // link only menu
   if (_col1 == '2') {
-    _elm.classList.add('bookmarked__item');
-    // store URL
-    Object.defineProperty(_elm, "url", {
-      enumerable: false,
-      writable: true,
-      value: _col0
-    });
-    // define click action
-    _elm.addEventListener("click", function(event) {
-      clickBookmark(_id);
-    });
+    _elm.href = _col0;
   }
   // indicator / status menu  
   if (_col1 == '3' || _col1 == '4' || _col1 == '5') {
@@ -1131,6 +1121,20 @@ function createListItem(_col0,_col1,_col2,_id) {
       setTheme(_color);
     });
   }
+  // bookmarks menu  
+  if (_col1 == '9') {
+    _elm.classList.add('bookmarked__item');
+    // store URL
+    Object.defineProperty(_elm, "url", {
+      enumerable: false,
+      writable: true,
+      value: _col0
+    });
+    // define click action
+    _elm.addEventListener("click", function(event) {
+      clickBookmark(_id);
+    });
+  }  
   return _elm;
 }
 

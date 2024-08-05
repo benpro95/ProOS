@@ -102,7 +102,7 @@ chown root:root /usr/bin/www.sh
 cp -f /tmp/config/wwwrun /usr/bin/
 chmod +x /usr/bin/wwwrun
 chown root:root /usr/bin/wwwrun
-cp -v /tmp/config/savebookmarks.sh /usr/bin/savebookmarks
+cp -f /tmp/config/savebookmarks.sh /usr/bin/savebookmarks
 chmod +x /usr/bin/savebookmarks
 chown root:root /usr/bin/savebookmarks
 
@@ -163,7 +163,7 @@ chown root:root /etc/rsyslog.d/ignore-session-slice.conf
 systemctl restart rsyslog
 
 ## Camera Cleanup Script
-cp /tmp/config/camcleanup /usr/bin/
+cp /tmp/config/camcleanup.sh /usr/bin/camcleanup
 chmod 755 /usr/bin/camcleanup
 chown root:root /usr/bin/camcleanup
 

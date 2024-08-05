@@ -1,7 +1,7 @@
 // Automate Website - JavaScript Frontend
 // by Ben Provenzano III
 
-//////////////////
+// global variables //
 let device;
 let selectedVM = "";
 let dynMenuActive = 0;
@@ -11,14 +11,13 @@ let defaultSite = "Automate";
 let siteVersion = "3.8";
 let bookmarkState = 0;
 let loadBarState = 0;
-let promptCount = 0;
 let serverCmdData;
 let socket = null;
 let fileData = [];
 let arcState = 0;
 let ctlState = 0;
 let ctlMode;
-////////////
+//////////////////////
 
 // runs after DOM finishes loading
 window.addEventListener("DOMContentLoaded", (event) => {
@@ -950,9 +949,20 @@ function showFavEditPrompt(add,url,name,elem){
             // save action
             if (e.target === editFavSaveBtn) {
               // update changed values
-              if (elem) { // replace pipes
-                elem['url'] = editFavURL.value.replaceAll("|", "-");
+              if (elem) { 
+                // replace pipes with dashes
                 elem.innerText = editFavName.value.replaceAll("|", "-");
+                let _boxurl = editFavURL.value.replaceAll("|", "-");
+                let _lowerurl = _boxurl.toLowerCase();
+                // add HTTPS prefix if not defined
+                if (_lowerurl.startsWith('http://', 0) || 
+                    _lowerurl.startsWith('https://', 0)) {
+                  elem['url'] = _boxurl;
+                } else {
+                  const _newurl = "https://" + _boxurl;
+                  editFavURL.value = _newurl;
+                  elem['url'] = _newurl;
+                }
                 editFavText.innerHTML = "Changes Saved"; 
               }
             }

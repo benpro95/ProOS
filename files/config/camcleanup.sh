@@ -3,7 +3,7 @@
 ## Cameras Cleanup Script
 ### run as cameras user only!
 
-lockfile='/mnt/cameras/.camclean.pid'
+lockfile='/mnt/scratch/cameras/.camclean.pid'
 if [ -e $lockfile ]; then
    pid=`cat $lockfile`
    if kill -0 &>1 > /dev/null $pid; then

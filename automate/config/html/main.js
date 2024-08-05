@@ -762,7 +762,7 @@ function addBookmark() {
   _elm.classList.add("dd-selected");
   navElement.insertBefore(_elm,navElement.firstChild);
   // add new window
-  showFavEditPrompt('add',null,null,_elm);
+  showFavEditPrompt(true,null,null,_elm);
 }
 
 function enableEditAddMode () {
@@ -790,7 +790,7 @@ function clickBookmark(id) {
       // edit bookmark item
       closeFavEditPrompt();
       elem.classList.add("dd-selected"); // highlight selected item
-      showFavEditPrompt('edit',url,name,elem);
+      showFavEditPrompt(false,url,name,elem);
     }
   }
 }
@@ -815,7 +815,7 @@ function closeFavEditPrompt() {
   }
 }
 
-function showFavEditPrompt(type,url,name,elem){
+function showFavEditPrompt(add,url,name,elem){
   // create empty window
   let editFavPrompt = document.createElement("div"); 
   editFavPrompt.id = "editFav__prompt";
@@ -824,22 +824,25 @@ function showFavEditPrompt(type,url,name,elem){
   let editFavName = document.createElement("input"); 
   editFavName.type = "text";
   editFavName.value = name;
+  editFavName.autocorrect = "off";
+  editFavName.autocapitalize = "none";  
   editFavName.classList.add("editFav__textbox");
   editFavName.classList.add("editFav__window");
   // URL edit box
   let editFavURL = document.createElement("input"); 
   editFavURL.type = "text";
   editFavURL.value = url;
+  editFavURL.autocorrect = "off";
+  editFavURL.autocapitalize = "none";
   editFavURL.classList.add("editFav__textbox");
   editFavURL.classList.add("editFav__window");
   let bannerText;
-  if (type === 'edit') { // edit mode 
-    bannerText = "Edit Bookmark";
+  if (add === true) { // add new mode
+    bannerText = "Add Bookmark";
     editFavName.placeholder = "Enter Name";
     editFavURL.placeholder = "Enter URL";
-  }
-  if (type === 'add') { // add new mode
-    bannerText = "Add Bookmark";
+  } else { // edit mode 
+    bannerText = "Edit Bookmark";
   }
   // window banner text
   let editFavText = document.createElement("div");
@@ -920,7 +923,7 @@ function showFavEditPrompt(type,url,name,elem){
             if (e.target === editFavSaveBtn) {
               if (editFavURL.value == null || editFavURL.value == "" || 
                 editFavName.value == null || editFavName.value == "") {
-                  editFavText.innerHTML = "Enter URL & Name";
+                  editFavText.innerHTML = "Enter Bookmark Name & URL";
                   return;
               }    
             }

@@ -151,7 +151,7 @@ chown root:root /etc/rc.local
 systemctl enable rc-local
 
 ## Main Cron Timer
-cp /tmp/config/rootcron /etc/cron.d/
+cp /tmp/config/rootcron.sh /etc/cron.d/rootcron
 chmod 644 /etc/cron.d/rootcron
 chown root:root /etc/cron.d/rootcron
 systemctl restart cron

@@ -5,6 +5,5 @@
 ################################################
 # Activation Time ##### User ###### Command ####
 
-0 11 1 * *      cameras    /usr/bin/camcleanup
-
-0 * * * *       ben        /usr/bin/savebookmarks
+@hourly ben /usr/bin/savebookmarks
+0 11 1 * * cameras /usr/bin/camcleanup

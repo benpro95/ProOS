@@ -2,7 +2,8 @@
 // by Ben Provenzano III
 
 // global variables //
-let device;
+let ctlMode;
+let ctlCommand = 0;
 let selectedVM = "";
 let dynMenuActive = 0;
 let dynChkboxChanged = 0;
@@ -15,25 +16,30 @@ let serverCmdData;
 let socket = null;
 let fileData = [];
 let arcState = 0;
-let ctlState = 0;
-let ctlMode;
+let deviceType;
 //////////////////////
 
 // runs after DOM finishes loading
 window.addEventListener("DOMContentLoaded", (event) => {
-  // hide menu's when clicking outside
+  // on-click actions
   document.addEventListener('click', function handleClickOutsideBox(event) {
+    // disable click events when in bookmark edit mode
+    if (bookmarkState === 2) {
+      if (event.target.className !== "editFav__win") {
+        event.stopPropagation();
+      }
+      return;
+    }
     // don't hide menus when clicking these elements
     if (!(event.target.classList.contains('button') || // button click
           event.target.classList.contains('button__text') || // button text click
           event.target.classList.contains('mainmenu__anchor') || // main menu click
           event.target.classList.contains('bookmarked__item') || // bookmark menu click
-          event.target.classList.contains('editFav__window') || // bookmark edit window
           event.target.classList.contains('fa-regular') || // icon click
           event.target.classList.contains('fa-solid') || // icon click
           event.target.classList.contains('dropbtn') || // dropdown menu
           event.target.classList.contains('chkbox'))) { // checkbox click
-      hideDropdowns();
+      hideDropdowns(); // hide all dropdown menus
     }
   }); 
 });
@@ -41,7 +47,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
 function hideDropdowns() {
   // hide all dropdown menus
   classDisplay("dd-content","none");
-  // hide all bookmark menu elements
+  // hide bookmark menus
   hideBookmarks();
   // remove any current dynamic menus
   removeDynMenus();
@@ -49,9 +55,9 @@ function hideDropdowns() {
 
 // runs on page load
 function loadPage() {
-  // read device type
-  device = deviceType(); 
-  if (device === defaultSite) {
+  // read deviceType type
+  deviceType = deviceTypeType(); 
+  if (deviceType === defaultSite) {
     // load control menu
     let _mode = localStorage.getItem("ctls-mode")
     if (_mode === null || _mode === undefined || _mode === "") {
@@ -62,20 +68,20 @@ function loadPage() {
     ctlsMenu(ctlMode);
     // server home
     classDisplay('server-grid','block');
-    // update devices status
+    // update deviceTypes status
     sendCmd('main','status','')
   } else { // pi's
-    if (device === 'Pi') {
+    if (deviceType === 'Pi') {
       classDisplay('pi-grid','block');
     }  
-    if (device === 'LEDpi') {
+    if (deviceType === 'LEDpi') {
       classDisplay('ledpi-grid','block');
     }
-    if (device === 'LCDpi') {
+    if (deviceType === 'LCDpi') {
       classDisplay('lcdpi-grid','block');
     }
   }
-  // mobile device setup
+  // mobile deviceType setup
   detectMobile();
   // set title
   let currentTheme;
@@ -151,7 +157,7 @@ function sleep(ms) {
 
 // back to home page 
 function GoToHomePage() {
-  if (device === defaultSite) {
+  if (deviceType === defaultSite) {
     hidePages();
     loadPage();
   } else {
@@ -398,7 +404,7 @@ function show_aboutPrompt(){
   aboutprompt.id= "about__prompt";
   // title
   let abouttext = document.createElement("div");
-  abouttext.innerHTML = device + " Controller";
+  abouttext.innerHTML = deviceType + " Controller";
   aboutprompt.appendChild(abouttext); 
   // logo
   let img = document.createElement("img");
@@ -584,7 +590,7 @@ async function serverSend() {
     document.getElementById("logTextBox").value = "select an option.";
   } else {
     // send command
-    if (device === defaultSite) {
+    if (deviceType === defaultSite) {
       sendCmd('main','server',serverCmdData);
     } else {
       sendCmd('main-www','server',serverCmdData);
@@ -603,7 +609,7 @@ async function serverSend() {
 
 function sendBtnAlert(state) {
   let _elmid;
-  if (device === 'LCDpi') {
+  if (deviceType === 'LCDpi') {
     _elmid = "sendButtonLCDpi";
   } else {
     _elmid = "sendButton";
@@ -637,13 +643,13 @@ function sendCmd(act, arg1, arg2) {
 // volume controls
 function sendVol(_cmd) {
   // volume mode
-  if (ctlState === 0 ){
+  if (ctlCommand === 0 ){
     sendCmd('main',_cmd+'f',''); // living room system 
   }
-  if (ctlState === 1 ){
+  if (ctlCommand === 1 ){
     sendCmd('main','v'+_cmd,'bedroom'); // bedroom system
   }
-  if (ctlState === 2 ){
+  if (ctlCommand === 2 ){
     sendCmd('main','v'+_cmd,'subs'); // living room subwoofers
   }
 }
@@ -655,17 +661,17 @@ function ctlsMenu(_mode) {
     classDisplay('bedroom-grid','none');
     classDisplay('hifi-grid','block');
     if (_mode === 'lr') { // normal mode
-      ctlState = 0; 
+      ctlCommand = 0; 
     }
     if (_mode === 'subs') { // subwoofer mode
       classDisplay('submode','inline-block');
-      ctlState = 2; 
+      ctlCommand = 2; 
     }
   } 
   if (_mode === 'br') { // bedroom
     classDisplay('hifi-grid','none');
     classDisplay('bedroom-grid','block');
-    ctlState = 1;
+    ctlCommand = 1;
   }
   // save state 
   localStorage.setItem("ctls-mode", _mode);
@@ -673,13 +679,13 @@ function ctlsMenu(_mode) {
 
 // controls menu dropdown
 function showCtlsMenu() {
-  if (ctlState === 0 ) { // living room 
+  if (ctlCommand === 0 ) { // living room 
     showMenu('ctls-menu-lr');
   }
-  if (ctlState === 1 ) { // bedroom
+  if (ctlCommand === 1 ) { // bedroom
     showMenu('ctls-menu-br');
   }
-  if (ctlState === 2 ) { // subwoofers
+  if (ctlCommand === 2 ) { // subwoofers
     showMenu('ctls-menu-sub');
   }
 }
@@ -699,7 +705,7 @@ function showMenu(_menu) {
 
 function hideBookmarks() {
   // close edit / add window
-  closeFavEditPrompt();
+  closeBookmarkPrompt();
   // hide bookmark edit/add buttons
   classDisplay("bookmark-buttons","none");
   // reset color of menu
@@ -761,16 +767,16 @@ function addBookmark() {
   _elm.classList.add("dd-selected");
   navElement.insertBefore(_elm,navElement.firstChild);
   // add new window
-  showFavEditPrompt(true,null,null,_elm);
+  drawBookmarkPrompt(true,null,null,_elm);
 }
 
-function enableEditAddMode () {
+function enableEditAddMode() {
   const elem = document.getElementById("bookmarks");
   if (elem) { // change color of menu
     elem.classList.add("bookmark-editmode");
   } 
   bookmarkState = 2;
-  closeFavEditPrompt();
+  closeBookmarkPrompt();
 }
 
 function clickBookmark(id) {
@@ -787,38 +793,18 @@ function clickBookmark(id) {
     }
     if (bookmarkState == 2) {
       // edit bookmark item
-      closeFavEditPrompt();
+      closeBookmarkPrompt();
       elem.classList.add("dd-selected"); // highlight selected item
-      showFavEditPrompt(false,url,name,elem);
+      drawBookmarkPrompt(false,url,name,elem);
     }
   }
 }
 
-// close add / edit window
-function closeFavEditPrompt() {
-  const favPrompt = document.getElementById("editFav__prompt");
-  if (favPrompt) {
-    favPrompt.remove();
-  }
-  // un-highlight selected item
-  for (var idx = 0; idx < fileData.length; idx++) {
-    if (idx !== 0) { // skip menu ID
-      const _menuid = "menu-" + idx.toString();
-      const elem = document.getElementById(_menuid);
-      if (elem) {
-        if(elem.classList.contains('dd-selected')) {
-          elem.classList.remove("dd-selected");
-        }
-      }
-    }
-  }
-}
-
-function showFavEditPrompt(add,url,name,elem){
+function drawBookmarkPrompt(add,url,name,elem){
   // create empty window
   let editFavPrompt = document.createElement("div"); 
+  editFavPrompt.className = "editFav__win";
   editFavPrompt.id = "editFav__prompt";
-  editFavPrompt.className = "editFav__window"; 
   // Link name edit box
   let editFavName = document.createElement("input"); 
   editFavName.type = "text";
@@ -826,7 +812,6 @@ function showFavEditPrompt(add,url,name,elem){
   editFavName.autocorrect = "off";
   editFavName.autocapitalize = "none";  
   editFavName.classList.add("editFav__textbox");
-  editFavName.classList.add("editFav__window");
   // URL edit box
   let editFavURL = document.createElement("input"); 
   editFavURL.type = "text";
@@ -834,7 +819,6 @@ function showFavEditPrompt(add,url,name,elem){
   editFavURL.autocorrect = "off";
   editFavURL.autocapitalize = "none";
   editFavURL.classList.add("editFav__textbox");
-  editFavURL.classList.add("editFav__window");
   let bannerText;
   if (add === true) { // add new mode
     bannerText = "Add Bookmark";
@@ -845,12 +829,10 @@ function showFavEditPrompt(add,url,name,elem){
   }
   // window banner text
   let editFavText = document.createElement("div");
-  editFavText.classList.add("editFav__window");
   editFavText.classList.add("editFav__text");
   editFavText.innerHTML = bannerText; 
   // cancel button
   let editFavCancelBtn = document.createElement("button");
-  editFavCancelBtn.classList.add("editFav__window");
   editFavCancelBtn.classList.add("editFav__cancelbtn");
   editFavCancelBtn.classList.add("button");
   editFavCancelBtn.classList.add("fa-solid");
@@ -858,7 +840,6 @@ function showFavEditPrompt(add,url,name,elem){
   editFavCancelBtn.type = "button";
   // save button
   let editFavSaveBtn = document.createElement("button");
-  editFavSaveBtn.classList.add("editFav__window");
   editFavSaveBtn.classList.add("editFav__button");
   editFavSaveBtn.classList.add("button");
   editFavSaveBtn.classList.add("fa-solid");
@@ -866,7 +847,6 @@ function showFavEditPrompt(add,url,name,elem){
   editFavSaveBtn.type = "button";
   // delete button
   let editFavDeleteBtn = document.createElement("button");
-  editFavDeleteBtn.classList.add("editFav__window");
   editFavDeleteBtn.classList.add("editFav__button");
   editFavDeleteBtn.classList.add("button");
   editFavDeleteBtn.classList.add("fa-solid");
@@ -874,7 +854,6 @@ function showFavEditPrompt(add,url,name,elem){
   editFavDeleteBtn.type = "button";
   // up button
   let editFavUpBtn = document.createElement("button");
-  editFavUpBtn.classList.add("editFav__window");
   editFavUpBtn.classList.add("editFav__button");
   editFavUpBtn.classList.add("button");
   editFavUpBtn.classList.add("fa-solid");
@@ -882,7 +861,6 @@ function showFavEditPrompt(add,url,name,elem){
   editFavUpBtn.type = "button"; 
   // down button
   let editFavDownBtn = document.createElement("button");
-  editFavDownBtn.classList.add("editFav__window");
   editFavDownBtn.classList.add("editFav__button");
   editFavDownBtn.classList.add("button");
   editFavDownBtn.classList.add("fa-solid");
@@ -898,7 +876,7 @@ function showFavEditPrompt(add,url,name,elem){
   editFavPrompt.appendChild(editFavDeleteBtn); 
   editFavPrompt.appendChild(editFavCancelBtn);  
   // display window on page
-  document.body.appendChild(editFavPrompt); 
+  document.body.appendChild(editFavPrompt);
   // handle button actions
   new Promise(function(resolve, reject) {
       editFavPrompt.addEventListener('click', function handleButtonClicks(e) { 
@@ -1002,6 +980,30 @@ function saveBookmarks() {
   savePOST('bookmarks',[_file]);
   // animations
   loadBar(1.0);
+}
+
+// close add / edit window
+function closeBookmarkPrompt() {
+  // re-enable click outside of window
+  document.querySelectorAll("*:not(#editFav__prompt)").forEach(e => {
+    e.style.pointerEvents = "";
+  }); 
+  // un-highlight selected item
+  for (var idx = 0; idx < fileData.length; idx++) {
+    if (idx !== 0) { // skip menu ID
+      const _menuid = "menu-" + idx.toString();
+      const elem = document.getElementById(_menuid);
+      if (elem) {
+        if(elem.classList.contains('dd-selected')) {
+          elem.classList.remove("dd-selected");
+        }
+      }
+    }
+  }
+  const favPrompt = document.getElementById("editFav__prompt");
+  if (favPrompt) {
+    favPrompt.remove();
+  }  
 }
 
 //// Dynamic Menus ////
@@ -1344,7 +1346,7 @@ function sendText() {
   if (data.trim() === "" || data === sendtext) {
     document.getElementById("lcdTextBox").value = sendtext;
   } else {
-    if (device === defaultSite) {
+    if (deviceType === defaultSite) {
       sendCmd('main','lcdpimsg',data);
     } else {
       // Create the HTTP POST request
@@ -1447,7 +1449,7 @@ function writeFrame(red, green, blue) {
 }
 
 async function colorPrompt(){
-  if (device === defaultSite) {
+  if (deviceType === defaultSite) {
     sendCmd('leds','randcolor','');
   } else {
     hideDropdowns();

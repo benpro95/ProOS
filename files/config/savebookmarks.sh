@@ -6,7 +6,7 @@ echo "(savebookmarks) started."
 if [ -f /mnt/ramdisk/bookmarks.txt ]; then
   echo "saving bookmarks to disk..."
   mv -f /mnt/ben/Documents/Bookmarks.txt /mnt/ben/Documents/.Bookmarks.bak
-  cp -fv /mnt/ramdisk/bookmarks.txt /mnt/ben/Documents/Bookmarks.txt
+  rsync -a /mnt/ramdisk/bookmarks.txt /mnt/ben/Documents/Bookmarks.txt
   chmod 644 /mnt/ben/Documents/Bookmarks.txt
   chown ben:shared /mnt/ben/Documents/Bookmarks.txt
 else

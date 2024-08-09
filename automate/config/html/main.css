@@ -118,6 +118,11 @@ input.chkbox {
   display: none;
 }
 
+#testmode {
+  /*display: inline-block;*/
+  display: none;
+}
+
 .banner__text {
   display: none;
   margin-top: 6px;
@@ -803,6 +808,11 @@ input.chkbox {
 .star-z-1,
 .star-z-2,
 .star-z-3 {
+  position: absolute;
+  width: 300vw;
+  height: 300vw;
+  left: -50vw;
+  top: -50vw;
   transform-origin: center;
 }
 

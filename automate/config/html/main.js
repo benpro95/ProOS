@@ -8,15 +8,18 @@ let selectedVM = "";
 let dynMenuActive = 0;
 let dynChkboxChanged = 0;
 let colorPromptActive = 0;
+var resizeTimeout = 600; // in ms
 let defaultSite = "Automate";
 let siteVersion = "3.8";
+var resizeState = false;
 let bookmarkState = 0;
 let loadBarState = 0;
 let serverCmdData;
 let socket = null;
 let fileData = [];
 let arcState = 0;
-let deviceType;
+var timeStamp;
+let sysModel;
 //////////////////////
 
 // runs after DOM finishes loading
@@ -41,8 +44,47 @@ window.addEventListener("DOMContentLoaded", (event) => {
           event.target.classList.contains('chkbox'))) { // checkbox click
       hideDropdowns(); // hide all dropdown menus
     }
-  }); 
+  });
+  // detect if running on iOS
+  detectMobileSafari();
 });
+
+function detectMobileSafari() {
+  if (navigator.vendor.match(/apple/i)) {
+    // iOS safari browser
+    document.addEventListener('gesturechange', function() {
+      resizeEvent(); // on pinch-zoom 
+    }, { passive: false });
+  } else {
+    // desktop browser
+    window.addEventListener("resize", function() {
+      resizeEvent(); // on window resize
+    });
+  }
+}
+
+function resizeEvent() {
+  timeStamp = new Date();
+  if (resizeState === false) {
+    // resize event started
+    resizeState = true;
+    setTimeout(resizeDone, resizeTimeout);
+    // disable stars animation 
+    starsAnimation(false);
+  }
+}
+
+function resizeDone() {
+  // detect when resize event completes
+  if (+new Date() - +timeStamp < resizeTimeout) {
+    setTimeout(resizeDone, resizeTimeout);
+  } else {
+    // resize event completed
+    resizeState = false;
+    // re-enable stars animation
+    starsAnimation(true);
+  }               
+}
 
 function hideDropdowns() {
   // hide all dropdown menus
@@ -55,9 +97,9 @@ function hideDropdowns() {
 
 // runs on page load
 function loadPage() {
-  // read deviceType type
-  deviceType = deviceTypeType(); 
-  if (deviceType === defaultSite) {
+  // read device type
+  sysModel = deviceType(); 
+  if (sysModel === defaultSite) {
     // load control menu
     let _mode = localStorage.getItem("ctls-mode")
     if (_mode === null || _mode === undefined || _mode === "") {
@@ -68,21 +110,19 @@ function loadPage() {
     ctlsMenu(ctlMode);
     // server home
     classDisplay('server-grid','block');
-    // update deviceTypes status
+    // update sysModels status
     sendCmd('main','status','')
   } else { // pi's
-    if (deviceType === 'Pi') {
+    if (sysModel === 'Pi') {
       classDisplay('pi-grid','block');
     }  
-    if (deviceType === 'LEDpi') {
+    if (sysModel === 'LEDpi') {
       classDisplay('ledpi-grid','block');
     }
-    if (deviceType === 'LCDpi') {
+    if (sysModel === 'LCDpi') {
       classDisplay('lcdpi-grid','block');
     }
   }
-  // mobile deviceType setup
-  detectMobile();
   // set title
   let currentTheme;
   let elem = document.getElementById("load__bar");
@@ -95,6 +135,8 @@ function loadPage() {
     currentTheme = localStorage.getItem("main-color");
   }  
   setTheme(currentTheme);
+  // enable stars animation 
+  starsAnimation(true);
 }
 
 function setTheme(newTheme) {
@@ -125,21 +167,14 @@ function classDisplay(_elem, _state) {
   }
 }
 
-function detectMobile() {
-  if (navigator.userAgent.match(/Android/i) ||
-      navigator.userAgent.match(/webOS/i)   ||
-      navigator.userAgent.match(/iPhone/i)  || 
-      navigator.userAgent.match(/iPad/i)) {
-        console.log("Mobile Browser");
-  } else {
-    // PC browser
-    starsAnimation(true);
-  }
-}
-
 function starsAnimation(_state) {
   let _itr;
-  var elem;
+  var elem;  
+  // do not run if zoomed in (causes crash on iOS)
+  let zoom = (document.body.clientWidth / window.innerWidth);
+  if (zoom > 1.3) {
+    return;
+  }
   for (_itr = 1; _itr <= 12; _itr++) {
     elem = document.getElementById("star-" + _itr);
     if (_state === true) {
@@ -157,7 +192,7 @@ function sleep(ms) {
 
 // back to home page 
 function GoToHomePage() {
-  if (deviceType === defaultSite) {
+  if (sysModel === defaultSite) {
     hidePages();
     loadPage();
   } else {
@@ -404,7 +439,7 @@ function show_aboutPrompt(){
   aboutprompt.id= "about__prompt";
   // title
   let abouttext = document.createElement("div");
-  abouttext.innerHTML = deviceType + " Controller";
+  abouttext.innerHTML = sysModel + " Controller";
   aboutprompt.appendChild(abouttext); 
   // logo
   let img = document.createElement("img");
@@ -590,7 +625,7 @@ async function serverSend() {
     document.getElementById("logTextBox").value = "select an option.";
   } else {
     // send command
-    if (deviceType === defaultSite) {
+    if (sysModel === defaultSite) {
       sendCmd('main','server',serverCmdData);
     } else {
       sendCmd('main-www','server',serverCmdData);
@@ -609,7 +644,7 @@ async function serverSend() {
 
 function sendBtnAlert(state) {
   let _elmid;
-  if (deviceType === 'LCDpi') {
+  if (sysModel === 'LCDpi') {
     _elmid = "sendButtonLCDpi";
   } else {
     _elmid = "sendButton";
@@ -1346,7 +1381,7 @@ function sendText() {
   if (data.trim() === "" || data === sendtext) {
     document.getElementById("lcdTextBox").value = sendtext;
   } else {
-    if (deviceType === defaultSite) {
+    if (sysModel === defaultSite) {
       sendCmd('main','lcdpimsg',data);
     } else {
       // Create the HTTP POST request
@@ -1449,7 +1484,7 @@ function writeFrame(red, green, blue) {
 }
 
 async function colorPrompt(){
-  if (deviceType === defaultSite) {
+  if (sysModel === defaultSite) {
     sendCmd('leds','randcolor','');
   } else {
     hideDropdowns();

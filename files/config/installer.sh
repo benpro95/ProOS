@@ -11,7 +11,8 @@ apt-get --yes update
 apt-get install -y --no-upgrade --ignore-missing unzip wget \
  rsync curl screen scrub ethtool aptitude sudo samba sshpass \
  libdbus-1-dev libdbus-glib-1-dev bc git locales mailutils \
- neofetch apt-transport-https nmap bpytop binutils iperf3
+ neofetch apt-transport-https nmap bpytop binutils iperf3 cron \
+ cron-daemon-common
 
 ## Process Monitor
 if [ ! -e /usr/local/bin/htop ]; then

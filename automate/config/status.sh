@@ -25,11 +25,16 @@ UPDATE_STATES () {
 }
 
 ## only allow one instance
-if [ -e "$LOCK" ]; then
-  echo "already running."
-  ## exit if locked
-  exit
+if [ -e $LOCK ]; then
+  PID=`cat $LOCK`
+  if kill -0 &>1 > /dev/null $PID; then
+    echo "already running, exiting..."
+    exit 1
+  else
+    rm $LOCK
+  fi
 fi
+echo $$ > $LOCK
 
 ## read file into memory
 if [ -e "$FILE" ]; then
@@ -70,8 +75,6 @@ if [ -e "$FILE" ]; then
   ## replace existing file
   rm -rf "$FILE"
   mv -f "${FILE}.new" "$FILE"
-  ## remove lock file
-  rm -rf "$LOCK"
 fi
 
 exit

@@ -199,14 +199,16 @@
 
       <p class="parstd"></p> 
 
-      <button type="button" class="button" onclick="showDynMenu('statsmenu')">
-          <span class="button__text"><i class="fa-solid fa-list"></i> Status</span>
-          <div class="dd-content ind-button" id="statsmenu"></div>
-      </button>
+      <div class="dropdown">
+        <button type="button" class="button" onclick="showDynMenu('statsmenu')">
+            <span class="button__text"><i class="fa-solid fa-list"></i> Status</span>
+        </button>
+        <div class="dd-content ind-button" id="statsmenu"></div>
+      </div>
       <div class="dropdown">
         <button type="button" class="button" onclick="showCtlsMenu()">
           <span class="button__text"><i class="fa-solid fa-gears"></i> Controls</span>
-        </button>  
+        </button>
         <div class="dd-content dd-button" id="ctls-menu-br">
           <a onclick="ctlsMenu('lr')"><i></i> Main Room</a>
           <a onclick="ctlsMenu('subs')"><i></i> Subwoofers</a>
@@ -894,7 +896,7 @@
     <p class="bottom"></p>  
 </div>
 
-<div class="chat-popup" id="logForm">
+<div class="log-popup" id="logForm">
   <form class="form-container">
     <div class="scrollmenu">
       <div class="server-grid">
@@ -957,19 +959,19 @@
 	  </div>
     </div>
     <textarea readonly class="scroll-bar" id="logTextBox" spellcheck="false" placeholder="" required=""></textarea>  
-    <button type="button" class="button button_left_txtwin" onclick="closePopup()">
+    <button type="button" class="button winbtn button_left_txtwin" onclick="closePopup()">
           <span class="button__textsmall"></i> Close</span>
     </button>       
-    <button type="button" class="button button_left_txtwin" onclick="loadLog('sysout')">
+    <button type="button" class="button winbtn button_left_txtwin" onclick="loadLog('sysout')">
           <span class="button__textsmall"></i> Load</span>
     </button>
-    <button type="button" class="button button_right_txtwin" id="sendButton" onclick="serverSend()">
+    <button type="button" class="button winbtn button_right_txtwin" id="sendButton" onclick="serverSend()">
           <span class="button__textsmall"></i> Send</span>
     </button>
   </form>
 </div>
 
-<div class="chat-popup" id="sendForm">
+<div class="log-popup" id="sendForm">
   <form class="form-container">
     <div class="scrollmenu">
       <div class="dropdown"> 
@@ -977,27 +979,27 @@
       </div>  
     </div>    
     <textarea class="scroll-bar" id="lcdTextBox" placeholder="" required=""></textarea>  
-    <button type="button" class="button button_left_txtwin" onclick="closeSendbox()">
+    <button type="button" class="button winbtn button_left_txtwin" onclick="closeSendbox()">
           <span class="button__textsmall"></i> Close</span>
     </button>   
-    <button type="button" class="button button_left_txtwin" onclick="clearText()">
+    <button type="button" class="button winbtn button_left_txtwin" onclick="clearText()">
           <span class="button__textsmall"></i> Clear</span>
     </button>     
-    <button type="button" class="button button_right_txtwin" id="sendButtonLCDpi" onclick="sendText()">
+    <button type="button" class="button winbtn button_right_txtwin" id="sendButtonLCDpi" onclick="sendText()">
           <span class="button__textsmall"></i> Send</span>
     </button>
   </form>
 </div>
 
-<div class="chat-popup" id="camForm">
+<div class="log-popup" id="camForm">
   <form class="form-container">
     <div class="iframe-container"> 
       <iframe id="cam-iframe" class="responsive-iframe" frameborder="0" border="0" scrolling="yes"></iframe>
     </div>
-    <button type="button" class="button cam__btnleft" onclick="closePopup()">
+    <button type="button" class="button winbtn cam__btnleft" onclick="closePopup()">
       <span class="button__textsmall"></i> Close</span>
     </button>     
-    <button type="button" class="button cam__btnright" onclick="GotoSubURL('cam1')">
+    <button type="button" class="button winbtn cam__btnright" onclick="GotoSubURL('cam1')">
       <span class="button__textsmall"></i> Fullscreen</span>
     </button>   
   </form>

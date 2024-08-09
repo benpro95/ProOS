@@ -8,10 +8,10 @@ let selectedVM = "";
 let dynMenuActive = 0;
 let dynChkboxChanged = 0;
 let colorPromptActive = 0;
-var resizeTimeout = 800; // in ms
+let resizeTimeout = 800; // in ms
 let defaultSite = "Automate";
 let siteVersion = "3.8";
-var resizeState = false;
+let resizeState = false;
 let bookmarkState = 0;
 let loadBarState = 0;
 let serverCmdData;
@@ -131,7 +131,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
           event.target.classList.contains('bookmarked__item') || // bookmark menu click
           event.target.classList.contains('fa-regular') || // icon click
           event.target.classList.contains('fa-solid') || // icon click
-          event.target.classList.contains('dropbtn') || // dropdown menu
+          event.target.classList.contains('dropbtn') || // dropdown button click
           event.target.classList.contains('chkbox'))) { // checkbox click
       hideDropdowns(); // hide all dropdown menus
     }
@@ -143,7 +143,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
 function detectMobileSafari() {
   if (navigator.vendor.match(/apple/i)) {
     // iOS safari browser
-    document.addEventListener('gesturechange', function() {
+    document.addEventListener('gesturechange', function(event) {
       resizeEvent(); // on pinch-zoom 
     }, { passive: false });
   } else {
@@ -221,58 +221,58 @@ function show_vmsPrompt(text){
   // the cancel-button
   let vms_cancelb = document.createElement("button"); 
   vms_cancelb.innerHTML = "Close";
-  vms_cancelb.className ="button button_vmctrls_close"; 
+  vms_cancelb.className ="button winbtn button_vmctrls_close"; 
   vms_cancelb.type="button"; 
   vms_prompt.appendChild(vms_cancelb); //append cancel-button
   // the dev-button 
   let vms_devbtn = document.createElement("button"); 
   vms_devbtn.innerHTML = "Development";
-  vms_devbtn.className ="button button_vmctrls"; 
+  vms_devbtn.className ="button winbtn button_vmctrls"; 
   vms_devbtn.type="button"; 
   vms_prompt.appendChild(vms_devbtn); 
   // the unifi-button 
   let vms_unifibtn = document.createElement("button"); 
   vms_unifibtn.innerHTML = "UniFi Controller";
-  vms_unifibtn.className ="button button_vmctrls"; 
+  vms_unifibtn.className ="button winbtn button_vmctrls"; 
   vms_unifibtn.type="button"; 
   vms_prompt.appendChild(vms_unifibtn); 
   // the cifs-button 
   let vms_cifsbtn = document.createElement("button"); 
   vms_cifsbtn.innerHTML = "Legacy CIFS";
-  vms_cifsbtn.className ="button button_vmctrls"; 
+  vms_cifsbtn.className ="button winbtn button_vmctrls"; 
   vms_cifsbtn.type="button"; 
   vms_prompt.appendChild(vms_cifsbtn); 
   // the xana-button 
   let vms_xanabtn = document.createElement("button"); 
   vms_xanabtn.innerHTML = "Xana";
-  vms_xanabtn.className ="button button_vmctrls"; 
+  vms_xanabtn.className ="button winbtn button_vmctrls"; 
   vms_xanabtn.type="button"; 
   vms_prompt.appendChild(vms_xanabtn);
   // erase button (hidden)
   let vms_restorebtn = document.createElement("button"); 
   vms_restorebtn.innerHTML = "Erase";
-  vms_restorebtn.className ="button button_vmactions";
+  vms_restorebtn.className ="button winbtn button_vmactions";
   vms_restorebtn.id = "vms__restorebtn";
   vms_restorebtn.type="button";
   vms_restorebtn.style.display = "none";
   // start button (hidden)
   let vms_startbtn = document.createElement("button"); 
   vms_startbtn.innerHTML = "Start";
-  vms_startbtn.className ="button button_vmactions";
+  vms_startbtn.className ="button winbtn button_vmactions";
   vms_startbtn.id = "vms__startbtn";
   vms_startbtn.type="button";
   vms_startbtn.style.display = "none";
   // stop button (hidden)
   let vms_stopbtn = document.createElement("button"); 
   vms_stopbtn.innerHTML = "Stop";
-  vms_stopbtn.className ="button button_vmactions";
+  vms_stopbtn.className ="button winbtn button_vmactions";
   vms_stopbtn.id = "vms__stopbtn";
   vms_stopbtn.type="button";
   vms_stopbtn.style.display = "none";
   // open button (hidden)
   let vms_openbtn = document.createElement("button"); 
   vms_openbtn.innerHTML = "Open";
-  vms_openbtn.className ="button button_vmactions";
+  vms_openbtn.className ="button winbtn button_vmactions";
   vms_openbtn.id = "vms__openbtn";
   vms_openbtn.type="button";
   vms_openbtn.style.display = "none";
@@ -371,12 +371,12 @@ function piWiFiPrompt(){
   // save button
   let pinetokbutton = document.createElement("button"); 
   pinetokbutton.innerHTML = "Save";
-  pinetokbutton.className ="button"; 
+  pinetokbutton.className ="button winbtn"; 
   pinetokbutton.type="button"; 
   // cancel button
   let pinetcancelb = document.createElement("button"); 
   pinetcancelb.innerHTML = "Cancel";
-  pinetcancelb.className ="button"; 
+  pinetcancelb.className ="button winbtn"; 
   pinetcancelb.type="button"; 
   // create window
   pinetprompt.appendChild(pinetcancelb); 
@@ -461,7 +461,7 @@ function show_aboutPrompt(){
   // cancel button
   let aboutcancelb = document.createElement("button");
   aboutcancelb.innerHTML = "Close";
-  aboutcancelb.className ="button"; 
+  aboutcancelb.className ="button winbtn"; 
   aboutcancelb.id = "about__btn";
   aboutcancelb.type="button"; 
   aboutprompt.appendChild(aboutcancelb); //append cancel-button
@@ -535,7 +535,7 @@ function show_wifiPwdPrompt(){
   wifiprompt.appendChild(wifipwd);
   let wificancelb = document.createElement("button");
   wificancelb.innerHTML = "Close";
-  wificancelb.className = "button"; 
+  wificancelb.className = "button winbtn"; 
   wificancelb.type = "button"; 
   wificancelb.id = "wifipmt__btn";
   wifiprompt.appendChild(wificancelb);
@@ -565,11 +565,11 @@ function passwordPrompt(){
   pwprompt.appendChild(pwinput); //append it to password-prompt
   let pwokbutton = document.createElement("button"); //the ok button
   pwokbutton.innerHTML = "Send";
-  pwokbutton.className ="button"; 
+  pwokbutton.className ="button winbtn"; 
   pwokbutton.type="button"; 
   let pwcancelb = document.createElement("button"); //the cancel-button
   pwcancelb.innerHTML = "Cancel";
-  pwcancelb.className = "button"; 
+  pwcancelb.className = "button winbtn"; 
   pwcancelb.type = "button"; 
   pwprompt.appendChild(pwcancelb); //append cancel-button first
   pwprompt.appendChild(pwokbutton); //append the ok-button
@@ -870,6 +870,7 @@ function drawBookmarkPrompt(add,url,name,elem){
   let editFavCancelBtn = document.createElement("button");
   editFavCancelBtn.classList.add("editFav__cancelbtn");
   editFavCancelBtn.classList.add("button");
+  editFavCancelBtn.classList.add("winbtn");
   editFavCancelBtn.classList.add("fa-solid");
   editFavCancelBtn.classList.add("fa-ban");
   editFavCancelBtn.type = "button";
@@ -877,6 +878,7 @@ function drawBookmarkPrompt(add,url,name,elem){
   let editFavSaveBtn = document.createElement("button");
   editFavSaveBtn.classList.add("editFav__button");
   editFavSaveBtn.classList.add("button");
+  editFavSaveBtn.classList.add("winbtn");
   editFavSaveBtn.classList.add("fa-solid");
   editFavSaveBtn.classList.add("fa-floppy-disk");
   editFavSaveBtn.type = "button";
@@ -884,6 +886,7 @@ function drawBookmarkPrompt(add,url,name,elem){
   let editFavDeleteBtn = document.createElement("button");
   editFavDeleteBtn.classList.add("editFav__button");
   editFavDeleteBtn.classList.add("button");
+  editFavDeleteBtn.classList.add("winbtn");
   editFavDeleteBtn.classList.add("fa-solid");
   editFavDeleteBtn.classList.add("fa-trash-can");
   editFavDeleteBtn.type = "button";
@@ -891,6 +894,7 @@ function drawBookmarkPrompt(add,url,name,elem){
   let editFavUpBtn = document.createElement("button");
   editFavUpBtn.classList.add("editFav__button");
   editFavUpBtn.classList.add("button");
+  editFavUpBtn.classList.add("winbtn");
   editFavUpBtn.classList.add("fa-solid");
   editFavUpBtn.classList.add("fa-arrow-up");
   editFavUpBtn.type = "button"; 
@@ -898,6 +902,7 @@ function drawBookmarkPrompt(add,url,name,elem){
   let editFavDownBtn = document.createElement("button");
   editFavDownBtn.classList.add("editFav__button");
   editFavDownBtn.classList.add("button");
+  editFavDownBtn.classList.add("winbtn");
   editFavDownBtn.classList.add("fa-solid");
   editFavDownBtn.classList.add("fa-arrow-down");
   editFavDownBtn.type = "button";
@@ -1505,13 +1510,13 @@ function show_colorPrompt(text){
   // the cancel-button
   let colorcancelb = document.createElement("button"); 
   colorcancelb.innerHTML = "Close";
-  colorcancelb.className ="button"; 
+  colorcancelb.className ="button winbtn"; 
   colorcancelb.type="button"; 
   colorprompt.appendChild(colorcancelb); //append cancel-button
   // the set color-button
   let colorsetb = document.createElement("button"); 
   colorsetb.innerHTML = "Apply";
-  colorsetb.className ="button"; 
+  colorsetb.className ="button winbtn"; 
   colorsetb.type="button"; 
   colorprompt.appendChild(colorsetb); //append set-button
   // color selector box

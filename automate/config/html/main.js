@@ -8,7 +8,7 @@ let selectedVM = "";
 let dynMenuActive = 0;
 let dynChkboxChanged = 0;
 let colorPromptActive = 0;
-var resizeTimeout = 600; // in ms
+var resizeTimeout = 800; // in ms
 let defaultSite = "Automate";
 let siteVersion = "3.8";
 var resizeState = false;
@@ -21,79 +21,6 @@ let arcState = 0;
 var timeStamp;
 let sysModel;
 //////////////////////
-
-// runs after DOM finishes loading
-window.addEventListener("DOMContentLoaded", (event) => {
-  // on-click actions
-  document.addEventListener('click', function handleClickOutsideBox(event) {
-    // disable click events when in bookmark edit mode
-    if (bookmarkState === 2) {
-      if (event.target.className !== "editFav__win") {
-        event.stopPropagation();
-      }
-      return;
-    }
-    // don't hide menus when clicking these elements
-    if (!(event.target.classList.contains('button') || // button click
-          event.target.classList.contains('button__text') || // button text click
-          event.target.classList.contains('mainmenu__anchor') || // main menu click
-          event.target.classList.contains('bookmarked__item') || // bookmark menu click
-          event.target.classList.contains('fa-regular') || // icon click
-          event.target.classList.contains('fa-solid') || // icon click
-          event.target.classList.contains('dropbtn') || // dropdown menu
-          event.target.classList.contains('chkbox'))) { // checkbox click
-      hideDropdowns(); // hide all dropdown menus
-    }
-  });
-  // detect if running on iOS
-  detectMobileSafari();
-});
-
-function detectMobileSafari() {
-  if (navigator.vendor.match(/apple/i)) {
-    // iOS safari browser
-    document.addEventListener('gesturechange', function() {
-      resizeEvent(); // on pinch-zoom 
-    }, { passive: false });
-  } else {
-    // desktop browser
-    window.addEventListener("resize", function() {
-      resizeEvent(); // on window resize
-    });
-  }
-}
-
-function resizeEvent() {
-  timeStamp = new Date();
-  if (resizeState === false) {
-    // resize event started
-    resizeState = true;
-    setTimeout(resizeDone, resizeTimeout);
-    // disable stars animation 
-    starsAnimation(false);
-  }
-}
-
-function resizeDone() {
-  // detect when resize event completes
-  if (+new Date() - +timeStamp < resizeTimeout) {
-    setTimeout(resizeDone, resizeTimeout);
-  } else {
-    // resize event completed
-    resizeState = false;
-    // re-enable stars animation
-    starsAnimation(true);
-  }               
-}
-
-function hideDropdowns() {
-  // hide all dropdown menus
-  classDisplay("dd-content","none");
-  // hide bookmark menus
-  hideBookmarks();
-  // remove any current dynamic menus
-  removeDynMenus();
-}
 
 // runs on page load
 function loadPage() {
@@ -167,24 +94,6 @@ function classDisplay(_elem, _state) {
   }
 }
 
-function starsAnimation(_state) {
-  let _itr;
-  var elem;  
-  // do not run if zoomed in (causes crash on iOS)
-  let zoom = (document.body.clientWidth / window.innerWidth);
-  if (zoom > 1.3) {
-    return;
-  }
-  for (_itr = 1; _itr <= 12; _itr++) {
-    elem = document.getElementById("star-" + _itr);
-    if (_state === true) {
-      elem.classList.add("animate-stars");
-    } else {
-      elem.classList.remove("animate-stars");
-    }
-  }
-}
-
 // timer
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -202,6 +111,97 @@ function GoToHomePage() {
 
 function GoToExtPage(_path) {
   window.location = "https://"+_path;   
+}
+
+// runs after DOM finishes loading
+window.addEventListener("DOMContentLoaded", (event) => {
+  // on-click actions
+  document.addEventListener('click', function handleClickOutsideBox(event) {
+    // disable click events when in bookmark edit mode
+    if (bookmarkState === 2) {
+      if (event.target.className !== "editFav__win") {
+        event.stopPropagation();
+      }
+      return;
+    }
+    // don't hide menus when clicking these elements
+    if (!(event.target.classList.contains('button') || // button click
+          event.target.classList.contains('button__text') || // button text click
+          event.target.classList.contains('mainmenu__anchor') || // main menu click
+          event.target.classList.contains('bookmarked__item') || // bookmark menu click
+          event.target.classList.contains('fa-regular') || // icon click
+          event.target.classList.contains('fa-solid') || // icon click
+          event.target.classList.contains('dropbtn') || // dropdown menu
+          event.target.classList.contains('chkbox'))) { // checkbox click
+      hideDropdowns(); // hide all dropdown menus
+    }
+  });
+  // detect if running on iOS
+  detectMobileSafari();
+});
+
+function detectMobileSafari() {
+  if (navigator.vendor.match(/apple/i)) {
+    // iOS safari browser
+    document.addEventListener('gesturechange', function() {
+      resizeEvent(); // on pinch-zoom 
+    }, { passive: false });
+  } else {
+    // desktop browser
+    window.addEventListener("resize", function() {
+      resizeEvent(); // on window resize
+    });
+  }
+}
+
+function resizeEvent() {
+  timeStamp = new Date();
+  if (resizeState === false) {
+    // resize event started
+    resizeState = true;
+    setTimeout(resizeDone, resizeTimeout);
+    // disable stars animation 
+    starsAnimation(false);
+  }
+}
+
+function resizeDone() {
+  // detect when resize event completes
+  if (+new Date() - +timeStamp < resizeTimeout) {
+    setTimeout(resizeDone, resizeTimeout);
+  } else {
+    // resize event completed
+    resizeState = false;
+    // re-enable stars animation
+    starsAnimation(true);
+  }               
+}
+
+function starsAnimation(_state) {
+  let _itr;
+  var elem;  
+  // do not run if zoomed in (causes crash on iOS)
+  let zoom = (document.body.clientWidth / window.innerWidth);
+  if (zoom >= 1.3) {
+    _state = false;
+  }
+  for (_itr = 1; _itr <= 12; _itr++) {
+    elem = document.getElementById("star-" + _itr);
+    if (_state === true) {
+      elem.classList.add("animate-stars");
+    } else {
+      elem.classList.remove("animate-stars");
+    }
+  }
+}
+
+function hideDropdowns() {
+  // hide all dropdown menus
+  classDisplay("dd-content","none");
+  // hide bookmark menus
+  hideBookmarks();
+  // remove any current dynamic menus
+  removeDynMenus();
 }
 
 function GotoSubURL(_path) {

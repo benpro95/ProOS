@@ -364,7 +364,7 @@ input.chkbox {
   cursor: pointer;
   display: none;
   background-color: #4d5b69;
-  opacity: 0.96;
+  opacity: 0.95;
   z-index: 999;
 }
 

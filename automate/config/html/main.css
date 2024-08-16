@@ -154,7 +154,7 @@ input.chkbox {
   color: #fff; /* buttons font color */
   text-shadow: 1px 1px 1px #000;
   border-radius: 12px;
-  background-color: color-mix(in srgb, var(--main-color),#0000 35%);
+  background-color: color-mix(in srgb, var(--main-color),#0000 40%);
   background-image: linear-gradient(to top left,
                                     rgba(0, 0, 0, .2),
                                     rgba(0, 0, 0, .2) 15%,
@@ -790,42 +790,14 @@ input.chkbox {
  *  Animated Stars Background
  */
 
-.animate-stars {
-  animation-name: slide-transparency;
-  animation-iteration-count: infinite;
-}
-
-@keyframes slide-transparency {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
 .star-bg {
+  top: 0;
+  left: 0;  
   width: 100vw;
   height: 100vh;
   position: fixed;
-  top: 0;
-  left: 0;
   background: #000;
   z-index: -1000;
-}
-
-.star-z-1,
-.star-z-2,
-.star-z-3 {
-  position: absolute;
-  width: 300vw;
-  height: 300vw;
-  left: -50vw;
-  top: -50vw;
-  transform-origin: center;
 }
 
 .star-tile {
@@ -842,67 +814,140 @@ input.chkbox {
 
 #star-1 {
   background-image: url("./img/topleft.png");
-  animation-duration: 5s;
 }
 
 #star-2 {
   background-image: url("./img/topright.png");
-  animation-duration: 9s;
 }
 
 #star-3 {
   background-image: url("./img/bottomleft.png");
-  animation-duration: 7s;
 }
 
 #star-4 {
   background-image: url("./img/bottomright.png");
-  animation-duration: 10.17s;
 }
 
 #star-5 {
   background-image: url("./img/topleft.png");
-  animation-duration: 9s;
-  animation-delay: 1.33s;
 }
 
 #star-6 {
   background-image: url("./img/topright.png");
-  animation-duration: 5s;
-  animation-delay: 1.33s;
 }
 
 #star-7 {
   background-image: url("./img/bottomleft.png");
-  animation-duration: 6.33s;
-  animation-delay: 2.11s;
 }
 
 #star-8 {
   background-image: url("./img/bottomright.png");
-  animation-duration: 10.17s;
-  animation-delay: 2.11s;
 }
 
 #star-9 {
   background-image: url("./img/topleft.png");
-  animation-duration: 7s;
-  animation-delay: 1.33s;
 }
 
 #star-10 {
   background-image: url("./img/topright.png");
-  animation-duration: 5s;
-  animation-delay: 2.11s;
 }
 
 #star-11 {
   background-image: url("./img/bottomleft.png");
-  animation-duration: 9s;
-  animation-delay: 1.33s;
 }
 
 #star-12 {
   background-image: url("./img/bottomright.png");
+}
+
+.star-a-1 {
+  animation-name: slide-transparency;
+  animation-iteration-count: infinite;
   animation-duration: 5s;
 }
+
+.star-a-2 {
+  animation-name: slide-transparency;
+  animation-iteration-count: infinite;
+  animation-duration: 9s;
+}
+
+.star-a-3 {
+  animation-name: slide-transparency;
+  animation-iteration-count: infinite;
+  animation-duration: 7s;
+}
+
+.star-a-4 {
+  animation-name: slide-transparency;
+  animation-iteration-count: infinite;
+  animation-duration: 10.17s;
+}
+
+.star-a-5 {
+  animation-name: slide-transparency;
+  animation-iteration-count: infinite;
+  animation-duration: 9s;
+  animation-delay: 1.33s;
+}
+
+.star-a-6 {
+  animation-name: slide-transparency;
+  animation-iteration-count: infinite;
+  animation-duration: 5s;
+  animation-delay: 1.33s;
+}
+
+.star-a-7 {
+  animation-name: slide-transparency;
+  animation-iteration-count: infinite;
+  animation-duration: 6.33s;
+  animation-delay: 2.11s;
+}
+
+.star-a-8 {
+  animation-name: slide-transparency;
+  animation-iteration-count: infinite;
+  animation-duration: 10.17s;
+  animation-delay: 2.11s;
+}
+
+.star-a-9 {
+  animation-name: slide-transparency;
+  animation-iteration-count: infinite;
+  animation-duration: 7s;
+  animation-delay: 1.33s;
+}
+
+.star-a-10 {
+  animation-name: slide-transparency;
+  animation-iteration-count: infinite;
+  animation-duration: 5s;
+  animation-delay: 2.11s;
+}
+
+.star-a-11 {
+  animation-name: slide-transparency;
+  animation-iteration-count: infinite;
+  animation-duration: 9s;
+  animation-delay: 1.33s;
+}
+
+.star-a-12 {
+  animation-name: slide-transparency;
+  animation-iteration-count: infinite;
+  animation-duration: 5s;
+}
+
+@keyframes slide-transparency {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+

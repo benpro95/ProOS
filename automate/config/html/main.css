@@ -23,6 +23,27 @@ body {
   height: 100%;
 }
 
+/*
+ *  Main scrollbar style
+ */
+
+body::-webkit-scrollbar-track
+{
+  background-color: #000;
+  border-radius: 6px;
+}
+
+body::-webkit-scrollbar-thumb
+{
+  background-color: color-mix(in srgb, var(--main-color) 70%, white);
+  border-radius: 6px;  
+}
+
+body::-webkit-scrollbar
+{
+  width: 6px;
+}
+
 .parstd {
 	border: 0px;
 	margin-bottom: 1px;
@@ -451,27 +472,6 @@ input.chkbox {
 #bookmarks::-webkit-scrollbar
 {
   width: 5px;
-}
-
-/*
- *  Main scrollbar style
- */
-
-.scroll-bar::-webkit-scrollbar-track
-{
-  background-color: #000;
-  border-radius: 6px;
-}
-
-.scroll-bar::-webkit-scrollbar-thumb
-{
-  background-color: color-mix(in srgb, var(--main-color) 70%, white);
-  border-radius: 6px;  
-}
-
-.scroll-bar::-webkit-scrollbar
-{
-  width: 6px;
 }
 
 /*

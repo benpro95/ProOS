@@ -2,18 +2,18 @@
 <html lang="en-US" class="notranslate" translate="no">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=0.75, minimum-scale=0.75, maximum-scale=0.75 shrink-to-fit=no" />
+  <meta name="viewport" content="initial-scale=0.75, minimum-scale=0.75, maximum-scale=0.75 shrink-to-fit=no"/>
   <title id="title">Automate</title>
-    <link href="img/automate.png" rel="icon" type="image/x-icon" >
-    <link href="fa/css/fontawesome.min.css" rel="stylesheet">
-    <link href="fa/css/brands.min.css" rel="stylesheet">
-    <link href="fa/css/solid.min.css" rel="stylesheet">
-    <link href="main.css" rel="stylesheet">
+  <link href="img/automate.png" rel="icon" type="image/x-icon">
+  <link href="fa/css/fontawesome.min.css" rel="stylesheet">
+  <link href="fa/css/brands.min.css" rel="stylesheet">
+  <link href="fa/css/solid.min.css" rel="stylesheet">
+  <link href="main.css" rel="stylesheet">
 </head>
 <body>
-<script src="device.js"></script>
-<script src="wifi.js"></script>
-<script src="main.js"></script>
+  <script src="device.js"></script>
+  <script src="wifi.js"></script>
+  <script src="main.js"></script>
 
 <!-- homepage navigation bar -->
 
@@ -37,16 +37,18 @@
   </a>
 
   <!-- bookmark buttons -->
-  <a onclick="showBookmarks()" class="dropbtn">
-    <i class="fa-solid fa-star"></i>
-  </a>
-  <div class="bookmark-buttons">
-    <a onclick="editBookmark()" class="dropbtn">
-      <i class="fa-solid fa-gear"></i>
-    </a>   
-    <a onclick="addBookmark()" class="dropbtn">
-      <i class="fa-solid fa-plus"></i>
-    </a> 
+  <div class="server-grid">
+    <a onclick="showBookmarks()" class="dropbtn">
+      <i class="fa-solid fa-star"></i>
+    </a>
+    <div class="bookmark-buttons">
+      <a onclick="editBookmark()" class="dropbtn">
+        <i class="fa-solid fa-gear"></i>
+      </a>   
+      <a onclick="addBookmark()" class="dropbtn">
+        <i class="fa-solid fa-plus"></i>
+      </a> 
+    </div>
   </div>
 
   <!-- back button -->
@@ -404,8 +406,8 @@
 
           <p class="parstd"></p>   
 
-          <button type="button" class="button" onclick="relaxSend('classical')">
-              <span class="button__text"></i>Classical</span>
+          <button type="button" class="button" onclick="relaxSend('fields')">
+              <span class="button__text"></i>Fields</span>
           </button>
           <button type="button" class="button" onclick="relaxSend('amazon')">
               <span class="button__text"></i>Amazon</span>
@@ -419,8 +421,8 @@
           <button type="button" class="button" onclick="relaxSend('islands')">
               <span class="button__text"></i>Islands</span>
           </button>  
-          <button type="button" class="button" onclick="relaxSend('fields')">
-              <span class="button__text"></i>Fields</span>
+          <button type="button" class="button" onclick="relaxSend('coldwar')">
+              <span class="button__text"></i>Cold War</span>
           </button>
           <button type="button" class="button" onclick="relaxSend('garden')">
               <span class="button__text"></i>Garden</span>

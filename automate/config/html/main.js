@@ -23,30 +23,33 @@ let sysModel;
 //////////////////////
 
 // runs after DOM finishes loading
-window.addEventListener("DOMContentLoaded", (event) => {
+window.addEventListener("DOMContentLoaded", () => {
   // on-click actions
-  document.addEventListener('click', function handleClickOutsideBox(event) {
-    // disable click events when in bookmark edit mode
-    if (bookmarkState === 2) {
-      if (event.target.className !== "editFav__win") {
-        event.stopPropagation();
-      }
-      return;
-    }
-    // don't hide menus when clicking these elements
-    if (!(event.target.classList.contains('button') || // button click
-          event.target.classList.contains('button__text') || // button text click
-          event.target.classList.contains('mainmenu__anchor') || // main menu click
-          event.target.classList.contains('bookmarked__item') || // bookmark menu click
-          event.target.classList.contains('fa-regular') || // icon click
-          event.target.classList.contains('fa-solid') || // icon click
-          event.target.classList.contains('dropbtn') || // dropdown button click
-          event.target.classList.contains('chkbox'))) { // checkbox click
-      hideDropdowns(); // hide all dropdown menus
-    }
-  });
+  window.addEventListener('click', handleClicks, false);
+  // load content
   loadPage();
 });
+
+function handleClicks(event) {
+  // disable click events when in bookmark edit mode
+  if (bookmarkState === 2) {
+    if (event.target.className !== "editFav__win") {
+      event.stopPropagation();
+    }
+    return;
+  }
+  // don't hide menus when clicking these elements
+  if (!(event.target.classList.contains('button') || // button click
+        event.target.classList.contains('button__text') || // button text click
+        event.target.classList.contains('mainmenu__anchor') || // main menu click
+        event.target.classList.contains('bookmarked__item') || // bookmark menu click
+        event.target.classList.contains('fa-regular') || // icon click
+        event.target.classList.contains('fa-solid') || // icon click
+        event.target.classList.contains('dropbtn') || // dropdown button click
+        event.target.classList.contains('chkbox'))) { // checkbox click
+    hideDropdowns(); // hide all dropdown menus
+  }
+}
 
 // runs on page load
 function loadPage() {

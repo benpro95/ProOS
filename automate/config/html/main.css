@@ -1,28 +1,20 @@
 @font-face {
-    font-family: 'JosefinSans';
-    src: url('../fonts/JosefinSans-SemiBold-webfont.eot?v=4.3.0');
-    src: url('../fonts/JosefinSans-SemiBold-webfont.eot?#iefix') format('embedded-opentype');
-    src: url('../fonts/JosefinSans-SemiBold-webfont.woff2?v=4.3.0') format('woff2'); 
-    src: url('../fonts/JosefinSans-SemiBold-webfont.woff') format('woff'); 
-    src: url('../fonts/JosefinSans-SemiBold-webfont.ttf') format('truetype');
-    src: url('../fonts/JosefinSans-SemiBold-webfont.svg') format('svg');
-    font-weight: normal;
-    font-style: normal;
+  font-family: 'JosefinSans';
+  src: url('../fonts/JosefinSans-SemiBold.woff2') format('woff2'); 
+  font-weight: normal;
+  font-style: normal;
 }
 
 * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  font-family: JosefinSans,system-ui,"Helvetica Neue";
-  font-size: 24px; /* page default font size */
+  font-family: JosefinSans,system-ui;
+  font-size: 24px; /* default font size */
 }
 
 body {
-  margin-top: 5px;
-  margin-right: 5px;
-  margin-left: 5px;
-  margin-bottom: 0px;
+  margin: 0px;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   touch-action: manipulation;
@@ -45,30 +37,37 @@ body {
 }
 
 .led-grid {
+  margin: 0px;
   display: none; 
 }
 
 .bedroom-grid {
+  margin: 0px;
   display: none;
 }
 
 .hifi-grid {
+  margin: 0px;
   display: none;
 }
 
 .lcdpi-grid {
+  margin: 0px;
   display: none;
 }
 
 .ledpi-grid {
+  margin: 0px;
   display: none; 
 }
 
 .pi-grid {
+  margin: 0px;
   display: none;
 }
 
 .server-grid {
+  margin: 0px;
   display: none;
 }
 
@@ -85,7 +84,7 @@ input.chkbox {
 
 .grid {
   display: flex;
-  overflow: none;
+  margin-left: -5px;
   flex-wrap: nowrap;
   flex-direction: row;
   align-items: flex-start;
@@ -104,7 +103,7 @@ input.chkbox {
 }
 
 .column-right {
-  padding-left: 8px;
+  padding-left: 7px;
 }
 
 @media screen and (max-width: 900px) {
@@ -208,6 +207,7 @@ input.chkbox {
 }
 
 .topnav {
+  margin: 5px;
   cursor: pointer;
   line-height: 2.65;
   overflow: hidden;

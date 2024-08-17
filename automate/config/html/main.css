@@ -746,44 +746,43 @@ input.chkbox {
  */
 
 #camForm {
-  min-height: unset;
-  min-width: unset;
-  max-height: 98%;
-  max-width: 98%;
-  width: 486px;  
-  height: 366px;
-} 
-
-.cam__btnleft {
-  position: absolute;
-  bottom: 1px;
-}  
-
-.cam__btnright {
-  position: absolute;
+  bottom: 5px;
   right: 5px;
-  bottom: 1px;
-}  
-
-.iframe-container {
-  width: 1280px;
-  height: 720px;
-  resize: none;
-  position: relative;
-  overflow: hidden;
+  width: auto;
+  height: auto;
+  display: none;
+  position: fixed;
+  border: 6px solid #1f252a; /* popup window border color */
+  z-index: 99;
 }
 
-.responsive-iframe {
-  overflow: scroll;
-  width: 100%;
-  height: 100%;
-  zoom: 0.37;
-  -moz-transform: scale(0.37);
-  -moz-transform-origin: 0 0;
-  -o-transform: scale(0.37);
-  -o-transform-origin: 0 0;
-  -webkit-transform: scale(0.37);
-  -webkit-transform-origin: 0 0;
+#camDiv {
+  background-color: #2d353d; /* popup window frame color */
+  overflow: hidden;
+  width: 100%;  
+  height: 100%;   
+  resize: none;
+}
+
+#camImage {
+  width: 90vw;
+  height: auto;
+  max-height: 80vh;
+  overflow: clip;
+  aspect-ratio: 16 / 9;
+  margin-bottom: 80px;
+}
+
+#cam__btnleft {
+  position: absolute;
+  left: 5px;
+  bottom: 0px;
+}  
+
+#cam__btnright {
+  position: absolute;
+  bottom: 0px;
+  right: 5px;
 }
 
 /*

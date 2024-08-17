@@ -990,18 +990,16 @@
   </form>
 </div>
 
-<div class="log-popup" id="camForm">
-  <form class="form-container">
-    <div class="iframe-container"> 
-      <iframe id="cam-iframe" class="responsive-iframe" frameborder="0" border="0" scrolling="yes"></iframe>
-    </div>
-    <button type="button" class="button winbtn cam__btnleft" onclick="closePopup()">
+<div id="camForm">
+  <div id="camDiv"> 
+    <img id="camImage"></img>  
+    <button type="button" class="button winbtn" id="cam__btnleft" onclick="closePopup()">
       <span class="button__textsmall"></i> Close</span>
     </button>     
-    <button type="button" class="button winbtn cam__btnright" onclick="GotoSubURL('cam1')">
+    <button type="button" class="button winbtn" id="cam__btnright" onclick="GotoSubURL('cam1')">
       <span class="button__textsmall"></i> Fullscreen</span>
-    </button>   
-  </form>
+    </button>
+  </div>    
 </div>
 
 <!-- animated background -->

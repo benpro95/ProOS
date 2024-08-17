@@ -1367,14 +1367,14 @@ function openCamWindow() {
   closePopup();
   // show camera form window
   document.getElementById("camForm").style.display = "block";
-  document.getElementById("cam-iframe").src = "/cam1";
+  document.getElementById("camImage").src = "/cam1";
 }
 
 function closePopup() {
   // close all popup windows
   document.getElementById("logForm").style.display = "none";
   document.getElementById("camForm").style.display = "none";
-  document.getElementById("cam-iframe").src = "about:blank";
+  document.getElementById("camImage").src = "about:blank";
   clearPendingCmd();
 }
 

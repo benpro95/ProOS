@@ -1374,7 +1374,7 @@ function closePopup() {
   // close all popup windows
   document.getElementById("logForm").style.display = "none";
   document.getElementById("camForm").style.display = "none";
-  document.getElementById("camImage").src = "about:blank";
+  document.getElementById("camImage").src = "";
   clearPendingCmd();
 }
 

@@ -768,18 +768,18 @@ input.chkbox {
   width: 90vw;
   height: auto;
   max-height: 80vh;
-  overflow: clip;
   aspect-ratio: 16 / 9;
   margin-bottom: 80px;
+  overflow: clip;
 }
 
-#cam__btnleft {
+#camButtonLeft {
   position: absolute;
-  left: 5px;
+  left: 0px;
   bottom: 0px;
 }  
 
-#cam__btnright {
+#camButtonRight {
   position: absolute;
   bottom: 0px;
   right: 5px;

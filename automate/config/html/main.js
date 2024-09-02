@@ -10,7 +10,7 @@ let dynChkboxChanged = 0;
 let colorPromptActive = 0;
 let resizeTimeout = 800; // in ms
 let defaultSite = "Automate";
-let siteVersion = "3.8";
+let siteVersion = "3.82";
 let resizeState = false;
 let bookmarkState = 0;
 let loadBarState = 0;
@@ -91,12 +91,17 @@ function loadPage() {
     currentTheme = localStorage.getItem("main-color");
   }  
   setTheme(currentTheme);
-  // detect if running on iOS
-  detectMobileSafari();
-  // enable stars animation 
-  setTimeout(function() {
-    starsAnimation(true);
-  }, 1000);
+  // not on Safari
+  if (!(navigator.vendor.match(/apple/i))) {
+    setTimeout(function() {
+      // enable stars animation 
+      starsAnimation(true);
+      // pause stars animation on window resize
+      window.addEventListener("resize", function() {
+        resizeEvent(); // on window resize
+      });
+    }, resizeTimeout);
+  }
 }
 
 function setTheme(newTheme) {
@@ -118,6 +123,15 @@ function hidePages() {
   classDisplay('led-grid','none');
 }
 
+function hideDropdowns() {
+  // hide all dropdown menus
+  classDisplay("dd-content","none");
+  // hide bookmark menus
+  hideBookmarks();
+  // remove any current dynamic menus
+  removeDynMenus();
+}
+
 // show / hide multiple classes
 function classDisplay(_elem, _state) {
   let _itr;
@@ -125,11 +139,6 @@ function classDisplay(_elem, _state) {
   for (_itr = 0; _itr < _class.length; _itr++) {
     _class[_itr].style.display = _state;
   }
-}
-
-// timer
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 // back to home page 
@@ -146,19 +155,12 @@ function GoToExtPage(_path) {
   window.location = "https://"+_path;   
 }
 
-function detectMobileSafari() {
-  if (navigator.vendor.match(/apple/i)) {
-    // iOS safari browser
-    document.addEventListener('gesturechange', function(event) {
-      resizeEvent(); // on pinch-zoom 
-    }, { passive: false });
-  } else {
-    // desktop browser
-    window.addEventListener("resize", function() {
-      resizeEvent(); // on window resize
-    });
-  }
+function GotoSubURL(_path) {
+  closePopup();
+  window.location = location.protocol+"//"+location.hostname+"/"+_path;
 }
+
+// stars animation
 
 function resizeEvent() {
   timeStamp = new Date();
@@ -184,12 +186,8 @@ function resizeDone() {
 }
 
 function starsAnimation(_state) {
+  // animated stars background
   let _itr;
-  // do not run if zoomed in (causes crash on iOS)
-  let zoom = (document.body.clientWidth / window.innerWidth);
-  if (zoom >= 1.3) {
-    _state = false;
-  }
   for (_itr = 1; _itr <= 12; _itr++) {
     const _elm = document.getElementById("star-" + _itr);
     const _class = "star-a-" + _itr;
@@ -205,19 +203,6 @@ function starsAnimation(_state) {
   }
 }
 
-function hideDropdowns() {
-  // hide all dropdown menus
-  classDisplay("dd-content","none");
-  // hide bookmark menus
-  hideBookmarks();
-  // remove any current dynamic menus
-  removeDynMenus();
-}
-
-function GotoSubURL(_path) {
-  closePopup();
-  window.location = location.protocol+"//"+location.hostname+"/"+_path;
-}
 
 function show_vmsPrompt(text){
   selectedVM = "";

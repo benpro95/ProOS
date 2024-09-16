@@ -215,9 +215,9 @@ fi
 if [[ $REPLY == "detach_all_regions" ]]
 then
   echo "detaching all regions..."
+  rm -f $REGROOT/.Volumes
   rm -f $REGROOT/Snapshots
   rm -f $REGROOT/External  
-  rm -f $REGROOT/.Volumes
   rm -f $REGROOT/Archive
   rm -f $REGROOT/WWW
   rm -f $REGROOT/RAM

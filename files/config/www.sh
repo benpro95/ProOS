@@ -215,7 +215,7 @@ fi
 if [[ $REPLY == "detach_all_regions" ]]
 then
   echo "detaching all regions..."
-  rm -f $REGROOT/.Volumes
+  rm -f $REGROOT/Volumes
   rm -f $REGROOT/Snapshots
   rm -f $REGROOT/External  
   rm -f $REGROOT/Archive
@@ -248,14 +248,14 @@ then
   exit
 fi
 ## Volumes Share
-if [[ $REPLY == "priv_region" ]]
+if [[ $REPLY == "vol_region" ]]
 then
-  if [ -e "$REGROOT/.Volumes" ]; then
+  if [ -e "$REGROOT/Volumes" ]; then
     echo "detaching volumes region..."
-    rm $REGROOT/.Volumes
+    rm $REGROOT/Volumes
   else
     echo "attaching volumes region..."
-    ln -s /mnt/.regions/Volumes $REGROOT/.Volumes
+    ln -s /mnt/.regions/Volumes $REGROOT/Volumes
   fi
   exit
 fi

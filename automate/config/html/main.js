@@ -298,7 +298,7 @@ function show_vmsPrompt(text){
 	      }  
 	      if (e.target === vms_xanabtn) {
           if (arcState === 1) {
-            serverAction('files-priv_region');
+            serverAction('files-vol_region');
             serverSend();
             document.body.removeChild(vms_prompt); 
             clearPendingCmd(); 

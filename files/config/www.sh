@@ -80,7 +80,7 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           /mnt/ben/ /mnt/extbkps/$POOL/Ben/ -delete --delete-excluded
         fi
         #### Regions Share ####
-        if [ ! -e /mnt/.regions/Private ]; then
+        if [ ! -e /mnt/.regions/Archive ]; then
           echo "'Regions' share not found!"
         else
           echo "syncing 'Regions' share to $POOL drive..."
@@ -106,7 +106,7 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           /mnt/ben/ /mnt/extbkps/$POOL/Ben/ -delete --delete-excluded
         fi
         #### Regions Share ####
-        if [ ! -e /mnt/.regions/Private ]; then
+        if [ ! -e /mnt/.regions/Archive ]; then
           echo "'Regions' share not found!"
         else
           echo "syncing 'Regions' share to $POOL drive..."
@@ -217,7 +217,7 @@ then
   echo "detaching all regions..."
   rm -f $REGROOT/Snapshots
   rm -f $REGROOT/External  
-  rm -f $REGROOT/Private
+  rm -f $REGROOT/.Volumes
   rm -f $REGROOT/Archive
   rm -f $REGROOT/WWW
   rm -f $REGROOT/RAM
@@ -247,15 +247,15 @@ then
   fi
   exit
 fi
-## Private Share
+## Volumes Share
 if [[ $REPLY == "priv_region" ]]
 then
-  if [ -e "$REGROOT/Private" ]; then
-    echo "detaching private region..."
-    rm $REGROOT/Private
+  if [ -e "$REGROOT/.Volumes" ]; then
+    echo "detaching volumes region..."
+    rm $REGROOT/.Volumes
   else
-    echo "attaching private region..."
-    ln -s /mnt/.regions/Private $REGROOT/Private
+    echo "attaching volumes region..."
+    ln -s /mnt/.regions/Volumes $REGROOT/.Volumes
   fi
   exit
 fi

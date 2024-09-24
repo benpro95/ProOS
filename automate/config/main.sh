@@ -28,6 +28,7 @@ XMITCALL=""
 XMITARG=""
 APIDATA=""
 ESP32=""
+sleep 0.5
 return
 }
 
@@ -289,6 +290,38 @@ if [[ "$XMITCMD" == "rfa3off" ]]; then
    return
 fi
 ##
+## HeartLED 433Mhz Control
+if [[ "$XMITCMD" == "htleds_off" ]]; then # LEDs off
+   XMITCALL="1|0|732101"
+   CALLAPI   
+   return
+fi
+if [[ "$XMITCMD" == "htleds_cyc" ]]; then # Cycle-through LEDs
+   XMITCALL="1|0|732102"
+   CALLAPI   
+   return
+fi
+if [[ "$XMITCMD" == "htleds_a" ]]; then # LEDs mode A:
+   XMITCALL="1|0|732103"
+   CALLAPI   
+   return
+fi
+if [[ "$XMITCMD" == "htleds_b" ]]; then # LEDs mode B:
+   XMITCALL="1|0|732104"
+   CALLAPI   
+   return
+fi
+if [[ "$XMITCMD" == "htleds_c" ]]; then # LEDs mode C:
+   XMITCALL="1|0|732105"
+   CALLAPI   
+   return
+fi
+if [[ "$XMITCMD" == "htleds_on" ]]; then # all LEDs on
+   XMITCALL="1|0|732106"
+   CALLAPI   
+   return
+fi
+##
 ## ESP32 Toggle PC Power
 ##
 if [[ "$XMITCMD" == "rfb3" ]]; then
@@ -446,9 +479,6 @@ pauseatv)
 systemctl stop relaxloop
 systemctl set-environment rpi_relaxmode="pause"
 systemctl start relaxloop
-## Turn off Apple TV
-#systemctl set-environment rpi_relaxmode=off
-#systemctl start relaxloop
 LCDPI_MSG="paused Apple TV"
 CALL_LCDPI 
 exit
@@ -552,13 +582,17 @@ allon)
 touch $LOCKFOLDER/lights.save
 ## Main Lamp
 XMITCMD="rfc1" ; XMITARG="on" ; XMIT 
+sleep 0.75
 ## Dresser Lamp
 XMITCMD="rfa2" ; XMITARG="on" ; XMIT 
+sleep 0.75
 ## Desk Light
 XMITCMD="rfb1" ; XMITARG="on" ; XMIT 
+sleep 0.75
+## HeartLED mode C:
+XMITCMD="htleds_c" ; XMIT
 ## LEDwalls
 /opt/system/leds candle
-sleep 2.5
 /opt/system/leds fc 60
 exit
 ;;
@@ -568,13 +602,15 @@ alloff)
 rm -f $LOCKFOLDER/lights.save
 ## Main Lamp
 XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
-sleep 1
+sleep 0.75
 ## Dresser Lamp
 XMITCMD="rfa2" ; XMITARG="off" ; XMIT 
-sleep 1
+sleep 0.75
 ## Desk Light
-XMITCMD="rfb1" ; XMITARG="off" ; XMIT 
-sleep 1
+XMITCMD="rfb1" ; XMITARG="off" ; XMIT
+sleep 0.75
+## HeartLED off
+XMITCMD="htleds_off" ; XMIT
 ## Blank LEDwalls
 /opt/system/leds stop
 exit
@@ -676,6 +712,9 @@ else
 fi
 ## LEDwalls
 /opt/system/leds abstract
+## HeartLED mode C:
+XMITCMD="htleds_c" ; XMIT
+sleep 0.75
 ## LCDpi message
 LCDPI_MSG="all power on"
 CALL_LCDPI
@@ -702,6 +741,9 @@ XMITCMD="hifioff" ; XMIT
 /opt/system/leds stop
 ## Stop playback on Apple TV
 systemctl stop relaxloop
+## HeartLED off
+XMITCMD="htleds_off" ; XMIT
+sleep 0.75
 ## LCDpi message
 LCDPI_MSG="all power off"
 CALL_LCDPI

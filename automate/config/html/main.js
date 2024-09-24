@@ -17,7 +17,6 @@ let loadBarState = 0;
 let serverCmdData;
 let socket = null;
 let fileData = [];
-let arcState = 0;
 var timeStamp;
 let sysModel;
 //////////////////////
@@ -297,14 +296,7 @@ function show_vmsPrompt(text){
 	        vmPromptSelect('legacy');
 	      }  
 	      if (e.target === vms_xanabtn) {
-          if (arcState === 1) {
-            serverAction('files-vol_region');
-            serverSend();
-            document.body.removeChild(vms_prompt); 
-            clearPendingCmd(); 
-          } else {  
-            vmPromptSelect('xana');
-          }
+          vmPromptSelect('xana');
 	      }
 	      // action buttons
 	      if (e.target === vms_startbtn) { 
@@ -649,7 +641,6 @@ function sendBtnAlert(state) {
 function clearPendingCmd() {
   sendBtnAlert("off");
   serverCmdData = null;
-  arcState = 0;
 }
 
 // transmit command
@@ -1321,9 +1312,6 @@ async function loadLog(file) {
 
 // load server action 
 function serverAction(cmd) {
-  if (cmd === 'files-ext_region') {
-    arcState = 1;
-  }
   serverCmdData = cmd;
   // change color of send button
   sendBtnAlert("on");

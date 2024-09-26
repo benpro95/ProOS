@@ -494,7 +494,7 @@ if (systemctl is-active --quiet relaxloop.service); then
   systemctl start relaxloop
 else  
   echo "Service not runnning starting sleep mode..."
-  /opt/system/main relax waterfall
+  /opt/system/main relax coldwar
   /opt/system/main alloff
   XMITCMD="hifioff" ; XMIT
   LCDPI_MSG="sleep mode" 
@@ -515,7 +515,7 @@ exit
 ;;
 
 lcdpimsg)
-LCDPI_MSG="$CMDARG"
+LCDPI_MSG=$(echo "$CMDARG" | sed -r 's/~/ /g')
 CALL_LCDPI  
 exit
 ;;
@@ -644,6 +644,10 @@ exit
 ## Toggle Bedroom TV
 toggletv)
 ESP32="no"; TARGET="ledgrid.home"; XMITCMD="toggletv"; CALLAPI
+## Pause Apple TV
+systemctl stop relaxloop
+systemctl set-environment rpi_relaxmode="pause"
+systemctl start relaxloop
 ## LCDpi message
 LCDPI_MSG="toggled bedroom TV"
 CALL_LCDPI

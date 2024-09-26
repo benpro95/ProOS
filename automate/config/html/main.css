@@ -288,12 +288,23 @@ input.chkbox {
   transition-property: width, background-color;
 }
 
-/* pop-up window - hidden by default */
 .log-popup {
   bottom: 5px;
   width: 95%; /* log window width */
   height: 95%; /* log window height */
   min-height: 95%;
+  display: none;
+  position: fixed;
+  right: 5px;
+  border: 6px solid #1f252a; /* popup window border color */
+  z-index: 99;
+}
+
+.msg-popup {
+  bottom: 5px;
+  width: 60%; /* log window width */
+  height: 60%; /* log window height */
+  min-height: 60%;
   display: none;
   position: fixed;
   right: 5px;

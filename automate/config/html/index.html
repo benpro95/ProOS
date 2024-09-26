@@ -213,8 +213,8 @@
           <a onclick="ctlsMenu('subs')"><i></i> Subwoofers</a>
         </div>
         <div class="dd-content dd-button" id="ctls-menu-sub">
-          <a onclick="ctlsMenu('br')"><i></i> Bedroom</a>
           <a onclick="ctlsMenu('lr')"><i></i> Main Room</a>
+          <a onclick="ctlsMenu('br')"><i></i> Bedroom</a>
         </div>
         <div class="dd-content dd-button" id="ctls-menu-lr">
           <a onclick="ctlsMenu('br')"><i></i> Bedroom</a>
@@ -292,17 +292,40 @@
             <span class="button__text"><i class="fa-solid fa-volume-high"></i> +5dB</span>
         </button>      
 
-        <p class="parstd"></p>    
+        <p class="parstd"></p>  
 
-        <button type="button" class="button" onclick="sendCmd('main','phono','')">
-            <span class="button__text"><i class="fa-solid fa-compact-disc"></i> Phono</span>
+        <div class="dropdown">
+          <button type="button" class="button" onclick="showMenu('heart-menu')">
+            <span class="button__text"><i class="fa-regular fa-heart"></i> Heart</span>
+          </button>  
+          <div class="dd-content dd-button" id="heart-menu">
+            <a onclick="sendCmd('main','htleds_off','')"><i class="fa-solid fa-stop"></i> Off</a>
+            <a onclick="sendCmd('main','htleds_cyc','')"><i class="fa-solid fa-shuffle"></i> Cycle</a>
+            <a onclick="sendCmd('main','htleds_a','')"><i></i> Effect A:</a>
+            <a onclick="sendCmd('main','htleds_b','')"><i></i> Effect B:</a>
+            <a onclick="sendCmd('main','htleds_c','')"><i></i> Effect C:</a>
+            <a onclick="sendCmd('main','htleds_on','')"><i></i> All On</a>
+          </div>
+        </div>
+        <button type="button" class="button" onclick="openSendWindow()">
+          <span class="button__text"><i class="fa-solid fa-envelope-open-text"></i> Message</span>
+        </button>        
+        <button type="button" class="button" onclick="sendCmd('main','clearlcdpi','')">
+            <span class="button__text"><i class="fa-solid fa-eraser"></i> Erase</span>
         </button>
-        <button type="button" class="button" onclick="sendCmd('main','aux','')">
-            <span class="button__text"><i class="fa-solid fa-microphone"></i> Aux</span> 
+
+        <p class="parstd"></p>   
+
+        <button type="button" class="button" onclick="sendCmd('main','sleep','')">
+            <span class="button__text"><i class="fa-solid fa-moon"></i> Sleep</span>
         </button>
-        <button type="button" class="button" onclick="sendCmd('main','usb','')">
-            <span class="button__text"><i class="fa-brands fa-usb"></i> USB</span>
+        <button type="button" class="button" onclick="sendCmd('main','vlimit','')">
+            <span class="button__text"><i class="fa-solid fa-volume-off"></i> vLimit</span>
+        </button> 
+        <button type="button" class="button" onclick="sendCmd('main','togglehpf','')">
+            <span class="button__text"> Bass Filter</span>
         </button>
+
         <p class="parstd"></p>        
 
         <button type="button" class="button" onclick="sendCmd('main','coax','')">   
@@ -315,29 +338,18 @@
             <span class="button__text"><i class="fa-solid fa-arrows-rotate"></i> Auto In</span>
         </button>
 
-        <p class="parstd"></p>           
+        <p class="parstd"></p> 
 
-        <button type="button" class="button" onclick="sendCmd('main','vlimit','')">
-            <span class="button__text"><i class="fa-solid fa-volume-off"></i> vLimit</span>
-        </button> 
-        <button type="button" class="button" onclick="sendCmd('main','togglehpf','')">
-            <span class="button__text"> Bass Filter</span>
+        <button type="button" class="button" onclick="sendCmd('main','phono','')">
+            <span class="button__text"><i class="fa-solid fa-compact-disc"></i> Phono</span>
         </button>
-        <button type="button" class="button" onclick="sendCmd('main','pauseatv','')">
-            <span class="button__text"><i class="fa-solid fa-pause"></i> Apple TV</span>
+        <button type="button" class="button" onclick="sendCmd('main','aux','')">
+            <span class="button__text"><i class="fa-solid fa-microphone"></i> Aux</span> 
+        </button>
+        <button type="button" class="button" onclick="sendCmd('main','usb','')">
+            <span class="button__text"><i class="fa-brands fa-usb"></i> USB</span>
         </button>
 
-        <p class="parstd"></p>   
-
-        <button type="button" class="button" onclick="sendCmd('main','sleep','')">
-            <span class="button__text"><i class="fa-solid fa-moon"></i> Sleep</span>
-        </button>
-        <button type="button" class="button" onclick="sendCmd('main','clearlcdpi','')">
-            <span class="button__text"><i class="fa-solid fa-eraser"></i> Erase</span>
-        </button>
-        <button type="button" class="button" onclick="openSendWindow()">
-          <span class="button__text"><i class="fa-solid fa-envelope-open-text"></i> Message</span>
-        </button>
         <p style="padding-bottom: 100px;"></p>  
 
       </div>  
@@ -970,7 +982,7 @@
   </form>
 </div>
 
-<div class="log-popup" id="sendForm">
+<div class="msg-popup" id="sendForm">
   <form class="form-container">
     <div class="scrollmenu">
       <div class="dropdown"> 

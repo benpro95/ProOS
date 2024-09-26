@@ -1359,7 +1359,7 @@ function sendText() {
     document.getElementById("lcdTextBox").value = sendtext;
   } else {
     if (sysModel === defaultSite) {
-      sendCmd('main','lcdpimsg',data);
+      sendCmd('main','lcdpimsg',data.replace(/ /g,"~"));
     } else {
       // Create the HTTP POST request
       savePOST('message',[data]);  

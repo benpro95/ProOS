@@ -13,8 +13,9 @@ STATUSFILE="/mnt/extbkps/status.txt"
 CURBKPDTES=()
 function SAVEBKPDATES () {
   local _POOL="$1"
-  touch /mnt/extbkps/$_POOL/Ben/LastSynced.txt
-  local _LASTSYNC=$(date -r /mnt/extbkps/$_POOL/Ben/LastSynced.txt '+%F %r')
+  mkdir -p /mnt/extbkps/$_POOL/Data
+  touch /mnt/extbkps/$_POOL/Data/LastSynced.txt
+  local _LASTSYNC=$(date -r /mnt/extbkps/$_POOL/Data/LastSynced.txt '+%F %r')
   local _CURBKPLNE=$(echo "$_POOL|$_LASTSYNC" | sed -e 's/ /_/g')
   CURBKPDTES+=( $_CURBKPLNE )
 }
@@ -65,19 +66,19 @@ for _POOL in "${ZFSPOOLS[@]}"; do
     ## USB Flash Drives
     if [[ ${POOL::3} == "usb" ]]; then
       #################################
-      if [ ! -e /mnt/extbkps/$POOL/Ben ]; then
+      if [ ! -e /mnt/extbkps/$POOL/Data ]; then
         echo "flash drive not connected $POOL"
       else
-        #### Ben Share ####
-        if [ ! -e /mnt/ben/ProOS ]; then
-          echo "Ben' share not found!"
+        #### Data Share ####
+        if [ ! -e /mnt/data/ProOS ]; then
+          echo "Data' share not found!"
         else
-          echo "syncing 'Ben' share to $POOL drive..."
+          echo "syncing 'Data' share to $POOL drive..."
           rsync $CHECKSUM -aP \
           --exclude="Software/**.adi" --exclude="Games/" \
           --exclude="Software/**VM.7z" --exclude="Software/**VM.zip" \
           --exclude="Software/**HD.zip" --exclude="Software/**HD.7z" \
-          /mnt/ben/ /mnt/extbkps/$POOL/Ben/ -delete --delete-excluded
+          /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
         fi
         #### Regions Share ####
         if [ ! -e /mnt/.regions/Archive ]; then
@@ -94,16 +95,16 @@ for _POOL in "${ZFSPOOLS[@]}"; do
     ## Hard Drives
     if [[ ${POOL::3} == "hdd" ]]; then
       #################################
-      if [ ! -e /mnt/extbkps/$POOL/Ben ]; then
+      if [ ! -e /mnt/extbkps/$POOL/Data ]; then
         echo "hard drive not connected $POOL"
       else      
-        #### Ben Share ####
-        if [ ! -e /mnt/ben/ProOS ]; then
-          echo "Ben' share not found!"
+        #### Data Share ####
+        if [ ! -e /mnt/data/ProOS ]; then
+          echo "Data' share not found!"
         else
-          echo "syncing 'Ben' share to $POOL drive..."
+          echo "syncing 'Data' share to $POOL drive..."
           rsync $CHECKSUM -aP \
-          /mnt/ben/ /mnt/extbkps/$POOL/Ben/ -delete --delete-excluded
+          /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
         fi
         #### Regions Share ####
         if [ ! -e /mnt/.regions/Archive ]; then
@@ -300,16 +301,16 @@ then
   echo "uploading all changes to GitHub..."
   echo ""
   echo "*** ProOS repository ***"  
-  git config --global --add safe.directory /mnt/ben/ProOS
-  cd /mnt/ben/ProOS
+  git config --global --add safe.directory /mnt/data/ProOS
+  cd /mnt/data/ProOS
   git add .
   git commit -m "$TIMESTMP"
   git push
   cd -
   echo ""
   echo "*** EE-Projects repository ***"  
-  git config --global --add safe.directory /mnt/ben/Projects
-  cd /mnt/ben/Projects
+  git config --global --add safe.directory /mnt/data/Projects
+  cd /mnt/data/Projects
   git add .
   git commit -m "$TIMESTMP"
   git push

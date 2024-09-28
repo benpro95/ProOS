@@ -37,7 +37,7 @@ chmod 777 /mnt/scratch/downloads
 
 ## Reset All Owners 'Optional' (5)
 ## !!WILL FORCE ENTIRE NEW DISK BACKUP SNAPSHOT!!
-chown -Rv ben:shared /mnt/datastore/Ben
+chown -Rv ben:shared /mnt/datastore/Data
 chown -Rv ben:shared /mnt/datastore/Media
 chown -Rv ben:shared /mnt/datastore/.Archive
 chown -Rv ben:shared /mnt/scratch/downloads

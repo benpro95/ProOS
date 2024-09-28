@@ -217,7 +217,7 @@ fi
 
   ###### Server VM Backup Script ######################
 if [ -e $TRIGGERS_DIR/pve_vmsbkp.txt ]; then
-  VM_CONFS="/mnt/datastore/Ben/ProOS"
+  VM_CONFS="/mnt/datastore/data/ProOS"
   echo " "
   touch /tmp/actiontrig.lock  
   rm -f $TRIGGERS_DIR/pve_vmsbkp.txt
@@ -292,7 +292,7 @@ if [ -e $TRIGGERS_DIR/pve_vmsbkp.txt ]; then
   echo "Copying VM's to Datastore..."
   chmod -R 777 /var/lib/vz/dump/vzdump-*
   rsync --progress -a --exclude="*qemu-103*" --exclude="*qemu-105*" \
-   /var/lib/vz/dump/vzdump-* /mnt/datastore/Ben/ProOS/pve/vmbkps/
+   /var/lib/vz/dump/vzdump-* /mnt/datastore/data/ProOS/pve/vmbkps/
   echo "Backup Complete."
   EXIT_ROUTINE
 fi

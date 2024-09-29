@@ -13,9 +13,8 @@ STATUSFILE="/mnt/extbkps/status.txt"
 CURBKPDTES=()
 function SAVEBKPDATES () {
   local _POOL="$1"
-  mkdir -p /mnt/extbkps/$_POOL/Data
-  touch /mnt/extbkps/$_POOL/Data/LastSynced.txt
-  local _LASTSYNC=$(date -r /mnt/extbkps/$_POOL/Data/LastSynced.txt '+%F %r')
+  touch /mnt/extbkps/$_POOL/LastSynced.txt
+  local _LASTSYNC=$(date -r /mnt/extbkps/$_POOL/LastSynced.txt '+%F %r')
   local _CURBKPLNE=$(echo "$_POOL|$_LASTSYNC" | sed -e 's/ /_/g')
   CURBKPDTES+=( $_CURBKPLNE )
 }

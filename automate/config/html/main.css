@@ -135,6 +135,11 @@ input.chkbox {
     flex-direction: column;
     align-items: center;
   }
+  .msg-popup {
+    width: 80%; /* message window width */
+    height: 80%; /* message window height */
+    min-height: 80%;
+  }
 }
 
 .submode {
@@ -288,11 +293,8 @@ input.chkbox {
   transition-property: width, background-color;
 }
 
-.log-popup {
+.popup {
   bottom: 5px;
-  width: 95%; /* log window width */
-  height: 95%; /* log window height */
-  min-height: 95%;
   display: none;
   position: fixed;
   right: 5px;
@@ -300,16 +302,16 @@ input.chkbox {
   z-index: 99;
 }
 
+.log-popup {
+  width: 95%; /* log window width */
+  height: 95%; /* log window height */
+  min-height: 95%;
+}
+
 .msg-popup {
-  bottom: 5px;
-  width: 60%; /* log window width */
-  height: 60%; /* log window height */
+  width: 60%; /* message window width */
+  height: 60%; /* message window height */
   min-height: 60%;
-  display: none;
-  position: fixed;
-  right: 5px;
-  border: 6px solid #1f252a; /* popup window border color */
-  z-index: 99;
 }
 
 /* Add styles to the form container */

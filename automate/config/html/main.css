@@ -127,6 +127,28 @@ input.chkbox {
   padding-left: 7px;
 }
 
+.popup {
+  bottom: 5px;
+  display: none;
+  position: fixed;
+  right: 5px;
+  border: 6px solid #1f252a; /* popup window border color */
+  z-index: 99;
+}
+
+.log-popup {
+  width: 75%; /* log window width */
+  height: 95%; /* log window height */
+  min-height: 95%;
+}
+
+.msg-popup {
+  width: 60%; /* message window width */
+  height: 60%; /* message window height */
+  min-height: 60%;
+}
+
+/* adjust elements when screen width is LT 900px */
 @media screen and (max-width: 900px) {
   .column-right {
     padding-left: 0px;
@@ -137,8 +159,9 @@ input.chkbox {
   }
   .msg-popup {
     width: 80%; /* message window width */
-    height: 80%; /* message window height */
-    min-height: 80%;
+  }
+  .log-popup {
+    width: 95%; /* log window width */  
   }
 }
 
@@ -291,27 +314,6 @@ input.chkbox {
   -moz-transition-property: width, background-color;
   -o-transition-property: width, background-color;
   transition-property: width, background-color;
-}
-
-.popup {
-  bottom: 5px;
-  display: none;
-  position: fixed;
-  right: 5px;
-  border: 6px solid #1f252a; /* popup window border color */
-  z-index: 99;
-}
-
-.log-popup {
-  width: 95%; /* log window width */
-  height: 95%; /* log window height */
-  min-height: 95%;
-}
-
-.msg-popup {
-  width: 60%; /* message window width */
-  height: 60%; /* message window height */
-  min-height: 60%;
 }
 
 /* Add styles to the form container */

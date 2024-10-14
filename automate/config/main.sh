@@ -13,7 +13,7 @@ LCDPI_MSG=""
 
 CALLAPI(){
 #### API Call
-CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 30 --retry 3 --retry-delay 1 --no-keepalive"
+CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 3 --retry 1 --retry-delay 1 --no-keepalive"
 ## API Type
 if [[ "$ESP32" == "no" ]]; then
   /usr/bin/curl $CURLARGS --data "var=$CMDARG&arg=$XMITCMD&action=main" http://$TARGET/exec.php
@@ -26,7 +26,6 @@ TARGET=""
 XMITCMD=""
 XMITCALL=""
 XMITARG=""
-APIDATA=""
 ESP32=""
 sleep 0.5
 return

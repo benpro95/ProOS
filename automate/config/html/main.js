@@ -578,16 +578,16 @@ function passwordPrompt(){
   }); 
 }
 
-async function getPassword(){
+async function getPassword(_type){
   let result;
   try{
     hideDropdowns();
     result = await passwordPrompt();
     if (result !== null) {  
-      if (result !== '') {  
-        savePOST('pwd',[result]);
+      if (result !== '') {
+        savePOST(_type,[result]);
       }
-    } 
+    }
     result = "";
   } catch(e){
     result = "";
@@ -1261,6 +1261,14 @@ function savePOST(file,data) {
         }
         if (file === 'pwd') {
           serverAction('attach_bkps');
+          serverSend(0);
+        }
+        if (file === 'fusevol') {
+          serverAction('files-vol_region');
+          serverSend(0);
+        }        
+        if (file === 'fusearch') {
+          serverAction('files-arch_region');
           serverSend(0);
         }
       }

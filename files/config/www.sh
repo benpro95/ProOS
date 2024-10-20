@@ -7,7 +7,6 @@ REPLY="$1"
 ARG="$2"
 RAMDISK="$3"
 LOGFILE="$4"
-REGROOT="/home/server/.regions"
 STATUSFILE="/mnt/extbkps/status.txt"
 
 CURBKPDTES=()
@@ -211,15 +210,48 @@ then
   exit
 fi
 
+REGROOT="/home/server/.regions"
+
+isPathMounted() { findmnt --target "$1" >/dev/null;} 
+
+function FUSEFS () {
+  VOLNME="$1"
+  PWDFILE="$2"
+  TOGGLE="$3"
+  FUSEPTH="$REGROOT/$VOLNME"
+  FUSEPWD="/mnt/ramdisk/$PWDFILE.txt"
+  if isPathMounted "$FUSEPTH"; then
+    if [[ $TOGGLE == "attach" ]]; then
+      echo "detaching $VOLNME..."
+    fi
+    fusermount -u "$FUSEPTH"; sleep 1
+    rmdir "$FUSEPTH"
+  else
+    if [[ $TOGGLE == "attach" ]]; then
+      echo "attaching $VOLNME..."
+      mkdir -p "$FUSEPTH"
+      if [ -e "$FUSEPWD" ]; then
+        gocryptfs -quiet -allow_other \
+         /mnt/.regions/"$VOLNME" \
+          "$FUSEPTH" -passfile "$FUSEPWD"
+        rm -f "$FUSEPWD"
+      else
+        echo "password file not found!"
+      fi
+    fi
+  fi
+}
+
 ## Detach All Regions
 if [[ $REPLY == "detach_all_regions" ]]
 then
   echo "detaching all regions..."
   rm -f $REGROOT/Snapshots
-  rm -f $REGROOT/External  
-  rm -f $REGROOT/Archive
+  rm -f $REGROOT/External
   rm -f $REGROOT/WWW
   rm -f $REGROOT/RAM
+  FUSEFS "Archived"
+  FUSEFS "Volumes"
   exit
 fi
 ## RAM Share
@@ -246,16 +278,16 @@ then
   fi
   exit
 fi
-## Archive Shares
-if [[ $REPLY == "arc_region" ]]
+## Archived Shares
+if [[ $REPLY == "arch_region" ]]
 then
-  if [ -e "$REGROOT/Archive" ]; then
-    echo "detaching archive region..."   
-    rm $REGROOT/Archive
-  else
-    echo "attaching archive region..."
-    ln -s /mnt/.regions/Archive $REGROOT/Archive
-  fi
+  FUSEFS "Archived" "fusearch" "attach"
+  exit
+fi
+## Volume Shares
+if [[ $REPLY == "vol_region" ]]
+then
+  FUSEFS "Volumes" "fusevol" "attach"
   exit
 fi
 ## Snapshot Share

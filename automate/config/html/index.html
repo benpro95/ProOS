@@ -939,13 +939,14 @@
             <a onclick="serverAction('files-backupchk')">Checksum</a>
             <a onclick="serverAction('files-backupstd')">Standard</a>
             <a onclick="serverAction('detach_bkps')">Detach</a>
-            <a onclick="getPassword()">Unlock</a>  
+            <a onclick="getPassword('pwd')">Unlock</a>  
           </div>
 	      </div>
 	      <div class="dropdown"> 
           <a class="dropbtn" onclick="showMenu('regionsmenu')">Regions</a>
           <div class="dd-content dd-menu" id="regionsmenu">
-            <a onclick="serverAction('files-arc_region')">Archive</a>
+            <a onclick="getPassword('fusearch')">Archived</a>
+            <a onclick="getPassword('fusevol')">Volume</a>
             <a onclick="serverAction('files-ext_region')">External</a>
             <a onclick="serverAction('files-snap_region')">Snapshots</a>               	
             <a onclick="serverAction('files-www_region')">Web Root</a>

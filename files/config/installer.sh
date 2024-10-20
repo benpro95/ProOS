@@ -12,7 +12,7 @@ apt-get install -y --no-upgrade --ignore-missing unzip wget \
  rsync curl screen scrub ethtool aptitude sudo samba sshpass \
  libdbus-1-dev libdbus-glib-1-dev bc git locales mailutils \
  neofetch apt-transport-https nmap bpytop binutils iperf3 cron \
- cron-daemon-common
+ cron-daemon-common fuse gocryptfs
 
 ## Process Monitor
 if [ ! -e /usr/local/bin/htop ]; then
@@ -121,6 +121,11 @@ passwd -d media
 cp /tmp/config/sshd_config /etc/ssh
 chmod 644 /etc/ssh/sshd_config
 chown root:root /etc/ssh/sshd_config
+
+## FUSE Configuration
+cp /tmp/config/fuse.conf /etc/fuse.conf
+chmod 644 /etc/fuse.conf
+chown root:root /etc/fuse.conf
 
 ## Quiet Login 
 touch /root/.hushlogin

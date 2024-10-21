@@ -212,108 +212,125 @@ fi
 
 REGROOT="/home/server/.regions"
 
-isPathMounted() { findmnt --target "$1" >/dev/null;} 
+PATHMOUNTED() { findmnt --target "$1" >/dev/null;} 
 
 function FUSEFS () {
   VOLNME="$1"
-  PWDFILE="$2"
-  TOGGLE="$3"
+  TOGGLE="$2"
   FUSEPTH="$REGROOT/$VOLNME"
-  FUSEPWD="/mnt/ramdisk/$PWDFILE.txt"
-  if isPathMounted "$FUSEPTH"; then
-    if [[ $TOGGLE == "attach" ]]; then
-      echo "detaching $VOLNME..."
-    fi
-    fusermount -u "$FUSEPTH"; sleep 1
+  FUSEPWD="/mnt/ramdisk/fusearch.txt"
+  if PATHMOUNTED "$FUSEPTH"
+  then
+    echo "detaching FUSE volume..."
+    fusermount -u "$FUSEPTH"
+    sleep 1
     rmdir "$FUSEPTH"
   else
-    if [[ $TOGGLE == "attach" ]]; then
-      echo "attaching $VOLNME..."
+    if [[ $TOGGLE == "attach" ]]
+    then
+      echo "attaching FUSE volume..."
       mkdir -p "$FUSEPTH"
-      if [ -e "$FUSEPWD" ]; then
+      if [[ -e "$FUSEPWD" ]]
+      then
         gocryptfs -quiet -allow_other \
          /mnt/.regions/"$VOLNME" \
           "$FUSEPTH" -passfile "$FUSEPWD"
-        rm -f "$FUSEPWD"
       else
         echo "password file not found!"
       fi
     fi
   fi
+  if [[ -e "$FUSEPWD" ]]
+  then
+    rm -f "$FUSEPWD"
+  fi
 }
+
+## Attach Archived Shares
+if [[ $REPLY == "arch_region" ]]
+then
+  FUSEFS "Archived" "attach"
+  exit
+fi
+
+## Attach Volume Shares
+if [[ $REPLY == "vol_region" ]]
+then
+  FUSEFS "Volumes" "attach"
+  exit
+fi
 
 ## Detach All Regions
 if [[ $REPLY == "detach_all_regions" ]]
 then
-  echo "detaching all regions..."
-  rm -f $REGROOT/Snapshots
-  rm -f $REGROOT/External
-  rm -f $REGROOT/WWW
-  rm -f $REGROOT/RAM
+  ## FUSE volumes
   FUSEFS "Archived"
   FUSEFS "Volumes"
+  ## Symlinks
+  echo "detaching all regions..."
+  if [ -e "$REGROOT/RAM" ]; then
+    rm $REGROOT/RAM
+  fi
+  if [ -e "$REGROOT/WWW" ]; then
+    rm $REGROOT/WWW
+  fi
+  if [ -e "$REGROOT/Snapshots" ]; then
+    rm $REGROOT/Snapshots
+  fi
+  if [ -e "$REGROOT/External" ]; then
+    rm $REGROOT/External
+  fi
   exit
 fi
+
 ## RAM Share
-if [[ $REPLY == "ram_region" ]]
+if [ $REPLY == "ram_region" ]
 then
-  if [ -e "$REGROOT/RAM" ]; then
-    echo "detaching RAM region..."
-    rm $REGROOT/RAM
-  else
+  if [ ! -e "$REGROOT/RAM" ]; then
     echo "attaching RAM region..."
     ln -s /mnt/ramdisk $REGROOT/RAM
+  else
+    echo "already attached."    
   fi
   exit
 fi
+
 ## WWW Share
-if [[ $REPLY == "www_region" ]]
+if [ $REPLY == "www_region" ]
 then
-  if [ -e "$REGROOT/WWW" ]; then
-    echo "detaching WWW root region..."
-    rm $REGROOT/WWW
-  else
-    echo "attaching WWW root region..."
+  if [ ! -e "$REGROOT/WWW" ]; then
+    echo "attaching WWW region..."
     ln -s /mnt/.regions/WWW $REGROOT/WWW
+  else
+    echo "already attached."
   fi
   exit
 fi
-## Archived Shares
-if [[ $REPLY == "arch_region" ]]
-then
-  FUSEFS "Archived" "fusearch" "attach"
-  exit
-fi
-## Volume Shares
-if [[ $REPLY == "vol_region" ]]
-then
-  FUSEFS "Volumes" "fusevol" "attach"
-  exit
-fi
+
 ## Snapshot Share
-if [[ $REPLY == "snap_region" ]]
+if [ $REPLY == "snap_region" ]
 then
-  if [ -e "$REGROOT/Snapshots" ]; then
-    echo "detaching snapshots region..."
-    rm $REGROOT/Snapshots
-  else
+  if [ ! -e "$REGROOT/Snapshots" ]; then
     echo "attaching snapshots region..."
     ln -s /mnt/snapshots $REGROOT/Snapshots
-  fi
-  exit
-fi
-## External Mountpoints Share
-if [[ $REPLY == "ext_region" ]]
-then
-  if [ -e "$REGROOT/External" ]; then
-    echo "detaching external mountpoints region..."
-    rm $REGROOT/External
   else
-    echo "attaching external mountpoints region..."
-    ln -s /mnt/extbkps $REGROOT/External
+    echo "already attached."
   fi
   exit
 fi
+
+## External Mountpoints Share
+if [ $REPLY == "ext_region" ]
+then
+  if [ ! -e "$REGROOT/External" ]; then
+    echo "attaching external region..."
+    ln -s /mnt/extbkps $REGROOT/External
+  else
+    echo "already attached."
+  fi
+  exit
+fi
+
 ## Copy To Media
 if [[ $REPLY == "scratchcopy" ]]
 then

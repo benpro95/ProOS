@@ -10,7 +10,7 @@ let dynChkboxChanged = 0;
 let colorPromptActive = 0;
 let resizeTimeout = 800; // in ms
 let defaultSite = "Automate";
-let siteVersion = "3.82";
+let siteVersion = "3.92";
 let resizeState = false;
 let bookmarkState = 0;
 let loadBarState = 0;
@@ -1263,12 +1263,20 @@ function savePOST(file,data) {
           serverAction('attach_bkps');
           serverSend(0);
         }
-        if (file === 'fusevol') {
-          serverAction('files-vol_region');
-          serverSend(0);
-        }        
         if (file === 'fusearch') {
-          serverAction('files-arch_region');
+          let _elmvis = false;
+          let _elem = document.getElementById('about__prompt');
+          if (_elem) {
+            var _style = window.getComputedStyle(_elem)
+            if (_style.display !== 'none') {
+              _elmvis = true;
+            }
+          }
+          if (_elmvis == true) {
+            serverAction('files-vol_region');
+          } else {
+            serverAction('files-arch_region');
+          }
           serverSend(0);
         }
       }

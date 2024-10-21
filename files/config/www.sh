@@ -79,11 +79,11 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
         fi
         #### Regions Share ####
-        if [ ! -e /mnt/.regions/Archive ]; then
+        if [ ! -e /mnt/.regions/WWW ]; then
           echo "'Regions' share not found!"
         else
           echo "syncing 'Regions' share to $POOL drive..."
-          rsync $CHECKSUM -aP --exclude="Archive/Movies/" \
+          rsync $CHECKSUM -aP --exclude="Archived/ALUTqMiuxVtjfuair7WIgQ/" \
           /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
         fi
         ##### END BACKUP #####
@@ -105,7 +105,7 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
         fi
         #### Regions Share ####
-        if [ ! -e /mnt/.regions/Archive ]; then
+        if [ ! -e /mnt/.regions/WWW ]; then
           echo "'Regions' share not found!"
         else
           echo "syncing 'Regions' share to $POOL drive..."

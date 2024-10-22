@@ -225,19 +225,18 @@ function FUSEFS () {
     fusermount -u "$FUSEPTH"
     sleep 1
     rmdir "$FUSEPTH"
-  else
-    if [[ $TOGGLE == "attach" ]]
+  fi
+  if [[ $TOGGLE == "attach" ]]
+  then
+    echo "attaching FUSE volume..."
+    mkdir -p "$FUSEPTH"
+    if [[ -e "$FUSEPWD" ]]
     then
-      echo "attaching FUSE volume..."
-      mkdir -p "$FUSEPTH"
-      if [[ -e "$FUSEPWD" ]]
-      then
-        gocryptfs -quiet -allow_other \
-         /mnt/.regions/"$VOLNME" \
-          "$FUSEPTH" -passfile "$FUSEPWD"
-      else
-        echo "password file not found!"
-      fi
+      gocryptfs -quiet -allow_other \
+       /mnt/.regions/"$VOLNME" \
+        "$FUSEPTH" -passfile "$FUSEPWD"
+    else
+      echo "password file not found!"
     fi
   fi
   if [[ -e "$FUSEPWD" ]]

@@ -67,7 +67,6 @@ fi
 ##
 ## Power
 if [[ "$XMITCMD" == "pwrhifi" ]]; then
-   rm -f $LOCKFOLDER/subs.enabled 
    XMITCALL="0|0|1270227167"
    LCDPI_MSG="system power"
    CALLAPI   
@@ -75,7 +74,6 @@ if [[ "$XMITCMD" == "pwrhifi" ]]; then
    return
 fi
 if [[ "$XMITCMD" == "hifioff" ]]; then
-   rm -f $LOCKFOLDER/subs.enabled 
    XMITCALL="0|0|1261859214"
    LCDPI_MSG="system off"
    CALLAPI   
@@ -83,7 +81,6 @@ if [[ "$XMITCMD" == "hifioff" ]]; then
    return
 fi
 if [[ "$XMITCMD" == "hifion" ]]; then
-   rm -f $LOCKFOLDER/subs.enabled 
    XMITCALL="0|0|1261869414"
    LCDPI_MSG="system on"
    CALLAPI   
@@ -130,12 +127,6 @@ if [[ "$XMITCMD" == "vlimit" ]]; then
    CALL_LCDPI
    return   
 fi   
-## Key Mute / Toggle
-if [[ "$XMITCMD" == "mute" ]]; then
-   XMITCALL="0|0|1270259807"
-   CALLAPI   
-   return
-fi
 ## Optical Mode
 if [[ "$XMITCMD" == "optical-preamp" ]]; then
    XMITCALL="0|0|1261824023"
@@ -152,25 +143,31 @@ if [[ "$XMITCMD" == "togglehpf" ]]; then
    CALL_LCDPI
    return
 fi
-## Key Down
-if [[ "$XMITCMD" == "dwnf" ]]; then
+## Key Mute / Toggle
+if [[ "$XMITCMD" == "mute" ]]; then
+   XMITCALL="0|0|1270259807"
+   CALLAPI   
+   return
+fi
+## Key Vol Down Fine
+if [[ "$XMITCMD" == "dwn" ]]; then
    XMITCALL="0|0|1261885734"
    CALLAPI
    return
 fi
-## Key Up
-if [[ "$XMITCMD" == "upf" ]]; then
+## Key Vol Up Fine
+if [[ "$XMITCMD" == "up" ]]; then
    XMITCALL="0|0|1261853094"
    CALLAPI
    return
 fi
-## Key Vol-
+## Key Vol Down Course
 if [[ "$XMITCMD" == "dwnc" ]]; then
    XMITCALL="0|0|1270267967"
    CALLAPI
    return
 fi
-## Key Vol+
+## Key Vol Up Course
 if [[ "$XMITCMD" == "upc" ]]; then
    XMITCALL="0|0|1270235327"
    CALLAPI
@@ -180,9 +177,9 @@ fi
 ### Class D Amp (Philips Universal Remote) NEC 32-bit
 ##
 ## Mute Key
-if [[ "$XMITCMD" == "subpwr" ]]; then
+if [[ "$XMITCMD" == "submute" ]]; then
    XMITCALL="0|0|551506095"
-   LCDPI_MSG="toggle subwoofer power"
+   LCDPI_MSG="toggle subwoofer amp"
    CALLAPI   
    CALL_LCDPI
    return
@@ -375,34 +372,33 @@ fi
 ##
 ## HiFi mini
 ##
-if [[ "$XMITCMD" == "miniupf" ]]; then
-   XMITCALL="1|0|696912"
+if [[ "$XMITCMD" == "miniup" ]]; then
+   XMITCALL="1|0|696912" ## Volume Up Fine
    CALLAPI
    return
 fi
-if [[ "$XMITCMD" == "minidwnf" ]]; then
-   XMITCALL="1|0|696913"
+if [[ "$XMITCMD" == "minidwn" ]]; then
+   XMITCALL="1|0|696913" ## Volume Down Fine
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "miniupc" ]]; then
-   XMITCALL="1|0|696922"
+   XMITCALL="1|0|696922" ## Volume Up Course
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "minidwnc" ]]; then
-   XMITCALL="1|0|696923"
+   XMITCALL="1|0|696923" ## Volume Down Course
    CALLAPI
    return
 fi
-if [[ "$XMITCMD" == "minimuteon" ]]; then
+if [[ "$XMITCMD" == "minimute" ]]; then
    XMITCALL="1|0|696944"
    CALLAPI   
    LCDPI_MSG="mute miniHiFi"
    CALL_LCDPI
    return
 fi
-
 if [[ "$XMITCMD" == "minimuteoff" ]]; then
    XMITCALL="1|0|696999"
    CALLAPI   
@@ -410,8 +406,7 @@ if [[ "$XMITCMD" == "minimuteoff" ]]; then
    CALL_LCDPI
    return
 fi
-
-if [[ "$XMITCMD" == "minidefv" ]]; then
+if [[ "$XMITCMD" == "minidefaultvol" ]]; then
    XMITCALL="1|0|696930"
    CALLAPI
    return
@@ -438,38 +433,6 @@ systemctl set-environment rpi_relaxmode=$CMDARG
 systemctl start relaxloop
 LCDPI_MSG="playing $CMDARG"
 CALL_LCDPI  
-exit
-;;
-
-vmute)
-if [ "$CMDARG" == "bedroom" ]; then
-  XMITCMD="minimute" ; XMITARG="toggle" ; XMIT 
-fi
-if [ "$CMDARG" == "subs" ]; then
-  XMITCMD="subpwr" ; XMIT
-fi
-exit
-;;
-
-### Relax Sounds Volume Up
-vup)
-if [ "$CMDARG" == "bedroom" ]; then
-  XMITCMD="miniupf" ; XMIT
-fi
-if [ "$CMDARG" == "subs" ]; then
-  XMITCMD="subup" ; XMIT
-fi   
-exit
-;;
-
-### Relax Sounds Volume Down
-vdwn)
-if [ "$CMDARG" == "bedroom" ]; then
-  XMITCMD="minidwnf" ; XMIT
-fi
-if [ "$CMDARG" == "subs" ]; then
-  XMITCMD="subdwn" ; XMIT
-fi
 exit
 ;;
 
@@ -654,8 +617,6 @@ exit
 ;;
 
 autodac)
-## Reset volume tokens
-rm -f $LOCKFOLDER/subs.enabled
 ## Auto Decoder Input
 XMITCMD="inauto" ; XMIT 
 sleep 0.75
@@ -665,8 +626,6 @@ exit
 ;;
 
 usb)
-## Reset volume tokens
-rm -f $LOCKFOLDER/subs.enabled
 ## USB Decoder Input
 XMITCMD="usb" ; XMIT
 sleep 0.75
@@ -677,8 +636,6 @@ exit
 
 ## Coax Input
 coax)
-## Reset volume tokens
-rm -f $LOCKFOLDER/subs.enabled
 ## Coaxial Decoder Input
 XMITCMD="coaxial" ; XMIT 
 sleep 0.75
@@ -689,8 +646,6 @@ exit
 
 ## Optical Input
 opt)
-## Reset volume tokens
-rm -f $LOCKFOLDER/subs.enabled
 ## Optical Decoder Input
 XMITCMD="optical" ; XMIT
 sleep 0.75

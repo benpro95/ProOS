@@ -657,13 +657,13 @@ function sendCmd(act, arg1, arg2) {
 function sendVol(_cmd) {
   // volume mode
   if (ctlCommand === 0 ){
-    sendCmd('main',_cmd+'f',''); // living room system 
+    sendCmd('main',_cmd,''); // living room system 
   }
   if (ctlCommand === 1 ){
-    sendCmd('main','v'+_cmd,'bedroom'); // bedroom system
+    sendCmd('main','mini'+_cmd,''); // bedroom system
   }
   if (ctlCommand === 2 ){
-    sendCmd('main','v'+_cmd,'subs'); // living room subwoofers
+    sendCmd('main','sub'+_cmd,''); // living room subwoofers
   }
 }
 

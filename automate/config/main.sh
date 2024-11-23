@@ -67,23 +67,33 @@ fi
 ##
 ## Power
 if [[ "$XMITCMD" == "pwrhifi" ]]; then
+   ## Mute Subwoofer Amp
+   XMITCALL="0|0|551520375"
+   CALLAPI
+   sleep 1.5
+    ## Power Off Preamp  
    XMITCALL="0|0|1270227167"
-   LCDPI_MSG="system power"
    CALLAPI   
+   LCDPI_MSG="system power"
    CALL_LCDPI
    return
 fi
 if [[ "$XMITCMD" == "hifioff" ]]; then
+   ## Mute Subwoofer Amp
+   XMITCALL="0|0|551520375"
+   CALLAPI
+   sleep 1.5
+   ## Power Off Preamp  
    XMITCALL="0|0|1261859214"
+   CALLAPI
    LCDPI_MSG="system off"
-   CALLAPI   
    CALL_LCDPI
    return
 fi
 if [[ "$XMITCMD" == "hifion" ]]; then
    XMITCALL="0|0|1261869414"
-   LCDPI_MSG="system on"
-   CALLAPI   
+   CALLAPI
+   LCDPI_MSG="system on"   
    CALL_LCDPI
    return
 fi
@@ -372,38 +382,38 @@ fi
 ##
 ## HiFi mini
 ##
-if [[ "$XMITCMD" == "miniup" ]]; then
+if [[ "$XMITCMD" == "miniupf" ]]; then
    XMITCALL="1|0|696912" ## Volume Up Fine
    CALLAPI
    return
 fi
-if [[ "$XMITCMD" == "minidwn" ]]; then
+if [[ "$XMITCMD" == "minidwnf" ]]; then
    XMITCALL="1|0|696913" ## Volume Down Fine
-   CALLAPI
+   CALLAPI 
    return
 fi
-if [[ "$XMITCMD" == "miniupc" ]]; then
+if [[ "$XMITCMD" == "miniup" ]]; then
    XMITCALL="1|0|696922" ## Volume Up Course
    CALLAPI
    return
 fi
-if [[ "$XMITCMD" == "minidwnc" ]]; then
+if [[ "$XMITCMD" == "minidwn" ]]; then
    XMITCALL="1|0|696923" ## Volume Down Course
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "minimute" ]]; then
-   XMITCALL="1|0|696944"
-   CALLAPI   
-   LCDPI_MSG="mute miniHiFi"
-   CALL_LCDPI
+   ##XMITCALL="1|0|696944"
+   ##CALLAPI   
+   ##LCDPI_MSG="mute miniHiFi"
+   ##CALL_LCDPI
    return
 fi
 if [[ "$XMITCMD" == "minimuteoff" ]]; then
-   XMITCALL="1|0|696999"
-   CALLAPI   
-   LCDPI_MSG="unmute miniHiFi"
-   CALL_LCDPI
+   ##XMITCALL="1|0|696999"
+   ##CALLAPI   
+   ##LCDPI_MSG="unmute miniHiFi"
+   ##CALL_LCDPI
    return
 fi
 if [[ "$XMITCMD" == "minidefaultvol" ]]; then

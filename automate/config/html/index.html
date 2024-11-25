@@ -294,6 +294,9 @@
 
         <p class="parstd"></p>  
 
+        <button type="button" class="button" onclick="openSendWindow()">
+          <span class="button__text"><i class="fa-solid fa-envelope-open-text"></i> Message</span>
+        </button> 
         <div class="dropdown">
           <button type="button" class="button" onclick="showMenu('heart-menu')">
             <span class="button__text"><i class="fa-regular fa-heart"></i> Heart</span>
@@ -306,10 +309,7 @@
             <a onclick="sendCmd('main','htleds_c','')"><i></i> Effect C:</a>
             <a onclick="sendCmd('main','htleds_on','')"><i class="fa-solid fa-toggle-on"></i> All On</a>
           </div>
-        </div>
-        <button type="button" class="button" onclick="openSendWindow()">
-          <span class="button__text"><i class="fa-solid fa-envelope-open-text"></i> Message</span>
-        </button>        
+        </div>       
         <button type="button" class="button" onclick="sendCmd('main','sleep','')">
             <span class="button__text"><i class="fa-solid fa-moon"></i> Sleep</span>
         </button>
@@ -926,7 +926,7 @@
 	        <a class="dropbtn" onclick="showMenu('net-menu')">Network</a>
 	        <div class="dd-content dd-menu" id="net-menu">  
 	          <a onclick="wifiPrompt()"> WiFi Access</a>
-            <a onclick="serverAction('files-netscan')">NetScan</a>
+            <a onclick="serverAction('files-netscan')">IP Scanner</a>
 	          <a onclick="serverAction('files-git_push')">Sync Git</a>
 	        </div>
 	      </div>

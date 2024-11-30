@@ -21,7 +21,8 @@ case "$1" in
 boot)
 ## Start Z-Terminal Service
 systemctl stop serial-getty@ttyS0
-systemctl start ztermcom
+ln -sf /dev/ttyS0 /dev/zterm-tty
+systemctl start rpi-ztermcom
 ## Initialize Message Service
 rm -rfv "$MSG_PATH*.txt"
 touch /var/www/html/ram/message.txt

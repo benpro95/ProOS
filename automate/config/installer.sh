@@ -30,24 +30,10 @@ apt-get remove -y --purge cron anacron postfix apache2 apache2-data htop
 apt-get install -y --no-upgrade --ignore-missing yui-compressor default-jre-headless
 mkdir -p /usr/lib/jvm/java-8-openjdk-amd64
 ln -sf /usr/lib/jvm/default-java /usr/lib/jvm/java-8-openjdk-amd64/jre
-
 if [ ! -e /usr/local/bin/uglifyjs ]; then
   ## Minify JS
   npm install uglify-js -g
 fi  
-
-if [ ! -e /opt/pyatv/bin/atvremote ]; then
-  ## Apple TV Control
-  rm -f /root/.pyatv.conf
-  rm -rf /opt/pyatv
-  mkdir -p /opt/pyatv
-  python3 -m venv /opt/pyatv
-  source /opt/pyatv/bin/activate
-  /opt/pyatv/bin/pip3 install pyatv
-  deactivate
-  echo "Use this command to pair Apple TV:"
-  echo "'/opt/pyatv/bin/atvremote wizard'"
-fi
 
 ## Process Monitor
 if [ ! -e /usr/local/bin/htop ]; then
@@ -176,12 +162,6 @@ chown root:root /etc/sudoers.d/nobody-perms
 chmod u=rwx,g=rx,o=rx /etc/sudoers.d/nobody-perms
 chmod u=r,g=r,o= /etc/sudoers.d/nobody-perms
 
-## Relax Loop Service
-cp -f /tmp/config/relaxloop.service /etc/systemd/system/
-chmod 644 /etc/systemd/system/relaxloop.service
-chown root:root /etc/systemd/system/relaxloop.service
-systemctl disable relaxloop
-
 ## Boot Service
 cp -f /tmp/config/rc.local /etc/
 chmod 755 /etc/rc.local
@@ -213,7 +193,9 @@ chown root:root /root/.hushlogin
 
 ## Clean-up
 systemctl daemon-reload
-rm -rf /tmp/config/
+rm -rf /etc/systemd/system/relaxloop.service
+rm -rf /opt/pyatv
+rm -rf /tmp/config
 apt-get autoremove -y
 apt-get clean -y
 apt-get autoclean -y

@@ -1,0 +1,15 @@
+#!/bin/bash
+###########################################################
+###########################################################
+## Start Relax Loop (triggered by systemd) ################
+###########################################################
+###########################################################
+
+## Capitialize first letter of argument
+FILE="${rpi_relaxmode^}"
+
+## Play Audio in Loop
+echo "starting $FILE sound..."
+/usr/bin/mpv --loop /mnt/smb/Media/Sounds/Relaxation/$FILE.mp3
+
+exit

@@ -4,6 +4,7 @@ rpi/retropi
 rpi/sources
 pve/vmbkps
 pve/photos
+unifi/firmware
 retropi/retropie-setup
 automate/config/html/img/wifi.png
 automate/config/html/wifi.js

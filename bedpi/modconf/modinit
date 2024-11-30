@@ -1,0 +1,45 @@
+#!/bin/sh
+## System Configuration Script v6.0
+## Bedroom Pi
+
+# Import Host name
+HOSTNAME=`cat /opt/rpi/config/hostname`
+## Set Module Path
+BIN=/opt/rpi
+# Import Brand name
+MODNAME=`cat $BIN/modconf/brand.txt`
+
+if [ ! -e /opt/rpi/init ]; then
+echo "Core components missing or corrupted."
+echo "Exiting..."
+sleep 1
+exit
+else
+echo "Components integrity verified."
+fi
+
+echo "Starting $MODNAME configuration..."
+
+## Copy Boot Config
+mount -o remount,rw /boot/firmware
+cp -f $BIN/modconf/config.txt /boot/firmware/
+mount -o remount,ro /boot/firmware
+
+## ALSA Configuration
+cp -f $BIN/modconf/asound.conf /etc/
+chmod 644 /etc/asound.conf
+chown root:root /etc/asound.conf
+
+## AutoFS Configuration
+cp -f $BIN/modconf/auto.master /etc/
+chmod 644 /etc/auto.master
+chown root:root /etc/auto.master
+cp -f $BIN/modconf/auto.map /etc/
+chmod 644 /etc/auto.map
+chown root:root /etc/auto.map
+cp -f $BIN/modconf/auto.creds /etc/
+chmod 400 /etc/auto.creds
+chown root:root /etc/auto.creds
+mkdir -p /mnt/smb
+
+exit

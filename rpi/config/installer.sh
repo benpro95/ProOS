@@ -540,7 +540,8 @@ cp -f $BIN/keyboard-setup.service /lib/systemd/system/
 chmod 644 /lib/systemd/system/keyboard-setup.service
 chown root:root /lib/systemd/system/keyboard-setup.service
 rm -f /lib/systemd/system/shairport-sync.service
-
+rm -f /etc/systemd/system/ztermcom.service
+rm -f /etc/systemd/system/ztermcom.socket
 systemctl daemon-reload
 if [ ! -e /etc/rpi-conf.done ]; then
   ## Active on startup
@@ -551,6 +552,7 @@ if [ ! -e /etc/rpi-conf.done ]; then
   systemctl enable NetworkManager ModemManager \
    NetworkManager-wait-online NetworkManager-dispatcher   
   ## Disabled on startup
+  systemctl disable rpi-ztermcom.service
   systemctl disable hostapd keyboard-setup sysstat lighttpd wifiswitch motion userconfig
   systemctl disable apt-daily.service apt-daily.timer apt-daily-upgrade.service dnsmasq \
    apt-daily-upgrade.timer sysstat-collect.timer 
@@ -579,6 +581,11 @@ fi
 
 ## Regenerate Update Database
 systemctl start man-db.service
+
+## Compile Z-Term COM Service
+/usr/bin/gcc /opt/rpi/ztermcom.c -o /usr/bin/ztermcom
+chmod +x /usr/bin/ztermcom 
+chown root:root /usr/bin/ztermcom 
 
 ## Re-create Null Device
 rm -f /dev/null

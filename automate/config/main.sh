@@ -436,42 +436,31 @@ CMD=$1
 case "$1" in
 
 relax)
-## Play Audio on Apple TV
-echo "$LCDPI_MSG"
-systemctl stop relaxloop
-systemctl set-environment rpi_relaxmode=$CMDARG
-systemctl start relaxloop
+ESP32="no"
+TARGET="bedpi.home"
+XMITCMD="relax"
+CALLAPI
 LCDPI_MSG="playing $CMDARG"
 CALL_LCDPI  
 exit
 ;;
 
-pauseatv)
-## Pause Apple TV
-systemctl stop relaxloop
-systemctl set-environment rpi_relaxmode="pause"
-systemctl start relaxloop
-LCDPI_MSG="paused Apple TV"
+stoprelax)
+ESP32="no"
+TARGET="bedpi.home"
+XMITCMD="stoprelax"
+CALLAPI
+LCDPI_MSG="stopped sounds."
 CALL_LCDPI 
 exit
 ;;
 
-## Sleep Mode
 sleep)
-## Toggle Sounds On/Off 
-if (systemctl is-active --quiet relaxloop.service); then
-  echo "Stopping playback on Apple TV..."
-  systemctl stop relaxloop
-  systemctl set-environment rpi_relaxmode="pause"
-  systemctl start relaxloop
-else  
-  echo "Service not runnning starting sleep mode..."
-  /opt/system/main relax coldwar
-  /opt/system/main alloff
-  XMITCMD="hifioff" ; XMIT
-  LCDPI_MSG="sleep mode" 
-  CALL_LCDPI  
-fi
+ESP32="no"
+TARGET="bedpi.home"
+XMITCMD="sleepmode"
+CALLAPI
+LCDPI_MSG="sleep mode"
 exit
 ;;
 
@@ -615,11 +604,10 @@ exit
 
 ## Toggle Bedroom TV
 toggletv)
-ESP32="no"; TARGET="ledgrid.home"; XMITCMD="toggletv"; CALLAPI
-## Pause Apple TV
-systemctl stop relaxloop
-systemctl set-environment rpi_relaxmode="pause"
-systemctl start relaxloop
+ESP32="no"
+TARGET="bedpi.home"
+XMITCMD="toggletv"
+CALLAPI
 ## LCDpi message
 LCDPI_MSG="toggled bedroom TV"
 CALL_LCDPI
@@ -707,8 +695,6 @@ fi
 XMITCMD="hifioff" ; XMIT 
 ## Blank LEDwalls
 /opt/system/leds stop
-## Stop playback on Apple TV
-systemctl stop relaxloop
 ## HeartLED off
 XMITCMD="htleds_off" ; XMIT
 sleep 0.75

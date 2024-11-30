@@ -31,17 +31,6 @@ else
   mount -o remount,ro /boot
 fi
 
-## Terminal Service
-cp -f $BIN/modconf/ztermcom.service /etc/systemd/system/
-chmod -f 644 /etc/systemd/system/ztermcom.service
-chown -f root:root /etc/systemd/system/ztermcom.service
-rm -f /etc/systemd/system/ztermcom.socket
-/usr/bin/gcc /opt/rpi/ztermcom.c -o /usr/bin/ztermcom
-chmod +x /usr/bin/ztermcom 
-chown root:root /usr/bin/ztermcom 
-systemctl disable ztermcom.service
-systemctl restart ztermcom.service
-
 ## Web Interface
 cp -v /opt/rpi/device.js /var/www/html/
 chmod -R 777 /var/www/html/device.js

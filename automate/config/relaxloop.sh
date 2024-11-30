@@ -10,25 +10,24 @@ WWW_URL="http://files.home/WWW/Relaxation"
 ## Load settings file into array
 ##mapfile -t SETTINGS < <(wget -O- -q $WWW_URL/Settings.txt)
 
-## Apple TV ID
-ATV_ID="C869CD3A8484"
+ATV_NAME="Bedroom"
 
 ## Turn off Apple TV
 if [ "$rpi_relaxmode" == "off" ]; then
-  ATVSTATE=$(/opt/pyatv/bin/atvremote --id "$ATV_ID" --storage-filename /root/.pyatv.conf power_state)
+  ATVSTATE=$(/opt/pyatv/bin/atvremote -n "$ATV_NAME" --storage-filename /root/.pyatv.conf power_state)
   ## Only turn-off if Apple TV is on  
   if [ "$ATVSTATE" == "PowerState.On" ]; then
     echo "turning off Apple TV..."  
-    /opt/pyatv/bin/atvremote --id "$ATV_ID" --storage-filename /root/.pyatv.conf turn_off
+    /opt/pyatv/bin/atvremote -n "$ATV_NAME" --storage-filename /root/.pyatv.conf turn_off
   fi
   exit
 fi
 
 ## Pause Apple TV
 if [ "$rpi_relaxmode" == "pause" ]; then
-  ATVSTATE=$(/opt/pyatv/bin/atvremote --id "$ATV_ID" --storage-filename /root/.pyatv.conf power_state)
+  ATVSTATE=$(/opt/pyatv/bin/atvremote -n "$ATV_NAME" --storage-filename /root/.pyatv.conf power_state)
   if [ "$ATVSTATE" == "PowerState.On" ]; then
-    /opt/pyatv/bin/atvremote --id "$ATV_ID" --storage-filename /root/.pyatv.conf pause
+    /opt/pyatv/bin/atvremote -n "$ATV_NAME" --storage-filename /root/.pyatv.conf pause
   fi  
   exit
 fi
@@ -59,13 +58,13 @@ if [ "$rpi_relaxmode" == "boot" ]; then
 fi
 
 ## Pause media and return to home screen
-/opt/pyatv/bin/atvremote --id "$ATV_ID" --storage-filename /root/.pyatv.conf pause home
+/opt/pyatv/bin/atvremote -n "$ATV_NAME" --storage-filename /root/.pyatv.conf pause home
 
 ## Capitialize first letter of argument
 FILE="${rpi_relaxmode^}"
 
 ## Play audio in loop on Apple TV
 echo "starting $FILE sound..."
-/opt/pyatv/bin/atvremote --id "$ATV_ID" --storage-filename /root/.pyatv.conf play_url="$WWW_URL/$FILE.mp4"
+/opt/pyatv/bin/atvremote -n "$ATV_NAME" --storage-filename /root/.pyatv.conf play_url="$WWW_URL/$FILE.mp4"
 
 exit

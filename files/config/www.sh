@@ -270,9 +270,6 @@ then
   if [ -e "$REGROOT/RAM" ]; then
     rm $REGROOT/RAM
   fi
-  if [ -e "$REGROOT/WWW" ]; then
-    rm $REGROOT/WWW
-  fi
   if [ -e "$REGROOT/Snapshots" ]; then
     rm $REGROOT/Snapshots
   fi
@@ -290,18 +287,6 @@ then
     ln -s /mnt/ramdisk $REGROOT/RAM
   else
     echo "already attached."    
-  fi
-  exit
-fi
-
-## WWW Share
-if [ $REPLY == "www_region" ]
-then
-  if [ ! -e "$REGROOT/WWW" ]; then
-    echo "attaching WWW region..."
-    ln -s /mnt/.regions/WWW $REGROOT/WWW
-  else
-    echo "already attached."
   fi
   exit
 fi

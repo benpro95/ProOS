@@ -1,4 +1,3 @@
 # by Ben Provenzano III
 
 /mnt/ramdisk        /home/server/.html/RAM   auto defaults,nofail,nobootwait,bind 0 2
-/mnt/.regions/WWW   /home/server/.html/WWW   auto defaults,nofail,nobootwait,bind 0 2

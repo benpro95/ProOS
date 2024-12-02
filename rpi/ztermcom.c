@@ -265,16 +265,25 @@ int serialRead() {
     // exit when sending disabled
     if (enableSend == 0) {
       return 0;
-    }  
+    }
+    // response size check
     if (num_bytes > 0) {
-      // Check if the target character is received
       size_t i;
+      bool ack_resp = false;
       for (i = 0; i < num_bytes; i++) {
-        // check for input
-        if (serCharBuf[i] == target_char) {
-          printf("Received acknowledge '%c'\n", target_char); 
-          return 0;
+        // read response
+        char _curchar = serCharBuf[i];
+        if (_curchar != '\n') {
+          printf("%c", _curchar);
         }
+        // check target character is received
+        if (serCharBuf[i] == target_char) {
+          ack_resp = true;
+        }
+      }
+      if (ack_resp == true) {
+        printf("\nReceived response.\n\n\n");
+        return 0;
       }
     } else {
       // no data available, continue reading input
@@ -287,6 +296,7 @@ int serialRead() {
         return 1;
       }
     }
+   // END num_bytes COND // 
   }
 }
 
@@ -375,7 +385,7 @@ int main() {
   }
   // program status 
   int status = 0;
-  printf("Z-Terminal Xmit v1.0\n");
+  printf("Z-Terminal Xmit v1.11\n");
   // main loop
   while(1) {
     // read FIFO (not-blocking)

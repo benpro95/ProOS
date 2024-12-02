@@ -8,16 +8,24 @@ ARG2=$2
 case "$1" in
 
 boot)
-## Bluetooth Audio
-systemctl start hciuart
-systemctl start bluetooth
-systemctl start bt-agent@hci0
-systemctl start bluealsa-aplay
 ## File Share
 systemctl start autofs
 ## Arduino COMs
 ln -sf /dev/ttyACM0 /dev/zterm-tty
 systemctl start rpi-ztermcom
+## AirPlay Support
+systemctl start rpi-airplay
+## Bluetooth Audio
+systemctl start hciuart
+systemctl start bluetooth
+systemctl start bt-agent@hci0
+systemctl start bluealsa-aplay
+## Disable HDMI (saves 30mA of power draw)
+tvservice -o
+## Blink LED
+python3 /opt/rpi/blinkled.py &&
+## Reset Bluetooth Connections
+/opt/rpi/init resetbt
 exit
 ;;
 
@@ -28,6 +36,8 @@ echo "D" > /dev/zterm
 systemctl stop rpi-relaxloop
 systemctl set-environment rpi_relaxmode=$ARG2
 systemctl start rpi-relaxloop
+## Blink LED
+python3 /opt/rpi/blinkled.py &&
 exit
 ;;
 
@@ -35,6 +45,8 @@ stoprelax)
 ## Apple TV input
 echo "C" > /dev/zterm
 systemctl stop rpi-relaxloop
+## Blink LED
+python3 /opt/rpi/blinkled.py &&
 exit
 ;;
 
@@ -53,19 +65,31 @@ else
   systemctl set-environment rpi_relaxmode="coldwar"
   systemctl start rpi-relaxloop
 fi
+## Blink LED
+python3 /opt/rpi/blinkled.py &&
 exit
 ;;
 
 toggletv)
 echo "Toggling TV Power..."
 echo "E" > /dev/zterm
+## Blink LED
+python3 /opt/rpi/blinkled.py &&
 exit
 ;;
 
+update-fw)
+## Update Arduino over USB
+rm -rf /opt/rpi/amp-fw/build
+mkdir -p /opt/rpi/amp-fw/build
+/opt/rpi/arduino-cli -v compile --fqbn arduino:avr:uno /opt/rpi/amp-fw/amp-fw.ino --build-path /opt/rpi/amp-fw/build
+/opt/rpi/arduino-cli -v upload -p /dev/zterm-tty --fqbn arduino:avr:uno --input-dir /opt/rpi/amp-fw/build
+exit
+;;
 
-	*)
-	  echo "Bedroom Pi"
-	  echo "by Ben Provenzano III "
-	  exit 1
-	;;
-    esac   
+*)
+echo "Bedroom Pi"
+echo "by Ben Provenzano III "
+exit 1
+;;
+esac   

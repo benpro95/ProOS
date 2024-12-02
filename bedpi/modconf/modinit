@@ -42,4 +42,7 @@ chmod 400 /etc/auto.creds
 chown root:root /etc/auto.creds
 mkdir -p /mnt/smb
 
+## Arduino Configuration
+/opt/rpi/arduino-cli core install arduino:avr
+
 exit

@@ -1,87 +1,77 @@
-/* 
- * Arduino Based Volume Control System 
- * Copyright (c) 2013 - 2015, Colin Shaw
- * Distributed under the terms of the MIT License
- */
- 
- 
- 
- /*
-  * General pin definitions
-  */
- 
- 
-// Relating to volume control via encoder 
-#define volumeKnobPin1         3         // INPUT Encoder pin (works best with interrupt pins)
-#define volumeKnobPin2         2         // INPUT Encoder pin (switch pins to reverse direction)
+ /////////////////////////////////////////////////////////////////////////
+// Bedroom Amp Controller with Z-Terminal v1.0
+// by Ben Provenzano III
+//////////////////////////////////////////////////////////////////////////
 
-// Relating to the PGA2311
+#include "encoder.h"
+#include "bounce.h"
+
+// RS-232 configuration
+const int CONFIG_SERIAL = 9600;
+
+// serial resources
+const uint8_t maxMessage = 32;
+char cmdData[maxMessage];
+char serialMessage[maxMessage];
+uint8_t serialMessageEnd = 0;
+uint8_t cmdDataEnd = 0;
+bool newData = 0;
+
+// PGA2311 resources
 #define volumeClockPin         9         // OUTPUT Clock pin for volume control
 #define volumeDataPin          8         // OUTPUT Data pin for volume control
 #define volumeSelectPin        10        // OUTPUT Select pin for volume control
 #define volumeMutePin          11        // OUTPUT Mute pin for the volume control   
+long tempChannelVolume = 0;
+byte channelVolume = 0;
 
-// Relating to debouncing the mute and channel select pins
-#define muteSwitchPin          5         // INPUT Momentary switch for mute
-#define channelSwitchPin       6         // Toggle input for channel select
-#define outputSwitchPin        4         // Toggle for impedance control for output
-#define switchDebounceTime     50        // Milliseconds switch needs to be in state before effect (ms)
+// control logic resources
+#define toggleTV               7
+#define enablePin              6
+#define inputSelect            5
 
-// Output pin to control input channel relay and output impedance shunt relay
-#define channelRelayPin        12        // Pin to control the relay for channel selection
-#define outputRelayPin         7         // Pin to control relay for output for turnout delay
-
-
-// XOR logic reversal for switches and relays
-// Somewhat redundant, but allows the logic states to be deterministic on both input and output
-#define channelSwitchReverse   HIGH
-#define channelRelayReverse    HIGH
-#define outputSwitchReverse    HIGH
-#define outputRelayReverse     HIGH
-
-
-
-// Maximum (byte value) of the volume to send to the PGA2311
-// This is here to avoid regions where the high gains has too high S/N
+// maximum (byte value) of the volume to send to the PGA2311
+// this is here to avoid regions where the high gains has too high S/N
 // (192 is 0 dB -- e.g. no gain)
-#define maximumVolume          192                
+#define maximumVolume          192    
 
-
-/*
- * Includes, variables and some options
- */
- 
- 
-//#define ENCODER_DO_NOT_USE_INTERRUPTS          // An option for the Encoder library
-#include "Encoder.h"
-#include "Bounce.h"
-#include <EEPROM.h>
-
- 
-// Encoder instantiation  
-Encoder   volumeKnob(volumeKnobPin1, volumeKnobPin2);
-long      newVolumePosition;
-long      tempChannelVolume;
-byte      channelVolume;
-long int  delayTimeout;
-
-// Debouncer instantiation
-Bounce    muteSwitch =       Bounce(muteSwitchPin,switchDebounceTime);
-Bounce    channelSwitch =    Bounce(channelSwitchPin,switchDebounceTime);
-Bounce    outputSwitch =     Bounce(outputSwitchPin,switchDebounceTime);
-
-// Other variables
-int       isMuted =          false;            // Internally used status for mute state
-int       channelRun =       false;            // Internally used status for passing control to channel 
-int       outputRun =        false;            // Internally used status for passing control to output 
-long int  selectedChannel;
-long int  selectedOutput;
-
-
-
-/*
- * Inline function to write a byte to the PGA2311
- */
+//////////////////////////////////////////////////////////////////////////
+// initialization
+void setup() {
+  // start serial ports
+  Serial.begin(CONFIG_SERIAL);
+  pinMode(LED_BUILTIN, OUTPUT);  
+  // control logic   
+  digitalWrite(LED_BUILTIN, LOW);  
+  pinMode(enablePin, OUTPUT);
+  pinMode(inputSelect, OUTPUT);  
+  pinMode(toggleTV, OUTPUT);
+  digitalWrite(enablePin, LOW); 
+  digitalWrite(inputSelect, LOW);  
+  digitalWrite(toggleTV, LOW);   
+  // PGA volume logic
+  pinMode(volumeMutePin, OUTPUT);
+  digitalWrite(volumeMutePin, LOW);           
+  pinMode(volumeSelectPin, OUTPUT);
+  pinMode(volumeClockPin, OUTPUT);
+  pinMode(volumeDataPin, OUTPUT);
+  digitalWrite(volumeSelectPin, HIGH);
+  digitalWrite(volumeClockPin, HIGH);
+  digitalWrite(volumeDataPin, HIGH);
+  // PGA initialization
+  delay(100);
+  setVolume(0);
+  delay(800);
+  // un-mute PGA
+  digitalWrite(volumeMutePin,HIGH); 
+  delay(200);
+  // set default volume
+  channelVolume = 150;
+  Serial.print("Setting initial volume to (byte value) ");
+  Serial.println(channelVolume);
+  // scale into default volume
+  scaleVolume(0,channelVolume,50);
+}
 
 static inline void byteWrite(byte byteOut){
    for (byte i=0;i<8;i++) {
@@ -96,8 +86,6 @@ static inline void byteWrite(byte byteOut){
      byteOut<<=1;
    }
 }
- 
- 
  
 /*
  * Function to set the (stereo) volume on the PGA2311
@@ -135,8 +123,6 @@ void setVolume(long volume){
    digitalWrite(volumeClockPin, HIGH);
    digitalWrite(volumeDataPin, HIGH);
 }
-
-
 
 /*
  * Function to scale volume from one level to another (softer changes for mute)
@@ -186,408 +172,137 @@ void scaleVolume(byte startVolume, byte endVolume, byte volumeSteps){
   return;
 }  
 
-
-
-
-/*
- * Main Arduino setup call
- */
-
-
-void setup(){
-  
-  // Initialize USB serial feedback for printing
-  Serial.begin(9600);
-  Serial.println("Initializing...");
-  
-  // Mute the PGA2311
-  pinMode(volumeMutePin,OUTPUT);
-  digitalWrite(volumeMutePin,LOW);           
-  
-  // Set up control pins for PGA2311
-  pinMode(volumeSelectPin,OUTPUT);
-  pinMode(volumeClockPin,OUTPUT);
-  pinMode(volumeDataPin,OUTPUT);
-  digitalWrite(volumeSelectPin,HIGH);
-  digitalWrite(volumeClockPin,HIGH);
-  digitalWrite(volumeDataPin,HIGH);
-  
-  // Initialize other I/O pins
-  pinMode(muteSwitchPin,INPUT);
-  pinMode(channelSwitchPin,INPUT);
-  pinMode(outputSwitchPin,INPUT);
-  pinMode(channelRelayPin,OUTPUT);
-  pinMode(outputRelayPin,OUTPUT);
-  
-  // Delay a bit to wait for the state of the switches
-  delay(switchDebounceTime+50);
-  
-  
-  // Read the channel switch and set the appropriate volume
-  channelSwitch.update();
-  if(channelSwitch.read()==(HIGH^channelSwitchReverse)){
-    // Channel One   
-    selectedChannel=1;
-    Serial.println("Using channel one...");
-    digitalWrite(channelRelayPin,HIGH^channelRelayReverse);
-  }
-  else{
-    // Channel Two
-    selectedChannel=2;
-    Serial.println("Using channel two...");
-    digitalWrite(channelRelayPin,LOW^channelRelayReverse);
-  }  
-  
-  // Set volume to 0 for later soft volume start
-  setVolume(0);
-  
-  // Read the output relay switch and set it appropriately
-  outputSwitch.update();
-  if(outputSwitch.read()==(HIGH^outputSwitchReverse)){
-    selectedOutput=1;
-    Serial.println("Using output channel one...");
-    digitalWrite(outputRelayPin,HIGH^outputRelayReverse);
-    channelVolume=EEPROM.read(2*selectedOutput+selectedChannel);
-  }
-  else{
-    selectedOutput=2;
-    Serial.println("Using output channel two...");
-    digitalWrite(outputRelayPin,LOW^outputRelayReverse);
-    channelVolume=EEPROM.read(2*selectedOutput+selectedChannel);
-    
-    // Safegaurd for the maximum
-    if(channelVolume>maximumVolume){
-      channelVolume=maximumVolume;
+// decode serial message
+void decodeMessage() {
+  digitalWrite(LED_BUILTIN, HIGH);
+  uint8_t _end = serialMessageEnd;
+  // count delimiters
+  uint8_t _delims = 0;
+  uint8_t _maxchars = 10;
+  char _delimiter = ',';
+  for(uint8_t _idx = 0; _idx < _end; _idx++) {
+    char _vchr = serialMessage[_idx];  
+    if (_vchr == _delimiter) {
+      _delims++;
     }
-    
-  }  
-  
-  tempChannelVolume=channelVolume;
-  
-  Serial.print("Setting initial volume to (byte value) ");
-  Serial.println(channelVolume);
-  
-  // Wait a bit for the whole system to come online
-  delay(800);
-  
-  // Unmute the PGA2311
-  digitalWrite(volumeMutePin,HIGH); 
-
-  // Wait a bit
-  delay(200);  
-  
-  // Smoothly scale into last volume
-  scaleVolume(0,channelVolume,50);
-  
-  // Reset the encoder monitor  
-  volumeKnob.write(0);
-  
+  } 
+  // exit when delimiters incorrect
+  if (_delims < 2){ 
+    return;
+  }
+  // find first delimiter position
+  uint8_t _linepos = 0;
+  for(uint8_t _idx = 0; _idx < _end; _idx++) {  
+    char _vchr = serialMessage[_idx];  
+    if (_vchr == _delimiter) {
+      // store index position
+      _linepos = _idx;
+      break;
+    }
+  }
+  // loop through line characters 
+  char _linebuffer[_maxchars + 1];
+  uint8_t _linecount = 0;   
+  for(uint8_t _idx = 0; _idx < _linepos; _idx++) {
+  	if (_linecount >= _maxchars) {
+      break;
+    } 
+    // store in new array
+    _linebuffer[_linecount] = serialMessage[_idx];
+    _linecount++;
+  } // terminate string
+  _linebuffer[_linecount] = '\0';
+  // convert to integer, store line value
+  uint8_t cmdFirstColumn = atoi(_linebuffer); 
+  // find second delimiter position
+  uint8_t _count = 0;
+  uint8_t _cmd2pos = 0; 
+  for(uint8_t _idx = 0; _idx < _end; _idx++) {
+    char _vchr = serialMessage[_idx];   
+    if (_vchr == _delimiter) {
+      if (_count == 1) {
+        // store pointer position
+        _cmd2pos = _idx;
+        break;
+      }  
+      _count++;
+    }
+  } 
+  // execute command
+  if (cmdFirstColumn == 0){
+    // position of the end of message
+    cmdDataEnd = (_end - (_cmd2pos + 1));
+    // write to characters to message array
+    uint8_t _lcdidx = 0;
+    for(uint8_t _idx = _cmd2pos + 1; _idx < _end; _idx++) { 
+      cmdData[_lcdidx] = serialMessage[_idx]; 
+      if (cmdData[0] == 'A') {
+        // enable inputs 
+        digitalWrite(enablePin, LOW); 
+      }
+      if (cmdData[0] == 'B') {
+        // disable inputs 
+        digitalWrite(enablePin, HIGH); 
+      }
+      if (cmdData[0] == 'C') {
+        // optical input
+        digitalWrite(inputSelect, LOW); 
+      }
+      if (cmdData[0] == 'D') { 
+        // coax input
+        digitalWrite(inputSelect, HIGH);
+      }
+      if (cmdData[0] == 'E') { 
+        // power TV
+        digitalWrite(toggleTV, HIGH);
+        delay(250);
+        digitalWrite(toggleTV, LOW);
+      } 
+      _lcdidx++; // increment index
+    }
+  }
+  // send ack to computer
+  Serial.println("*DATAOUT");
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
- 
- 
- 
-/*
- * Main Arduino loop 
- */
- 
-void loop(){
-  
-    /*
-     * OUTPUT SWITCH
-     */
-     
-     // Only need to do this on switch state change
-     if(outputSwitch.update() || outputRun){
-       
-       // Address the change
-       if(outputSwitch.read()==(HIGH^outputSwitchReverse)){
-         
-         // Channel one
-         if(selectedOutput==2){
-            Serial.println("Switching to output one...");
-            selectedOutput=1;
-       
-            // Scale the volume down if it is not muted
-            if(isMuted==false && outputRun==false){
-              scaleVolume(channelVolume,0,35);
-       
-              // Mute the PGA2311
-              digitalWrite(volumeMutePin,LOW); 
-            }
-            // Reset the control variable
-            outputRun=false;
-            
-            // Load the volume value
-            channelVolume=EEPROM.read(2*selectedOutput+selectedChannel);
-            
-            // Safegaurd for the maximum
-            if(channelVolume>maximumVolume){
-              channelVolume=maximumVolume;
-            }
-            tempChannelVolume=channelVolume;
-            
-            // Switch the channel relay
-            digitalWrite(outputRelayPin,HIGH^outputRelayReverse);
-            
-            // Delay a bit for the relay to switch
-            delay(200);
-            
-            if(isMuted==false){
-              // Unmute the PGA2311
-              digitalWrite(volumeMutePin,HIGH); 
-              
-              // Delay 
-              delay(20);
-              
-              // Check the status of the channel switch 
-              if(channelSwitch.update()){
-                // Just set the flag to run through the channel logic
-                channelRun=true;
-              }
-              else{
-                // Otherwise scale the volume back up
-                scaleVolume(0,channelVolume,50);
-              }
-            }
-         }
-       }
-
-       // Channel two
-       else{
-         if(selectedOutput==1){
-            Serial.println("Switching to output two...");
-            selectedOutput=2;
-        
-            // Scale the volume down if it is not muted
-            if(isMuted==false && outputRun==false){
-              scaleVolume(channelVolume,0,35);
-              
-              // Mute the PGA2311
-              digitalWrite(volumeMutePin,LOW); 
-            }  
-            // Reset the control variable
-            outputRun=false;
-              
-            // Load the volume value
-            channelVolume=EEPROM.read(2*selectedOutput+selectedChannel);
-            
-            // Safegaurd for the maximum
-            if(channelVolume>maximumVolume){
-              channelVolume=maximumVolume;
-            }
-            tempChannelVolume=channelVolume;
-            
-            // Switch the channel relay
-            digitalWrite(outputRelayPin,LOW^outputRelayReverse);
-            
-            // delay a bit for the relay to switch
-            delay(200);
-            
-            if(isMuted==false){
-              // Unmute the PGA2311
-              digitalWrite(volumeMutePin,HIGH); 
-              
-              // Delay 
-              delay(20);
-              
-              // Check the status of the channel switch 
-              if(channelSwitch.update()){
-                // Just set the flag to run through the channel logic
-                channelRun=true;
-              }
-              else{
-                // Otherwise scale the volume back up
-                scaleVolume(0,channelVolume,50);
-              }
-           }
-         }
-      }  
-   }
-    
-     
-    /*
-     * CHANNEL SELECT
-     */
-     
-     // Only need to do this on switch state change
-     if(channelSwitch.update() || channelRun){
-       
-       // Address the change
-       if(channelSwitch.read()==(HIGH^channelSwitchReverse)){
-         // Channel one
-         if(selectedChannel==2){
-            Serial.println("Switching to channel one...");
-            selectedChannel=1;
-       
-            // Scale the volume down if it is not muted
-            if(isMuted==false && channelRun==false){
-              scaleVolume(channelVolume,0,35);
-       
-              // Mute the PGA2311
-              digitalWrite(volumeMutePin,LOW); 
-            }
-            // Reset channelRun
-            channelRun=false;
-            
-            // Load the volume value
-            channelVolume=EEPROM.read(2*selectedOutput+selectedChannel);
-            
-            // Safegaurd for the maximum
-            if(channelVolume>maximumVolume){
-              channelVolume=maximumVolume;
-            }
-            tempChannelVolume=channelVolume;
-            
-            // Switch the channel relay
-            digitalWrite(channelRelayPin,HIGH^channelRelayReverse);
-            
-            // Delay a bit for the relay to switch
-            delay(200);
-            
-            if(isMuted==false){
-              // Unmute the PGA2311
-              digitalWrite(volumeMutePin,HIGH); 
-              
-              // Delay 
-              delay(20);
-              
-              // Check the status of the output switch 
-              if(outputSwitch.update()){
-                // Just set the flag to run through the channel logic
-                outputRun=true;
-              }
-              else{
-                // Otherwise scale the volume back up
-                scaleVolume(0,channelVolume,50);
-              }
-            }
-         }
-       }
-    
-       // Channel two
-       else{
-         if(selectedChannel==1){
-            Serial.println("Switching to channel two...");
-            selectedChannel=2;
-        
-            // Scale the volume down if it is not muted
-            if(isMuted==false && channelRun==false){
-              scaleVolume(channelVolume,0,35);
-              
-              // Mute the PGA2311
-              digitalWrite(volumeMutePin,LOW); 
-            }  
-            // Reset channelRun
-            channelRun=false;
-              
-            // Load the volume value
-            channelVolume=EEPROM.read(2*selectedOutput+selectedChannel);
-            
-            // Safegaurd for the maximum
-            if(channelVolume>maximumVolume){
-              channelVolume=maximumVolume;
-            }
-            tempChannelVolume=channelVolume;
-            
-            // Switch the channel relay
-            digitalWrite(channelRelayPin,LOW^channelRelayReverse);
-            
-            // delay a bit for the relay to switch
-            delay(200);
-            
-            if(isMuted==false){
-              // Unmute the PGA2311
-              digitalWrite(volumeMutePin,HIGH); 
-              
-              // Delay 
-              delay(20);
-              
-              // Check the status of the output switch 
-              if(outputSwitch.update()){
-                // Just set the flag to run through the channel logic
-                outputRun=true;
-              }
-              else{
-                // Otherwise scale the volume back up
-                scaleVolume(0,channelVolume,50);
-              }
-            }
-         }
-      }  
-   }
-    
-    
-  /*
-   * MUTE BUTTON
-   */
-  
-  if(muteSwitch.update()){
-     if(muteSwitch.read()==HIGH){
-       if(isMuted==false){
-         isMuted=true;
-         Serial.println("Muting...");
-         scaleVolume(channelVolume,0,35);
-       }
-       else{
-         isMuted=false;
-         Serial.println("Unmuting...");
-         scaleVolume(0,channelVolume,50);
-       }
-     }
-   }
-  
-  
- /*
-  * VOLUME 
-  */ 
-  
-  newVolumePosition=volumeKnob.read();
-  if (newVolumePosition != 0) {
-      
-    // This section delays the encoder to make it feel better for user experience
-      if(millis()-delayTimeout>5){
-    
-        // Unmute to last volume if the volume is changed
-        if(isMuted==true){
-          Serial.println("Unmuting..."); 
-          scaleVolume(0,channelVolume,50);
+void readSerial() {
+  static bool recvInProgress = 0;
+  static uint8_t ndx = 0;
+  char startMarker = '<';
+  char endMarker = '>';
+  char rc;
+  if (Serial.available() > 0 && newData == 0) {
+    rc = Serial.read();
+    if (recvInProgress == 1) {
+      if (rc != endMarker) {
+        serialMessage[ndx] = rc;
+        ndx++;
+        if (ndx >= maxMessage) {
+          ndx = maxMessage - 1;
         }
-        isMuted=false;
-      
-        // Grab knob differential value and enforce volume bounds
-        tempChannelVolume+=newVolumePosition;
-        if(tempChannelVolume<0){
-          tempChannelVolume=0;
-        }
-        if(tempChannelVolume>maximumVolume){
-          tempChannelVolume=maximumVolume;
-        }  
-        
-        channelVolume=tempChannelVolume;
-        
-        Serial.print("Volume = ");
-        if(channelVolume==0){
-          Serial.println("Mute");
-        }
-        else{
-          // Save the volume setting
-          EEPROM.write(2*selectedOutput+selectedChannel,channelVolume);
-          
-          // Print it out for debug
-          Serial.print(31.5-((255-(float)channelVolume)/2));
-          Serial.print(" dB (byte value = ");
-          Serial.print(channelVolume);
-          Serial.println(")");
-        }
-        
-        // Reset the knob position
-        volumeKnob.write(0);
-        setVolume(channelVolume);
-        delayTimeout=millis();  
+      } else {
+        // terminate the string
+        serialMessage[ndx] = '\0'; 
+        serialMessageEnd = ndx;
+        recvInProgress = 0;
+        newData = 1;
+        ndx = 0;
+      }
     }
-    else{
-      volumeKnob.write(0);
+    else if (rc == startMarker) {
+      recvInProgress = 1;
     }
   }
-}  
+  if (newData == 1) {
+    // End-of-data action
+    decodeMessage();
+    serialMessageEnd = 0;
+    newData = 0;
+  }
+}
+
+void loop() {
+  // read serial port data
+  readSerial();
+}

@@ -218,12 +218,6 @@ function show_vmsPrompt(text){
   vms_cancelb.className ="button winbtn button_vmctrls_close"; 
   vms_cancelb.type="button"; 
   vms_prompt.appendChild(vms_cancelb); //append cancel-button
-  // the dev-button 
-  let vms_devbtn = document.createElement("button"); 
-  vms_devbtn.innerHTML = "Development";
-  vms_devbtn.className ="button winbtn button_vmctrls"; 
-  vms_devbtn.type="button"; 
-  vms_prompt.appendChild(vms_devbtn); 
   // the unifi-button 
   let vms_unifibtn = document.createElement("button"); 
   vms_unifibtn.innerHTML = "UniFi Controller";
@@ -239,7 +233,7 @@ function show_vmsPrompt(text){
   // the xana-button 
   let vms_xanabtn = document.createElement("button"); 
   vms_xanabtn.innerHTML = "Xana";
-  vms_xanabtn.className ="button winbtn button_vmctrls"; 
+  vms_xanabtn.className ="button winbtn button_vmctrlslgr"; 
   vms_xanabtn.type="button"; 
   vms_prompt.appendChild(vms_xanabtn);
   // erase button (hidden)
@@ -286,9 +280,6 @@ function show_vmsPrompt(text){
 	        clearPendingCmd(); // clear any pending command
 	      }
 	      // selection buttons
-	      if (e.target === vms_devbtn) { 
-	        vmPromptSelect('dev');
-	      }
 	      if (e.target === vms_unifibtn) { 
 	        vmPromptSelect('unifi');
 	      }  

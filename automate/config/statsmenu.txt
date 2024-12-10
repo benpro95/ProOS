@@ -1,7 +1,7 @@
-hi-fi.home|3|Hi-Fi|ping
 wkst.home|3|Computer|ping
-bedroom.home|3|Apple TV|ping
+hifipi.home|3|Hi-Fi|ping
 aptcam.home|3|Aptcam|ping
-unifi.home|3|UniFi|ping
-xana.home|3|Xana|ping
-dev.home|3|Dev|ping
+xana.home|3|Xana VM|ping
+unifi.home|3|UniFi VM|ping
+bedroom.home|3|Apple TV|ping
+bedpi.home|3|BedPi|ping

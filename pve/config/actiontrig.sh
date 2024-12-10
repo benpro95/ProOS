@@ -153,24 +153,6 @@ if [ -e $TRIGGERS_DIR/restorexana.txt ]; then
   EXIT_ROUTINE
 fi
 #######################################################
-if [ -e $TRIGGERS_DIR/startdev.txt ]; then
-  echo " "
-  touch /tmp/actiontrig.lock
-  rm -f $TRIGGERS_DIR/startdev.txt
-  echo "starting development VM..."
-  qm start 103
-  chmod 777 $LOGFILE
-  EXIT_ROUTINE
-fi
-if [ -e $TRIGGERS_DIR/stopdev.txt ]; then
-  echo " "
-  touch /tmp/actiontrig.lock	
-  rm -f $TRIGGERS_DIR/stopdev.txt
-  echo "shutting down development VM..."
-  qm stop 103
-  EXIT_ROUTINE
-fi
-#######################################################
 if [ -e $TRIGGERS_DIR/startlegacy.txt ]; then
   echo " "
   touch /tmp/actiontrig.lock
@@ -265,13 +247,6 @@ if [ -e $TRIGGERS_DIR/pve_vmsbkp.txt ]; then
   vzdump 100 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1
   cp -v /etc/pve/qemu-server/100.conf $VM_CONFS/pve/vmbkps/vzdump-qemu-100.conf
   chmod 777 $VM_CONFS/pve/vmbkps/vzdump-qemu-100.conf
-  ###
-  echo ""
-  echo "Backing-up Development KVM 103..."
-  echo "Only configuration is backed up."
-  #vzdump 103 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1
-  cp -v /etc/pve/qemu-server/103.conf $VM_CONFS/dev/qemu.conf
-  chmod 777 $VM_CONFS/dev/qemu.conf
   ###
   echo ""
   echo "Backing-up Xana KVM 105..."

@@ -694,9 +694,15 @@ input.chkbox {
   z-index: 999; 
 }
 
+
 .button_vmactions { 
   margin-top: 20px;
   width: 118px;
+  height: 60px;
+}
+
+.button_vmctrlslgr {
+  width: 365px;
   height: 60px;
 }
 

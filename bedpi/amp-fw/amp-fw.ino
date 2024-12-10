@@ -22,8 +22,9 @@ bool newData = 0;
 #define volumeDataPin          8         // OUTPUT Data pin for volume control
 #define volumeSelectPin        10        // OUTPUT Select pin for volume control
 #define volumeMutePin          11        // OUTPUT Mute pin for the volume control   
-long tempChannelVolume = 0;
+byte lastChannelVolume = 0;
 byte channelVolume = 0;
+bool isMuted = false;
 
 // control logic resources
 #define toggleTV               7
@@ -33,8 +34,9 @@ byte channelVolume = 0;
 // maximum (byte value) of the volume to send to the PGA2311
 // this is here to avoid regions where the high gains has too high S/N
 // (192 is 0 dB -- e.g. no gain)
-#define maximumVolume          192    
-
+#define maxVolume            192    
+#define minVolume              4
+#define volumeStep             2
 //////////////////////////////////////////////////////////////////////////
 // initialization
 void setup() {
@@ -92,21 +94,16 @@ static inline void byteWrite(byte byteOut){
  */
 
 void setVolume(long volume){
-   
    long int r_vol_test;
-   
    byte l_vol=(byte)volume;
    byte r_vol=0;
-   
    l_vol=volume;
    r_vol_test=volume;
-  
    // This test is unlikely to run unless maximumVolume is 255 or very close
    if(r_vol_test>255){
       r_vol=255;
       l_vol=255;
    }
-
    else if(r_vol_test<0){
      r_vol=0;
      l_vol=0;
@@ -115,7 +112,6 @@ void setVolume(long volume){
    else{
      r_vol=(byte)r_vol_test;
    }
-       
    digitalWrite(volumeSelectPin, LOW);   
    byteWrite(r_vol);                                // Right        
    byteWrite(l_vol);                                // Left
@@ -131,15 +127,11 @@ void setVolume(long volume){
 void scaleVolume(byte startVolume, byte endVolume, byte volumeSteps){
   byte diff;
   long counter;
-  
   if(endVolume==startVolume){
     return;
   }
   if(endVolume>startVolume){
-    Serial.print("Increasing volume to (byte value) ");
-    Serial.println(endVolume);
     diff=(endVolume-startVolume)/volumeSteps;
-    
     // Protect against a non-event
     if(diff==0){
       diff=1;
@@ -153,10 +145,7 @@ void scaleVolume(byte startVolume, byte endVolume, byte volumeSteps){
     setVolume(endVolume);               
   }  
   else{
-    Serial.print("Diminishing volume to (byte value) ");
-    Serial.println(endVolume);
     diff=(startVolume-endVolume)/volumeSteps;
-    
     // Protect against a non-event
     if(diff==0){
       diff=1;
@@ -257,12 +246,43 @@ void decodeMessage() {
         digitalWrite(toggleTV, HIGH);
         delay(250);
         digitalWrite(toggleTV, LOW);
-      } 
+      }
+      if (cmdData[0] == 'U') { 
+        if (isMuted == false ) {
+          lastChannelVolume = channelVolume;
+          channelVolume = channelVolume + volumeStep;
+          if (channelVolume >= maxVolume) {
+            channelVolume = maxVolume;
+          }
+          scaleVolume(lastChannelVolume,channelVolume,volumeStep);    
+        }
+      }
+      if (cmdData[0] == 'D') { 
+        if (isMuted == false ) {
+          lastChannelVolume = channelVolume;
+          channelVolume = channelVolume - volumeStep;
+          if (channelVolume <= minVolume) {
+            channelVolume = minVolume;
+          }
+          scaleVolume(lastChannelVolume,channelVolume,volumeStep);    
+        }
+      }
+      if (cmdData[0] == 'M') { 
+        if (isMuted == false) {
+          isMuted = true;
+          Serial.println("Muting...");
+          scaleVolume(channelVolume,0,35);
+        } else {
+          isMuted = false;
+          Serial.println("Unmuting...");
+          scaleVolume(0,channelVolume,40);
+        }
+      }
       _lcdidx++; // increment index
     }
   }
   // send ack to computer
-  Serial.println("*DATAOUT");
+  Serial.println("*");
   digitalWrite(LED_BUILTIN, LOW);
 }
 

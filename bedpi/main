@@ -20,8 +20,6 @@ systemctl start hciuart
 systemctl start bluetooth
 systemctl start bt-agent@hci0
 systemctl start bluealsa-aplay
-## Disable HDMI (saves 30mA of power draw)
-tvservice -o
 ## Blink LED
 python3 /opt/rpi/blinkled.py &&
 ## Reset Bluetooth Connections
@@ -73,6 +71,26 @@ exit
 toggletv)
 echo "Toggling TV Power..."
 echo "E" > /dev/zterm
+## Blink LED
+python3 /opt/rpi/blinkled.py &&
+exit
+;;
+
+volup)
+echo "Volume Up..."
+echo "U" > /dev/zterm
+exit
+;;
+
+voldwn)
+echo "Volume Down..."
+echo "D" > /dev/zterm
+exit
+;;
+
+volmute)
+echo "Toggle Mute..."
+echo "M" > /dev/zterm
 ## Blink LED
 python3 /opt/rpi/blinkled.py &&
 exit

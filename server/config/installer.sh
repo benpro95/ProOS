@@ -38,7 +38,7 @@ fi
 ## SSH keys
 mkdir -p /root/.ssh
 cp /tmp/config/authorized_keys /root/.ssh/
-cp -Rv /tmp/config/keys/* /root/.ssh/
+cp -Rvf /tmp/config/keys/*.rsa /root/.ssh/
 chown root:root -R /root/.ssh/*
 chmod 600 -R /root/.ssh/*
 

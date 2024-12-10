@@ -380,44 +380,28 @@ if [[ "$XMITCMD" == "rfc1off" ]]; then
    return
 fi
 ##
-## HiFi mini
+## Bedroom Stereo
 ##
-if [[ "$XMITCMD" == "miniupf" ]]; then
-   XMITCALL="1|0|696912" ## Volume Up Fine
-   CALLAPI
-   return
-fi
-if [[ "$XMITCMD" == "minidwnf" ]]; then
-   XMITCALL="1|0|696913" ## Volume Down Fine
-   CALLAPI 
-   return
-fi
 if [[ "$XMITCMD" == "miniup" ]]; then
-   XMITCALL="1|0|696922" ## Volume Up Course
+   #XMITCALL="1|0|696922" ## Volume Up Course
+   ESP32="no"
+   TARGET="bedpi.home"
+   XMITCMD="volup"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "minidwn" ]]; then
-   XMITCALL="1|0|696923" ## Volume Down Course
+   #XMITCALL="1|0|696923" ## Volume Down Course
+   ESP32="no"
+   TARGET="bedpi.home"
+   XMITCMD="voldwn"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "minimute" ]]; then
-   ##XMITCALL="1|0|696944"
-   ##CALLAPI   
-   ##LCDPI_MSG="mute miniHiFi"
-   ##CALL_LCDPI
-   return
-fi
-if [[ "$XMITCMD" == "minimuteoff" ]]; then
-   ##XMITCALL="1|0|696999"
-   ##CALLAPI   
-   ##LCDPI_MSG="unmute miniHiFi"
-   ##CALL_LCDPI
-   return
-fi
-if [[ "$XMITCMD" == "minidefaultvol" ]]; then
-   XMITCALL="1|0|696930"
+   ESP32="no"
+   TARGET="bedpi.home"
+   XMITCMD="volmute"
    CALLAPI
    return
 fi
@@ -439,8 +423,8 @@ relax)
 ESP32="no"
 TARGET="bedpi.home"
 XMITCMD="relax"
-CALLAPI
 LCDPI_MSG="playing $CMDARG"
+CALLAPI
 CALL_LCDPI  
 exit
 ;;
@@ -449,8 +433,8 @@ stoprelax)
 ESP32="no"
 TARGET="bedpi.home"
 XMITCMD="stoprelax"
-CALLAPI
 LCDPI_MSG="stopped sounds."
+CALLAPI
 CALL_LCDPI 
 exit
 ;;
@@ -459,8 +443,9 @@ sleep)
 ESP32="no"
 TARGET="bedpi.home"
 XMITCMD="sleepmode"
-CALLAPI
 LCDPI_MSG="sleep mode"
+CALLAPI
+CALL_LCDPI 
 exit
 ;;
 

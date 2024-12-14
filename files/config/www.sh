@@ -339,14 +339,6 @@ then
   git commit -m "$TIMESTMP"
   git push
   cd -
-  echo ""
-  echo "*** EE-Projects repository ***"  
-  git config --global --add safe.directory /mnt/data/Projects
-  cd /mnt/data/Projects
-  git add .
-  git commit -m "$TIMESTMP"
-  git push
-  cd -
   exit
 fi
 

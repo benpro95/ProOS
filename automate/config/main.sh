@@ -383,18 +383,18 @@ fi
 ## Bedroom Stereo
 ##
 if [[ "$XMITCMD" == "miniup" ]]; then
-   #XMITCALL="1|0|696922" ## Volume Up Course
-   ESP32="no"
-   TARGET="bedpi.home"
-   XMITCMD="volup"
+   XMITCALL="1|0|696922" ## Volume Up Course
+   #ESP32="no"
+   #TARGET="bedpi.home"
+   #XMITCMD="volup"
    CALLAPI
    return
 fi
 if [[ "$XMITCMD" == "minidwn" ]]; then
-   #XMITCALL="1|0|696923" ## Volume Down Course
-   ESP32="no"
-   TARGET="bedpi.home"
-   XMITCMD="voldwn"
+   XMITCALL="1|0|696923" ## Volume Down Course
+   #ESP32="no"
+   #TARGET="bedpi.home"
+   #XMITCMD="voldwn"
    CALLAPI
    return
 fi
@@ -402,7 +402,7 @@ if [[ "$XMITCMD" == "minimute" ]]; then
    ESP32="no"
    TARGET="bedpi.home"
    XMITCMD="volmute"
-   CALLAPI
+   #CALLAPI
    return
 fi
 ##

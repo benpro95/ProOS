@@ -3,11 +3,14 @@
 // by Ben Provenzano III
 //////////////////////////////////////////////////////////////////////////
 
+#include "Adafruit_MCP23008.h"
 #include "encoder.h"
 #include "bounce.h"
 
 // RS-232 configuration
 const int CONFIG_SERIAL = 9600;
+
+Adafruit_MCP23008 mcp;
 
 // serial resources
 const uint8_t maxMessage = 32;
@@ -40,11 +43,22 @@ bool isMuted = false;
 //////////////////////////////////////////////////////////////////////////
 // initialization
 void setup() {
+
+  mcp.begin(0x27);      // use default address 0
+  mcp.pinMode(0, OUTPUT);
+  mcp.pinMode(1, OUTPUT);
+  mcp.pinMode(2, OUTPUT);
+  mcp.pinMode(3, OUTPUT);
+  mcp.pinMode(4, OUTPUT);
+  mcp.pinMode(5, OUTPUT);
+  mcp.pinMode(6, OUTPUT);
+  mcp.pinMode(7, OUTPUT);
+   
   // start serial ports
   Serial.begin(CONFIG_SERIAL);
   pinMode(LED_BUILTIN, OUTPUT);  
   // control logic   
-  digitalWrite(LED_BUILTIN, LOW);  
+  digitalWrite(LED_BUILTIN, HIGH);  
   pinMode(enablePin, OUTPUT);
   pinMode(inputSelect, OUTPUT);  
   pinMode(toggleTV, OUTPUT);
@@ -73,6 +87,49 @@ void setup() {
   Serial.println(channelVolume);
   // scale into default volume
   scaleVolume(0,channelVolume,50);
+
+
+
+  delay(500);
+  mcp.digitalWrite(0, HIGH);
+  delay(500);
+  mcp.digitalWrite(0, LOW);
+
+    delay(500);
+  mcp.digitalWrite(1, HIGH);
+  delay(500);
+  mcp.digitalWrite(1, LOW);
+
+    delay(500);
+  mcp.digitalWrite(2, HIGH);
+  delay(500);
+  mcp.digitalWrite(2, LOW);
+
+    delay(500);
+  mcp.digitalWrite(3, HIGH);
+  delay(500);
+  mcp.digitalWrite(3, LOW);
+
+    delay(500);
+  mcp.digitalWrite(4, HIGH);
+  delay(500);
+  mcp.digitalWrite(4, LOW);
+
+    delay(500);
+  mcp.digitalWrite(5, HIGH);
+  delay(500);
+  mcp.digitalWrite(5, LOW);
+
+      delay(500);
+  mcp.digitalWrite(6, HIGH);
+  delay(500);
+  mcp.digitalWrite(6, LOW);
+
+      delay(500);
+  mcp.digitalWrite(7, HIGH);
+  delay(500);
+  mcp.digitalWrite(7, LOW);
+  
 }
 
 static inline void byteWrite(byte byteOut){

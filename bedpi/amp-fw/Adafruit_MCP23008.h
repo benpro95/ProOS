@@ -5,8 +5,8 @@
 #ifndef _ADAFRUIT_MCP23008_H
 #define _ADAFRUIT_MCP23008_H
 
-#include <Adafruit_BusIO_Register.h>
-#include <Adafruit_I2CDevice.h>
+#include "Adafruit_BusIO_Register.h"
+#include "Adafruit_I2CDevice.h"
 #include <Arduino.h>
 
 /*!

@@ -11,7 +11,7 @@ boot)
 ## File Share
 systemctl start autofs
 ## Arduino COMs
-ln -sf /dev/ttyACM0 /dev/zterm-tty
+ln -sf /dev/ttyUSB0 /dev/zterm-tty
 systemctl start rpi-ztermcom
 ## AirPlay Support
 systemctl start rpi-airplay
@@ -29,7 +29,7 @@ exit
 
 relax)
 ## Pi audio input
-echo "D" > /dev/zterm
+echo "C" > /dev/zterm
 ## Play sound in loop
 systemctl stop rpi-relaxloop
 systemctl set-environment rpi_relaxmode=$ARG2
@@ -41,7 +41,7 @@ exit
 
 stoprelax)
 ## Apple TV input
-echo "C" > /dev/zterm
+echo "B" > /dev/zterm
 systemctl stop rpi-relaxloop
 ## Blink LED
 python3 /opt/rpi/blinkled.py &&
@@ -52,12 +52,12 @@ sleepmode)
 ## Toggle Sounds On/Off 
 if (systemctl is-active --quiet rpi-relaxloop.service); then
   ## Apple TV input
-  echo "C" > /dev/zterm
+  echo "B" > /dev/zterm
   echo "Stopping playback..."
   systemctl stop rpi-relaxloop
 else 
   ## Pi audio input
-  echo "D" > /dev/zterm	
+  echo "C" > /dev/zterm	
   echo "Starting sleep mode..."
   systemctl stop rpi-relaxloop
   systemctl set-environment rpi_relaxmode="coldwar"
@@ -70,7 +70,7 @@ exit
 
 toggletv)
 echo "Toggling TV Power..."
-echo "E" > /dev/zterm
+echo "G" > /dev/zterm
 ## Blink LED
 python3 /opt/rpi/blinkled.py &&
 exit
@@ -78,13 +78,13 @@ exit
 
 volup)
 echo "Volume Up..."
-echo "U" > /dev/zterm
+echo "X" > /dev/zterm
 exit
 ;;
 
 voldwn)
 echo "Volume Down..."
-echo "D" > /dev/zterm
+echo "Y" > /dev/zterm
 exit
 ;;
 

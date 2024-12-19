@@ -29,10 +29,14 @@ byte lastChannelVolume = 0;
 byte channelVolume = 0;
 bool isMuted = false;
 
-// control logic resources
-#define toggleTV               7
-#define enablePin              6
-#define inputSelect            5
+// I/O resources
+#define ampPowerPin            12
+#define inputBtnPin            7
+#define inputIRPin             6
+#define powerBtnPin            5
+#define muteBtnPin             4
+#define inputEncoderA          3
+#define inputEncoderB          2
 
 // maximum (byte value) of the volume to send to the PGA2311
 // this is here to avoid regions where the high gains has too high S/N
@@ -43,8 +47,7 @@ bool isMuted = false;
 //////////////////////////////////////////////////////////////////////////
 // initialization
 void setup() {
-
-  mcp.begin(0x27);      // use default address 0
+  mcp.begin(0x27);
   mcp.pinMode(0, OUTPUT);
   mcp.pinMode(1, OUTPUT);
   mcp.pinMode(2, OUTPUT);
@@ -53,21 +56,22 @@ void setup() {
   mcp.pinMode(5, OUTPUT);
   mcp.pinMode(6, OUTPUT);
   mcp.pinMode(7, OUTPUT);
-   
+  mcp.digitalWrite(0, LOW); // Aux In Relay (active-high)
+  mcp.digitalWrite(1, HIGH); // Trigger R (active-low)
+  mcp.digitalWrite(2, HIGH); // Trigger L (active-low)
+  mcp.digitalWrite(3, LOW); // TBD Header
+  mcp.digitalWrite(4, LOW); // N/C
+  mcp.digitalWrite(5, LOW); // 74HC4052 - S0
+  mcp.digitalWrite(6, LOW); // 74HC4052 - S1
+  mcp.digitalWrite(7, LOW); // Mute Lock (active-high)
   // start serial ports
   Serial.begin(CONFIG_SERIAL);
   pinMode(LED_BUILTIN, OUTPUT);  
   // control logic   
-  digitalWrite(LED_BUILTIN, HIGH);  
-  pinMode(enablePin, OUTPUT);
-  pinMode(inputSelect, OUTPUT);  
-  pinMode(toggleTV, OUTPUT);
-  digitalWrite(enablePin, LOW); 
-  digitalWrite(inputSelect, LOW);  
-  digitalWrite(toggleTV, LOW);   
+  digitalWrite(LED_BUILTIN, LOW);
   // PGA volume logic
   pinMode(volumeMutePin, OUTPUT);
-  digitalWrite(volumeMutePin, LOW);           
+  digitalWrite(volumeMutePin, HIGH);           
   pinMode(volumeSelectPin, OUTPUT);
   pinMode(volumeClockPin, OUTPUT);
   pinMode(volumeDataPin, OUTPUT);
@@ -79,7 +83,7 @@ void setup() {
   setVolume(0);
   delay(800);
   // un-mute PGA
-  digitalWrite(volumeMutePin,HIGH); 
+  digitalWrite(volumeMutePin,LOW); 
   delay(200);
   // set default volume
   channelVolume = 150;
@@ -87,49 +91,6 @@ void setup() {
   Serial.println(channelVolume);
   // scale into default volume
   scaleVolume(0,channelVolume,50);
-
-
-
-  delay(500);
-  mcp.digitalWrite(0, HIGH);
-  delay(500);
-  mcp.digitalWrite(0, LOW);
-
-    delay(500);
-  mcp.digitalWrite(1, HIGH);
-  delay(500);
-  mcp.digitalWrite(1, LOW);
-
-    delay(500);
-  mcp.digitalWrite(2, HIGH);
-  delay(500);
-  mcp.digitalWrite(2, LOW);
-
-    delay(500);
-  mcp.digitalWrite(3, HIGH);
-  delay(500);
-  mcp.digitalWrite(3, LOW);
-
-    delay(500);
-  mcp.digitalWrite(4, HIGH);
-  delay(500);
-  mcp.digitalWrite(4, LOW);
-
-    delay(500);
-  mcp.digitalWrite(5, HIGH);
-  delay(500);
-  mcp.digitalWrite(5, LOW);
-
-      delay(500);
-  mcp.digitalWrite(6, HIGH);
-  delay(500);
-  mcp.digitalWrite(6, LOW);
-
-      delay(500);
-  mcp.digitalWrite(7, HIGH);
-  delay(500);
-  mcp.digitalWrite(7, LOW);
-  
 }
 
 static inline void byteWrite(byte byteOut){
@@ -281,30 +242,53 @@ void decodeMessage() {
     // write to characters to message array
     uint8_t _lcdidx = 0;
     for(uint8_t _idx = _cmd2pos + 1; _idx < _end; _idx++) { 
+      //check message data!!!
       cmdData[_lcdidx] = serialMessage[_idx]; 
       if (cmdData[0] == 'A') {
-        // enable inputs 
-        digitalWrite(enablePin, LOW); 
+        // optical in #1
+        mcp.digitalWrite(6, LOW); // 4052-S1
+        mcp.digitalWrite(5, HIGH); // 4052-S0
       }
       if (cmdData[0] == 'B') {
-        // disable inputs 
-        digitalWrite(enablePin, HIGH); 
+        // optical in #2
+        mcp.digitalWrite(6, HIGH); // 4052-S1
+        mcp.digitalWrite(5, HIGH); // 4052-S0
       }
       if (cmdData[0] == 'C') {
-        // optical input
-        digitalWrite(inputSelect, LOW); 
-      }
-      if (cmdData[0] == 'D') { 
         // coax input
-        digitalWrite(inputSelect, HIGH);
+        mcp.digitalWrite(6, HIGH); // 4052-S1
+        mcp.digitalWrite(5, LOW); // 4052-S0 
       }
-      if (cmdData[0] == 'E') { 
-        // power TV
-        digitalWrite(toggleTV, HIGH);
+      if (cmdData[0] == 'D') {
+        // DAC input
+        mcp.digitalWrite(0, LOW);
+      }ec
+      if (cmdData[0] == 'E') {
+        // Aux input
+        mcp.digitalWrite(0, HIGH);
+      }               
+      if (cmdData[0] == 'F') { 
+        // trigger R (pulse)
+        mcp.digitalWrite(1, LOW);
         delay(250);
-        digitalWrite(toggleTV, LOW);
+        mcp.digitalWrite(1, HIGH);
       }
-      if (cmdData[0] == 'U') { 
+      if (cmdData[0] == 'G') {
+        // trigger L (pulse)
+        mcp.digitalWrite(2, LOW);
+        delay(250);
+        mcp.digitalWrite(2, HIGH);
+      }
+      if (cmdData[0] == 'H') {
+        // mute lock (ON)
+        mcp.digitalWrite(7, HIGH);
+      }  
+      if (cmdData[0] == 'I') {
+        // mute lock (OFF)
+        mcp.digitalWrite(7, LOW);
+      }  
+      if (cmdData[0] == 'X') { 
+        // volume up
         if (isMuted == false ) {
           lastChannelVolume = channelVolume;
           channelVolume = channelVolume + volumeStep;
@@ -314,7 +298,8 @@ void decodeMessage() {
           scaleVolume(lastChannelVolume,channelVolume,volumeStep);    
         }
       }
-      if (cmdData[0] == 'D') { 
+      if (cmdData[0] == 'Y') { 
+        // volume down 
         if (isMuted == false ) {
           lastChannelVolume = channelVolume;
           channelVolume = channelVolume - volumeStep;
@@ -324,7 +309,8 @@ void decodeMessage() {
           scaleVolume(lastChannelVolume,channelVolume,volumeStep);    
         }
       }
-      if (cmdData[0] == 'M') { 
+      if (cmdData[0] == 'Z') { 
+        // mute
         if (isMuted == false) {
           isMuted = true;
           Serial.println("Muting...");

@@ -1,0 +1,204 @@
+#!/bin/bash
+##
+## CameraPi by Ben Provenzano III v1.5 #############
+####################################################
+
+## Manual Camera Control Function
+CAMCTL () {
+clear
+REPLY=""
+echo "(Manual Camera Control Menu)"
+echo "(1) - disable IR filter shutter"
+echo "(2) - enable IR filter shutter"
+echo "(3) - disable IR LEDs"
+echo "(4) - enable IR LEDs"
+echo "(5) - disable power LED"
+echo "(6) - enable power LED"
+echo "(enter) exit manual control"
+echo " "
+read -p "select mode: " -n 1 -r
+echo
+############
+if [[ $REPLY =~ ^[1]$ ]]
+then
+## Disable IR Filter (GPIO #17)
+/usr/bin/python3 - <<END
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO_PIN = 17
+GPIO.setup(GPIO_PIN, GPIO.OUT)
+GPIO.output(GPIO_PIN, True)
+quit()
+END
+CAMCTL
+fi
+############
+if [[ $REPLY =~ ^[2]$ ]]
+then
+## Enable IR Filter (GPIO #17)
+/usr/bin/python3 - <<END
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO_PIN = 17
+GPIO.setup(GPIO_PIN, GPIO.OUT)
+GPIO.output(GPIO_PIN, False)
+quit()
+END
+CAMCTL
+fi
+############
+if [[ $REPLY =~ ^[3]$ ]]
+then
+## Disable IR LEDs (GPIO #27)
+/usr/bin/python3 - <<END
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO_PIN = 27
+GPIO.setup(GPIO_PIN, GPIO.OUT)
+GPIO.output(GPIO_PIN, False)
+quit()
+END
+CAMCTL
+fi
+############
+if [[ $REPLY =~ ^[4]$ ]]
+then
+## Enable IR LEDs (GPIO #27)
+/usr/bin/python3 - <<END
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO_PIN = 27
+GPIO.setup(GPIO_PIN, GPIO.OUT)
+GPIO.output(GPIO_PIN, True)
+quit()
+END
+CAMCTL
+fi
+############
+if [[ $REPLY =~ ^[5]$ ]]
+then
+## Disable Red LED
+echo 1 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
+CAMCTL
+fi
+############
+if [[ $REPLY =~ ^[6]$ ]]
+then
+## Enable Red LED
+echo 0 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
+CAMCTL
+fi
+############
+echo "restarting auto IR Control..."
+/usr/bin/python3 - <<END
+import RPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(27, GPIO.OUT)
+GPIO.setup(17, GPIO.OUT)
+GPIO.cleanup()
+quit()
+END
+systemctl start rpi-ldr.service
+echo 1 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
+exit
+}
+
+##################################
+
+case "$1" in
+
+boot)
+## Video RAM disk
+mkdir -p /mnt/ramdisk
+chmod 777 /mnt/ramdisk
+mount -t tmpfs -o size=284m ramdisk /mnt/ramdisk
+## Attach flash drive
+mkdir -p /media/usb0
+mount /dev/sda1 /media/usb0
+sleep 15
+## Attach server SMB share
+if ping -c 1 files.home > /dev/null 2> /dev/null
+then
+  systemctl start autofs
+  sleep 5.75
+fi
+## Google Drive
+if [ ! -e /media/usb0/rclone ]; then
+  echo "flash drive not connected, not starting rclone."
+else
+  systemctl start rpi-rclone
+  sleep 5.75
+fi
+## Motion Server
+systemctl start rpi-motion.service
+## Cameras Cleanup Timer
+systemctl start rpi-camcleanup.timer
+## Automatic Infrared LED
+systemctl start rpi-ldr.service
+## Disable HDMI (saves 30mA)
+/usr/bin/tvservice -o
+exit
+;;
+
+camctl)
+echo "stopping auto IR control..."
+systemctl stop rpi-ldr.service
+sleep 1.25
+CAMCTL
+exit
+;;
+
+redoff)
+## Disable Red Status LED
+echo 1 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
+exit
+;;
+
+redon)
+## Enable Red Status LED
+echo 0 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
+exit
+;;
+
+redpulse)
+## Pulse Red Status LED
+echo 0 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
+sleep 7.5
+echo 1 | tee /sys/class/leds/led1/brightness > /dev/null 2> /dev/null
+exit
+;;
+
+cpusb)
+## Copy Videos on USB Drive to Server
+rsync -a --progress /media/usb0/cameras/Doorway/* /mnt/smb/Cameras/Doorway/
+echo "videos can be found at '//files/Cameras/Doorway'"
+read -p "delete videos from USB drive? (y/n) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[yY]$ ]]
+then
+  rm -rfv /media/usb0/cameras/Doorway
+  mkdir -p /media/usb0/cameras/Doorway
+  chown -R motion:motion /media/usb0/cameras/Doorway
+  chmod -R 777 /media/usb0/cameras/Doorway
+fi
+exit
+;;
+
+##################################
+    
+        *)
+	      echo "CameraPi v1"
+	      echo " by Ben Provenzano III"
+	      echo " "
+	      echo "camctl - manual camera control menu"
+	      echo "cpusb - copy videos on USB drive to server"
+	      echo " "
+	      echo "enter a valid command argument."
+        exit 1
+        ;;
+    esac   

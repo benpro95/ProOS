@@ -1,0 +1,33 @@
+## Created by Ben Provenzano III for CameraPi
+
+# Automatically load overlays for detected DSI displays
+display_auto_detect=1
+
+# Automatically load initramfs files, if found
+auto_initramfs=1
+
+# Don't have the firmware create an initial video= setting in cmdline.txt.
+# Use the kernel's default instead.
+disable_fw_kms_setup=1
+
+#-------GPU memory-------
+gpu_mem=128
+
+#-------Max USB Current-------
+max_usb_current=1
+
+#------Disable Bluetooth-----
+dtoverlay=disable-bt
+
+#-------Disable Ram temp refresh every 500ms---------
+disable_pvt=1
+
+#-------Disable Pi Splash screen on boot-------------
+disable_splash=1
+
+#------Reboot when exceeds-----
+temp_limit=75
+
+#------Camera------
+start_x=1
+

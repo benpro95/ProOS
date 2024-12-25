@@ -262,7 +262,7 @@ void decodeMessage() {
       if (cmdData[0] == 'D') {
         // DAC input
         mcp.digitalWrite(0, LOW);
-      }ec
+      }
       if (cmdData[0] == 'E') {
         // Aux input
         mcp.digitalWrite(0, HIGH);

@@ -90,7 +90,7 @@ exit
 
 volmute)
 echo "Toggle Mute..."
-echo "M" > /dev/zterm
+echo "Z" > /dev/zterm
 ## Blink LED
 python3 /opt/rpi/blinkled.py &&
 exit

@@ -25,13 +25,9 @@ mount -o remount,rw /boot/firmware
 cp -f $BIN/modconf/config.txt /boot/firmware/
 mount -o remount,ro /boot/firmware
 
-## Camera Motion Configuration 
-cp -f $BIN/modconf/motion.conf /etc/motion/
-chmod 644 /etc/motion/motion.conf
-chown root:root /etc/motion/motion.conf
-cp -fr $BIN/modconf/camera*.conf /etc/motion/
-chmod -R 644 /etc/motion/camera*.conf
-chown -R root:root /etc/motion/camera*.conf
+## Pi Camera Python Library
+apt install -y python3-picamera2 python3-simplejpeg --no-install-recommends
+usermod -a -G video root
 
 ## Pi and Motion Permissions
 rm -f /etc/sudoers.d/010_pi-perms
@@ -42,6 +38,11 @@ sh -c "echo \"pi ALL=(ALL) NOPASSWD: ALL\" >> /etc/sudoers.d/010_pi-nopasswd"
 chown root:root /etc/sudoers.d/010_pi-nopasswd
 chmod u=rwx,g=rx,o=rx /etc/sudoers.d/010_pi-nopasswd
 chmod u=r,g=r,o= /etc/sudoers.d/010_pi-nopasswd
+
+## Allow Password Login
+cp -fv $BIN/modconf/sshd_config /etc/ssh/
+chown root:root /etc/ssh/sshd_config
+chmod 644 /etc/ssh/sshd_config
 
 ## Link RPi to global commands library
 ln -sf /opt/rpi/main /usr/bin/main

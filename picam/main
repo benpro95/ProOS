@@ -5,8 +5,8 @@
 case "$1" in
 
 boot)
-## Motion Server
-systemctl start rpi-motion.service
+## Live Camera
+python3 /opt/rpi/livecam.py &
 exit
 ;;
 
@@ -18,3 +18,4 @@ exit
         exit 1
     ;;
     esac   
+n

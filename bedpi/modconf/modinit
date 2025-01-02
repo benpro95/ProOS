@@ -45,7 +45,8 @@ mkdir -p /mnt/smb
 ## Arduino Configuration
 /opt/rpi/arduino-cli core install arduino:avr
 
-## Write Firmware 
+## Write Firmware
+/opt/rpi/main boot
 /opt/rpi/main update-fw
 
 exit

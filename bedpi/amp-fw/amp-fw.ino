@@ -1,33 +1,20 @@
  /////////////////////////////////////////////////////////////////////////
-// Bedroom Amp Controller with Z-Terminal v1.0
+// Bedroom Amp Controller v1.2
 // by Ben Provenzano III
 //////////////////////////////////////////////////////////////////////////
 
-#include "Adafruit_MCP23008.h"
 #include "encoder.h"
 #include "bounce.h"
+#include <Wire.h>
 
 // RS-232 configuration
 const int CONFIG_SERIAL = 9600;
 
-Adafruit_MCP23008 mcp;
-
 // serial resources
 const uint8_t maxMessage = 32;
-char cmdData[maxMessage];
 char serialMessage[maxMessage];
 uint8_t serialMessageEnd = 0;
-uint8_t cmdDataEnd = 0;
 bool newData = 0;
-
-// PGA2311 resources
-#define volumeClockPin         9         // OUTPUT Clock pin for volume control
-#define volumeDataPin          8         // OUTPUT Data pin for volume control
-#define volumeSelectPin        10        // OUTPUT Select pin for volume control
-#define volumeMutePin          11        // OUTPUT Mute pin for the volume control   
-byte lastChannelVolume = 0;
-byte channelVolume = 0;
-bool isMuted = false;
 
 // I/O resources
 #define ampPowerPin            12
@@ -38,32 +25,44 @@ bool isMuted = false;
 #define inputEncoderA          3
 #define inputEncoderB          2
 
-// maximum (byte value) of the volume to send to the PGA2311
-// this is here to avoid regions where the high gains has too high S/N
-// (192 is 0 dB -- e.g. no gain)
-#define maxVolume            192    
+// PGA2311 resources
+#define volumeClockPin         9     // clock pin for volume control
+#define volumeDataPin          8     // data pin for volume control
+#define volumeSelectPin        10    // select pin for volume control
+#define volumeMutePin          11    // mute pin for the volume control  
+#define maxVolume              192   // maximum PGA volume (192 is 0 dB -- no gain)
 #define minVolume              4
 #define volumeStep             2
+byte lastChannelVolume = 0;
+byte channelVolume = 0;
+bool isMuted = false;
+
+// MCP23008 resources
+#define MCP23_ADDR           0x27    //  MCP's I2C address
+#define MCP23_DDR_A          0x00    //  data direction register A
+#define MCP23_POL_A          0x01    //  input polarity A
+#define MCP23_IOCR           0x05    //  IO control register
+#define MCP23_PUR_A          0x06    //  pull-up resistors A
+#define MCP23_GPIO_A         0x09    //  general purpose IO A
+#define MCP23_IOCR_OUT       0x00    //  sets all pins as outputs
+#define MCP23_IOCR_SEQOP     0x20    //  sequential operation mode bit.
+#define MCP23_IOCR_DISSLW    0x10    //  slew rate control bit for SDA output.
+#define MCP23_IOCR_ODR       0x04    //  sets the INT pin as an open-drain output.
+#define MCP23_IOCR_INTPOL    0x02    //  polarity of the INT output pin.
+byte mcpState = 0x00;  
+
 //////////////////////////////////////////////////////////////////////////
 // initialization
 void setup() {
-  mcp.begin(0x27);
-  mcp.pinMode(0, OUTPUT);
-  mcp.pinMode(1, OUTPUT);
-  mcp.pinMode(2, OUTPUT);
-  mcp.pinMode(3, OUTPUT);
-  mcp.pinMode(4, OUTPUT);
-  mcp.pinMode(5, OUTPUT);
-  mcp.pinMode(6, OUTPUT);
-  mcp.pinMode(7, OUTPUT);
-  mcp.digitalWrite(0, LOW); // Aux In Relay (active-high)
-  mcp.digitalWrite(1, HIGH); // Trigger R (active-low)
-  mcp.digitalWrite(2, HIGH); // Trigger L (active-low)
-  mcp.digitalWrite(3, LOW); // TBD Header
-  mcp.digitalWrite(4, LOW); // N/C
-  mcp.digitalWrite(5, LOW); // 74HC4052 - S0
-  mcp.digitalWrite(6, LOW); // 74HC4052 - S1
-  mcp.digitalWrite(7, LOW); // Mute Lock (active-high)
+  // MCP23008 setup
+  Wire.begin();
+  Wire.beginTransmission(MCP23_ADDR);
+  Wire.write(MCP23_DDR_A);
+  Wire.write(MCP23_IOCR_OUT);
+  Wire.endTransmission();
+  // set trigger pin states
+  writeMCP(1, HIGH);
+  writeMCP(2, HIGH);
   // start serial ports
   Serial.begin(CONFIG_SERIAL);
   pinMode(LED_BUILTIN, OUTPUT);  
@@ -93,8 +92,30 @@ void setup() {
   scaleVolume(0,channelVolume,50);
 }
 
-static inline void byteWrite(byte byteOut){
-   for (byte i=0;i<8;i++) {
+static inline void writeMCP(byte outputPin, bool pinState) {
+  //// MCP23008 configuration ////
+  // Aux-In Relay (active-high) //
+  // Trigger R (active-low)     //
+  // Trigger L (active-low)     //
+  // TBD Header                 //
+  // N/C                        //
+  // 74HC4052 - S0              //
+  // 74HC4052 - S1              //
+  // Mute Lock (active-high)    //
+  ////////////////////////////////
+  if (outputPin > 7) {
+    return;
+  }
+  bitWrite(mcpState, outputPin, pinState);
+  Wire.beginTransmission(MCP23_ADDR);
+  Wire.write(MCP23_GPIO_A);
+  Wire.write(mcpState);
+  Wire.endTransmission();
+}
+
+
+static inline void volWriteByte(byte byteOut) {
+   for (byte i=0; i<8; i++) {
      digitalWrite(volumeClockPin, LOW);
      if (0x80 & byteOut) {
        digitalWrite(volumeDataPin, HIGH);
@@ -110,29 +131,19 @@ static inline void byteWrite(byte byteOut){
 /*
  * Function to set the (stereo) volume on the PGA2311
  */
-
-void setVolume(long volume){
-   long int r_vol_test;
-   byte l_vol=(byte)volume;
-   byte r_vol=0;
-   l_vol=volume;
-   r_vol_test=volume;
-   // This test is unlikely to run unless maximumVolume is 255 or very close
-   if(r_vol_test>255){
-      r_vol=255;
-      l_vol=255;
+void setVolume(long _intvol){
+   byte _vol = 0;
+   if (_intvol > 255) {
+     _vol = 255;
    }
-   else if(r_vol_test<0){
-     r_vol=0;
-     l_vol=0;
-   }
-   // Business as usual  
-   else{
-     r_vol=(byte)r_vol_test;
+   else if (_intvol < 0) {
+     _vol = 0;
+   } else {
+     _vol = (byte)_intvol;
    }
    digitalWrite(volumeSelectPin, LOW);   
-   byteWrite(r_vol);                                // Right        
-   byteWrite(l_vol);                                // Left
+   volWriteByte(_vol); // Right        
+   volWriteByte(_vol); // Left
    digitalWrite(volumeSelectPin, HIGH);    
    digitalWrite(volumeClockPin, HIGH);
    digitalWrite(volumeDataPin, HIGH);
@@ -141,38 +152,36 @@ void setVolume(long volume){
 /*
  * Function to scale volume from one level to another (softer changes for mute)
  */
-
 void scaleVolume(byte startVolume, byte endVolume, byte volumeSteps){
   byte diff;
   long counter;
-  if(endVolume==startVolume){
+  if (endVolume == startVolume) {
     return;
   }
-  if(endVolume>startVolume){
-    diff=(endVolume-startVolume)/volumeSteps;
+  if (endVolume > startVolume) {
+    diff = (endVolume - startVolume) / volumeSteps;
     // Protect against a non-event
-    if(diff==0){
-      diff=1;
+    if (diff == 0){
+      diff = 1;
     }
-    counter=startVolume;
-    while(counter<endVolume){
+    counter = startVolume;
+    while (counter < endVolume) {
       setVolume(counter);
       delay(25);  
-      counter+=diff;  
+      counter += diff;  
     }
     setVolume(endVolume);               
-  }  
-  else{
-    diff=(startVolume-endVolume)/volumeSteps;
+  } else {
+    diff = (startVolume - endVolume) / volumeSteps;
     // Protect against a non-event
-    if(diff==0){
-      diff=1;
+    if (diff == 0) {
+      diff = 1;
     }
-    counter=startVolume;
-    while(counter>endVolume){
+    counter = startVolume;
+    while (counter > endVolume){
       setVolume(counter);
       delay(25);  
-      counter-=diff; 
+      counter -= diff; 
     }
     setVolume(endVolume);              
   }  
@@ -234,60 +243,58 @@ void decodeMessage() {
       }  
       _count++;
     }
-  } 
-  // execute command
+  }
+  // read command data
   if (cmdFirstColumn == 0){
-    // position of the end of message
-    cmdDataEnd = (_end - (_cmd2pos + 1));
-    // write to characters to message array
-    uint8_t _lcdidx = 0;
-    for(uint8_t _idx = _cmd2pos + 1; _idx < _end; _idx++) { 
-      //check message data!!!
-      cmdData[_lcdidx] = serialMessage[_idx]; 
-      if (cmdData[0] == 'A') {
+    for(uint8_t _idx = _cmd2pos + 1; _idx < _end; _idx++) {
+
+
+
+      
+      if (serialMessage[_idx] == 'A') {
         // optical in #1
-        mcp.digitalWrite(6, LOW); // 4052-S1
-        mcp.digitalWrite(5, HIGH); // 4052-S0
+        writeMCP(6, LOW); // 4052-S1
+        writeMCP(5, HIGH); // 4052-S0
       }
-      if (cmdData[0] == 'B') {
+      if (serialMessage[_idx] == 'B') {
         // optical in #2
-        mcp.digitalWrite(6, HIGH); // 4052-S1
-        mcp.digitalWrite(5, HIGH); // 4052-S0
+        writeMCP(6, HIGH); // 4052-S1
+        writeMCP(5, HIGH); // 4052-S0
       }
-      if (cmdData[0] == 'C') {
+      if (serialMessage[_idx] == 'C') {
         // coax input
-        mcp.digitalWrite(6, HIGH); // 4052-S1
-        mcp.digitalWrite(5, LOW); // 4052-S0 
+        writeMCP(6, HIGH); // 4052-S1
+        writeMCP(5, LOW); // 4052-S0 
       }
-      if (cmdData[0] == 'D') {
+      if (serialMessage[_idx] == 'D') {
         // DAC input
-        mcp.digitalWrite(0, LOW);
+        writeMCP(0, LOW);
       }
-      if (cmdData[0] == 'E') {
+      if (serialMessage[_idx] == 'E') {
         // Aux input
-        mcp.digitalWrite(0, HIGH);
+        writeMCP(0, HIGH);
       }               
-      if (cmdData[0] == 'F') { 
+      if (serialMessage[_idx] == 'F') { 
         // trigger R (pulse)
-        mcp.digitalWrite(1, LOW);
+        writeMCP(1, LOW);
         delay(250);
-        mcp.digitalWrite(1, HIGH);
+        writeMCP(1, HIGH);
       }
-      if (cmdData[0] == 'G') {
+      if (serialMessage[_idx] == 'G') {
         // trigger L (pulse)
-        mcp.digitalWrite(2, LOW);
+        writeMCP(2, LOW);
         delay(250);
-        mcp.digitalWrite(2, HIGH);
+        writeMCP(2, HIGH);
       }
-      if (cmdData[0] == 'H') {
+      if (serialMessage[_idx] == 'H') {
         // mute lock (ON)
-        mcp.digitalWrite(7, HIGH);
+        writeMCP(7, HIGH);
       }  
-      if (cmdData[0] == 'I') {
+      if (serialMessage[_idx] == 'I') {
         // mute lock (OFF)
-        mcp.digitalWrite(7, LOW);
+        writeMCP(7, LOW);
       }  
-      if (cmdData[0] == 'X') { 
+      if (serialMessage[_idx] == 'X') { 
         // volume up
         if (isMuted == false ) {
           lastChannelVolume = channelVolume;
@@ -298,7 +305,7 @@ void decodeMessage() {
           scaleVolume(lastChannelVolume,channelVolume,volumeStep);    
         }
       }
-      if (cmdData[0] == 'Y') { 
+      if (serialMessage[_idx] == 'Y') { 
         // volume down 
         if (isMuted == false ) {
           lastChannelVolume = channelVolume;
@@ -309,7 +316,7 @@ void decodeMessage() {
           scaleVolume(lastChannelVolume,channelVolume,volumeStep);    
         }
       }
-      if (cmdData[0] == 'Z') { 
+      if (serialMessage[_idx] == 'Z') { 
         // mute
         if (isMuted == false) {
           isMuted = true;
@@ -321,7 +328,9 @@ void decodeMessage() {
           scaleVolume(0,channelVolume,40);
         }
       }
-      _lcdidx++; // increment index
+
+      
+      ////
     }
   }
   // send ack to computer

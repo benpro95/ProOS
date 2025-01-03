@@ -24,6 +24,8 @@ bool newData = 0;
 #define muteBtnPin             4
 #define inputEncoderA          3
 #define inputEncoderB          2
+uint8_t selectedInput = 0;
+uint8_t lastInput = 0;
 
 // PGA2311 resources
 #define volumeClockPin         9     // clock pin for volume control
@@ -33,8 +35,8 @@ bool newData = 0;
 #define maxVolume              192   // maximum PGA volume (192 is 0 dB -- no gain)
 #define minVolume              4
 #define volumeStep             2
-byte lastChannelVolume = 0;
-byte channelVolume = 0;
+uint8_t lastChannelVolume = 0;
+uint8_t channelVolume = 0;
 bool isMuted = false;
 
 // MCP23008 resources
@@ -49,7 +51,7 @@ bool isMuted = false;
 #define MCP23_IOCR_DISSLW    0x10    //  slew rate control bit for SDA output.
 #define MCP23_IOCR_ODR       0x04    //  sets the INT pin as an open-drain output.
 #define MCP23_IOCR_INTPOL    0x02    //  polarity of the INT output pin.
-byte mcpState = 0x00;  
+uint8_t mcpState = 0x00;  
 
 //////////////////////////////////////////////////////////////////////////
 // initialization
@@ -63,6 +65,8 @@ void setup() {
   // set trigger pin states
   writeMCP(1, HIGH);
   writeMCP(2, HIGH);
+  // default audio input
+  audioInput(2); // optical #2
   // start serial ports
   Serial.begin(CONFIG_SERIAL);
   pinMode(LED_BUILTIN, OUTPUT);  
@@ -92,7 +96,7 @@ void setup() {
   scaleVolume(0,channelVolume,50);
 }
 
-static inline void writeMCP(byte outputPin, bool pinState) {
+static inline void writeMCP(uint8_t outputPin, bool pinState) {
   //// MCP23008 configuration ////
   // Aux-In Relay (active-high) //
   // Trigger R (active-low)     //
@@ -113,9 +117,8 @@ static inline void writeMCP(byte outputPin, bool pinState) {
   Wire.endTransmission();
 }
 
-
-static inline void volWriteByte(byte byteOut) {
-   for (byte i=0; i<8; i++) {
+static inline void volWriteByte(uint8_t byteOut) {
+   for (uint8_t i=0; i<8; i++) {
      digitalWrite(volumeClockPin, LOW);
      if (0x80 & byteOut) {
        digitalWrite(volumeDataPin, HIGH);
@@ -132,14 +135,14 @@ static inline void volWriteByte(byte byteOut) {
  * Function to set the (stereo) volume on the PGA2311
  */
 void setVolume(long _intvol){
-   byte _vol = 0;
+   uint8_t _vol = 0;
    if (_intvol > 255) {
      _vol = 255;
    }
    else if (_intvol < 0) {
      _vol = 0;
    } else {
-     _vol = (byte)_intvol;
+     _vol = (uint8_t)_intvol;
    }
    digitalWrite(volumeSelectPin, LOW);   
    volWriteByte(_vol); // Right        
@@ -152,8 +155,8 @@ void setVolume(long _intvol){
 /*
  * Function to scale volume from one level to another (softer changes for mute)
  */
-void scaleVolume(byte startVolume, byte endVolume, byte volumeSteps){
-  byte diff;
+void scaleVolume(uint8_t startVolume, uint8_t endVolume, uint8_t volumeSteps){
+  uint8_t diff;
   long counter;
   if (endVolume == startVolume) {
     return;
@@ -187,6 +190,36 @@ void scaleVolume(byte startVolume, byte endVolume, byte volumeSteps){
   }  
   return;
 }  
+
+void audioInput(uint8_t _input) {
+  lastInput = selectedInput;
+  // optical #1 input
+  if (_input == 1) {
+    writeMCP(6, LOW);  // 4052-S1
+    writeMCP(5, HIGH); // 4052-S0
+    // DAC analog input
+    writeMCP(0, LOW);
+  }
+  // optical #2 input
+  if (_input == 2) {
+    writeMCP(6, HIGH); // 4052-S1
+    writeMCP(5, HIGH); // 4052-S0
+    // DAC analog input
+    writeMCP(0, LOW);
+  }
+  // coaxial digital input
+  if (_input == 3) {
+    writeMCP(6, HIGH); // 4052-S1
+    writeMCP(5, LOW);  // 4052-S0 
+    // DAC analog input
+    writeMCP(0, LOW);
+  }
+  // aux analog input
+  if (_input == 4) {
+    writeMCP(0, HIGH);
+  }
+  selectedInput = _input;
+}
 
 // decode serial message
 void decodeMessage() {
@@ -248,31 +281,21 @@ void decodeMessage() {
   if (cmdFirstColumn == 0){
     for(uint8_t _idx = _cmd2pos + 1; _idx < _end; _idx++) {
 
-
-
-      
       if (serialMessage[_idx] == 'A') {
         // optical in #1
-        writeMCP(6, LOW); // 4052-S1
-        writeMCP(5, HIGH); // 4052-S0
+        audioInput(1);
       }
       if (serialMessage[_idx] == 'B') {
         // optical in #2
-        writeMCP(6, HIGH); // 4052-S1
-        writeMCP(5, HIGH); // 4052-S0
+        audioInput(2);
       }
       if (serialMessage[_idx] == 'C') {
         // coax input
-        writeMCP(6, HIGH); // 4052-S1
-        writeMCP(5, LOW); // 4052-S0 
-      }
-      if (serialMessage[_idx] == 'D') {
-        // DAC input
-        writeMCP(0, LOW);
+        audioInput(3);
       }
       if (serialMessage[_idx] == 'E') {
-        // Aux input
-        writeMCP(0, HIGH);
+        // aux input
+        audioInput(4);
       }               
       if (serialMessage[_idx] == 'F') { 
         // trigger R (pulse)
@@ -329,7 +352,6 @@ void decodeMessage() {
         }
       }
 
-      
       ////
     }
   }

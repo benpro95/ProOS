@@ -2,6 +2,7 @@ rpi/java
 rpi/pkgs
 rpi/retropi
 rpi/sources
+pve/network
 pve/vmbkps
 pve/photos
 unifi/firmware

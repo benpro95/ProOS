@@ -24,6 +24,8 @@ systemctl start bluealsa-aplay
 python3 /opt/rpi/blinkled.py &&
 ## Reset Bluetooth Connections
 /opt/rpi/init resetbt
+## Power On Amplifier
+echo "J" > /dev/zterm
 exit
 ;;
 

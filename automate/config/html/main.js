@@ -10,7 +10,7 @@ let dynChkboxChanged = 0;
 let colorPromptActive = 0;
 let resizeTimeout = 800; // in ms
 let defaultSite = "Automate";
-let siteVersion = "4.11";
+let siteVersion = "4.12";
 let resizeState = false;
 let bookmarkState = 0;
 let loadBarState = 0;
@@ -658,40 +658,70 @@ function sendVol(_cmd) {
   }
 }
 
+function subModeToggle() {
+  // toggle subwoofer mode
+  if (ctlCommand === 2 ){
+    ctlsMenu('lr');
+    return;
+  }
+  if (ctlCommand === 0 || ctlCommand === 1 ){
+    ctlsMenu('subs');
+    return;
+  } 
+}
+
+function elemToClass(_action,_elmid,_class) {
+  let _elm = document.getElementById(_elmid);
+  if (_action === 'show') {
+    if (!(_elm.classList.contains(_class))) {
+      _elm.classList.add(_class);
+    }
+  }
+  if (_action === 'hide') {
+    if (_elm.classList.contains(_class)) {
+      _elm.classList.remove(_class);
+    } 
+  }
+}
+
+function subMode(_action) {
+  // hide subwoofer mode indicator
+  elemToClass(_action,'voldwnbtn','submode_btn')
+  elemToClass(_action,'volmutebtn','submode_btn')
+  elemToClass(_action,'volupbtn','submode_btn')
+}
+
 // controls menu actions
 function ctlsMenu(_mode) {
-  classDisplay('submode','none');
-  if ((_mode === 'lr') || (_mode === 'subs')) { // living room
+  // living room controls
+  if ((_mode === 'lr') || (_mode === 'subs')) {
+    // disable bedroom grid
     classDisplay('bedroom-grid','none');
+    // enable hifi grid
     classDisplay('hifi-grid','block');
-    if (_mode === 'lr') { // normal mode
-      ctlCommand = 0; 
-    }
-    if (_mode === 'subs') { // subwoofer mode
-      classDisplay('submode','inline-block');
+    if (_mode === 'lr') {
+      // hide subwoofer controls 
+      subMode('hide');
+      // hifi controls
+      ctlCommand = 0;
+    } else {
+      // subwoofer controls
+      subMode('show');
       ctlCommand = 2; 
     }
   } 
-  if (_mode === 'br') { // bedroom
+  // bedroom controls
+  if (_mode === 'br') { 
+    // disable hifi grid
     classDisplay('hifi-grid','none');
+    // hide subwoofer controls 
+    subMode('hide');
+    // enable bedroom grid
     classDisplay('bedroom-grid','block');
     ctlCommand = 1;
   }
   // save state 
   localStorage.setItem("ctls-mode", _mode);
-}
-
-// controls menu dropdown
-function showCtlsMenu() {
-  if (ctlCommand === 0 ) { // living room 
-    showMenu('ctls-menu-lr');
-  }
-  if (ctlCommand === 1 ) { // bedroom
-    showMenu('ctls-menu-br');
-  }
-  if (ctlCommand === 2 ) { // subwoofers
-    showMenu('ctls-menu-sub');
-  }
 }
 
 // toggle dropdown menu's

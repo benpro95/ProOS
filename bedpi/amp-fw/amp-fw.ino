@@ -27,6 +27,15 @@ bool newData = 0;
 uint8_t selectedInput = 0;
 uint8_t lastInput = 0;
 
+// MCP23008 configuration
+#define inputRelayPin          0 // Aux-In Relay (active-high) 
+#define trigger1Pin            1 // Trigger R (active-low) 
+#define trigger2Pin            2 // Trigger L (active-low)
+#define powerLEDPin            3 // Power LED (active-high) 
+#define digitalS0Pin           5 // 74HC4052 - S0 
+#define digitalS1Pin           6 // 74HC4052 - S1 
+#define muteLockPin            7 // Mute Lock (active-high)
+
 // PGA2311 resources
 #define volumeClockPin         9     // clock pin for volume control
 #define volumeDataPin          8     // data pin for volume control
@@ -56,24 +65,11 @@ uint8_t mcpState = 0x00;
 //////////////////////////////////////////////////////////////////////////
 // initialization
 void setup() {
+  // GPIO initialization
+  pinMode(LED_BUILTIN, OUTPUT);  
+  digitalWrite(LED_BUILTIN, LOW);
   pinMode(ampPowerPin, OUTPUT);
   digitalWrite(ampPowerPin, LOW); 
-  // MCP23008 setup
-  Wire.begin();
-  Wire.beginTransmission(MCP23_ADDR);
-  Wire.write(MCP23_DDR_A);
-  Wire.write(MCP23_IOCR_OUT);
-  Wire.endTransmission();
-  // set trigger pin states
-  writeMCP(1, HIGH);
-  writeMCP(2, HIGH);
-  // default audio input
-  //audioInput(2); // optical #2
-  // start serial ports
-  Serial.begin(CONFIG_SERIAL);
-  pinMode(LED_BUILTIN, OUTPUT);  
-  // control logic   
-  digitalWrite(LED_BUILTIN, LOW);
   // PGA volume logic
   pinMode(volumeMutePin, OUTPUT);
   digitalWrite(volumeMutePin, HIGH);           
@@ -82,7 +78,20 @@ void setup() {
   pinMode(volumeDataPin, OUTPUT);
   digitalWrite(volumeSelectPin, HIGH);
   digitalWrite(volumeClockPin, HIGH);
-  digitalWrite(volumeDataPin, HIGH);
+  digitalWrite(volumeDataPin, HIGH);  
+  // MCP23008 initialization
+  Wire.begin();
+  Wire.beginTransmission(MCP23_ADDR);
+  Wire.write(MCP23_DDR_A);
+  Wire.write(MCP23_IOCR_OUT);
+  Wire.endTransmission();
+  // set trigger pin states
+  writeMCP(trigger1Pin, HIGH);
+  writeMCP(trigger2Pin, HIGH);
+  // default audio input
+  audioInput(2); // optical #2
+  // start serial ports
+  Serial.begin(CONFIG_SERIAL);
   // PGA initialization
   delay(100);
   setVolume(0);
@@ -92,27 +101,11 @@ void setup() {
   delay(200);
   // set default volume
   channelVolume = 150;
-  Serial.print("Setting initial volume to (byte value) ");
-  Serial.println(channelVolume);
   // scale into default volume
   scaleVolume(0,channelVolume,50);
-  // aux input
-  audioInput(4);
-  // power amps on 
-  digitalWrite(ampPowerPin, HIGH); 
 }
 
 static inline void writeMCP(uint8_t outputPin, bool pinState) {
-  ////// MCP23008 configuration //////
-  // 0 = Aux-In Relay (active-high) //
-  // 1 = Trigger R (active-low)     //
-  // 2 = Trigger L (active-low)     //
-  // 3 = TBD Header                 //
-  // 4 = N/C                        //
-  // 5 = 74HC4052 - S0              //
-  // 6 = 74HC4052 - S1              //
-  // 7 = Mute Lock (active-high)    //
-  ////////////////////////////////////
   if (outputPin > 7) {
     return;
   }
@@ -201,36 +194,36 @@ void audioInput(uint8_t _input) {
   lastInput = selectedInput;
   if (_input == 1) {
     // optical #1 input
-    writeMCP(6, LOW);  // 4052-S1
-    writeMCP(5, HIGH); // 4052-S0
+    writeMCP(digitalS1Pin, LOW);
+    writeMCP(digitalS0Pin, HIGH);
     // DAC analog input
-    writeMCP(0, LOW);
+    writeMCP(inputRelayPin, LOW);
     // enable DAC mute logic
-    writeMCP(7, LOW);
+    writeMCP(muteLockPin, LOW);
   }
   if (_input == 2) {
     // optical #2 input
-    writeMCP(6, HIGH); // 4052-S1
-    writeMCP(5, HIGH); // 4052-S0
+    writeMCP(digitalS1Pin, HIGH); 
+    writeMCP(digitalS0Pin, HIGH);
     // DAC analog input
-    writeMCP(0, LOW);
+    writeMCP(inputRelayPin, LOW);
     // enable DAC mute logic
-    writeMCP(7, LOW);
+    writeMCP(muteLockPin, LOW);
   }
   if (_input == 3) {
     // coaxial digital input
-    writeMCP(6, HIGH); // 4052-S1
-    writeMCP(5, LOW);  // 4052-S0 
+    writeMCP(digitalS1Pin, HIGH); 
+    writeMCP(digitalS0Pin, LOW);  
     // DAC analog input
-    writeMCP(0, LOW);
+    writeMCP(inputRelayPin, LOW);
     // enable DAC mute logic
-    writeMCP(7, LOW);
+    writeMCP(muteLockPin, LOW);
   }
   if (_input == 4) {
     // aux analog input
-    writeMCP(0, HIGH);
+    writeMCP(inputRelayPin, HIGH);
     // disable DAC mute logic
-    writeMCP(7, HIGH);
+    writeMCP(muteLockPin, HIGH);
   }
   selectedInput = _input;
 }
@@ -313,28 +306,30 @@ void decodeMessage() {
       }               
       if (serialMessage[_idx] == 'F') { 
         // trigger R (pulse)
-        writeMCP(1, LOW);
+        writeMCP(trigger1Pin, LOW);
         delay(250);
-        writeMCP(1, HIGH);
+        writeMCP(trigger1Pin, HIGH);
       }
       if (serialMessage[_idx] == 'G') {
         // trigger L (pulse)
-        writeMCP(2, LOW);
+        writeMCP(trigger2Pin, LOW);
         delay(250);
-        writeMCP(2, HIGH);
+        writeMCP(trigger2Pin, HIGH);
       }
       if (serialMessage[_idx] == 'H') {
         // mute lock (ON)
-        writeMCP(7, HIGH);
+        writeMCP(muteLockPin, HIGH);
       }  
       if (serialMessage[_idx] == 'I') {
         // mute lock (OFF)
-        writeMCP(7, LOW);
+        writeMCP(muteLockPin, LOW);
       } 
       if (serialMessage[_idx] == 'J') {
+        writeMCP(powerLEDPin, HIGH);
         digitalWrite(ampPowerPin, HIGH); 
       }
       if (serialMessage[_idx] == 'K') {
+        writeMCP(powerLEDPin, LOW);
         digitalWrite(ampPowerPin, LOW); 
       }      
       if (serialMessage[_idx] == 'X') { 

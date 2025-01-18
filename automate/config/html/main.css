@@ -165,10 +165,6 @@ input.chkbox {
   }
 }
 
-.submode {
-  display: none;
-}
-
 #testmode {
   /*display: inline-block;*/
   display: none;
@@ -222,6 +218,13 @@ input.chkbox {
 .button:active {
   box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
               inset 2px 2px 3px rgba(0, 0, 0, .6);
+}
+
+.submode_btn {
+  background-color: color-mix(in srgb, #8d2a2a,#0000 30%);
+}
+.submode_btn:hover {
+  background-color: #8d2a2a;
 }
 
 .winbtn { /* button in window */
@@ -279,8 +282,9 @@ input.chkbox {
 }
 
 .topnav a.mainmenu__anchor {
-  position:relative; left:1px; top:2px
-  font-size: 33px;
+  position:relative;
+  left:1px; 
+  top:2px;
 }
 
 #load__progress {

@@ -651,7 +651,7 @@ function sendVol(_cmd) {
     sendCmd('main',_cmd,''); // living room system 
   }
   if (ctlCommand === 1 ){
-    sendCmd('main','mini'+_cmd,''); // bedroom system
+    sendCmd('main','bedpi','vol'+_cmd); // bedroom system
   }
   if (ctlCommand === 2 ){
     sendCmd('main','sub'+_cmd,''); // living room subwoofers

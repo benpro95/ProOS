@@ -380,32 +380,6 @@ if [[ "$XMITCMD" == "rfc1off" ]]; then
    return
 fi
 ##
-## Bedroom Stereo
-##
-if [[ "$XMITCMD" == "miniup" ]]; then
-   # XMITCALL="1|0|696922" ## Volume Up Course
-   ESP32="no"
-   TARGET="bedpi.home"
-   XMITCMD="volup"
-   CALLAPI
-   return
-fi
-if [[ "$XMITCMD" == "minidwn" ]]; then
-   # XMITCALL="1|0|696923" ## Volume Down Course
-   ESP32="no"
-   TARGET="bedpi.home"
-   XMITCMD="voldwn"
-   CALLAPI
-   return
-fi
-if [[ "$XMITCMD" == "minimute" ]]; then
-   ESP32="no"
-   TARGET="bedpi.home"
-   XMITCMD="volmute"
-   CALLAPI
-   return
-fi
-##
 echo "invalid command!"
 return
 }
@@ -419,6 +393,15 @@ CMD=$1
 
 case "$1" in
 
+## Forward command to bedpi.home
+bedpi)
+ESP32="no"
+TARGET="bedpi.home"
+XMITCMD="$CMDARG"
+CALLAPI
+exit
+;;
+
 relax)
 ESP32="no"
 TARGET="bedpi.home"
@@ -429,32 +412,12 @@ CALL_LCDPI
 exit
 ;;
 
-stoprelax)
-ESP32="no"
-TARGET="bedpi.home"
-XMITCMD="stoprelax"
-LCDPI_MSG="stopped sounds."
-CALLAPI
-CALL_LCDPI 
-exit
-;;
-
-sleep)
-ESP32="no"
-TARGET="bedpi.home"
-XMITCMD="sleepmode"
-LCDPI_MSG="sleep mode"
-CALLAPI
-CALL_LCDPI 
-exit
-;;
-
 status)
 /opt/system/status > /dev/null 2> /dev/null
 exit
 ;;
 
-clearlcdpi)
+clear)
 LCDPI_MSG="clear"
 CALL_LCDPI  
 exit
@@ -469,45 +432,22 @@ exit
 ####################################
 ## Automated Multi-Functions
 
-lights)
-## Toggle Lamps
-if [ ! -e $LOCKFOLDER/lights.save ]; then
-  touch $LOCKFOLDER/lights.save
-  ## Main Lamp
-  XMITCMD="rfc1" ; XMITARG="on" ; XMIT
-  ## Dresser Lamp
-  XMITCMD="rfa2" ; XMITARG="on" ; XMIT
-else
-  ## Turn all lights off
-  rm -f $LOCKFOLDER/lights.save
-  ## Main Lamp
-  XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
-  ## Dresser Lamp
-  XMITCMD="rfa2" ; XMITARG="off" ; XMIT 
-fi
-exit
-;;
-
 mainon)
-## Main Lamp
+## Window Lamp
 XMITCMD="rfc1" ; XMITARG="on" ; XMIT 
 exit
 ;;
 
 mainoff)
-## Turn all lights off
-rm -f $LOCKFOLDER/lights.save
-## Main Lamp
+## Window Lamp
 XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
 ## Dresser Lamp
-XMITCMD="rfa2" ; XMITARG="off" ; XMIT 
+XMITCMD="rfa2" ; XMITARG="off" ; XMIT
 exit
 ;;
 
 lightson)
-## Turn all lights on
-touch $LOCKFOLDER/lights.save
-## Main Lamp
+## Window Lamp
 XMITCMD="rfc1" ; XMITARG="on" ; XMIT 
 ## Dresser Lamp
 XMITCMD="rfa2" ; XMITARG="on" ; XMIT
@@ -515,50 +455,19 @@ exit
 ;;
 
 lightsoff)
-## Turn all lights off
-rm -f $LOCKFOLDER/lights.save
-## Main Lamp
+## Window Lamp
 XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
 ## Dresser Lamp
 XMITCMD="rfa2" ; XMITARG="off" ; XMIT
-exit
-;;
-
-allon)
-touch $LOCKFOLDER/lights.save
-## Main Lamp
-XMITCMD="rfc1" ; XMITARG="on" ; XMIT 
-sleep 0.75
-## Dresser Lamp
-XMITCMD="rfa2" ; XMITARG="on" ; XMIT 
-sleep 0.75
-## Desk Light
-XMITCMD="rfb1" ; XMITARG="on" ; XMIT 
-sleep 0.75
-## HeartLED mode C:
-XMITCMD="htleds_c" ; XMIT
-## LEDwalls
-/opt/system/leds candle
-/opt/system/leds fc 60
-exit
-;;
-
-alloff)
-## Turn all lights off
-rm -f $LOCKFOLDER/lights.save
-## Main Lamp
-XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
-sleep 0.75
-## Dresser Lamp
-XMITCMD="rfa2" ; XMITARG="off" ; XMIT 
-sleep 0.75
-## Desk Light
-XMITCMD="rfb1" ; XMITARG="off" ; XMIT
-sleep 0.75
-## HeartLED off
-XMITCMD="htleds_off" ; XMIT
 ## Blank LEDwalls
 /opt/system/leds stop
+exit
+;;
+
+ambient)
+## LEDwalls
+/opt/system/leds fc 40
+/opt/system/leds candle
 exit
 ;;
 
@@ -584,18 +493,6 @@ then
 else
   echo "wkst.home is offline"
 fi
-exit
-;;
-
-## Toggle Bedroom TV
-toggletv)
-ESP32="no"
-TARGET="bedpi.home"
-XMITCMD="toggletv"
-CALLAPI
-## LCDpi message
-LCDPI_MSG="toggled bedroom TV"
-CALL_LCDPI
 exit
 ;;
 
@@ -637,13 +534,11 @@ XMITCMD="optical-preamp" ; XMIT
 exit
 ;;
 
-roomon)
-## Main Lamp On
+allon)
+## Window Lamp On
 XMITCMD="rfc1" ; XMITARG="on" ; XMIT 
 ## Dresser Lamp
 XMITCMD="rfa2" ; XMITARG="on" ; XMIT 
-## Desk Light
-XMITCMD="rfb1" ; XMITARG="on" ; XMIT 
 ## PC Power On
 if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
@@ -662,13 +557,11 @@ CALL_LCDPI
 exit
 ;;
 
-roomoff)
-## Main Lamp Off
+alloff)
+## Window Lamp Off
 XMITCMD="rfc1" ; XMITARG="off" ; XMIT 
 ## Dresser Lamp
 XMITCMD="rfa2" ; XMITARG="off" ; XMIT 
-## Desk Light
-XMITCMD="rfb1" ; XMITARG="off" ; XMIT 
 ## PC Power Off
 if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then

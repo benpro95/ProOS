@@ -94,7 +94,7 @@ apt-get install -y --no-upgrade --ignore-missing libgtk2.0-dev libbluetooth3 lib
  libass-dev libfreetype6-dev libgpac-dev libsdl1.2-dev libtheora-dev libssl-dev \
  libxml2-dev libxslt1-dev portaudio19-dev libffi-dev zlib1g-dev libdbus-1-dev \
  libva-dev libvdpau-dev libvorbis-dev libx11-dev libxext-dev libxfixes-dev \
- libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdbus-glib-1-dev
+ libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdbus-glib-1-dev minicom
 
  ## AV Codecs Support
 apt-get install -y --no-upgrade --ignore-missing libgstreamer1.0-dev gstreamer1.0-plugins-base \

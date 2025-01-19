@@ -1,6 +1,9 @@
 #!/bin/bash
 ###########################################################
 
+## Arduino's Serial Port
+ARDUINO_PORT="ttyUSB0"
+
 ## Read the 2nd Argument
 ARG2=$2
 
@@ -10,8 +13,8 @@ case "$1" in
 boot)
 ## File Share
 systemctl start autofs
-## Arduino COMs
-ln -sf /dev/ttyUSB0 /dev/zterm-tty
+## Start Amplifier Communication
+ln -sf /dev/$ARDUINO_PORT /dev/zterm-tty
 systemctl start rpi-ztermcom
 ## AirPlay Support
 systemctl start rpi-airplay
@@ -24,8 +27,11 @@ systemctl start bluealsa-aplay
 python3 /opt/rpi/blinkled.py &&
 ## Reset Bluetooth Connections
 /opt/rpi/init resetbt
-## Power On Amplifier
-echo "J" > /dev/zterm
+exit
+;;
+
+serialmon)
+/opt/rpi/arduino-cli monitor -p /dev/$ARDUINO_PORT -b arduino:avr:uno --config 9600
 exit
 ;;
 
@@ -70,6 +76,38 @@ python3 /opt/rpi/blinkled.py &&
 exit
 ;;
 
+opt-a)
+echo "Optical A: Input..."
+echo "A" > /dev/zterm
+## Blink LED
+python3 /opt/rpi/blinkled.py &&
+exit
+;;
+
+opt-b)
+echo "Optical B: Input..."
+echo "B" > /dev/zterm
+## Blink LED
+python3 /opt/rpi/blinkled.py &&
+exit
+;;
+
+coaxial)
+echo "Coaxial Input..."
+echo "C" > /dev/zterm
+## Blink LED
+python3 /opt/rpi/blinkled.py &&
+exit
+;;
+
+aux)
+echo "Aux Input..."
+echo "E" > /dev/zterm
+## Blink LED
+python3 /opt/rpi/blinkled.py &&
+exit
+;;
+
 toggletv)
 echo "Toggling TV Power..."
 echo "G" > /dev/zterm
@@ -98,18 +136,40 @@ python3 /opt/rpi/blinkled.py &&
 exit
 ;;
 
+poweron)
+echo "Powering On..."
+echo "J" > /dev/zterm
+## Blink LED
+python3 /opt/rpi/blinkled.py &&
+exit
+;;
+
+poweroff)
+echo "Powering Off..."
+echo "K" > /dev/zterm
+## Blink LED
+python3 /opt/rpi/blinkled.py &&
+exit
+;;
+
 update-fw)
+## Stop Serial Communication
+systemctl stop rpi-ztermcom
+rm -rfv /dev/zterm-tty
 ## Update Arduino over USB
 rm -rf /opt/rpi/amp-fw/build
 mkdir -p /opt/rpi/amp-fw/build
 /opt/rpi/arduino-cli -v compile --fqbn arduino:avr:uno /opt/rpi/amp-fw/amp-fw.ino --build-path /opt/rpi/amp-fw/build
-/opt/rpi/arduino-cli -v upload -p /dev/zterm-tty --fqbn arduino:avr:uno --input-dir /opt/rpi/amp-fw/build
+/opt/rpi/arduino-cli -v upload -p /dev/$ARDUINO_PORT --fqbn arduino:avr:uno --input-dir /opt/rpi/amp-fw/build
+## Start Serial Communication
+ln -sf /dev/$ARDUINO_PORT /dev/zterm-tty
+systemctl start rpi-ztermcom
 exit
 ;;
 
 *)
-echo "Bedroom Pi"
-echo "by Ben Provenzano III "
+echo "Bedroom Pi - by Ben Provenzano III "
+echo "Enter valid command."
 exit 1
 ;;
 esac   

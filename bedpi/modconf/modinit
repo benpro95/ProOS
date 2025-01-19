@@ -22,7 +22,9 @@ echo "Starting $MODNAME configuration..."
 
 ## Copy Boot Config
 mount -o remount,rw /boot/firmware
-cp -f $BIN/modconf/config.txt /boot/firmware/
+#touch /boot/firmware/apd.enable
+cp -fv $BIN/modconf/apd.conf /boot/firmware/apd.conf
+cp -fv $BIN/modconf/config.txt /boot/firmware/
 mount -o remount,ro /boot/firmware
 
 ## ALSA Configuration
@@ -44,9 +46,9 @@ mkdir -p /mnt/smb
 
 ## Arduino Configuration
 /opt/rpi/arduino-cli core install arduino:avr
+/opt/rpi/arduino-cli lib install Encoder@1.4.4
 
-## Write Firmware
-/opt/rpi/main boot
-/opt/rpi/main update-fw
+## Link Main Script
+ln -sf /opt/rpi/main /usr/bin/main
 
 exit

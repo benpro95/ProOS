@@ -23,8 +23,6 @@ echo "Starting $MODNAME configuration..."
 
 ## Copy Boot Config
 mount -o remount,rw /boot/firmware
-touch /boot/firmware/apd.enable
-cp -fv $BIN/modconf/apd.conf /boot/firmware/apd.conf
 cp -fv $BIN/modconf/cmdline.txt /boot/firmware/
 cp -fv $BIN/modconf/config.txt /boot/firmware/
 mount -o remount,ro /boot/firmware

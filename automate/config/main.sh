@@ -417,7 +417,7 @@ status)
 exit
 ;;
 
-clear)
+clearlcdpi)
 LCDPI_MSG="clear"
 CALL_LCDPI  
 exit

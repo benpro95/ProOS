@@ -1410,6 +1410,12 @@ function clearText() {
   // clear text window
   document.getElementById("lcdTextBox").value = "";
   clearPendingCmd();
+  // erase screen
+  if (sysModel === defaultSite) {
+    sendCmd('main','clearlcdpi','');
+  } else {
+    sendCmd('main','clear','');
+  }
 }
 
 // loading bar animation 

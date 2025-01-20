@@ -111,14 +111,13 @@
   <div class="grid">
 
     <!-- left column -->
-
     <div class="column-left">  
       <!---->
       <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('winlight-menu')">
-          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Window</span>
+        <button type="button" class="button" onclick="showMenu('mainlight-menu')">
+          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Main</span>
         </button>  
-        <div class="dd-content dd-button" id="winlight-menu">
+        <div class="dd-content dd-button" id="mainlight-menu">
           <a onclick="sendCmd('main','rfc1','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
           <a onclick="sendCmd('main','rfc1','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
@@ -145,10 +144,10 @@
       <p class="parstd"></p>  
       <!---->
       <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('mainlight-menu')">
-          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Main</span>
+        <button type="button" class="button" onclick="showMenu('winlight-menu')">
+          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Window</span>
         </button>  
-        <div class="dd-content dd-button" id="mainlight-menu">
+        <div class="dd-content dd-button" id="winlight-menu">
           <a onclick="sendCmd('main','rfc1','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
           <a onclick="sendCmd('main','rfc1','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
@@ -256,15 +255,9 @@
             <a onclick="ctlsMenu('lr')"></i> Living Room</a>
           </div>
         </div>
-        <div class="dropdown">
-          <button type="button" class="button" onclick="showMenu('braudio-menu')">
-            <span class="button__text"><i class="fa-solid fa-music"></i> Audio</span>
-          </button>  
-          <div class="dd-content dd-button" id="braudio-menu">
-            <a onclick="sendCmd('main','bedpi','poweron')"><i class="fa-solid fa-toggle-on"></i> On</a>
-            <a onclick="sendCmd('main','bedpi','poweroff')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-          </div>
-        </div>
+        <button type="button" class="button" onclick="sendCmd('main','bedpi','stoprelax')">
+          <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
+        </button> 
         <!---->
         <p class="parstd"></p> 
         <!---->
@@ -289,9 +282,15 @@
             <a onclick="sendCmd('main','rfa3','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
           </div>
         </div>
-        <button type="button" class="button" onclick="sendCmd('main','bedpi','stoprelax')">
-          <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
-        </button> 
+        <div class="dropdown">
+          <button type="button" class="button" onclick="showMenu('braudio-menu')">
+            <span class="button__text"><i class="fa-solid fa-music"></i> Audio</span>
+          </button>  
+          <div class="dd-content dd-button" id="braudio-menu">
+            <a onclick="sendCmd('main','bedpi','poweron')"><i class="fa-solid fa-toggle-on"></i> On</a>
+            <a onclick="sendCmd('main','bedpi','poweroff')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+          </div>
+        </div>
         <div class="dropdown">
           <button type="button" class="button" onclick="showMenu('brinput-menu')">
             <span class="button__text"><i class="fa-solid fa-sitemap"></i> Input</span>
@@ -331,7 +330,7 @@
         </button>
         <div class="dropdown">
           <button type="button" class="button" onclick="showMenu('hifi-menu')">
-            <span class="button__text"><i class="fa-solid fa-music"></i> Audio</span>
+            <span class="button__text"><i class="fa-solid fa-music"></i> Hi-Fi</span>
           </button>  
           <div class="dd-content dd-button" id="hifi-menu">
             <a onclick="sendCmd('main','hifion','')"><i class="fa-solid fa-toggle-on"></i> On</a>
@@ -340,18 +339,6 @@
         </div>
         <button type="button" class="button" onclick="sendCmd('main','upc','')">   
             <span class="button__text"><i class="fa-solid fa-volume-high"></i> +5dB</span>
-        </button>
-
-        <p class="parstd"></p>
-
-        <button type="button" class="button" onclick="sendCmd('main','togglehpf','')">
-          <span class="button__text"> Bass Filter</span>
-        </button>
-        <button type="button" class="button" onclick="sendCmd('main','vlimit','')">
-          <span class="button__text"><i class="fa-solid fa-volume-off"></i> vLimiter</span>
-        </button> 
-        <button type="button" class="button" onclick="subModeToggle()">
-          <span class="button__text"> Subwoofers</span>
         </button>
 
         <p class="parstd"></p>
@@ -369,13 +356,25 @@
         <p class="parstd"></p> 
 
         <button type="button" class="button" onclick="sendCmd('main','usb','')">
-          <span class="button__text"><i class="fa-brands fa-usb"></i> PC In</span>
+          <span class="button__text"><i class="fa-brands fa-usb"></i> USB</span>
         </button>
         <button type="button" class="button" onclick="sendCmd('main','phono','')">
-          <span class="button__text"><i class="fa-solid fa-compact-disc"></i> Phono In</span>
+          <span class="button__text"><i class="fa-solid fa-compact-disc"></i> Phono</span>
         </button>
         <button type="button" class="button" onclick="sendCmd('main','aux','')">
-          <span class="button__text"><i class="fa-solid fa-microphone"></i> Aux In</span> 
+          <span class="button__text"><i class="fa-solid fa-microphone"></i> Analog</span> 
+        </button>
+
+        <p class="parstd"></p>
+
+        <button type="button" class="button" onclick="sendCmd('main','togglehpf','')">
+          <span class="button__text"> Bass Filter</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('main','vlimit','')">
+          <span class="button__text"><i class="fa-solid fa-volume-off"></i> vLimiter</span>
+        </button> 
+        <button type="button" class="button" onclick="subModeToggle()">
+          <span class="button__text"> Subwoofers</span>
         </button>
 
         <p style="padding-bottom: 100px;"></p>  
@@ -1022,7 +1021,7 @@
   <form class="form-container">
     <div class="scrollmenu">
       <div class="dropdown"> 
-        <a class="dropbtn">Transmit Message</a>
+        <a class="dropbtn">Send Message to LCDpi</a>
       </div>  
     </div>    
     <textarea class="scroll-bar" id="lcdTextBox" placeholder="" required=""></textarea>  
@@ -1030,11 +1029,8 @@
           <span class="button__textsmall"></i> Close</span>
     </button>   
     <button type="button" class="button winbtn button_left_txtwin" onclick="clearText()">
-          <span class="button__textsmall"></i> Reset</span>
-    </button>
-    <button type="button" class="button winbtn button_left_txtwin" onclick="sendCmd('main','clear','')">
           <span class="button__textsmall"></i> Erase</span>
-    </button>       
+    </button> 
     <button type="button" class="button winbtn button_right_txtwin" id="sendButtonLCDpi" onclick="sendText()">
           <span class="button__textsmall"></i> Send</span>
     </button>

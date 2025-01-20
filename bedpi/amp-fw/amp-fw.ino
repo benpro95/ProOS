@@ -13,7 +13,7 @@ char serialMessage[maxMessage];
 uint8_t serialMessageEnd = 0;
 bool newData = 0;
 
-// GPIO resources
+// GPIO pins
 #define ampPowerPin            12
 #define inputBtnPin            7
 #define inputIRPin             6
@@ -21,11 +21,11 @@ bool newData = 0;
 #define muteBtnPin             4
 #define inputEncPinA           3
 #define inputEncPinB           2
-uint8_t selectedInput = 0;
-uint8_t lastInput = 0;
-uint8_t debounceDelay = 75;
+
+// common resources
 bool powerState = 0;
 bool powerCycle = 0;
+uint8_t debounceDelay = 75;
 uint8_t lastPowerButton = 0;
 uint8_t powerButton = 0;
 uint32_t powerButtonMillis;
@@ -34,16 +34,29 @@ uint8_t muteButton = 0;
 uint32_t muteButtonMillis;
 Encoder volumeEncoder(inputEncPinB, inputEncPinA);
 uint16_t oldVolEncPos = 1;
+uint8_t selectedInput = 0;
+uint8_t lastInput = 0;
 
 // MCP23008 resources
-#define analogRelayPin         0 // Aux-In Relay (active-high) 
-#define trigger1Pin            1 // Trigger R (active-low) 
-#define trigger2Pin            2 // Trigger L (active-low)
-#define powerLEDPin            3 // Power LED (active-high) 
-#define digitalS0Pin           5 // 74HC4052 - S0 
-#define digitalS1Pin           6 // 74HC4052 - S1 
-#define muteLockPin            7 // Mute Lock (active-high)
+#define analogRelayPin         0     // Aux-In Relay (active-high) 
+#define trigger1Pin            1     // Trigger R (active-low) 
+#define trigger2Pin            2     // Trigger L (active-low)
+#define powerLEDPin            3     // Power LED (active-high) 
+#define digitalS0Pin           5     // 74HC4052 (S0)
+#define digitalS1Pin           6     // 74HC4052 (S1) 
+#define muteLockPin            7     // Mute Lock (active-high)
 uint8_t mcpState = 0x0;
+#define MCP23_ADDR             0x27  //  MCP's I2C address
+#define MCP23_DDR_A            0x00  //  data direction register A
+#define MCP23_POL_A            0x01  //  input polarity A
+#define MCP23_IOCR             0x05  //  IO control register
+#define MCP23_PUR_A            0x06  //  pull-up resistors A
+#define MCP23_GPIO_A           0x09  //  general purpose IO A
+#define MCP23_IOCR_OUT         0x00  //  sets all pins as outputs
+#define MCP23_IOCR_SEQOP       0x20  //  sequential operation mode bit.
+#define MCP23_IOCR_DISSLW      0x10  //  slew rate control bit for SDA output.
+#define MCP23_IOCR_ODR         0x04  //  sets the INT pin as an open-drain output.
+#define MCP23_IOCR_INTPOL      0x02  //  polarity of the INT output pin.
 
 // PGA2311 resources
 #define volumeClockPin         9     // clock pin for volume control
@@ -52,23 +65,9 @@ uint8_t mcpState = 0x0;
 #define volumeMutePin          11    // mute pin for the volume control  
 #define maxVolume              192   // maximum PGA volume (192 is 0 dB -- no gain)
 #define minVolume              4
-#define volumeStep             2
 uint8_t lastChannelVolume = 0;
 uint8_t channelVolume = 0;
-bool isMuted = false;
-
-// MCP23008 resources
-#define MCP23_ADDR           0x27    //  MCP's I2C address
-#define MCP23_DDR_A          0x00    //  data direction register A
-#define MCP23_POL_A          0x01    //  input polarity A
-#define MCP23_IOCR           0x05    //  IO control register
-#define MCP23_PUR_A          0x06    //  pull-up resistors A
-#define MCP23_GPIO_A         0x09    //  general purpose IO A
-#define MCP23_IOCR_OUT       0x00    //  sets all pins as outputs
-#define MCP23_IOCR_SEQOP     0x20    //  sequential operation mode bit.
-#define MCP23_IOCR_DISSLW    0x10    //  slew rate control bit for SDA output.
-#define MCP23_IOCR_ODR       0x04    //  sets the INT pin as an open-drain output.
-#define MCP23_IOCR_INTPOL    0x02    //  polarity of the INT output pin.
+bool isMuted = 0;
 
 /// initialization ///
 void setup() {
@@ -104,14 +103,14 @@ void setup() {
   setVolume(0);
   delay(800);
   // set default volume
-  channelVolume = 100;
+  channelVolume = 120;
   lastChannelVolume = channelVolume;
   // set default audio input
   selectedInput = 2; // optical #2
   lastInput = selectedInput;
   // start serial ports
   Serial.begin(serialBaudRate);
-  delay(1000);
+  delay(800);
   digitalWrite(LED_BUILTIN, LOW);
 }
   
@@ -127,17 +126,17 @@ void writeMCP(uint8_t outputPin, bool pinState) {
 }
 
 void volWriteByte(uint8_t byteOut) {
-   for (uint8_t i=0; i<8; i++) {
-     digitalWrite(volumeClockPin, LOW);
-     if (0x80 & byteOut) {
-       digitalWrite(volumeDataPin, HIGH);
-     } else {
-       digitalWrite(volumeDataPin, LOW);
-     } 
-     digitalWrite(volumeClockPin, HIGH);
-     digitalWrite(volumeClockPin, LOW);
-     byteOut<<=1;
-   }
+  for (uint8_t i=0; i<8; i++) {
+    digitalWrite(volumeClockPin, LOW);
+    if (0x80 & byteOut) {
+      digitalWrite(volumeDataPin, HIGH);
+    } else {
+      digitalWrite(volumeDataPin, LOW);
+    } 
+    digitalWrite(volumeClockPin, HIGH);
+    digitalWrite(volumeClockPin, LOW);
+    byteOut<<=1;
+  }
 }
  
 /* set PGA2311's volume */
@@ -195,101 +194,38 @@ void scaleVolume(uint8_t startVolume, uint8_t endVolume, uint8_t volumeSteps){
   return;
 }
 
-void volumeUp() {
-      // volume up
-      if (isMuted == false ) {
-        lastChannelVolume = channelVolume;
-        channelVolume = channelVolume + volumeStep;
-        if (channelVolume >= maxVolume) {
-          channelVolume = maxVolume;
-        }
-        scaleVolume(lastChannelVolume,channelVolume,volumeStep);    
-      }
-}
-
-void volumeDown() {
-      // volume down 
-      if (isMuted == false ) {
-        lastChannelVolume = channelVolume;
-        channelVolume = channelVolume - volumeStep;
-        if (channelVolume <= minVolume) {
-          channelVolume = minVolume;
-        }
-        scaleVolume(lastChannelVolume,channelVolume,volumeStep);    
-      }
-}
-
-// startup routines
-void startupLogic() {
-  writeMCP(powerLEDPin, HIGH);
-  delay(200);
-  writeMCP(powerLEDPin, LOW);
-  delay(200);
-  writeMCP(powerLEDPin, HIGH);
-  delay(200);
-  writeMCP(powerLEDPin, LOW);
-  // last set audio input
-  audioInput(lastInput);
-  // un-mute PGA
-  digitalWrite(volumeMutePin,LOW);
-  isMuted = 0;
-  delay(200);
-  writeMCP(powerLEDPin, HIGH);  
-  // turn power amps on 
-  digitalWrite(ampPowerPin, HIGH);   
-  delay(200);
-  // scale into last set volume
-  scaleVolume(0,lastChannelVolume,50);
-}
-
-// shutdown routines
-void shutdownLogic() {
-  writeMCP(powerLEDPin, LOW);
-  // mute PGA
-  if (isMuted == 0){
-    scaleVolume(channelVolume,0,35);
-    isMuted = 1;
-  }
-  digitalWrite(volumeMutePin,HIGH);  
-  // disconnect inputs
-  audioInput(0);
-  // turn power amps off 
-  digitalWrite(ampPowerPin, LOW); 
-  delay(500);
-}
-
-// power on/off
-void setPowerState() {
-  // read pin state
-  int reading = digitalRead(powerBtnPin);
-  // if switch changed
-  if (reading != lastPowerButton) {
-    // reset the debouncing timer
-    powerButtonMillis = millis();
-  }
-  if ((millis() - powerButtonMillis) > debounceDelay) {
-    // if the button state has changed:
-    if (reading != powerButton) {
-      powerButton = reading;
-      // power state has changed!
-      if (powerButton == 0) { 
-        powerState = !powerState;  
-        powerCycle = 1;
-      }
+void volumeUp(uint8_t _volumeStep) {
+  // volume up
+  if (isMuted == 0) {
+    lastChannelVolume = channelVolume;
+    channelVolume = channelVolume + _volumeStep;
+    if (channelVolume >= maxVolume) {
+      channelVolume = maxVolume;
     }
+    scaleVolume(lastChannelVolume,channelVolume,_volumeStep);    
   }
-  lastPowerButton = reading; 
-  // power state actions  
-  if (powerCycle == 1){
-    // one-shot triggers
-    if (powerState == 1){
-      /// runs once on boot ///
-      startupLogic();
-    } else {  
-      /// runs once on shutdown ///
-      shutdownLogic();
-    }  
-    powerCycle = 0;  
+}
+
+void volumeDown(uint8_t _volumeStep) {
+  // volume down 
+  if (isMuted == 0) {
+    lastChannelVolume = channelVolume;
+    channelVolume = channelVolume - _volumeStep;
+    if (channelVolume <= minVolume) {
+      channelVolume = minVolume;
+    }
+    scaleVolume(lastChannelVolume,channelVolume,_volumeStep);    
+  }
+}
+
+void volumeMute() {
+  // mute toggle
+  if (isMuted == 0) {
+    isMuted = 1;
+    scaleVolume(channelVolume,0,35);
+  } else {
+    isMuted = 0;
+    scaleVolume(0,channelVolume,40);
   }
 }
 
@@ -341,61 +277,71 @@ void audioInput(uint8_t _input) {
 // process serial message
 void processMessage(uint8_t messageStart) {
   for(uint8_t _idx = messageStart; _idx < serialMessageEnd; _idx++) {
+    if (serialMessage[_idx] == 'J') {
+      if (powerState == 0) {
+        // turn-on system
+        powerCycle = 1;
+        powerState = 1; 
+      }
+      return;
+    }
+    if (serialMessage[_idx] == 'K') {
+      if (powerState == 1) {
+        // turn-off system
+        powerCycle = 1;
+        powerState = 0;
+      }
+      return;
+    }
+    if (powerState == 0) {
+      return;
+    }
     if (serialMessage[_idx] == 'A') {
       // optical in #1
       audioInput(1);
+      return;
     }
     if (serialMessage[_idx] == 'B') {
       // optical in #2
       audioInput(2);
+      return;
     }
     if (serialMessage[_idx] == 'C') {
       // coax input
       audioInput(3);
+      return;
     }
     if (serialMessage[_idx] == 'E') {
       // aux input
       audioInput(4);
+      return;
     }      
     if (serialMessage[_idx] == 'F') { 
       // trigger R (pulse)
       writeMCP(trigger1Pin, LOW);
       delay(250);
       writeMCP(trigger1Pin, HIGH);
+      return;
     }
     if (serialMessage[_idx] == 'G') {
       // trigger L (pulse)
       writeMCP(trigger2Pin, LOW);
       delay(250);
       writeMCP(trigger2Pin, HIGH);
-    }
-    if (serialMessage[_idx] == 'J') {
-      // turn-on system
-      powerCycle = 1;
-      powerState = 1;
-    }
-    if (serialMessage[_idx] == 'K') {
-      // turn-off system
-      powerCycle = 1;
-      powerState = 0;
+      return;
     }
     if (serialMessage[_idx] == 'X') { 
-      volumeUp();
+      volumeUp(2); // volume step
+      return;
     }
     if (serialMessage[_idx] == 'Y') { 
-      volumeDown();
+      volumeDown(2); // volume step
+      return;
     }
     if (serialMessage[_idx] == 'Z') { 
-      // mute
-      if (isMuted == false) {
-        isMuted = true;
-        scaleVolume(channelVolume,0,35);
-      } else {
-        isMuted = false;
-        scaleVolume(0,channelVolume,40);
-      }
+      volumeMute();
+      return;
     }
-    ///
   }
 }
 
@@ -500,28 +446,128 @@ void readSerial() {
   }
 }
 
+void readMuteButton() {
+  // read pin state
+  uint8_t reading = digitalRead(muteBtnPin);
+  // if switch changed
+  if (reading != lastMuteButton) {
+    // reset the debouncing timer
+    muteButtonMillis = millis();
+  }
+  if ((millis() - muteButtonMillis) > debounceDelay) {
+    // if the button state has changed
+    if (reading != muteButton) {
+      muteButton = reading;
+      if (muteButton == 0) { 
+        volumeMute();
+      }
+    }
+  }
+  lastMuteButton = reading; 
+}
+
 void readVolumeEncoder() {
-  uint16_t volEncPosition = volumeEncoder.read();
+  uint8_t volEncPosition = volumeEncoder.read();
   if(volEncPosition != oldVolEncPos){
+    digitalWrite(LED_BUILTIN, HIGH);
+    Serial.println(volEncPosition);
     if (volEncPosition > oldVolEncPos) {
-      volumeUp();
+      volumeUp(1); // volume step
     }
     if (volEncPosition < oldVolEncPos) {
-      volumeDown();
+      volumeDown(1); // volume step
     }
     oldVolEncPos = volEncPosition;
+    digitalWrite(LED_BUILTIN, LOW);
   }
 }
 
 void readButtonStates() {
-  readVolumeEncoder();
+  if (powerState == 1) {  
+    readVolumeEncoder();
+    readMuteButton();
+  }
+}
+
+// startup routines
+void startupLogic() {
+  writeMCP(powerLEDPin, HIGH);
+  delay(350);
+  writeMCP(powerLEDPin, LOW);
+  delay(350);
+  writeMCP(powerLEDPin, HIGH);
+  delay(350);
+  writeMCP(powerLEDPin, LOW);
+  // last set audio input
+  audioInput(lastInput);
+  // un-mute PGA
+  digitalWrite(volumeMutePin,LOW);
+  isMuted = 0;
+  delay(350);
+  writeMCP(powerLEDPin, HIGH);  
+  // turn power amps on 
+  digitalWrite(ampPowerPin, HIGH);   
+  delay(350);
+  // scale into last set volume
+  scaleVolume(0,lastChannelVolume,50);
+}
+
+// shutdown routines
+void shutdownLogic() {
+  writeMCP(powerLEDPin, LOW);
+  // mute PGA
+  if (isMuted == 0){
+    scaleVolume(channelVolume,0,25);
+    isMuted = 1;
+  }
+  digitalWrite(volumeMutePin,HIGH);  
+  // disconnect inputs
+  audioInput(0);
+  // turn power amps off 
+  digitalWrite(ampPowerPin, LOW); 
+  delay(500);
+}
+
+// power on/off
+void setPowerState() {
+  // read pin state
+  uint8_t reading = digitalRead(powerBtnPin);
+  // if switch changed
+  if (reading != lastPowerButton) {
+    // reset the debouncing timer
+    powerButtonMillis = millis();
+  }
+  if ((millis() - powerButtonMillis) > debounceDelay) {
+    // if the button state has changed:
+    if (reading != powerButton) {
+      powerButton = reading;
+      // power state has changed!
+      if (powerButton == 0) { 
+        powerState = !powerState;  
+        powerCycle = 1;
+      }
+    }
+  }
+  lastPowerButton = reading; 
+  // power state actions  
+  if (powerCycle == 1){
+    // one-shot triggers
+    if (powerState == 1) {
+      /// runs once on boot ///
+      startupLogic();
+    } else {  
+      /// runs once on shutdown ///
+      shutdownLogic();
+    }
+    powerCycle = 0;
+  }
 }
 
 void loop() {
+  // read serial port data
+  readSerial();  
   // power management
   setPowerState();  
-  // read serial port data
-  readSerial();
   // read front-panel buttons
   readButtonStates();
 }

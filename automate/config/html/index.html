@@ -217,9 +217,14 @@
         <!---->
         <p class="parstd"></p> 
         <!---->
-        <button type="button" class="button" onclick="sendCmd('main','bedpi','sleepmode')">
+        <div class="dropdown"> 
+          <button type="button" class="button" onclick="showMenu('sleep-menu')">
             <span class="button__text"><i class="fa-solid fa-moon"></i> Sleep</span>
-        </button>        
+          </button> 
+          <div class="dd-content dd-button" id="sleep-menu">
+            <a onclick="sendCmd('main','bedpi','sleepmode')"><i class="fa-solid fa-toggle-on"></i> Sleepmode</a>
+          </div>
+        </div>
         <div class="dropdown">
           <button type="button" class="button" onclick="showMenu('lr-menu')">
             <span class="button__text"></i> Living Room</span>
@@ -373,7 +378,7 @@
         <button type="button" class="button" onclick="sendCmd('main','vlimit','')">
           <span class="button__text"><i class="fa-solid fa-volume-off"></i> vLimiter</span>
         </button> 
-        <button type="button" class="button" onclick="subModeToggle()">
+        <button type="button" class="button" id="subwooferbtn" onclick="subModeToggle()">
           <span class="button__text"> Subwoofers</span>
         </button>
 
@@ -1021,7 +1026,7 @@
   <form class="form-container">
     <div class="scrollmenu">
       <div class="dropdown"> 
-        <a class="dropbtn">Send Message to LCDpi</a>
+        <a class="dropbtn">Send Message</a>
       </div>  
     </div>    
     <textarea class="scroll-bar" id="lcdTextBox" placeholder="" required=""></textarea>  

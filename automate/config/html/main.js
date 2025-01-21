@@ -10,7 +10,7 @@ let dynChkboxChanged = 0;
 let colorPromptActive = 0;
 let resizeTimeout = 800; // in ms
 let defaultSite = "Automate";
-let siteVersion = "4.12";
+let siteVersion = "5.0";
 let resizeState = false;
 let bookmarkState = 0;
 let loadBarState = 0;
@@ -686,9 +686,10 @@ function elemToClass(_action,_elmid,_class) {
 
 function subMode(_action) {
   // hide subwoofer mode indicator
-  elemToClass(_action,'voldwnbtn','submode_btn')
-  elemToClass(_action,'volmutebtn','submode_btn')
-  elemToClass(_action,'volupbtn','submode_btn')
+  elemToClass(_action,'voldwnbtn','submode_btn');
+  elemToClass(_action,'volmutebtn','submode_btn');
+  elemToClass(_action,'volupbtn','submode_btn');
+  elemToClass(_action,'subwooferbtn','submode_btn');
 }
 
 // controls menu actions

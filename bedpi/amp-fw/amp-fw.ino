@@ -3,8 +3,12 @@
 // by Ben Provenzano III
 //////////////////////////////////////////////////////////////////////////
 
+// shared libraries
 #include <Wire.h>
 #include <Encoder.h>
+
+// local libraries
+#include "neotimer.h"
 
 // serial resources
 #define serialBaudRate 9600
@@ -26,16 +30,27 @@ bool newData = 0;
 bool powerState = 0;
 bool powerCycle = 0;
 uint8_t debounceDelay = 75;
-uint8_t lastPowerButton = 0;
+
+// power control resources
+bool runPowerAction = 0;
+uint8_t lastPowerButton = 1;
 uint8_t powerButton = 0;
 uint32_t powerButtonMillis;
-uint8_t lastMuteButton = 0;
-uint8_t muteButton = 0;
-uint32_t muteButtonMillis;
-Encoder volumeEncoder(inputEncPinB, inputEncPinA);
-uint16_t oldVolEncPos = 1;
+
+// input control resources
 uint8_t selectedInput = 0;
 uint8_t lastInput = 0;
+uint8_t lastInputButton = 1;
+uint8_t inputButton = 0;
+uint32_t inputButtonMillis;
+
+// front panel LED resources
+Neotimer frntLEDTimer = Neotimer();
+uint32_t frntLEDSpeed = 0;
+uint16_t frontLEDCycles = 0;
+bool frntLEDKeepBlink = 0;
+bool frntLEDState = 0;
+bool blinkLEDdone = 0;
 
 // MCP23008 resources
 #define analogRelayPin         0     // Aux-In Relay (active-high) 
@@ -65,9 +80,17 @@ uint8_t mcpState = 0x0;
 #define volumeMutePin          11    // mute pin for the volume control  
 #define maxVolume              192   // maximum PGA volume (192 is 0 dB -- no gain)
 #define minVolume              4
+
+// volume control resources
 uint8_t lastChannelVolume = 0;
 uint8_t channelVolume = 0;
 bool isMuted = 0;
+uint8_t lastMuteButton = 1;
+uint8_t muteButton = 0;
+uint32_t muteButtonMillis;
+// volume encoder resources
+Encoder volumeEncoder(inputEncPinB, inputEncPinA);
+uint16_t oldVolEncPos = 1;
 
 /// initialization ///
 void setup() {
@@ -113,7 +136,7 @@ void setup() {
   delay(800);
   digitalWrite(LED_BUILTIN, LOW);
 }
-  
+
 void writeMCP(uint8_t outputPin, bool pinState) {
   if (outputPin > 7) {
     return;
@@ -221,9 +244,15 @@ void volumeDown(uint8_t _volumeStep) {
 void volumeMute() {
   // mute toggle
   if (isMuted == 0) {
+    // blink LED continously
+    setBlinkFrontLED(600,0,1);    
+    // mute
     isMuted = 1;
     scaleVolume(channelVolume,0,35);
   } else {
+    // disable blinking LED
+    disableFntLEDBlink(); 
+    // un-mute
     isMuted = 0;
     scaleVolume(0,channelVolume,40);
   }
@@ -274,23 +303,29 @@ void audioInput(uint8_t _input) {
   selectedInput = _input;
 }
 
+  // cycle thru audio inputs
+void cycleThruInputs() {
+  if (selectedInput != 0) {
+    uint8_t _input = selectedInput + 1;
+    uint8_t _maxInputRange = 4;
+    uint8_t _minInputRange = 1;
+    if ((_input > _maxInputRange) || (_input < _minInputRange)) {
+      _input = _minInputRange;
+    }
+    setBlinkFrontLED(300,2,0);
+    audioInput(_input);
+  }
+}
+
 // process serial message
 void processMessage(uint8_t messageStart) {
   for(uint8_t _idx = messageStart; _idx < serialMessageEnd; _idx++) {
     if (serialMessage[_idx] == 'J') {
-      if (powerState == 0) {
-        // turn-on system
-        powerCycle = 1;
-        powerState = 1; 
-      }
+      powerOn();
       return;
     }
     if (serialMessage[_idx] == 'K') {
-      if (powerState == 1) {
-        // turn-off system
-        powerCycle = 1;
-        powerState = 0;
-      }
+      powerOff();
       return;
     }
     if (powerState == 0) {
@@ -298,22 +333,26 @@ void processMessage(uint8_t messageStart) {
     }
     if (serialMessage[_idx] == 'A') {
       // optical in #1
+      setBlinkFrontLED(300,2,0);
       audioInput(1);
       return;
     }
     if (serialMessage[_idx] == 'B') {
       // optical in #2
+      setBlinkFrontLED(300,2,0);
       audioInput(2);
       return;
     }
     if (serialMessage[_idx] == 'C') {
       // coax input
+      setBlinkFrontLED(300,2,0);
       audioInput(3);
       return;
     }
     if (serialMessage[_idx] == 'E') {
       // aux input
       audioInput(4);
+      setBlinkFrontLED(300,2,0);
       return;
     }      
     if (serialMessage[_idx] == 'F') { 
@@ -446,6 +485,49 @@ void readSerial() {
   }
 }
 
+// read power button state
+void readInputButton() {
+  // read pin state
+  uint8_t reading = digitalRead(inputBtnPin);
+  // if switch changed
+  if (reading != lastInputButton) {
+    // reset the debouncing timer
+    inputButtonMillis = millis();
+  }
+  if ((millis() - inputButtonMillis) > debounceDelay) {
+    if (reading != inputButton) {
+      inputButton = reading;
+      // input button was pressed
+      if (inputButton == 0) { 
+        cycleThruInputs();
+      }
+    }
+  }
+  lastInputButton = reading;
+}
+
+// read power button state
+void readPowerButton() {
+  // read pin state
+  uint8_t reading = digitalRead(powerBtnPin);
+  // if switch changed
+  if (reading != lastPowerButton) {
+    // reset the debouncing timer
+    powerButtonMillis = millis();
+  }
+  if ((millis() - powerButtonMillis) > debounceDelay) {
+    if (reading != powerButton) {
+      powerButton = reading;
+      // power button was pressed
+      if (powerButton == 0) {
+        powerState = !powerState; // toggle power state 
+        powerCycle = 1; // set power cycle flag
+      }
+    }
+  }
+  lastPowerButton = reading;
+}
+
 void readMuteButton() {
   // read pin state
   uint8_t reading = digitalRead(muteBtnPin);
@@ -455,22 +537,20 @@ void readMuteButton() {
     muteButtonMillis = millis();
   }
   if ((millis() - muteButtonMillis) > debounceDelay) {
-    // if the button state has changed
     if (reading != muteButton) {
       muteButton = reading;
+      // mute button was pressed
       if (muteButton == 0) { 
         volumeMute();
       }
     }
   }
-  lastMuteButton = reading; 
+  lastMuteButton = reading;
 }
 
 void readVolumeEncoder() {
   uint8_t volEncPosition = volumeEncoder.read();
   if(volEncPosition != oldVolEncPos){
-    digitalWrite(LED_BUILTIN, HIGH);
-    Serial.println(volEncPosition);
     if (volEncPosition > oldVolEncPos) {
       volumeUp(1); // volume step
     }
@@ -478,96 +558,170 @@ void readVolumeEncoder() {
       volumeDown(1); // volume step
     }
     oldVolEncPos = volEncPosition;
-    digitalWrite(LED_BUILTIN, LOW);
   }
 }
 
+// read front-panel buttons
 void readButtonStates() {
-  if (powerState == 1) {  
+  if (powerState == 1) { // only when power-on
     readVolumeEncoder();
+    readInputButton();
     readMuteButton();
   }
 }
 
-// startup routines
-void startupLogic() {
-  writeMCP(powerLEDPin, HIGH);
-  delay(350);
-  writeMCP(powerLEDPin, LOW);
-  delay(350);
-  writeMCP(powerLEDPin, HIGH);
-  delay(350);
-  writeMCP(powerLEDPin, LOW);
-  // last set audio input
-  audioInput(lastInput);
-  // un-mute PGA
-  digitalWrite(volumeMutePin,LOW);
-  isMuted = 0;
-  delay(350);
-  writeMCP(powerLEDPin, HIGH);  
-  // turn power amps on 
-  digitalWrite(ampPowerPin, HIGH);   
-  delay(350);
-  // scale into last set volume
-  scaleVolume(0,lastChannelVolume,50);
+// set power state
+void powerOff() {
+  if (powerState == 1) {
+    // turn-off system
+    powerCycle = 1;
+    powerState = 0;
+  }
+}
+void powerOn() {
+  if (powerState == 0) {
+    // turn-on system
+    powerCycle = 1;
+    powerState = 1; 
+  }
 }
 
-// shutdown routines
-void shutdownLogic() {
-  writeMCP(powerLEDPin, LOW);
-  // mute PGA
-  if (isMuted == 0){
-    scaleVolume(channelVolume,0,25);
-    isMuted = 1;
-  }
-  digitalWrite(volumeMutePin,HIGH);  
-  // disconnect inputs
-  audioInput(0);
-  // turn power amps off 
-  digitalWrite(ampPowerPin, LOW); 
-  delay(500);
-}
-
-// power on/off
-void setPowerState() {
-  // read pin state
-  uint8_t reading = digitalRead(powerBtnPin);
-  // if switch changed
-  if (reading != lastPowerButton) {
-    // reset the debouncing timer
-    powerButtonMillis = millis();
-  }
-  if ((millis() - powerButtonMillis) > debounceDelay) {
-    // if the button state has changed:
-    if (reading != powerButton) {
-      powerButton = reading;
-      // power state has changed!
-      if (powerButton == 0) { 
-        powerState = !powerState;  
-        powerCycle = 1;
+void afterBlinkActions() {
+  // action after blinking done
+  if (blinkLEDdone == 1) {
+    blinkLEDdone = 0;
+    // power state change actions
+    if (runPowerAction == 1) {
+      runPowerAction = 0;
+      /// startup logic ///
+      if (powerState == 1) {         
+        // last set audio input
+        audioInput(lastInput);
+        // un-mute PGA
+        digitalWrite(volumeMutePin,LOW);
+        isMuted = 0;
+        delay(200);
+        // turn power amps on 
+        digitalWrite(ampPowerPin, HIGH);   
+        delay(200);
+        // scale into last set volume
+        scaleVolume(0,lastChannelVolume,50);
+        // set power LED on
+        frntLEDState = 1;
+        writeMCP(powerLEDPin, frntLEDState);           
+      }  
+      /// shutdown logic ///      
+      if (powerState == 0) {
+        // stop any running LED timers
+        disableFntLEDBlink();
+        // mute system
+        if (isMuted == 0) {
+          scaleVolume(channelVolume,0,25);
+          isMuted = 1;
+        } // mute PGA
+        digitalWrite(volumeMutePin,HIGH);  
+        // disconnect inputs
+        audioInput(0);
+        delay(200);
+        // turn power amps off 
+        digitalWrite(ampPowerPin, LOW); 
+        delay(200);
+        // set power LED off
+        frntLEDState = 0;
+        writeMCP(powerLEDPin, frntLEDState);  
       }
     }
   }
-  lastPowerButton = reading; 
-  // power state actions  
-  if (powerCycle == 1){
-    // one-shot triggers
-    if (powerState == 1) {
-      /// runs once on boot ///
-      startupLogic();
-    } else {  
-      /// runs once on shutdown ///
-      shutdownLogic();
+}
+
+void restartFrontLED() {
+  // re-start timer
+  frntLEDTimer.set(frntLEDSpeed);
+  frntLEDTimer.start();
+}
+
+void blinkFrontLED() {
+  if (frntLEDTimer.done()) {
+    // blink front-panel LED
+    frntLEDState = !frntLEDState;    
+    writeMCP(powerLEDPin, frntLEDState);
+    if (frntLEDKeepBlink == 1) {
+      // continous blinkmode
+      restartFrontLED();
+    } else {
+      // x # of cycles mode
+      if (frontLEDCycles == 0) {
+        // reset & stop timer
+        frntLEDTimer.stop();
+        frntLEDTimer.reset();
+        frntLEDSpeed = 0;
+        // trigger after blink actions     
+        blinkLEDdone = 1;
+      } else {
+        // countdown cycles
+        restartFrontLED();
+        frontLEDCycles--; 
+      }
     }
+  }
+}
+
+void disableFntLEDBlink() {
+  // reset & stop timer
+  frntLEDTimer.stop();
+  frntLEDTimer.reset();
+  // disable continous blinking
+  frntLEDKeepBlink = 0;
+  // re-enable power LED
+  frntLEDState = 1;    
+  writeMCP(powerLEDPin, frntLEDState);
+}
+
+void setBlinkFrontLED(uint32_t _speed, uint32_t _cycles, bool _continous) {
+  // reset LED
+  disableFntLEDBlink();
+  // _speed = delay (ms)
+  // _cycles = # of blinks
+  // * (even # LED stays on, odd # LED stays off)
+  if (_continous == 1) {
+    frontLEDCycles = 1;
+    frntLEDKeepBlink = 1;
+  } else {
+    frontLEDCycles = _cycles;
+    frntLEDKeepBlink = 0;
+  }
+  frntLEDSpeed = _speed;
+  frntLEDTimer.set(_speed);
+  frntLEDTimer.start();
+}
+
+void setPowerState() {
+  // power state changed actions  
+  if (powerCycle == 1){
     powerCycle = 0;
+    if (powerState == 1) {   
+      // startup LED blinks
+      setBlinkFrontLED(250,8,0);
+    } else {       
+      // shutdown LED blinks
+      setBlinkFrontLED(250,5,0);
+    }
+    // run after blink actions
+    runPowerAction = 1;
   }
 }
 
 void loop() {
   // read serial port data
   readSerial();  
-  // power management
-  setPowerState();  
   // read front-panel buttons
   readButtonStates();
+  // read power button
+  readPowerButton();
+  // blink front-panel LED
+  blinkFrontLED();
+  // action after LED blinking
+  afterBlinkActions();
+  // power management
+  setPowerState();
 }

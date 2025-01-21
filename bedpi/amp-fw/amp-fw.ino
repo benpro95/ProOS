@@ -566,8 +566,8 @@ void readVolumeEncoder() {
 
 // read front-panel buttons
 void readButtonStates() {
-  if (powerState == 1) { // only when power-on
-    if (isMuted == 0) {
+  if (powerState == 1) { // power-on state
+    if (isMuted == 0) { // not muted
       readVolumeEncoder();
       readInputButton();
     }

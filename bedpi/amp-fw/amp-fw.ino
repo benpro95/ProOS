@@ -312,7 +312,7 @@ void cycleThruInputs() {
     if ((_input > _maxInputRange) || (_input < _minInputRange)) {
       _input = _minInputRange;
     }
-    setBlinkFrontLED(300,2,0);
+    setBlinkFrontLED(300,1,0);
     audioInput(_input);
   }
 }
@@ -328,33 +328,9 @@ void processMessage(uint8_t messageStart) {
       powerOff();
       return;
     }
-    if (powerState == 0) {
+    if (powerState != 1) { 
       return;
-    }
-    if (serialMessage[_idx] == 'A') {
-      // optical in #1
-      setBlinkFrontLED(300,2,0);
-      audioInput(1);
-      return;
-    }
-    if (serialMessage[_idx] == 'B') {
-      // optical in #2
-      setBlinkFrontLED(300,2,0);
-      audioInput(2);
-      return;
-    }
-    if (serialMessage[_idx] == 'C') {
-      // coax input
-      setBlinkFrontLED(300,2,0);
-      audioInput(3);
-      return;
-    }
-    if (serialMessage[_idx] == 'E') {
-      // aux input
-      audioInput(4);
-      setBlinkFrontLED(300,2,0);
-      return;
-    }      
+    } // only-when power-on //
     if (serialMessage[_idx] == 'F') { 
       // trigger R (pulse)
       writeMCP(trigger1Pin, LOW);
@@ -369,16 +345,43 @@ void processMessage(uint8_t messageStart) {
       writeMCP(trigger2Pin, HIGH);
       return;
     }
+    if (serialMessage[_idx] == 'Z') { 
+      volumeMute(); // mute 
+      return;
+    }
+    if (isMuted == 1) {
+      return;
+    } // only-when power-on & not muted //  
+    if (serialMessage[_idx] == 'A') {
+      // optical in #1
+      setBlinkFrontLED(300,1,0);
+      audioInput(1);
+      return;
+    }
+    if (serialMessage[_idx] == 'B') {
+      // optical in #2
+      setBlinkFrontLED(300,1,0);
+      audioInput(2);
+      return;
+    }
+    if (serialMessage[_idx] == 'C') {
+      // coax input
+      setBlinkFrontLED(300,1,0);
+      audioInput(3);
+      return;
+    }
+    if (serialMessage[_idx] == 'E') {
+      // aux input
+      setBlinkFrontLED(300,1,0);
+      audioInput(4);
+      return;
+    }   
     if (serialMessage[_idx] == 'X') { 
-      volumeUp(2); // volume step
+      volumeUp(2); // volume up
       return;
     }
     if (serialMessage[_idx] == 'Y') { 
-      volumeDown(2); // volume step
-      return;
-    }
-    if (serialMessage[_idx] == 'Z') { 
-      volumeMute();
+      volumeDown(2); // volume down
       return;
     }
   }
@@ -564,13 +567,15 @@ void readVolumeEncoder() {
 // read front-panel buttons
 void readButtonStates() {
   if (powerState == 1) { // only when power-on
-    readVolumeEncoder();
-    readInputButton();
+    if (isMuted == 0) {
+      readVolumeEncoder();
+      readInputButton();
+    }
     readMuteButton();
   }
 }
 
-// set power state
+// set power states
 void powerOff() {
   if (powerState == 1) {
     // turn-off system
@@ -586,6 +591,43 @@ void powerOn() {
   }
 }
 
+void powerOnLogic() {
+  // last set audio input
+  audioInput(lastInput);
+  // un-mute PGA
+  digitalWrite(volumeMutePin,LOW);
+  isMuted = 0;
+  delay(250);
+  // turn power amps on 
+  digitalWrite(ampPowerPin, HIGH);   
+  delay(150);
+  // scale into last set volume
+  scaleVolume(0,lastChannelVolume,50);
+  // set power LED on
+  frntLEDState = 1;
+  writeMCP(powerLEDPin, frntLEDState);       
+}
+
+void powerOffLogic() {
+  // stop any running LED timers
+  disableFntLEDBlink();
+  // mute system
+  if (isMuted == 0) {
+    scaleVolume(channelVolume,0,25);
+    isMuted = 1;
+  } // mute PGA
+  digitalWrite(volumeMutePin,HIGH);  
+  // disconnect inputs
+  audioInput(0);
+  delay(250);
+  // turn power amps off 
+  digitalWrite(ampPowerPin, LOW); 
+  delay(150);
+  // set power LED off
+  frntLEDState = 0;
+  writeMCP(powerLEDPin, frntLEDState);  
+}
+
 void afterBlinkActions() {
   // action after blinking done
   if (blinkLEDdone == 1) {
@@ -595,40 +637,11 @@ void afterBlinkActions() {
       runPowerAction = 0;
       /// startup logic ///
       if (powerState == 1) {         
-        // last set audio input
-        audioInput(lastInput);
-        // un-mute PGA
-        digitalWrite(volumeMutePin,LOW);
-        isMuted = 0;
-        delay(200);
-        // turn power amps on 
-        digitalWrite(ampPowerPin, HIGH);   
-        delay(200);
-        // scale into last set volume
-        scaleVolume(0,lastChannelVolume,50);
-        // set power LED on
-        frntLEDState = 1;
-        writeMCP(powerLEDPin, frntLEDState);           
+        powerOnLogic(); 
       }  
       /// shutdown logic ///      
       if (powerState == 0) {
-        // stop any running LED timers
-        disableFntLEDBlink();
-        // mute system
-        if (isMuted == 0) {
-          scaleVolume(channelVolume,0,25);
-          isMuted = 1;
-        } // mute PGA
-        digitalWrite(volumeMutePin,HIGH);  
-        // disconnect inputs
-        audioInput(0);
-        delay(200);
-        // turn power amps off 
-        digitalWrite(ampPowerPin, LOW); 
-        delay(200);
-        // set power LED off
-        frntLEDState = 0;
-        writeMCP(powerLEDPin, frntLEDState);  
+        powerOffLogic();
       }
     }
   }
@@ -673,16 +686,15 @@ void disableFntLEDBlink() {
   // disable continous blinking
   frntLEDKeepBlink = 0;
   // re-enable power LED
-  frntLEDState = 1;    
+  frntLEDState = 1;
   writeMCP(powerLEDPin, frntLEDState);
 }
 
 void setBlinkFrontLED(uint32_t _speed, uint32_t _cycles, bool _continous) {
-  // reset LED
-  disableFntLEDBlink();
   // _speed = delay (ms)
   // _cycles = # of blinks
   // * (even # LED stays on, odd # LED stays off)
+  disableFntLEDBlink(); // reset LED timer
   if (_continous == 1) {
     frontLEDCycles = 1;
     frntLEDKeepBlink = 1;
@@ -701,7 +713,7 @@ void setPowerState() {
     powerCycle = 0;
     if (powerState == 1) {   
       // startup LED blinks
-      setBlinkFrontLED(250,8,0);
+      setBlinkFrontLED(250,7,0);
     } else {       
       // shutdown LED blinks
       setBlinkFrontLED(250,5,0);

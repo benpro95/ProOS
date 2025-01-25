@@ -320,68 +320,73 @@ void cycleThruInputs() {
 // process serial message
 void processMessage(uint8_t messageStart) {
   for(uint8_t _idx = messageStart; _idx < serialMessageEnd; _idx++) {
-    if (serialMessage[_idx] == 'J') {
-      powerOn();
-      return;
-    }
-    if (serialMessage[_idx] == 'K') {
-      powerOff();
-      return;
-    }
-    if (powerState != 1) { 
-      return;
-    } // only-when power-on //
+    // trigger R (pulse)
     if (serialMessage[_idx] == 'F') { 
-      // trigger R (pulse)
       writeMCP(trigger1Pin, LOW);
       delay(250);
       writeMCP(trigger1Pin, HIGH);
       return;
     }
+    // trigger L (pulse)    
     if (serialMessage[_idx] == 'G') {
-      // trigger L (pulse)
       writeMCP(trigger2Pin, LOW);
       delay(250);
       writeMCP(trigger2Pin, HIGH);
       return;
     }
-    if (serialMessage[_idx] == 'Z') { 
-      volumeMute(); // mute 
+    // power amplifier on 
+    if (serialMessage[_idx] == 'J') {
+      powerOn();
       return;
     }
-    if (isMuted == 1) {
+    // power amplifier off
+    if (serialMessage[_idx] == 'K') {
+      powerOff();
       return;
-    } // only-when power-on & not muted //  
+    }
+    if (powerState != 1) { // run rest only when power-on
+      return;
+    }
+    // volume mute toggle
+    if (serialMessage[_idx] == 'Z') { 
+      volumeMute();
+      return;
+    }
+    if (isMuted == 1) { // run rest only when not muted
+      return;
+    }
+    // optical in #1
     if (serialMessage[_idx] == 'A') {
-      // optical in #1
       setBlinkFrontLED(300,1,0);
       audioInput(1);
       return;
     }
+    // optical in #2
     if (serialMessage[_idx] == 'B') {
-      // optical in #2
       setBlinkFrontLED(300,1,0);
       audioInput(2);
       return;
     }
+    // coax input    
     if (serialMessage[_idx] == 'C') {
-      // coax input
       setBlinkFrontLED(300,1,0);
       audioInput(3);
       return;
     }
+    // aux input
     if (serialMessage[_idx] == 'E') {
-      // aux input
       setBlinkFrontLED(300,1,0);
       audioInput(4);
       return;
-    }   
+    }
+    // volume up
     if (serialMessage[_idx] == 'X') { 
-      volumeUp(2); // volume up
+      volumeUp(2);
       return;
     }
+    // volume down
     if (serialMessage[_idx] == 'Y') { 
-      volumeDown(2); // volume down
+      volumeDown(2);
       return;
     }
   }

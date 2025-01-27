@@ -260,9 +260,15 @@
             <a onclick="ctlsMenu('lr')"></i> Living Room</a>
           </div>
         </div>
-        <button type="button" class="button" onclick="sendCmd('main','bedpi','stoprelax')">
-          <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
-        </button> 
+        <div class="dropdown">
+          <button type="button" class="button" onclick="showMenu('macs-menu')">
+            <span class="button__text"><i class="fa-solid fa-floppy-disk"></i> Macs</span>
+          </button>  
+          <div class="dd-content dd-button" id="macs-menu">
+            <a onclick="sendCmd('main','rfa1','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
+            <a onclick="sendCmd('main','rfa1','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+          </div>
+        </div>
         <!---->
         <p class="parstd"></p> 
         <!---->
@@ -393,18 +399,12 @@
 
         <p class="parstd"></p> 
 
-        <div class="dropdown">
-          <button type="button" class="button" onclick="showMenu('macs-menu')">
-            <span class="button__text"><i class="fa-solid fa-floppy-disk"></i> Macs</span>
-          </button>  
-          <div class="dd-content dd-button" id="macs-menu">
-            <a onclick="sendCmd('main','rfa1','on')"><i class="fa-solid fa-toggle-on"></i> On</a>
-            <a onclick="sendCmd('main','rfa1','off')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-          </div>
-        </div>
         <button type="button" class="button" onclick="relaxSend('fan')">
           <span class="button__text"></i>Fan</span>
         </button>
+        <button type="button" class="button" onclick="sendCmd('main','bedpi','stoprelax')">
+          <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
+        </button>         
         <button type="button" class="button" onclick="relaxSend('waterfall')">
             <span class="button__text"></i>Waterfall</span>
         </button>

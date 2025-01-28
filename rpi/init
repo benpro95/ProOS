@@ -143,17 +143,6 @@ echo temp = $tf\'F \($tc\'C\)
 exit
 ;;
 
-## Restart System
-restart)
-/usr/bin/systemctl reboot
-exit
-;;
-
-reboot)
-/usr/bin/systemctl reboot
-exit
-;;
-
 rebroken)
 echo "Removing broken APT packages..."
 dpkg -l | grep ^iU | awk '{print $2}' | xargs sudo dpkg --purge 
@@ -360,6 +349,19 @@ fi
 exit
 ;;
 
+disablewifi)
+mount -o remount,rw /boot/firmware
+if [ -e /boot/firmware/apd.enable ]; then
+  echo 'Re-enabling Wi-Fi on startup...'
+  rm -f /boot/firmware/disable.wifi
+else
+  echo 'Disabling Wi-Fi on startup...'
+  touch /boot/firmware/disable.wifi
+fi
+mount -o remount,ro /boot/firmware
+exit
+;;
+
 resetbt)
 ## Reset bluetooth connections 
 for device in $(bluetoothctl devices  | grep -o "[[:xdigit:]:]\{8,17\}"); do
@@ -367,7 +369,6 @@ for device in $(bluetoothctl devices  | grep -o "[[:xdigit:]:]\{8,17\}"); do
 done
 exit
 ;;
-
 
 id)
 ## Capture current LED status

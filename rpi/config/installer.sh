@@ -222,6 +222,7 @@ mount -o remount,rw /boot/firmware
 rm -f /boot/ssh
 rm -f /boot/firmware/ssh
 ## Delete flags, return to default
+rm -f /boot/firmware/disable.wifi
 rm -f /boot/firmware/apd.enable
 rm -f /boot/firmware/apd.conf
 

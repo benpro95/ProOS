@@ -393,10 +393,10 @@ CMD=$1
 
 case "$1" in
 
-## Forward command to bedpi.home
+## Forward command to bedpi
 bedpi)
 ESP32="no"
-TARGET="bedpi.home"
+TARGET="10.177.1.15"
 XMITCMD="$CMDARG"
 CALLAPI
 exit
@@ -404,7 +404,7 @@ exit
 
 relax)
 ESP32="no"
-TARGET="bedpi.home"
+TARGET="10.177.1.15"
 XMITCMD="relax"
 LCDPI_MSG="playing $CMDARG"
 CALLAPI

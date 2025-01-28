@@ -2,7 +2,7 @@
 ## ProOS for RPi, Network Script by Ben Provenzano III
 #### RUN FROM '/opt/rpi/init CMD'
 
-STOP_NET(){
+STOP_NET() {
 ## Clear Firewall Tables
 iptables -F
 if [ -e /sys/class/net/wlan0 ] ; then
@@ -28,26 +28,31 @@ sleep 2.5
 CLIENT_MODE(){
 ## Stop Networking
 STOP_NET
-if [ -e /sys/class/net/wlan0 ] ; then
-  ## Read Wi-Fi Configuration
-  if [ -e /boot/firmware/wpa.conf ]; then
-    WPADATA=`cat /boot/firmware/wpa.conf`
-    DELIM="|$|"
-    WPA_SSID=${WPADATA%"$DELIM"*}
-    WPA_PWD=${WPADATA#*"$DELIM"}
-    nmcli con add con-name RPiWiFi ifname wlan0 type wifi ssid "$WPA_SSID"
-    nmcli con modify RPiWiFi wifi-sec.key-mgmt wpa-psk
-    nmcli con modify RPiWiFi wifi-sec.psk "$WPA_PWD"
-    nmcli con modify RPiWiFi connection.autoconnect yes
-    nmcli con down RPiWiFi
-    nmcli con up RPiWiFi
-  else
-    echo "No WiFi Configuration Found, Switching to Access Point..."
-    APD_MODE
-  fi
+if [ -e /boot/firmware/disable.wifi ]; then
+  echo "Wi-Fi Disabled"
 else
-  echo "No WiFi Hardware Found"
+  if [ -e /sys/class/net/wlan0 ] ; then
+    ## Read Wi-Fi Configuration
+    if [ -e /boot/firmware/wpa.conf ]; then
+      WPADATA=`cat /boot/firmware/wpa.conf`
+      DELIM="|$|"
+      WPA_SSID=${WPADATA%"$DELIM"*}
+      WPA_PWD=${WPADATA#*"$DELIM"}
+      nmcli con add con-name RPiWiFi ifname wlan0 type wifi ssid "$WPA_SSID"
+      nmcli con modify RPiWiFi wifi-sec.key-mgmt wpa-psk
+      nmcli con modify RPiWiFi wifi-sec.psk "$WPA_PWD"
+      nmcli con modify RPiWiFi connection.autoconnect yes
+      nmcli con down RPiWiFi
+      nmcli con up RPiWiFi
+    else
+      echo "No WiFi Configuration Found, Switching to Access Point..."
+      APD_MODE
+    fi
+  else
+    echo "No WiFi Hardware Found"
+  fi
 fi
+
 }
 
 APD_MODE(){

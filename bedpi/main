@@ -11,22 +11,20 @@ ARG2=$2
 case "$1" in
 
 boot)
-## File Share
+## SMB file share
 systemctl start autofs
-## Start Amplifier Communication
+## Amplifier communication
 ln -sf /dev/$ARDUINO_PORT /dev/zterm-tty
 systemctl start rpi-ztermcom
-## AirPlay Support
-systemctl start rpi-airplay
-## Bluetooth Audio
+## Bluetooth audio
 systemctl start hciuart
 systemctl start bluetooth
 systemctl start bt-agent@hci0
 systemctl start bluealsa-aplay
 ## Blink LED
 python3 /opt/rpi/blinkled.py &&
-## Reset Bluetooth Connections
-/opt/rpi/init resetbt
+sleep 1.25
+python3 /opt/rpi/blinkled.py &&
 exit
 ;;
 
@@ -36,6 +34,8 @@ exit
 ;;
 
 relax)
+## Power-on amplifier
+echo "J" > /dev/zterm
 ## Pi audio input
 echo "C" > /dev/zterm
 ## Play sound in loop
@@ -57,18 +57,20 @@ exit
 ;;
 
 sleepmode)
-## Toggle Sounds On/Off 
+## Toggle relax sounds
 if (systemctl is-active --quiet rpi-relaxloop.service); then
   ## Apple TV input
   echo "B" > /dev/zterm
   echo "Stopping playback..."
   systemctl stop rpi-relaxloop
-else 
+else
+  ## Power-on amplifier
+  echo "J" > /dev/zterm
   ## Pi audio input
   echo "C" > /dev/zterm	
   echo "Starting sleep mode..."
   systemctl stop rpi-relaxloop
-  systemctl set-environment rpi_relaxmode="coldwar"
+  systemctl set-environment rpi_relaxmode="fan"
   systemctl start rpi-relaxloop
 fi
 ## Blink LED
@@ -77,67 +79,41 @@ exit
 ;;
 
 opt-a)
-echo "Optical A: Input..."
 echo "A" > /dev/zterm
-## Blink LED
-python3 /opt/rpi/blinkled.py &&
 exit
 ;;
 
 opt-b)
-echo "Optical B: Input..."
 echo "B" > /dev/zterm
-## Blink LED
-python3 /opt/rpi/blinkled.py &&
 exit
 ;;
 
 coaxial)
-echo "Coaxial Input..."
 echo "C" > /dev/zterm
-## Blink LED
-python3 /opt/rpi/blinkled.py &&
 exit
 ;;
 
 aux)
-echo "Aux Input..."
 echo "E" > /dev/zterm
-## Blink LED
-python3 /opt/rpi/blinkled.py &&
-exit
-;;
-
-toggletv)
-echo "Toggling TV Power..."
-echo "G" > /dev/zterm
-## Blink LED
-python3 /opt/rpi/blinkled.py &&
 exit
 ;;
 
 volup)
-echo "Volume Up..."
 echo "X" > /dev/zterm
 exit
 ;;
 
 voldwn)
-echo "Volume Down..."
 echo "Y" > /dev/zterm
 exit
 ;;
 
 volmute)
-echo "Toggle Mute..."
 echo "Z" > /dev/zterm
-## Blink LED
-python3 /opt/rpi/blinkled.py &&
 exit
 ;;
 
 poweron)
-echo "Powering On..."
 echo "J" > /dev/zterm
 ## Blink LED
 python3 /opt/rpi/blinkled.py &&
@@ -145,8 +121,30 @@ exit
 ;;
 
 poweroff)
-echo "Powering Off..."
 echo "K" > /dev/zterm
+## Blink LED
+python3 /opt/rpi/blinkled.py &&
+exit
+;;
+
+apd-on)
+## Blink LED
+python3 /opt/rpi/blinkled.py &&
+## Enable Hotspot Mode
+/bin/bash /etc/netmode.sh apd
+exit
+;;
+
+apd-off)
+## Blink LED
+python3 /opt/rpi/blinkled.py &&
+## Disable Hotspot Mode
+/bin/bash /etc/netmode.sh client
+exit
+;;
+
+toggletv)
+echo "G" > /dev/zterm
 ## Blink LED
 python3 /opt/rpi/blinkled.py &&
 exit

@@ -33,6 +33,14 @@ cp -f $BIN/modconf/asound.conf /etc/
 chmod 644 /etc/asound.conf
 chown root:root /etc/asound.conf
 
+## SAMBA Configuration 
+#useradd ben
+#smbpasswd -a ben
+usermod -G pi ben
+cp -f $BIN/modconf/smb.conf /etc/samba/
+chmod 644 /etc/samba/smb.conf
+chown root:root /etc/samba/smb.conf
+
 ## AutoFS Configuration
 cp -f $BIN/modconf/auto.master /etc/
 chmod 644 /etc/auto.master

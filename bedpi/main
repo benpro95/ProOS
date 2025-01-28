@@ -11,8 +11,6 @@ ARG2=$2
 case "$1" in
 
 boot)
-## SMB file share
-systemctl start autofs
 ## Amplifier communication
 ln -sf /dev/$ARDUINO_PORT /dev/zterm-tty
 systemctl start rpi-ztermcom
@@ -21,9 +19,9 @@ systemctl start hciuart
 systemctl start bluetooth
 systemctl start bt-agent@hci0
 systemctl start bluealsa-aplay
+## SMB file share client
+systemctl start autofs
 ## Blink LED
-python3 /opt/rpi/blinkled.py &&
-sleep 1.25
 python3 /opt/rpi/blinkled.py &&
 exit
 ;;
@@ -127,11 +125,21 @@ python3 /opt/rpi/blinkled.py &&
 exit
 ;;
 
+toggletv)
+echo "G" > /dev/zterm
+## Blink LED
+python3 /opt/rpi/blinkled.py &&
+exit
+;;
+
 apd-on)
 ## Blink LED
 python3 /opt/rpi/blinkled.py &&
 ## Enable Hotspot Mode
-/bin/bash /etc/netmode.sh apd
+/bin/bash /etc/netmode.sh apd &&
+## SMB share server
+systemctl start smbd
+systemctl start nmbd
 exit
 ;;
 
@@ -139,14 +147,10 @@ apd-off)
 ## Blink LED
 python3 /opt/rpi/blinkled.py &&
 ## Disable Hotspot Mode
-/bin/bash /etc/netmode.sh client
-exit
-;;
-
-toggletv)
-echo "G" > /dev/zterm
-## Blink LED
-python3 /opt/rpi/blinkled.py &&
+/bin/bash /etc/netmode.sh client &&
+## disable SMB share server
+systemctl stop smbd
+systemctl stop nmbd
 exit
 ;;
 

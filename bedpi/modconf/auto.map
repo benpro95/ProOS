@@ -1,1 +1,1 @@
-Media   -fstype=cifs,vers=3.0,rw,file_mode=0777,dir_mode=0777,nounix,credentials=/etc/auto.creds ://10.177.1.4/Media
+Media   -fstype=cifs,vers=3.0,ro,file_mode=0777,dir_mode=0777,nounix,credentials=/etc/auto.creds ://10.177.1.4/Media

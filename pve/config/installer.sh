@@ -154,6 +154,11 @@ chmod 600 /etc/postfix/sasl_passwd
 postmap hash:/etc/postfix/sasl_passwd
 postfix reload
 
+## Network Bug Fix 'https://forum.proxmox.com/threads/invalid-arp-responses-cause-network-problems.118128/'
+cp -f /tmp/config/99-arp_ignore.conf /etc/sysctl.d/
+chmod 644 /etc/sysctl.d/99-arp_ignore.conf
+chown root:root /etc/sysctl.d/99-arp_ignore.conf
+
 ## Drives List
 cp -f /tmp/config/drives.txt /usr/lib/
 chmod 644 /usr/lib/drives.txt

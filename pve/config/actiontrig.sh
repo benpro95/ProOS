@@ -153,24 +153,6 @@ if [ -e $TRIGGERS_DIR/restorexana.txt ]; then
   EXIT_ROUTINE
 fi
 #######################################################
-if [ -e $TRIGGERS_DIR/startlegacy.txt ]; then
-  echo " "
-  touch /tmp/actiontrig.lock
-  rm -f $TRIGGERS_DIR/startlegacy.txt
-  echo "starting legacy file share LXC..."
-  pct start 108
-  chmod 777 $LOGFILE
-  EXIT_ROUTINE
-fi
-if [ -e $TRIGGERS_DIR/stoplegacy.txt ]; then
-  echo " "
-  touch /tmp/actiontrig.lock	
-  rm -f $TRIGGERS_DIR/stoplegacy.txt
-  echo "shutting down legacy file share LXC..."
-  pct stop 108
-  EXIT_ROUTINE
-fi
-#######################################################
 if [ -e $TRIGGERS_DIR/startunifi.txt ]; then
   echo " "
   touch /tmp/actiontrig.lock
@@ -234,12 +216,11 @@ if [ -e $TRIGGERS_DIR/pve_vmsbkp.txt ]; then
   chmod 777 $VM_CONFS/automate/lxc.conf
   ###
   echo ""
-  echo "Backing-up Legacy LXC 108..."
-  vzdump 108 --mode snapshot --compress zstd --node pve --storage local \
-    --maxfiles 1 --remove 1 --exclude-path /mnt
-  cp -v /etc/pve/lxc/108.conf $VM_CONFS/legacy/lxc.conf
-  chmod 777 $VM_CONFS/legacy/lxc.conf  
-  ###
+  echo "Backing-up Unifi LXC 107..."
+  vzdump 107 --mode snapshot --compress zstd --node pve --storage local \
+    --maxfiles 1 --remove 1
+  cp -v /etc/pve/lxc/107.conf $VM_CONFS/unifi/lxc.conf
+  chmod 777 $VM_CONFS/unifi/lxc.conf 
   ### Virtual Machine Backups
   ###
   echo ""
@@ -255,12 +236,6 @@ if [ -e $TRIGGERS_DIR/pve_vmsbkp.txt ]; then
   cp -v /etc/pve/qemu-server/105.conf $VM_CONFS/xana/qemu.conf
   chmod 777 $VM_CONFS/xana/qemu.conf
   ###
-  echo ""
-  echo "Backing-up Unifi LXC 107..."
-  vzdump 107 --mode snapshot --compress zstd --node pve --storage local \
-    --maxfiles 1 --remove 1
-  cp -v /etc/pve/lxc/107.conf $VM_CONFS/unifi/lxc.conf
-  chmod 777 $VM_CONFS/unifi/lxc.conf
   ### Copy to ZFS Pool
   ###
   echo ""

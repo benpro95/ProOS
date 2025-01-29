@@ -11,6 +11,9 @@ LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
 LCDPI_MSG=""
 
+XMIT_IP="10.177.1.12" ## Xmit IP Address
+BEDPI_IP="10.177.1.15" ## BedPi Address
+
 CALLAPI(){
 #### API Call
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 3 --retry 1 --retry-delay 1 --no-keepalive"
@@ -19,7 +22,7 @@ if [[ "$ESP32" == "no" ]]; then
   /usr/bin/curl $CURLARGS --data "var=$CMDARG&arg=$XMITCMD&action=main" http://$TARGET/exec.php
   CMDARG=""
 else ## ESP32 Xmit URL
-  /usr/bin/curl $CURLARGS http://10.177.1.12 -H "Accept: ####?|$XMITCALL"
+  /usr/bin/curl $CURLARGS http://"$XMIT_IP" -H "Accept: ####?|$XMITCALL"
 fi
 ## Clear Data
 TARGET=""
@@ -391,12 +394,12 @@ CMDARG=$2
 ## Read the 1st argument
 CMD=$1
 
-case "$1" in
+case "$CMD" in
 
 ## Forward command to bedpi
 bedpi)
 ESP32="no"
-TARGET="10.177.1.15"
+TARGET="$BEDPI_IP"
 XMITCMD="$CMDARG"
 CALLAPI
 exit
@@ -404,7 +407,7 @@ exit
 
 relax)
 ESP32="no"
-TARGET="10.177.1.15"
+TARGET="$BEDPI_IP"
 XMITCMD="relax"
 LCDPI_MSG="playing $CMDARG"
 CALLAPI
@@ -592,6 +595,29 @@ if [ "$SERVERARG" == "files" ]; then
   if [ "$FILESCMD" != "" ]; then
     ESP32="no"; TARGET="files.home"; XMITCMD="$FILESCMD"; CALLAPI
   fi  
+  exit
+fi
+## start / stop legacy services
+if [ "$SERVERARG" == "startlegacy" ]; then
+  echo "Starting legacy services..." &>> $LOGFILE
+  CMDARG=""
+  ESP32="no"
+  TARGET="$BEDPI_IP"
+  XMITCMD="apd-on"
+  CALLAPI
+  LCDPI_MSG="Legacy services started."
+  CALL_LCDPI
+  exit
+fi
+if [ "$SERVERARG" == "stoplegacy" ]; then
+  echo "Stopping legacy services..." &>> $LOGFILE
+  CMDARG=""
+  ESP32="no"
+  TARGET="$BEDPI_IP"
+  XMITCMD="apd-off"
+  CALLAPI
+  LCDPI_MSG="Legacy services stopped."
+  CALL_LCDPI
   exit
 fi
 ## Pass action file to the hypervisor

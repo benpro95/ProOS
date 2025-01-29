@@ -43,8 +43,9 @@ mkdir -p /mnt/ramdisk
 touch /mnt/ramdisk/sysout.txt
 chmod -R 777 /mnt/ramdisk
 
-## Power saving mode for CPU
-echo "ondemand" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+## Power mode for CPU
+#echo "ondemand" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+echo "performance" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 
 ## Disable Web UI
 sleep 15

@@ -33,10 +33,13 @@ cp -f $BIN/modconf/asound.conf /etc/
 chmod 644 /etc/asound.conf
 chown root:root /etc/asound.conf
 
+## SAMBA Users 
+useradd media --password='' --shell=/bin/false
+groupadd shared
+usermod -a -G shared media
+#smbpasswd -a media
+
 ## SAMBA Configuration 
-#useradd ben
-#smbpasswd -a ben
-usermod -G pi ben
 cp -f $BIN/modconf/smb.conf /etc/samba/
 chmod 644 /etc/samba/smb.conf
 chown root:root /etc/samba/smb.conf

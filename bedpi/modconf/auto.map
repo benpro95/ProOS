@@ -1,1 +1,3 @@
-Media   -fstype=cifs,vers=3.0,ro,file_mode=0777,dir_mode=0777,nounix,credentials=/etc/auto.creds ://10.177.1.4/Media
+Downloads   -fstype=cifs,dir_mode=0755,file_mode=0755,nounix,uid=media,gid=shared,rw,credentials=/etc/auto.creds ://10.177.1.4/Downloads
+Media       -fstype=cifs,dir_mode=0755,file_mode=0755,nounix,uid=media,gid=shared,ro,credentials=/etc/auto.creds ://10.177.1.4/Media
+Data        -fstype=cifs,dir_mode=0755,file_mode=0755,nounix,uid=media,gid=shared,ro,credentials=/etc/auto.creds ://10.177.1.4/Data

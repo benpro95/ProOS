@@ -4,11 +4,17 @@
 ## Arduino's Serial Port
 ARDUINO_PORT="ttyUSB0"
 
-## Read the 2nd Argument
+## Read Command-Line Arguments
+ARG1=$1
 ARG2=$2
 
-## Read the 1st Argument
-case "$1" in
+BLINKLED(){
+## Blink front-panel LED
+python3 /opt/rpi/blinkled.py &&
+return
+}
+
+case "$ARG1" in
 
 boot)
 ## Amplifier communication
@@ -21,8 +27,7 @@ systemctl start bt-agent@hci0
 systemctl start bluealsa-aplay
 ## SMB file share client
 systemctl start autofs
-## Blink LED
-python3 /opt/rpi/blinkled.py &&
+BLINKLED
 exit
 ;;
 
@@ -40,8 +45,7 @@ echo "C" > /dev/zterm
 systemctl stop rpi-relaxloop
 systemctl set-environment rpi_relaxmode=$ARG2
 systemctl start rpi-relaxloop
-## Blink LED
-python3 /opt/rpi/blinkled.py &&
+BLINKLED
 exit
 ;;
 
@@ -49,8 +53,7 @@ stoprelax)
 ## Apple TV input
 echo "B" > /dev/zterm
 systemctl stop rpi-relaxloop
-## Blink LED
-python3 /opt/rpi/blinkled.py &&
+BLINKLED
 exit
 ;;
 
@@ -71,8 +74,7 @@ else
   systemctl set-environment rpi_relaxmode="fan"
   systemctl start rpi-relaxloop
 fi
-## Blink LED
-python3 /opt/rpi/blinkled.py &&
+BLINKLED
 exit
 ;;
 
@@ -113,28 +115,24 @@ exit
 
 poweron)
 echo "J" > /dev/zterm
-## Blink LED
-python3 /opt/rpi/blinkled.py &&
+BLINKLED
 exit
 ;;
 
 poweroff)
 echo "K" > /dev/zterm
-## Blink LED
-python3 /opt/rpi/blinkled.py &&
+BLINKLED
 exit
 ;;
 
 toggletv)
 echo "G" > /dev/zterm
-## Blink LED
-python3 /opt/rpi/blinkled.py &&
+BLINKLED
 exit
 ;;
 
 apd-on)
-## Blink LED
-python3 /opt/rpi/blinkled.py &&
+BLINKLED
 ## Enable Hotspot Mode
 /bin/bash /etc/netmode.sh apd &&
 ## SMB share server
@@ -144,8 +142,7 @@ exit
 ;;
 
 apd-off)
-## Blink LED
-python3 /opt/rpi/blinkled.py &&
+BLINKLED
 ## Disable Hotspot Mode
 /bin/bash /etc/netmode.sh client &&
 ## disable SMB share server
@@ -155,6 +152,7 @@ exit
 ;;
 
 update-fw)
+BLINKLED
 ## Stop Serial Communication
 systemctl stop rpi-ztermcom
 rm -rfv /dev/zterm-tty

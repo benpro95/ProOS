@@ -497,7 +497,7 @@ void readSerial() {
 void readInputButton() {
   // read pin state
   uint8_t reading = digitalRead(inputBtnPin);
-  // if switch changed
+  // switch changed
   if (reading != lastInputButton) {
     // reset the debouncing timer
     inputButtonMillis = millis();
@@ -518,7 +518,7 @@ void readInputButton() {
 void readPowerButton() {
   // read pin state
   uint8_t reading = digitalRead(powerBtnPin);
-  // if switch changed
+  // switch changed
   if (reading != lastPowerButton) {
     // reset the debouncing timer
     powerButtonMillis = millis();
@@ -539,7 +539,7 @@ void readPowerButton() {
 void readMuteButton() {
   // read pin state
   uint8_t reading = digitalRead(muteBtnPin);
-  // if switch changed
+  // switch changed
   if (reading != lastMuteButton) {
     // reset the debouncing timer
     muteButtonMillis = millis();
@@ -735,10 +735,10 @@ void loop() {
   readButtonStates();
   // read power button
   readPowerButton();
+  // manage power state
+  setPowerState();  
   // blink front-panel LED
   blinkFrontLED();
   // action after LED blinking
   afterBlinkActions();
-  // power management
-  setPowerState();
 }

@@ -10,8 +10,7 @@ ARG2=$2
 
 BLINKLED(){
 ## Blink front-panel LED
-python3 /opt/rpi/blinkled.py &&
-return
+nohup python3 /opt/rpi/blinkled.py >/dev/null 2>&1 &
 }
 
 case "$ARG1" in
@@ -25,20 +24,20 @@ systemctl start hciuart
 systemctl start bluetooth
 systemctl start bt-agent@hci0
 systemctl start bluealsa-aplay
-## SMB file share client
-systemctl start autofs
 BLINKLED
+## SMB file share client
+sleep 10
+systemctl start autofs
 exit
 ;;
 
 serialmon)
-/opt/rpi/arduino-cli monitor -p /dev/$ARDUINO_PORT -b arduino:avr:uno --config 9600
+/opt/rpi/arduino-cli monitor -p /dev/$ARDUINO_PORT \
+  -b arduino:avr:uno --config 9600
 exit
 ;;
 
 relax)
-## Power-on amplifier
-echo "J" > /dev/zterm
 ## Pi audio input
 echo "C" > /dev/zterm
 ## Play sound in loop
@@ -65,8 +64,6 @@ if (systemctl is-active --quiet rpi-relaxloop.service); then
   echo "Stopping playback..."
   systemctl stop rpi-relaxloop
 else
-  ## Power-on amplifier
-  echo "J" > /dev/zterm
   ## Pi audio input
   echo "C" > /dev/zterm	
   echo "Starting sleep mode..."
@@ -80,36 +77,43 @@ exit
 
 opt-a)
 echo "A" > /dev/zterm
+BLINKLED
 exit
 ;;
 
 opt-b)
 echo "B" > /dev/zterm
+BLINKLED
 exit
 ;;
 
 coaxial)
 echo "C" > /dev/zterm
+BLINKLED
 exit
 ;;
 
 aux)
 echo "E" > /dev/zterm
+BLINKLED
 exit
 ;;
 
 volup)
 echo "X" > /dev/zterm
+BLINKLED
 exit
 ;;
 
 voldwn)
 echo "Y" > /dev/zterm
+BLINKLED
 exit
 ;;
 
 volmute)
 echo "Z" > /dev/zterm
+BLINKLED
 exit
 ;;
 
@@ -134,20 +138,24 @@ exit
 apd-on)
 BLINKLED
 ## Enable Hotspot Mode
-/bin/bash /etc/netmode.sh apd &&
+nohup /etc/netmode.sh apd >/dev/null 2>&1 &
 ## SMB share server
 systemctl start smbd
 systemctl start nmbd
+# restart SMB client
+systemctl restart autofs
 exit
 ;;
 
 apd-off)
 BLINKLED
 ## Disable Hotspot Mode
-/bin/bash /etc/netmode.sh client &&
+nohup /etc/netmode.sh client >/dev/null 2>&1 &
 ## disable SMB share server
 systemctl stop smbd
 systemctl stop nmbd
+# restart SMB client
+systemctl restart autofs
 exit
 ;;
 
@@ -159,8 +167,10 @@ rm -rfv /dev/zterm-tty
 ## Update Arduino over USB
 rm -rf /opt/rpi/amp-fw/build
 mkdir -p /opt/rpi/amp-fw/build
-/opt/rpi/arduino-cli -v compile --fqbn arduino:avr:uno /opt/rpi/amp-fw/amp-fw.ino --build-path /opt/rpi/amp-fw/build
-/opt/rpi/arduino-cli -v upload -p /dev/$ARDUINO_PORT --fqbn arduino:avr:uno --input-dir /opt/rpi/amp-fw/build
+/opt/rpi/arduino-cli -v compile --fqbn arduino:avr:uno \
+  /opt/rpi/amp-fw/amp-fw.ino --build-path /opt/rpi/amp-fw/build
+/opt/rpi/arduino-cli -v upload -p /dev/$ARDUINO_PORT \
+  --fqbn arduino:avr:uno --input-dir /opt/rpi/amp-fw/build
 ## Start Serial Communication
 ln -sf /dev/$ARDUINO_PORT /dev/zterm-tty
 systemctl start rpi-ztermcom

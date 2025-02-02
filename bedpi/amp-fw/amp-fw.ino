@@ -320,6 +320,17 @@ void cycleThruInputs() {
 // process serial message
 void processMessage(uint8_t messageStart) {
   for(uint8_t _idx = messageStart; _idx < serialMessageEnd; _idx++) {
+
+
+
+  switch (var) {
+    case 1:
+        break;
+    default:
+        printf("Default case is Matched.");
+        break;
+  }
+
     // trigger R (pulse)
     if (serialMessage[_idx] == 'F') { 
       writeMCP(trigger1Pin, LOW);

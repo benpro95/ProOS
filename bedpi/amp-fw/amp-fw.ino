@@ -6,6 +6,8 @@
 // shared libraries
 #include <Wire.h>
 #include <Encoder.h>
+#include <stdio.h>
+#include <string.h>
 
 // local libraries
 #include "neotimer.h"
@@ -319,19 +321,11 @@ void cycleThruInputs() {
 
 // process serial message
 void processMessage(uint8_t messageStart) {
+  
   for(uint8_t _idx = messageStart; _idx < serialMessageEnd; _idx++) {
+    Serial.println(serialMessage[_idx]);
 
-
-
-  switch (var) {
-    case 1:
-        break;
-    default:
-        printf("Default case is Matched.");
-        break;
-  }
-
-    // trigger R (pulse)
+ // trigger R (pulse)
     if (serialMessage[_idx] == 'F') { 
       writeMCP(trigger1Pin, LOW);
       delay(250);
@@ -400,7 +394,17 @@ void processMessage(uint8_t messageStart) {
       volumeDown(2);
       return;
     }
+
+    
   }
+
+  //switch (var) {
+  //  case 1:
+  //      break;
+  //  default:
+  //      printf("Default case is Matched.");
+  //      break;
+  //}
 }
 
 // decode serial message

@@ -8,9 +8,6 @@ let selectedVM = "";
 let dynMenuActive = 0;
 let dynChkboxChanged = 0;
 let colorPromptActive = 0;
-let resizeTimeout = 800; // in ms
-let defaultSite = "Automate";
-let siteVersion = "5.0";
 let resizeState = false;
 let bookmarkState = 0;
 let loadBarState = 0;
@@ -19,6 +16,12 @@ let socket = null;
 let fileData = [];
 var timeStamp;
 let sysModel;
+
+// global constants
+let resizeTimeout = 800; // in ms
+let defaultSite = "Automate";
+let siteVersion = "5.0";
+
 //////////////////////
 
 // runs after DOM finishes loading
@@ -1397,27 +1400,33 @@ function sendText() {
     document.getElementById("lcdTextBox").value = sendtext;
   } else {
     if (sysModel === defaultSite) {
-      sendCmd('main','lcdpimsg',data.replace(/ /g,"~"));
+      // transmit from remote connection
+      sendCmd('main','lcdpi_message',data.replace(/ /g,"~"));
     } else {
-      // Create the HTTP POST request
+      // transmit from local connection
       savePOST('message',[data]);  
     }
     loadBar(0.25);
-    clearText();   
+    clearMsgBox();
   }
 }
 
-function clearText() {
+function eraseText() {
+  clearMsgBox();
+  // erase screen
+  if (sysModel === defaultSite) {
+    sendCmd('main','lcdpi_message','!erase@');
+  } else {
+    sendCmd('main','erase','');
+  }
+}
+
+function clearMsgBox() {
   // clear text window
   document.getElementById("lcdTextBox").value = "";
   clearPendingCmd();
-  // erase screen
-  if (sysModel === defaultSite) {
-    sendCmd('main','clearlcdpi','');
-  } else {
-    sendCmd('main','clear','');
-  }
 }
+
 
 // loading bar animation 
 async function loadBar(_interval) {

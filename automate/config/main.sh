@@ -69,7 +69,8 @@ fi
 ### HiFi Preamp (Philips Universal Remote) NEC 32-bit
 ##
 ## Power
-if [[ "$XMITCMD" == "pwrhifi" ]]; then
+case "$XMITCMD" in
+  "pwrhifi")
    ## Mute Subwoofer Amp
    XMITCALL="0|0|551520375"
    CALLAPI
@@ -81,7 +82,7 @@ if [[ "$XMITCMD" == "pwrhifi" ]]; then
    CALL_LCDPI
    return
 fi
-if [[ "$XMITCMD" == "hifioff" ]]; then
+  "hifioff")
    ## Mute Subwoofer Amp
    XMITCALL="0|0|551520375"
    CALLAPI
@@ -93,7 +94,7 @@ if [[ "$XMITCMD" == "hifioff" ]]; then
    CALL_LCDPI
    return
 fi
-if [[ "$XMITCMD" == "hifion" ]]; then
+  "hifion")
    XMITCALL="0|0|1261869414"
    CALLAPI
    LCDPI_MSG="system on"   
@@ -101,7 +102,7 @@ if [[ "$XMITCMD" == "hifion" ]]; then
    return
 fi
 ## DAC
-if [[ "$XMITCMD" == "dac" ]]; then
+  "dac")
    XMITCALL="0|0|1261793423"
    LCDPI_MSG="DAC in"
    CALLAPI
@@ -109,7 +110,7 @@ if [[ "$XMITCMD" == "dac" ]]; then
    return   
 fi
 ## Aux
-if [[ "$XMITCMD" == "aux" ]]; then
+  "aux")
    XMITCALL="0|0|1261826063"
    LCDPI_MSG="aux in"
    CALLAPI   
@@ -117,7 +118,7 @@ if [[ "$XMITCMD" == "aux" ]]; then
    return
 fi
 ## Phono
-if [[ "$XMITCMD" == "phono" ]]; then 
+  "phono")
    XMITCALL="0|0|1261766903"
    LCDPI_MSG="phono in"
    CALLAPI   
@@ -125,7 +126,7 @@ if [[ "$XMITCMD" == "phono" ]]; then
    return
 fi
 ## Airplay
-if [[ "$XMITCMD" == "airplay-preamp" ]]; then
+  "airplay-preamp")
    XMITCALL="0|0|1261799543"
    LCDPI_MSG="AirPlay in"
    CALLAPI   
@@ -133,7 +134,7 @@ if [[ "$XMITCMD" == "airplay-preamp" ]]; then
    return
 fi   
 ## Volume Limit Mode
-if [[ "$XMITCMD" == "vlimit" ]]; then
+  "vlimit")
    XMITCALL="0|0|1261783223"
    LCDPI_MSG="volume limiter"
    CALLAPI   
@@ -141,7 +142,7 @@ if [[ "$XMITCMD" == "vlimit" ]]; then
    return   
 fi   
 ## Optical Mode
-if [[ "$XMITCMD" == "optical-preamp" ]]; then
+  "optical-preamp")
    XMITCALL="0|0|1261824023"
    LCDPI_MSG="optical in"
    CALLAPI   
@@ -149,7 +150,7 @@ if [[ "$XMITCMD" == "optical-preamp" ]]; then
    return
 fi
 ## Key Toggle Hi-Pass Filter
-if [[ "$XMITCMD" == "togglehpf" ]]; then
+  "togglehpf")
    XMITCALL="0|0|1261875534"
    LCDPI_MSG="toggle HPF"
    CALLAPI   
@@ -157,31 +158,31 @@ if [[ "$XMITCMD" == "togglehpf" ]]; then
    return
 fi
 ## Key Mute / Toggle
-if [[ "$XMITCMD" == "mute" ]]; then
+  "mute")
    XMITCALL="0|0|1270259807"
    CALLAPI   
    return
 fi
 ## Key Vol Down Fine
-if [[ "$XMITCMD" == "dwn" ]]; then
+  "dwn")
    XMITCALL="0|0|1261885734"
    CALLAPI
    return
 fi
 ## Key Vol Up Fine
-if [[ "$XMITCMD" == "up" ]]; then
+  "up")
    XMITCALL="0|0|1261853094"
    CALLAPI
    return
 fi
 ## Key Vol Down Course
-if [[ "$XMITCMD" == "dwnc" ]]; then
+  "dwnc")
    XMITCALL="0|0|1270267967"
    CALLAPI
    return
 fi
 ## Key Vol Up Course
-if [[ "$XMITCMD" == "upc" ]]; then
+  "upc")
    XMITCALL="0|0|1270235327"
    CALLAPI
    return
@@ -190,7 +191,7 @@ fi
 ### Class D Amp (Philips Universal Remote) NEC 32-bit
 ##
 ## Mute Key
-if [[ "$XMITCMD" == "submute" ]]; then
+  "submute")
    XMITCALL="0|0|551506095"
    LCDPI_MSG="toggle subwoofer amp"
    CALLAPI   
@@ -199,7 +200,7 @@ if [[ "$XMITCMD" == "submute" ]]; then
 fi
 ##
 ## (0) Key
-if [[ "$XMITCMD" == "subon" ]]; then
+  "subon")
    XMITCALL="0|0|551504055"
    LCDPI_MSG="subwoofer on"
    CALLAPI   
@@ -208,7 +209,7 @@ if [[ "$XMITCMD" == "subon" ]]; then
 fi
 ##
 ## (1) Key
-if [[ "$XMITCMD" == "suboff" ]]; then
+  "suboff")
    XMITCALL="0|0|551520375"
    LCDPI_MSG="subwoofer off"
    CALLAPI   
@@ -217,14 +218,14 @@ if [[ "$XMITCMD" == "suboff" ]]; then
 fi
 ##
 ## Vol (+) Key
-if [[ "$XMITCMD" == "subup" ]]; then
+  "subup")
    XMITCALL="0|0|551502015"
    CALLAPI
    return
 fi
 ##
 ## Vol (-) Key
-if [[ "$XMITCMD" == "subdwn" ]]; then
+  "subdwn")
    XMITCALL="0|0|551534655"
    CALLAPI
    return
@@ -233,25 +234,25 @@ fi
 ### DAM1021 DAC (Onn Soundbar Remote) NEC 32-bit
 ##
 ## USB Input (Music Button)
-if [[ "$XMITCMD" == "usb" ]]; then
+  "usb")
    XMITCALL="0|0|-300872971"
    CALLAPI
    return
 fi
 ## Coaxial Input (Aux Button)
-if [[ "$XMITCMD" == "coaxial" ]]; then
+  "coaxial")
    XMITCALL="0|0|-300816361"
    CALLAPI
    return
 fi
 ## Optical Input (TV Button)
-if [[ "$XMITCMD" == "optical" ]]; then
+  "optical")
    XMITCALL="0|0|-300813811"
    CALLAPI
    return
 fi
 ## Auto Input (Play Button)
-if [[ "$XMITCMD" == "inauto" ]]; then
+  "inauto")
    XMITCALL="0|0|-300833701"
    CALLAPI
    return
@@ -260,14 +261,14 @@ fi
 ## RF Power Controller (under dresser)
 ##
 ## Vintage Macs
-if [[ "$XMITCMD" == "rfa1on" ]]; then
+  "rfa1on")
    XMITCALL="1|0|734733"
    LCDPI_MSG="macs on"
    CALLAPI   
    CALL_LCDPI
    return
 fi
-if [[ "$XMITCMD" == "rfa1off" ]]; then
+  "rfa1off")
    XMITCALL="1|0|734734"
    LCDPI_MSG="macs off"
    CALLAPI   
@@ -275,24 +276,24 @@ if [[ "$XMITCMD" == "rfa1off" ]]; then
    return
 fi
 ## Dresser Lamp
-if [[ "$XMITCMD" == "rfa2on" ]]; then
+  "rfa2on")
    XMITCALL="1|0|734731"
    CALLAPI
    return
 fi
-if [[ "$XMITCMD" == "rfa2off" ]]; then
+  "rfa2off")
    XMITCALL="1|0|734732"
    CALLAPI
    return
 fi
 ## RetroPi
-if [[ "$XMITCMD" == "rfa3on" ]]; then
+  "rfa3on")
    XMITCALL="1|0|734735"
    LCDPI_MSG="accessory on"
    CALLAPI   
    return
 fi
-if [[ "$XMITCMD" == "rfa3off" ]]; then
+  "rfa3off")
    XMITCALL="1|0|734736"
    LCDPI_MSG="accessory off"
    CALLAPI   
@@ -300,32 +301,32 @@ if [[ "$XMITCMD" == "rfa3off" ]]; then
 fi
 ##
 ## HeartLED 433Mhz Control
-if [[ "$XMITCMD" == "htleds_off" ]]; then # LEDs off
+  "htleds_off") # LEDs off
    XMITCALL="1|0|732101"
    CALLAPI   
    return
 fi
-if [[ "$XMITCMD" == "htleds_cyc" ]]; then # Cycle-through LEDs
+  "htleds_cyc") # Cycle-through LEDs
    XMITCALL="1|0|732102"
    CALLAPI   
    return
 fi
-if [[ "$XMITCMD" == "htleds_a" ]]; then # LEDs mode A:
+  "htleds_a") # LEDs mode A:
    XMITCALL="1|0|732103"
    CALLAPI   
    return
 fi
-if [[ "$XMITCMD" == "htleds_b" ]]; then # LEDs mode B:
+  "htleds_b") # LEDs mode B:
    XMITCALL="1|0|732104"
    CALLAPI   
    return
 fi
-if [[ "$XMITCMD" == "htleds_c" ]]; then # LEDs mode C:
+  "htleds_c") # LEDs mode C:
    XMITCALL="1|0|732105"
    CALLAPI   
    return
 fi
-if [[ "$XMITCMD" == "htleds_on" ]]; then # all LEDs on
+  "htleds_on") # all LEDs on
    XMITCALL="1|0|732106"
    CALLAPI   
    return
@@ -333,7 +334,7 @@ fi
 ##
 ## ESP32 Toggle PC Power
 ##
-if [[ "$XMITCMD" == "rfb3" ]]; then
+  "rfb3") then
    XMITCALL="2|2|32"
    CALLAPI   
    return
@@ -341,43 +342,43 @@ fi
 ##
 ## RF Relay Controller Board 
 ##
-if [[ "$XMITCMD" == "rfb1on" ]]; then
+  "rfb1on")
    XMITCALL="1|0|864341"
    CALLAPI
    return
 fi
-if [[ "$XMITCMD" == "rfb1off" ]]; then
+  "rfb1off")
    XMITCALL="1|0|864342"
    CALLAPI
    return
 fi
-if [[ "$XMITCMD" == "rfb2on" ]]; then
+  "rfb2on")
    XMITCALL="1|0|864343"
    CALLAPI
    return
 fi
-if [[ "$XMITCMD" == "rfb2off" ]]; then
+  "rfb2off")
    XMITCALL="1|0|864344"
    CALLAPI
    return
 fi
-if [[ "$XMITCMD" == "rfb3on" ]]; then
+  "rfb3on")
    XMITCALL="1|0|864345"
    CALLAPI
    return
 fi
-if [[ "$XMITCMD" == "rfb3off" ]]; then
+  "rfb3off")
    XMITCALL="1|0|864346"
    CALLAPI
    return
 fi
 ## Main Lamp Controller
-if [[ "$XMITCMD" == "rfc1on" ]]; then
+  "rfc1on")
    XMITCALL="1|0|834511"
    CALLAPI
    return
 fi
-if [[ "$XMITCMD" == "rfc1off" ]]; then
+  "rfc1off")
    XMITCALL="1|0|834512"
    CALLAPI
    return
@@ -396,7 +397,6 @@ CMD=$1
 
 case "$CMD" in
 
-## Forward command to bedpi
 bedpi)
 ESP32="no"
 TARGET="$BEDPI_IP"
@@ -415,25 +415,16 @@ CALL_LCDPI
 exit
 ;;
 
+lcdpi_message)
+LCDPI_MSG="$CMDARG"
+CALL_LCDPI  
+exit
+;;
+
 status)
 /opt/system/status > /dev/null 2> /dev/null
 exit
 ;;
-
-clearlcdpi)
-LCDPI_MSG="clear"
-CALL_LCDPI  
-exit
-;;
-
-lcdpimsg)
-LCDPI_MSG=$(echo "$CMDARG" | sed -r 's/~/ /g')
-CALL_LCDPI  
-exit
-;;
-
-####################################
-## Automated Multi-Functions
 
 mainon)
 ## Window Lamp

@@ -1,22 +1,24 @@
 #!/bin/bash
-## Main Parser
+## LCDpi API by Ben Provenzano III
 
 DELAYSET(){ 
 echo "${SIG}d${ARG}" > /dev/zterm
 }
 
-CLEARLCD(){ 
+ERASELCD(){ 
 echo "${SIG}c3" > /dev/zterm
 }
 
-## Message File Basepath
+## Message File Path
 MSG_PATH="/var/www/html/ram/message"
 
+## Control Mode
 SIG='$?-|'
 
+CMD="$1"
 ARG="$2"
 
-case "$1" in
+case "$CMD" in
 
 boot)
 ## Start Z-Terminal Service
@@ -30,14 +32,12 @@ chmod 777 /var/www/html/ram/message.txt
 chown www-data:www-data /var/www/html/ram/message.txt
 ## Turn off power LED
 echo 0 > /sys/class/leds/ACT/brightness
-## Disable HDMI (saves 30mA)
-tvservice -o
 ## Set Default Character Delay
 ARG="250"
 DELAYSET
 sleep 1
-## Clear Display
-CLEARLCD
+## Erase Display
+ERASELCD
 exit
 ;;
 
@@ -91,24 +91,24 @@ echo "${SIG}b${ARG}" > /dev/zterm
 exit
 ;;
 
-clear)
-CLEARLCD
+lorem)
+cat /opt/rpi/lorem_ipsum.txt > /dev/zterm
 exit
 ;;
 
-clear-btm)
+erase)
+ERASELCD
+exit
+;;
+
+erase-btm)
 echo "${SIG}c2" > /dev/zterm
 exit
 ;;
 
-clear-top)
+erase-top)
 echo "${SIG}c1" > /dev/zterm
 exit 
-;;
-
-lorem)
-cat /opt/rpi/lorem_ipsum.txt > /dev/zterm
-exit
 ;;
 
 stop)

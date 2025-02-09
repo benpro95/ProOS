@@ -1,7 +1,7 @@
 #!/bin/bash
 ##
 ###########################################################
-## Main Home Automation Script by Ben Provenzano III v18 ##
+## Main Home Automation Script by Ben Provenzano III v20 ##
 ###########################################################
 ###########################################################
 ## Do not use the screen command in this script ##
@@ -13,111 +13,103 @@ LCDPI_MSG=""
 XMITCMD=""
 TARGET=""
 
-FILES_IP="10.177.1.4" ## Files IP
-XMIT_IP="10.177.1.12" ## Xmit IP
-BEDPI_IP="10.177.1.15" ## BedPi IP
+BASE_IP="10.177.1"
+FILES_IP="{$BASE_IP}.4" ## Files IP
+XMIT_IP="{$BASE_IP}.12" ## Xmit IP
+BEDPI_IP="{$BASE_IP}.15" ## BedPi IP
 
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 3 --retry 1 --retry-delay 1 --no-keepalive"
 
 CALLAPI(){
   ## Default Target
   if [[ "$TARGET" == "" ]]; then
-    ## ESP32 Xmit URL
-    /usr/bin/curl $CURLARGS http://"$XMIT_IP" -H "Accept: ####?|$XMITCMD"
-  else   
-    /usr/bin/curl $CURLARGS --data "var=$CMDARG&arg=$XMITCMD&action=main" http://$TARGET/exec.php
+    ## ESP32 Xmit API
+    /usr/bin/curl $CURLARGS --header "Accept: ####?|$XMITCMD" http://"$XMIT_IP":80
+  else
+    ## Pi PHP API 
+    /usr/bin/curl $CURLARGS --data "var=$SEC_ARG&arg=$XMITCMD&action=main" http://"$TARGET":80/exec.php
   fi
-  ## Clear Data
+  ## Display Message
+  if [[ "$LCDPI_MSG" != "" ]]; then
+    /opt/system/lcdpi "$LCDPI_MSG" > /dev/null 2>&1
+  fi
   TARGET=""
   XMITCMD=""
-}
-
-CALL_LCDPI(){
-  /opt/system/lcdpi "$LCDPI_MSG" &
+  LCDPI_MSG=""
 }
 
 XMIT(){
 #### ESP32 Transmit Function
 case "$XMITCMD" in
   ### HiFi Preamp
-  ##
   ## Power
   "pwrhifi")
     ## Mute Subwoofer Amp
     XMITCMD="0|0|551520375"
     CALLAPI
-    sleep 1.5
+    sleep 1
     ## Power Off Preamp  
     XMITCMD="0|0|1270227167"
-    CALLAPI   
     LCDPI_MSG="system power"
-    CALL_LCDPI
+    CALLAPI   
     ;;
   "hifioff")
     ## Mute Subwoofer Amp
     XMITCMD="0|0|551520375"
     CALLAPI
-    sleep 1.5
+    sleep 1
     ## Power Off Preamp  
     XMITCMD="0|0|1261859214"
-    CALLAPI
     LCDPI_MSG="system off"
-    CALL_LCDPI
+    CALLAPI
     ;;
   "hifion")
     XMITCMD="0|0|1261869414"
     CALLAPI
     LCDPI_MSG="system on"   
-    CALL_LCDPI
+    CALLAPI
     ;;
   ## DAC
   "dac")
     XMITCMD="0|0|1261793423"
     LCDPI_MSG="DAC in"
     CALLAPI
-    CALL_LCDPI
     ;;
   ## Aux
   "aux")
     XMITCMD="0|0|1261826063"
     LCDPI_MSG="aux in"
     CALLAPI   
-    CALL_LCDPI
     ;;
   ## Phono
   "phono")
     XMITCMD="0|0|1261766903"
     LCDPI_MSG="phono in"
     CALLAPI   
-    CALL_LCDPI
     ;;
   ## Airplay
   "airplay-preamp")
     XMITCMD="0|0|1261799543"
     LCDPI_MSG="AirPlay in"
     CALLAPI   
-    CALL_LCDPI
     ;;   
   ## Volume Limit Mode
   "vlimit")
     XMITCMD="0|0|1261783223"
     LCDPI_MSG="volume limiter"
     CALLAPI   
-    CALL_LCDPI
     ;;  
   ## Optical Mode
   "optical-preamp")
     XMITCMD="0|0|1261824023"
     LCDPI_MSG="optical in"
     CALLAPI   
-    CALL_LCDPI
     ;;
   ## Key Toggle Hi-Pass Filter
   "togglehpf")
     XMITCMD="0|0|1261875534"
     LCDPI_MSG="toggle HPF"
     CALLAPI   
-    CALL_LCDPI
     ;;
   ## Key Mute / Toggle
   "mute")
@@ -152,7 +144,6 @@ case "$XMITCMD" in
     XMITCMD="0|0|551506095"
     LCDPI_MSG="toggle subwoofer amp"
     CALLAPI   
-    CALL_LCDPI
     ;;
   ##
   ## (0) Key
@@ -160,7 +151,6 @@ case "$XMITCMD" in
     XMITCMD="0|0|551504055"
     LCDPI_MSG="subwoofer on"
     CALLAPI   
-    CALL_LCDPI
     ;;
   ##
   ## (1) Key
@@ -168,7 +158,6 @@ case "$XMITCMD" in
     XMITCMD="0|0|551520375"
     LCDPI_MSG="subwoofer off"
     CALLAPI   
-    CALL_LCDPI
     ;;
   ##
   ## Vol (+) Key
@@ -212,13 +201,11 @@ case "$XMITCMD" in
     XMITCMD="1|0|734733"
     LCDPI_MSG="macs on"
     CALLAPI   
-    CALL_LCDPI
     ;;
   "rfa1off")
     XMITCMD="1|0|734734"
     LCDPI_MSG="macs off"
     CALLAPI   
-    CALL_LCDPI
     ;;
   ## Dresser Lamp
   "rfa2on")
@@ -319,17 +306,16 @@ esac
 
 ########################
 
-## Read the 2nd argument
-CMDARG=$2
-## Read the 1st argument
-CMD=$1
+## Read command line arguments
+FIRST_ARG=$1
+SEC_ARG=$2
 
-case "$CMD" in
+case "$FIRST_ARG" in
 
 bedpi)
 ESP32="no"
 TARGET="$BEDPI_IP"
-XMITCMD="$CMDARG"
+XMITCMD="$SEC_ARG"
 CALLAPI
 exit
 ;;
@@ -338,15 +324,14 @@ relax)
 ESP32="no"
 TARGET="$BEDPI_IP"
 XMITCMD="relax"
-LCDPI_MSG="playing $CMDARG"
-CALLAPI
-CALL_LCDPI  
+LCDPI_MSG="playing $SEC_ARG"
+CALLAPI 
 exit
 ;;
 
 lcdpi_message)
-LCDPI_MSG="$CMDARG"
-CALL_LCDPI  
+LCDPI_MSG="$SEC_ARG"
+CALLAPI
 exit
 ;;
 
@@ -402,7 +387,7 @@ then
 else
   XMITCMD="rfb3" ; XMIT 
   LCDPI_MSG="PC on"
-  CALL_LCDPI  
+  CALLAPI  
 fi
 exit
 ;;
@@ -412,7 +397,7 @@ if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
   XMITCMD="rfb3" ; XMIT
   LCDPI_MSG="PC off"
-  CALL_LCDPI  
+  CALLAPI  
 else
   echo "wkst.home is offline"
 fi
@@ -476,7 +461,7 @@ XMITCMD="htleds_c" ; XMIT
 sleep 0.75
 ## LCDpi message
 LCDPI_MSG="all power on"
-CALL_LCDPI
+CALLAPI
 exit
 ;;
 
@@ -501,15 +486,15 @@ XMITCMD="htleds_off" ; XMIT
 sleep 0.75
 ## LCDpi message
 LCDPI_MSG="all power off"
-CALL_LCDPI
+CALLAPI
 exit
 ;;
 
 server)
 ## Read argument
-_CMDARG=${CMDARG//$'\n'/} 
-SERVERARG=${_CMDARG%-*}
-FILESCMD=${_CMDARG#*-}
+_SEC_ARG=${SEC_ARG//$'\n'/} 
+SERVERARG=${_SEC_ARG%-*}
+FILESCMD=${_SEC_ARG#*-}
 ## transmit action to file server
 if [ "$SERVERARG" == "files" ]; then
   if [ "$FILESCMD" != "" ]; then
@@ -524,18 +509,16 @@ if [ "$SERVERARG" == "startlegacy" ]; then
   echo "Starting legacy services..." &>> $LOGFILE
   TARGET="$BEDPI_IP"
   XMITCMD="apd-on"
-  CALLAPI
   LCDPI_MSG="Legacy services started."
-  CALL_LCDPI
+  CALLAPI
   exit
 fi
 if [ "$SERVERARG" == "stoplegacy" ]; then
   echo "Stopping legacy services..." &>> $LOGFILE
   TARGET="$BEDPI_IP"
   XMITCMD="apd-off"
-  CALLAPI
   LCDPI_MSG="Legacy services stopped."
-  CALL_LCDPI
+  CALLAPI
   exit
 fi
 ## Pass action file to the hypervisor
@@ -574,11 +557,11 @@ exit
 # http://automate:9300/exec.php?var=prism&arg=video&action=leds
 ###############################
 
-*) ###############################################
-### If command not matched above, pass argument to Xmit function
-XMITCMD="$CMD" ; XMIT
-exit 0 
-  ;; #############################################
-esac   
+*)
+## command not matched above, pass argument to Xmit function
+XMITCMD="$FIRST_ARG" 
+XMIT
+exit
+;;
 
-
+esac

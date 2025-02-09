@@ -1297,7 +1297,7 @@ function savePOST(file,data) {
               _elmvis = true;
             }
           }
-          if (_elmvis == true) {
+          if (_elmvis === true) {
             serverAction('files-vol_region');
           } else {
             serverAction('files-arch_region');

@@ -68,7 +68,7 @@ function loadPage() {
     ctlsMenu(ctlMode);
     // server home
     classDisplay('server-grid','block');
-    // update sysModels status
+    // update system status
     sendCmd('main','status','')
   } else { // pi's
     if (sysModel === 'Pi') {
@@ -617,10 +617,10 @@ async function serverSend() {
 
 function sendBtnAlert(state) {
   let _elmid;
-  if (sysModel === 'LCDpi') {
-    _elmid = "sendButtonLCDpi";
-  } else {
+  if (sysModel === defaultSite) {
     _elmid = "sendButton";
+  } else {
+    _elmid = "sendButtonLCDpi";
   }
   let _elem = document.getElementById(_elmid);
   if (state === 'off') {

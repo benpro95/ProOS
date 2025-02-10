@@ -319,92 +319,125 @@ void cycleThruInputs() {
   }
 }
 
-// process serial message
-void processMessage(uint8_t messageStart) {
-  
-  for(uint8_t _idx = messageStart; _idx < serialMessageEnd; _idx++) {
-    Serial.println(serialMessage[_idx]);
-
- // trigger R (pulse)
-    if (serialMessage[_idx] == 'F') { 
+void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
+  // process register
+  switch (_register) {
+  // power select
+  case 1:
+    // power amplifier on (01001)
+    if (_ctldata == 1) {
+      powerOn();
+    }
+    // power amplifier off (01002)
+    if (_ctldata == 2) { 
+      powerOff();
+    }
+    // trigger R (01003)
+    if (_ctldata == 3) { 
       writeMCP(trigger1Pin, LOW);
       delay(250);
       writeMCP(trigger1Pin, HIGH);
-      return;
     }
-    // trigger L (pulse)    
-    if (serialMessage[_idx] == 'G') {
+    // trigger L (01004)    
+    if (_ctldata == 4) {
       writeMCP(trigger2Pin, LOW);
       delay(250);
       writeMCP(trigger2Pin, HIGH);
-      return;
     }
-    // power amplifier on 
-    if (serialMessage[_idx] == 'J') {
-      powerOn();
-      return;
+    break;
+  // input select
+  case 2:
+    if (powerState == 1 && isMuted == 0) {
+      // optical in #1 (02001) 
+      if (_ctldata == 1) {
+        setBlinkFrontLED(300,1,0);
+        audioInput(1);
+      }
+      // optical in #2 (02002) 
+      if (_ctldata == 2) {
+        setBlinkFrontLED(300,1,0);
+        audioInput(2);
+      }
+      // coax input (02003)  
+      if (_ctldata == 3) {
+        setBlinkFrontLED(300,1,0);
+        audioInput(3);
+      }
+      // aux input (02004) 
+      if (_ctldata == 4) {
+        setBlinkFrontLED(300,1,0);
+        audioInput(4);
+      }
     }
-    // power amplifier off
-    if (serialMessage[_idx] == 'K') {
-      powerOff();
-      return;
+    break;
+  // volume select
+  case 3:
+    if (powerState == 1) {
+      // mute toggle (03001) 
+      if (_ctldata == 1) { 
+        volumeMute();
+      }
     }
-    if (powerState != 1) { // run rest only when power-on
-      return;
+    if (powerState == 1 && isMuted == 0) {
+      // volume up (03002) 
+      if (_ctldata == 2) { 
+        volumeUp(2);
+      }
+      // volume down (03003) 
+      if (_ctldata == 3) { 
+        volumeDown(2);
+      }
     }
-    // volume mute toggle
-    if (serialMessage[_idx] == 'Z') { 
-      volumeMute();
-      return;
-    }
-    if (isMuted == 1) { // run rest only when not muted
-      return;
-    }
-    // optical in #1
-    if (serialMessage[_idx] == 'A') {
+    break;
+  default:
+    // blink LED when command invalid
+    if (powerState == 1){ 
       setBlinkFrontLED(300,1,0);
-      audioInput(1);
-      return;
     }
-    // optical in #2
-    if (serialMessage[_idx] == 'B') {
-      setBlinkFrontLED(300,1,0);
-      audioInput(2);
-      return;
-    }
-    // coax input    
-    if (serialMessage[_idx] == 'C') {
-      setBlinkFrontLED(300,1,0);
-      audioInput(3);
-      return;
-    }
-    // aux input
-    if (serialMessage[_idx] == 'E') {
-      setBlinkFrontLED(300,1,0);
-      audioInput(4);
-      return;
-    }
-    // volume up
-    if (serialMessage[_idx] == 'X') { 
-      volumeUp(2);
-      return;
-    }
-    // volume down
-    if (serialMessage[_idx] == 'Y') { 
-      volumeDown(2);
-      return;
-    }
-
-    
+    break; 
   }
+}
 
-  //switch (var) {
-  //  case 1:
-  //      break;
-  //  default:
-  //      printf("Default case is Matched.");
-  //      break;
-  //}
+// process serial message
+void processMessage(uint8_t messageStart) {
+  uint8_t _numcnt = 0;
+  const uint8_t cmdLength = 5; // fixed command length
+  const uint8_t cmdRegLen = 2; // register select length (99***)
+  const uint8_t cmdDataLen = 3; // data length (**999)
+  char _cmdarr[cmdLength + 1];
+  // extract control code from message
+  for(uint8_t _idx = messageStart; _idx < serialMessageEnd; _idx++) {
+    char _curchar = serialMessage[_idx];
+    if (isDigit(_curchar) && _numcnt < cmdLength) {
+      _cmdarr[_numcnt] = _curchar;
+      _numcnt++;
+    }
+  }
+  _cmdarr[_numcnt] = '\0';
+  // valiate control code length
+  if (_numcnt =! (cmdLength - 1)) {
+    return;
+  }
+  // extract register select
+  char _regarr[cmdRegLen + 1];
+  uint8_t _regidx = 0;
+  for(uint8_t _idx = 0; _idx < cmdRegLen; _idx++) {
+    _regarr[_regidx] = _cmdarr[_idx];
+    _regidx++;
+  }
+  _regarr[_regidx] = '\0';
+  uint8_t _register = atoi(_regarr); 
+  // extract control data
+  char _datarr[cmdDataLen + 1];
+  uint8_t _dataidx = 0;
+  for(uint8_t _idx = (cmdDataLen - 1); _idx < cmdLength; _idx++) {
+    _datarr[_dataidx] = _cmdarr[_idx];
+    _dataidx++;
+  }
+  _datarr[_dataidx] = '\0';
+  uint16_t _ctldata = atoi(_datarr); 
+  // process control code
+  remoteFunctions(_register, _ctldata);
 }
 
 // decode serial message

@@ -39,7 +39,7 @@ exit
 
 relax)
 ## Pi audio input
-echo "C" > /dev/zterm
+/opt/rpi/main coaxial &
 ## Play sound in loop
 systemctl stop rpi-relaxloop
 systemctl set-environment rpi_relaxmode=$ARG2
@@ -50,7 +50,7 @@ exit
 
 stoprelax)
 ## Apple TV input
-echo "B" > /dev/zterm
+/opt/rpi/main opt-a &
 systemctl stop rpi-relaxloop
 BLINKLED
 exit
@@ -60,12 +60,12 @@ sleepmode)
 ## Toggle relax sounds
 if (systemctl is-active --quiet rpi-relaxloop.service); then
   ## Apple TV input
-  echo "B" > /dev/zterm
+  /opt/rpi/main opt-a &
   echo "Stopping playback..."
   systemctl stop rpi-relaxloop
 else
   ## Pi audio input
-  echo "C" > /dev/zterm	
+  /opt/rpi/main coaxial &
   echo "Starting sleep mode..."
   systemctl stop rpi-relaxloop
   systemctl set-environment rpi_relaxmode="fan"
@@ -76,61 +76,61 @@ exit
 ;;
 
 opt-a)
-echo "A" > /dev/zterm
+echo "02001" > /dev/zterm
 BLINKLED
 exit
 ;;
 
 opt-b)
-echo "B" > /dev/zterm
+echo "02002" > /dev/zterm
 BLINKLED
 exit
 ;;
 
 coaxial)
-echo "C" > /dev/zterm
+echo "02003" > /dev/zterm
 BLINKLED
 exit
 ;;
 
 aux)
-echo "E" > /dev/zterm
+echo "02004" > /dev/zterm
 BLINKLED
 exit
 ;;
 
 volup)
-echo "X" > /dev/zterm
+echo "03002" > /dev/zterm
 BLINKLED
 exit
 ;;
 
 voldwn)
-echo "Y" > /dev/zterm
+echo "03003" > /dev/zterm
 BLINKLED
 exit
 ;;
 
 volmute)
-echo "Z" > /dev/zterm
+echo "03001" > /dev/zterm
 BLINKLED
 exit
 ;;
 
 poweron)
-echo "J" > /dev/zterm
+echo "01001" > /dev/zterm
 BLINKLED
 exit
 ;;
 
 poweroff)
-echo "K" > /dev/zterm
+echo "01002" > /dev/zterm
 BLINKLED
 exit
 ;;
 
 toggletv)
-echo "G" > /dev/zterm
+echo "01004" > /dev/zterm
 BLINKLED
 exit
 ;;

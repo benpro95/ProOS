@@ -76,13 +76,13 @@ exit
 ;;
 
 opt-a)
-echo "02001" > /dev/zterm
+echo "02002" > /dev/zterm
 BLINKLED
 exit
 ;;
 
 opt-b)
-echo "02002" > /dev/zterm
+echo "02001" > /dev/zterm
 BLINKLED
 exit
 ;;

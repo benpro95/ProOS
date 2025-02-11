@@ -10,13 +10,14 @@ RAMDISK="/var/www/html/ram"
 LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
 LCDPI_MSG=""
+ATV_CMD=""
 XMITCMD=""
 TARGET=""
 
-BASE_IP="10.177.1"
-FILES_IP="{$BASE_IP}.4" ## Files IP
-XMIT_IP="{$BASE_IP}.12" ## Xmit IP
-BEDPI_IP="{$BASE_IP}.15" ## BedPi IP
+FILES_IP="10.177.1.4" ## Files IP
+XMIT_IP="10.177.1.12" ## Xmit IP
+BEDPI_IP="10.177.1.15" ## BedPi IP
+ATV_MAC="3E:08:87:30:B9:A8" ## Bedroom Apple TV MAC
 
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 3 --retry 1 --retry-delay 1 --no-keepalive"
 
@@ -36,6 +37,16 @@ CALLAPI(){
   TARGET=""
   XMITCMD=""
   LCDPI_MSG=""
+}
+
+## Control Apple TV
+ATV_CTL(){
+  if [[ "$ATV_CMD" != "" ]]; then
+    source /opt/pyatv/bin/activate
+    atvremote --id "$ATV_MAC" "$ATV_CMD" 
+    deactivate
+  fi
+  ATV_CMD=""
 }
 
 XMIT(){
@@ -296,12 +307,10 @@ case "$XMITCMD" in
     XMITCMD="1|0|834512"
     CALLAPI
     ;;
-
 *)
   echo "invalid command!"
   ;;
 esac
-
 }
 
 ########################
@@ -312,20 +321,40 @@ SEC_ARG=$2
 
 case "$FIRST_ARG" in
 
-bedpi)
-ESP32="no"
+sleep)
+## Send Command
 TARGET="$BEDPI_IP"
-XMITCMD="$SEC_ARG"
+LCDPI_MSG="sleep mode"
+XMITCMD="sleepmode"
 CALLAPI
-exit
+## Pause Apple TV
+ATV_CMD="pause"; ATV_CTL
 ;;
 
 relax)
-ESP32="no"
+## Send Command
 TARGET="$BEDPI_IP"
 XMITCMD="relax"
 LCDPI_MSG="playing $SEC_ARG"
-CALLAPI 
+CALLAPI
+## Pause Apple TV
+ATV_CMD="pause"; ATV_CTL
+exit
+;;
+
+toggletv)
+## Send Command
+TARGET="$BEDPI_IP"
+XMITCMD="toggletv"
+CALLAPI
+## Pause Apple TV
+ATV_CMD="pause"; ATV_CTL
+;;
+
+bedpi)
+TARGET="$BEDPI_IP"
+XMITCMD="$SEC_ARG"
+CALLAPI
 exit
 ;;
 
@@ -374,8 +403,8 @@ exit
 
 ambient)
 ## LEDwalls
-/opt/system/leds fc 40
-/opt/system/leds candle
+/opt/system/leds fc 40 > /dev/null 2> /dev/null
+/opt/system/leds candle > /dev/null 2> /dev/null
 exit
 ;;
 
@@ -487,6 +516,8 @@ sleep 0.75
 ## LCDpi message
 LCDPI_MSG="all power off"
 CALLAPI
+## Pause Apple TV
+ATV_CMD="pause"; ATV_CTL
 exit
 ;;
 
@@ -558,10 +589,9 @@ exit
 ###############################
 
 *)
-## command not matched above, pass argument to Xmit function
-XMITCMD="$FIRST_ARG" 
-XMIT
-exit
+  ## command not matched above, pass argument to Xmit function
+  XMITCMD="$FIRST_ARG" 
+  XMIT
+  exit
 ;;
-
 esac

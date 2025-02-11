@@ -57,9 +57,9 @@ chown root:root /etc/auto.creds
 mkdir -p /mnt/smb
 
 ## Arduino Configuration
-/opt/rpi/arduino-cli core install arduino:avr
-/opt/rpi/arduino-cli lib install Encoder@1.4.4
-/opt/rpi/main update-fw
+#/opt/rpi/arduino-cli core install arduino:avr
+#/opt/rpi/arduino-cli lib install Encoder@1.4.4
+#/opt/rpi/main update-fw
 
 ## Link Main Script
 ln -sf /opt/rpi/main /usr/bin/main

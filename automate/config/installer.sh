@@ -61,6 +61,14 @@ dpkg --purge rsyslog
 rm -f /var/log/messages
 rm -f /var/log/syslog
 
+## Install Apple TV Controller 
+if [ ! -e /opt/pyatv/bin/atvremote ]; then
+  python3 -m venv /opt/pyatv
+  source /opt/pyatv/bin/activate
+  pip3 install pyatv
+  deactivate
+fi
+
 ## System Configuration
 cp /tmp/config/sysctl.conf /etc
 chmod 644 /etc/sysctl.conf
@@ -74,7 +82,6 @@ cp -v /tmp/config/main.sh /opt/system/main
 cp -v /tmp/config/lcdpi.sh /opt/system/lcdpi
 cp -v /tmp/config/status.sh /opt/system/status
 ln -sf /opt/system/status /usr/bin/update-status
-cp -v /tmp/config/relaxloop.sh /opt/system/relaxloop
 cp -v /tmp/config/mainmenu.txt /opt/system/
 cp -v /tmp/config/thememenu.txt /opt/system/
 cp -v /tmp/config/statsmenu.txt /opt/system/
@@ -194,7 +201,6 @@ chown root:root /root/.hushlogin
 ## Clean-up
 systemctl daemon-reload
 rm -rf /etc/systemd/system/relaxloop.service
-rm -rf /opt/pyatv
 rm -rf /tmp/config
 apt-get autoremove -y
 apt-get clean -y

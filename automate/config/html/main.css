@@ -473,7 +473,7 @@ input.chkbox {
 #bookmarks {
   overflow-x: hidden;
   overflow-y: scroll;
-  height: 90%;
+  height: 90vh;
 }
 
 #bookmarks::-webkit-scrollbar-track
@@ -681,45 +681,22 @@ input.chkbox {
 }
 
 /*
- *  VM Control Style
+ *  Server Options Window
  */
 
-#vms__prompt {
+.srvopt__prompt {
+  display: none;
   background-color: black;
   border: 1px solid white;
   position: fixed;
-  top: 25%;
-  left: 8%;
-  width: 387px;  
-  height: 350px;
-  padding: 5px; 
+  top: 10%;
+  left: 3%;
+  width: 500px;  
+  height: auto;
+  padding: 7px; 
   overflow-y: auto;
   color: #fff;
   z-index: 999; 
-}
-
-
-.button_vmactions { 
-  margin-top: 20px;
-  width: 118px;
-  height: 60px;
-}
-
-.button_vmctrlslgr {
-  width: 365px;
-  height: 60px;
-}
-
-.button_vmctrls { 
-  width: 180px;
-  height: 60px;
-}
-
-.button_vmctrls_close { 
-  position: absolute;
-  width: 180px;
-  height: 60px;
-  bottom: 5px;
 }
 
 /*

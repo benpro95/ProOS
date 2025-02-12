@@ -19,8 +19,8 @@ let sysModel;
 
 // global constants
 let resizeTimeout = 800; // in ms
-let defaultSite = "Automate";
-let siteVersion = "5.0";
+let serverSite = "Automate";
+let siteVersion = "5.1";
 
 //////////////////////
 
@@ -57,7 +57,7 @@ function handleClicks(event) {
 function loadPage() {
   // read device type
   sysModel = deviceType(); 
-  if (sysModel === defaultSite) {
+  if (sysModel === serverSite) {
     // load control menu
     let _mode = localStorage.getItem("ctls-mode")
     if (_mode === null || _mode === undefined || _mode === "") {
@@ -66,7 +66,7 @@ function loadPage() {
       ctlMode = localStorage.getItem("ctls-mode");
     }  
     ctlsMenu(ctlMode);
-    // server home
+    // server home page
     classDisplay('server-grid','block');
     // update system status
     sendCmd('main','status','')
@@ -84,7 +84,7 @@ function loadPage() {
   // set title
   let currentTheme;
   let elem = document.getElementById("load__bar");
-  elem.textContent = defaultSite;
+  elem.textContent = serverSite;
   // set theme
   let _theme = localStorage.getItem("main-color")
   if (_theme === null || _theme === undefined || _theme === "") {
@@ -145,11 +145,11 @@ function classDisplay(_elem, _state) {
 
 // back to home page 
 function GoToHomePage() {
-  if (sysModel === defaultSite) {
+  if (sysModel === serverSite) {
     hidePages();
     loadPage();
   } else {
-    window.location = 'https://'+defaultSite+'.home';   
+    window.location = 'https://'+serverSite+'.home';   
   }
 }
 
@@ -205,120 +205,14 @@ function starsAnimation(_state) {
   }
 }
 
+function serverPrompt(){
+  classDisplay("srvopt__prompt","block");
+}
 
-function show_vmsPrompt(text){
-  selectedVM = "";
+function closeServerPrompt(){
+  hideDropdowns();
   clearPendingCmd();
-  let vms_prompt = document.createElement("div"); //creates the div to be used as a prompt
-  vms_prompt.id= "vms__prompt"; //gives the prompt an id - not used in my example but good for styling with css-file
-  let vms_text = document.createElement("div"); //create the div for the password-text
-  vms_text.innerHTML = text; //put inside the text
-  vms_text.id="vms__text"; 
-  vms_prompt.appendChild(vms_text); //append the text-div
-  // the cancel-button
-  let vms_cancelb = document.createElement("button"); 
-  vms_cancelb.innerHTML = "Close";
-  vms_cancelb.className ="button winbtn button_vmctrls_close"; 
-  vms_cancelb.type="button"; 
-  vms_prompt.appendChild(vms_cancelb); //append cancel-button
-  // the unifi-button 
-  let vms_unifibtn = document.createElement("button"); 
-  vms_unifibtn.innerHTML = "UniFi Controller";
-  vms_unifibtn.className ="button winbtn button_vmctrls"; 
-  vms_unifibtn.type="button"; 
-  vms_prompt.appendChild(vms_unifibtn); 
-  // the cifs-button 
-  let vms_cifsbtn = document.createElement("button"); 
-  vms_cifsbtn.innerHTML = "Legacy CIFS";
-  vms_cifsbtn.className ="button winbtn button_vmctrls"; 
-  vms_cifsbtn.type="button"; 
-  vms_prompt.appendChild(vms_cifsbtn); 
-  // the xana-button 
-  let vms_xanabtn = document.createElement("button"); 
-  vms_xanabtn.innerHTML = "Xana";
-  vms_xanabtn.className ="button winbtn button_vmctrlslgr"; 
-  vms_xanabtn.type="button"; 
-  vms_prompt.appendChild(vms_xanabtn);
-  // erase button (hidden)
-  let vms_restorebtn = document.createElement("button"); 
-  vms_restorebtn.innerHTML = "Erase";
-  vms_restorebtn.className ="button winbtn button_vmactions";
-  vms_restorebtn.id = "vms__restorebtn";
-  vms_restorebtn.type="button";
-  vms_restorebtn.style.display = "none";
-  // start button (hidden)
-  let vms_startbtn = document.createElement("button"); 
-  vms_startbtn.innerHTML = "Start";
-  vms_startbtn.className ="button winbtn button_vmactions";
-  vms_startbtn.id = "vms__startbtn";
-  vms_startbtn.type="button";
-  vms_startbtn.style.display = "none";
-  // stop button (hidden)
-  let vms_stopbtn = document.createElement("button"); 
-  vms_stopbtn.innerHTML = "Stop";
-  vms_stopbtn.className ="button winbtn button_vmactions";
-  vms_stopbtn.id = "vms__stopbtn";
-  vms_stopbtn.type="button";
-  vms_stopbtn.style.display = "none";
-  // open button (hidden)
-  let vms_openbtn = document.createElement("button"); 
-  vms_openbtn.innerHTML = "Open";
-  vms_openbtn.className ="button winbtn button_vmactions";
-  vms_openbtn.id = "vms__openbtn";
-  vms_openbtn.type="button";
-  vms_openbtn.style.display = "none";
-  // button order
-  vms_prompt.appendChild(vms_stopbtn); 
-  vms_prompt.appendChild(vms_startbtn);
-  vms_prompt.appendChild(vms_restorebtn);
-  vms_prompt.appendChild(vms_openbtn);
-  // append the prompt so it gets visible
-  document.body.appendChild(vms_prompt); 
-  new Promise(function(resolve, reject) { 
-	  vms_prompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
-	    if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else      
-	      if (e.target === vms_cancelb) { //click on cancel-button
-	        vms_prompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
-	        document.body.removeChild(vms_prompt);  //as we are done clean up by removing the password-prompt
-	        clearPendingCmd(); // clear any pending command
-	      }
-	      // selection buttons
-	      if (e.target === vms_unifibtn) { 
-	        vmPromptSelect('unifi');
-	      }  
-	      if (e.target === vms_cifsbtn) {
-	        vmPromptSelect('legacy');
-	      }  
-	      if (e.target === vms_xanabtn) {
-          vmPromptSelect('xana');
-	      }
-	      // action buttons
-	      if (e.target === vms_startbtn) { 
-	        if (selectedVM !==  ""){
-	          serverAction('start' + selectedVM);
-	          serverSend();
-	        }
-	      }         
-	      if (e.target === vms_stopbtn) { 
-	        if (selectedVM !==  ""){
-	          serverAction('stop' + selectedVM);
-	          serverSend();
-	        }           
-	      }                 
-	      if (e.target === vms_openbtn) { 
-	        if (selectedVM === 'unifi'){
-	          GoToExtPage('unifi.home:8443');
-	        }           
-	      } 
-	      if (e.target === vms_restorebtn) { 
-	        if (selectedVM !==  ""){
-	          serverAction('restore' + selectedVM);
-	          let _text = "Click send to confirm erase of " + selectedVM;
-	          document.getElementById('vms__text').innerHTML = _text;
-	        }           
-	      }                        
-	  });
-  });   
+  classDisplay("srvopt__prompt","none");
 }
 
 function piWiFiPrompt(){
@@ -440,11 +334,11 @@ function show_aboutPrompt(){
   aboutprompt.appendChild(aboutcancelb); //append cancel-button
   document.body.appendChild(aboutprompt); //append the password-prompt so it gets visible
   new Promise(function(resolve, reject) {
-      aboutprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
-        if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
-          aboutprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
-          document.body.removeChild(aboutprompt);  //as we are done clean up by removing the password-prompt
-      });
+    aboutprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
+      if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
+      aboutprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
+      document.body.removeChild(aboutprompt);  //as we are done clean up by removing the password-prompt
+    });
   });   
 }
 
@@ -467,29 +361,6 @@ async function showPiWiFiPrompt(){
   } catch(e){
     result = "";
   }
-}
-
-function vmPromptSelect(_vm){
-  let _text = "Select action for " + _vm + " VM:";
-  // set top text
-  document.getElementById('vms__text').innerHTML = _text;
-  // hide existing buttons
-  document.getElementById("vms__restorebtn").style.display = "none";
-  document.getElementById("vms__openbtn").style.display = "none";
-  // show actions buttons after selection
-  document.getElementById("vms__startbtn").style.display = "inline-block";
-  document.getElementById("vms__stopbtn").style.display = "inline-block";
-  if ( _vm === "xana" ) { 
-    document.getElementById("vms__restorebtn").style.display = "inline-block";
-  }
-  if ( _vm === "unifi" ) { 
-    document.getElementById("vms__openbtn").style.display = "inline-block";
-  }    
-  selectedVM = _vm;
-}
-
-async function vmsPrompt(){
-  await show_vmsPrompt("Select Virtual Machine:");
 }
 
 function show_wifiPwdPrompt(){
@@ -598,8 +469,10 @@ async function serverSend() {
     document.getElementById("logTextBox").value = "select an option.";
   } else {
     // send command
-    if (sysModel === defaultSite) {
+    if (sysModel === serverSite) {
       sendCmd('main','server',serverCmdData);
+      // hide server window
+      classDisplay('srvopt__prompt','none');
     } else {
       sendCmd('main-www','server',serverCmdData);
     }
@@ -617,7 +490,7 @@ async function serverSend() {
 
 function sendBtnAlert(state) {
   let _elmid;
-  if (sysModel === defaultSite) {
+  if (sysModel === serverSite) {
     _elmid = "sendButton";
   } else {
     _elmid = "sendButtonLCDpi";
@@ -631,7 +504,7 @@ function sendBtnAlert(state) {
   }
 }
 
-// clear a pending server command 
+// clear pending server command 
 function clearPendingCmd() {
   sendBtnAlert("off");
   serverCmdData = null;
@@ -922,75 +795,75 @@ function drawBookmarkPrompt(add,url,name,elem){
   document.body.appendChild(editFavPrompt);
   // handle button actions
   new Promise(function(resolve, reject) {
-      editFavPrompt.addEventListener('click', function handleButtonClicks(e) { 
-        if (e.target.tagName !== 'BUTTON') { return; }
-          // move up button action
-          if (e.target === editFavUpBtn) {
-            shiftMenuUp(elem);
-          }
-          // move down button action
-          if (e.target === editFavDownBtn) {
-            shiftMenuDown(elem);
-          }         
-          // cancel button action
-          if (e.target === editFavCancelBtn) {
-            editFavPrompt.removeEventListener('click', handleButtonClicks);
-            hideDropdowns();
-          }
-          // common save / delete actions
-          if (e.target === editFavDeleteBtn || e.target === editFavSaveBtn) {
-            // do not allow empty name or URL
-            if (e.target === editFavSaveBtn) {
-              if (editFavURL.value == null || editFavURL.value == "" || 
-                editFavName.value == null || editFavName.value == "") {
-                  editFavText.innerHTML = "Enter Bookmark Name & URL";
-                  return;
-              }    
-            }
-            // remove buttons
-            editFavPrompt.removeChild(editFavUpBtn); 
-            editFavPrompt.removeChild(editFavDownBtn); 
-            editFavPrompt.removeChild(editFavDeleteBtn); 
-            editFavPrompt.removeChild(editFavSaveBtn);
-            // cancel -> close button
-            editFavCancelBtn.classList.remove("fa-solid");
-            editFavCancelBtn.classList.remove("fa-ban");
-            editFavCancelBtn.innerHTML = "Close"; 
-            // set text read-only
-            editFavName.readOnly = true;
-            editFavURL.readOnly = true;
-            // delete action
-            if (e.target === editFavDeleteBtn) {
-              editFavName.style.textDecoration = 'line-through';
-              editFavURL.style.textDecoration = 'line-through';
-              // remove element from menu
-              elem.remove();
-              editFavText.innerHTML = "Bookmark Deleted"; 
-            }
-            // save action
-            if (e.target === editFavSaveBtn) {
-              // update changed values
-              if (elem) { 
-                // replace pipes with dashes
-                elem.innerText = editFavName.value.replaceAll("|", "-");
-                let _boxurl = editFavURL.value.replaceAll("|", "-");
-                let _lowerurl = _boxurl.toLowerCase();
-                // add HTTPS prefix if not defined
-                if (_lowerurl.startsWith('http://', 0) || 
-                    _lowerurl.startsWith('https://', 0)) {
-                  elem['url'] = _boxurl;
-                } else {
-                  const _newurl = "https://" + _boxurl;
-                  editFavURL.value = _newurl;
-                  elem['url'] = _newurl;
-                }
-                editFavText.innerHTML = "Changes Saved"; 
-              }
-            }
-            // save to file
-            saveBookmarks();
+    editFavPrompt.addEventListener('click', function handleButtonClicks(e) { 
+    if (e.target.tagName !== 'BUTTON') { return; }
+      // move up button action
+      if (e.target === editFavUpBtn) {
+        shiftMenuUp(elem);
+      }
+      // move down button action
+      if (e.target === editFavDownBtn) {
+        shiftMenuDown(elem);
+      }         
+      // cancel button action
+      if (e.target === editFavCancelBtn) {
+        editFavPrompt.removeEventListener('click', handleButtonClicks);
+        hideDropdowns();
+      }
+      // common save / delete actions
+      if (e.target === editFavDeleteBtn || e.target === editFavSaveBtn) {
+        // do not allow empty name or URL
+        if (e.target === editFavSaveBtn) {
+          if (editFavURL.value == null || editFavURL.value == "" || 
+            editFavName.value == null || editFavName.value == "") {
+              editFavText.innerHTML = "Enter Bookmark Name & URL";
+              return;
           }    
-      });
+        }
+        // remove buttons
+        editFavPrompt.removeChild(editFavUpBtn); 
+        editFavPrompt.removeChild(editFavDownBtn); 
+        editFavPrompt.removeChild(editFavDeleteBtn); 
+        editFavPrompt.removeChild(editFavSaveBtn);
+        // cancel -> close button
+        editFavCancelBtn.classList.remove("fa-solid");
+        editFavCancelBtn.classList.remove("fa-ban");
+        editFavCancelBtn.innerHTML = "Close"; 
+        // set text read-only
+        editFavName.readOnly = true;
+        editFavURL.readOnly = true;
+        // delete action
+        if (e.target === editFavDeleteBtn) {
+          editFavName.style.textDecoration = 'line-through';
+          editFavURL.style.textDecoration = 'line-through';
+          // remove element from menu
+          elem.remove();
+          editFavText.innerHTML = "Bookmark Deleted"; 
+        }
+        // save action
+        if (e.target === editFavSaveBtn) {
+          // update changed values
+          if (elem) { 
+            // replace pipes with dashes
+            elem.innerText = editFavName.value.replaceAll("|", "-");
+            let _boxurl = editFavURL.value.replaceAll("|", "-");
+            let _lowerurl = _boxurl.toLowerCase();
+            // add HTTPS prefix if not defined
+            if (_lowerurl.startsWith('http://', 0) || 
+                _lowerurl.startsWith('https://', 0)) {
+              elem['url'] = _boxurl;
+            } else {
+              const _newurl = "https://" + _boxurl;
+              editFavURL.value = _newurl;
+              elem['url'] = _newurl;
+            }
+            editFavText.innerHTML = "Changes Saved"; 
+          }
+        }
+        // save to file
+        saveBookmarks();
+      }    
+    });
   });   
 }
 
@@ -1399,7 +1272,7 @@ function sendText() {
   if (data.trim() === "" || data === sendtext) {
     document.getElementById("lcdTextBox").value = sendtext;
   } else {
-    if (sysModel === defaultSite) {
+    if (sysModel === serverSite) {
       // transmit from remote connection
       sendCmd('main','lcdpi_message',data.replace(/ /g,"~"));
     } else {
@@ -1414,7 +1287,7 @@ function sendText() {
 function eraseText() {
   clearMsgBox();
   // erase screen
-  if (sysModel === defaultSite) {
+  if (sysModel === serverSite) {
     sendCmd('main','lcdpi_message','!erase@');
   } else {
     sendCmd('main','erase','');
@@ -1446,7 +1319,7 @@ async function loadBar(_interval) {
       }
       if (width >= 100) {
         elem.style.width = 0;  
-        elem.textContent = defaultSite;  
+        elem.textContent = serverSite;  
       }
     }
   }
@@ -1514,7 +1387,7 @@ function writeFrame(red, green, blue) {
 }
 
 async function colorPrompt(){
-  if (sysModel === defaultSite) {
+  if (sysModel === serverSite) {
     sendCmd('leds','randcolor','');
   } else {
     hideDropdowns();
@@ -1571,6 +1444,3 @@ function show_colorPrompt(text){
       });
   });   
 }
-
-
-

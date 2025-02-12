@@ -948,20 +948,62 @@
     <p class="bottom"></p>  
 </div>
 
+<div class="srvopt__prompt">
+  <div class="dropdown">
+    <button type="button" class="button" onclick="showMenu('legacy-menu')">
+      <span class="button__text"><i class="fa-regular fa-network"></i> Legacy</span>
+    </button>  
+    <div class="dd-content dd-button" id="legacy-menu">
+      <a onclick="serverAction('startlegacy')"></i> Start</a>
+      <a onclick="serverAction('stoplegacy')"><i class="fa-solid fa-stop"></i> Stop</a>      
+    </div>
+  </div>    
+  <div class="dropdown">
+    <button type="button" class="button" onclick="showMenu('xana-menu')">
+      <span class="button__text"><i class="fa-regular fa-network"></i> Xana</span>
+    </button>  
+    <div class="dd-content dd-button" id="xana-menu">
+      <a onclick="serverAction('startxana')"></i> Start</a>
+      <a onclick="serverAction('stopxana')"><i class="fa-solid fa-stop"></i> Stop</a>      
+      <a onclick="serverAction('restorexana');"><i class=""></i> Erase</a>
+    </div>
+  </div>
+  <div class="dropdown">
+    <button type="button" class="button" onclick="showMenu('unifi-menu')">
+      <span class="button__text"><i class="fa-regular fa-network"></i> Unifi</span>
+    </button>  
+    <div class="dd-content dd-button" id="unifi-menu">
+      <a onclick="GoToExtPage('unifi.home:8443')"></i> Open</a>
+      <a onclick="serverAction('startunifi');"></i> Start</a>      
+      <a onclick="serverAction('stopunifi')"><i class="fa-solid fa-stop"></i> Stop</a>
+    </div>
+  </div>
+  <button type="button" class="button" onclick="serverAction('pve_webui_toggle')">
+    <span class="button__text"></i>PVE Web UI</span>
+  </button>      
+  <button type="button" class="button" onclick="serverAction('syslog')">
+    <span class="button__text"></i>Status Report</span>
+  </button>
+  <button type="button" class="button" onclick="serverAction('files-lastlog')">  
+    <span class="button__text"></i>Last Login</span>
+  </button>  
+  <button type="button" class="button" onclick="serverAction('files-scratchcopy')"> 
+    <span class="button__text"></i>Copy Scratch</span>
+  </button>    
+  <button type="button" class="button" onclick="serverAction('files-clearlog')">
+    <span class="button__text"></i>Clear Log</span>
+  </button>      
+  <button type="button" class="button" onclick="closeServerPrompt()">
+    <span class="button__text"><i class="fa-solid fa-xmark"></i> Cancel</span>
+  </button>
+</div>
+
 <div class="log-popup popup" id="logForm">
   <form class="form-container">
     <div class="scrollmenu">
       <div class="server-grid">
 	      <div class="dropdown"> 
-	        <a class="dropbtn" onclick="showMenu('options-menu')">Options</a>
-	        <div class="dd-content dd-menu" id="options-menu">  
-            <a onclick="vmsPrompt()"> VM Control</a> 
-            <a onclick="serverAction('pve_webui_toggle')">PVE Web UI</a>
-            <a onclick="serverAction('syslog')">System Status</a>
-            <a onclick="serverAction('files-scratchcopy')">Copy Scratch</a>
-            <a onclick="serverAction('files-lastlog')">Last Login</a> 
-            <a onclick="serverAction('files-clearlog')"> Clear Log</a>
-	        </div>
+	        <a class="dropbtn" onclick="serverPrompt()">Options</a>
 	      </div>
 	      <div class="dropdown"> 
 	        <a class="dropbtn" onclick="showMenu('net-menu')">Network</a>

@@ -950,7 +950,7 @@
 
 <div class="srvopt__prompt">
   <div class="dropdown">
-    <button type="button" class="button" onclick="showMenu('legacy-menu')">
+    <button type="button" class="button srvopt_button" onclick="showMenu('legacy-menu')">
       <span class="button__text"><i class="fa-regular fa-network"></i> Legacy</span>
     </button>  
     <div class="dd-content dd-button" id="legacy-menu">
@@ -959,7 +959,7 @@
     </div>
   </div>    
   <div class="dropdown">
-    <button type="button" class="button" onclick="showMenu('xana-menu')">
+    <button type="button" class="button srvopt_button" onclick="showMenu('xana-menu')">
       <span class="button__text"><i class="fa-regular fa-network"></i> Xana</span>
     </button>  
     <div class="dd-content dd-button" id="xana-menu">
@@ -969,7 +969,7 @@
     </div>
   </div>
   <div class="dropdown">
-    <button type="button" class="button" onclick="showMenu('unifi-menu')">
+    <button type="button" class="button srvopt_button" onclick="showMenu('unifi-menu')">
       <span class="button__text"><i class="fa-regular fa-network"></i> Unifi</span>
     </button>  
     <div class="dd-content dd-button" id="unifi-menu">
@@ -978,22 +978,22 @@
       <a onclick="serverAction('stopunifi')"><i class="fa-solid fa-stop"></i> Stop</a>
     </div>
   </div>
-  <button type="button" class="button" onclick="serverAction('pve_webui_toggle')">
+  <button type="button" class="button srvopt_button" onclick="serverAction('pve_webui_toggle')">
     <span class="button__text"></i>PVE Web UI</span>
   </button>      
-  <button type="button" class="button" onclick="serverAction('syslog')">
+  <button type="button" class="button srvopt_button" onclick="serverAction('syslog')">
     <span class="button__text"></i>Status Report</span>
   </button>
-  <button type="button" class="button" onclick="serverAction('files-lastlog')">  
+  <button type="button" class="button srvopt_button" onclick="serverAction('files-lastlog')">  
     <span class="button__text"></i>Last Login</span>
   </button>  
-  <button type="button" class="button" onclick="serverAction('files-scratchcopy')"> 
+  <button type="button" class="button srvopt_button" onclick="serverAction('files-scratchcopy')"> 
     <span class="button__text"></i>Copy Scratch</span>
   </button>    
-  <button type="button" class="button" onclick="serverAction('files-clearlog')">
+  <button type="button" class="button srvopt_button" onclick="serverAction('files-clearlog')">
     <span class="button__text"></i>Clear Log</span>
   </button>      
-  <button type="button" class="button" onclick="closeServerPrompt()">
+  <button type="button" class="button srvopt_button" onclick="closeServerPrompt()">
     <span class="button__text"><i class="fa-solid fa-xmark"></i> Cancel</span>
   </button>
 </div>

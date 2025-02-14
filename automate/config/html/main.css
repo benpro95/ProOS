@@ -691,12 +691,16 @@ input.chkbox {
   position: fixed;
   top: 10%;
   left: 3%;
-  width: 500px;  
+  width: 455px;  
   height: auto;
   padding: 7px; 
   overflow-y: auto;
   color: #fff;
   z-index: 999; 
+}
+
+.srvopt_button {
+  width: 135px;  
 }
 
 /*

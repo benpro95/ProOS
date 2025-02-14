@@ -953,7 +953,7 @@
     <button type="button" class="button srvopt_button" onclick="showMenu('legacy-menu')">
       <span class="button__text"></i> Legacy</span>
     </button>  
-    <div class="dd-content dd-button" id="legacy-menu">
+    <div class="dd-content dd-optbtn" id="legacy-menu">
       <a onclick="serverAction('startlegacy')"><i class="fa-solid fa-play"></i> Start</a>
       <a onclick="serverAction('stoplegacy')"><i class="fa-solid fa-stop"></i> Stop</a>      
     </div>
@@ -962,7 +962,7 @@
     <button type="button" class="button srvopt_button" onclick="showMenu('xana-menu')">
       <span class="button__text"></i> Xana</span>
     </button>  
-    <div class="dd-content dd-button" id="xana-menu">
+    <div class="dd-content dd-optbtn" id="xana-menu">
       <a onclick="serverAction('startxana')"><i class="fa-solid fa-play"></i> Start</a>
       <a onclick="serverAction('stopxana')"><i class="fa-solid fa-stop"></i> Stop</a>      
       <a onclick="serverAction('restorexana')"><i class="fa-solid fa-eraser"></i> Erase</a>
@@ -972,47 +972,42 @@
     <button type="button" class="button srvopt_button" onclick="showMenu('unifi-menu')">
       <span class="button__text"></i> Unifi</span>
     </button>  
-    <div class="dd-content dd-button" id="unifi-menu">
+    <div class="dd-content dd-optbtn" id="unifi-menu">
       <a onclick="GoToExtPage('unifi.home:8443')"><i class="fa-solid fa-link"></i> Open</a>
       <a onclick="serverAction('startunifi')"><i class="fa-solid fa-play"></i> Start</a>   
       <a onclick="serverAction('stopunifi')"><i class="fa-solid fa-stop"></i> Stop</a>
     </div>
   </div>
-
   <div class="dropdown">
     <button type="button" class="button srvopt_button" onclick="showMenu('pve-menu')">
       <span class="button__text"></i> Proxmox</span>
     </button>  
-    <div class="dd-content dd-button" id="pve-menu">
+    <div class="dd-content dd-optbtn" id="pve-menu">
       <a onclick="GoToExtPage('pve.home:8006')"></i> Open Web UI</a>
       <a onclick="serverAction('pve_webui_toggle')"></i> Start/Stop UI</a>
       <a onclick="serverAction('syslog')"></i> Status Report</a>  
-      <a onclick="serverAction('stopunifi')"></i> Stop</a>
     </div>
   </div>
-
   <div class="dropdown">
     <button type="button" class="button srvopt_button" onclick="showMenu('files-menu')">
       <span class="button__text"></i> Files</span>
     </button>  
-    <div class="dd-content dd-button" id="files-menu">
+    <div class="dd-content dd-optbtn" id="files-menu">
       <a onclick="serverAction('files-scratchcopy')"></i> Copy to Scratch</a>      
       <a onclick="serverAction('files-lastlog')"></i> Last Login</a>
     </div>
   </div>
-
   <div class="dropdown">
     <button type="button" class="button srvopt_button" onclick="showMenu('netwrk-menu')">
       <span class="button__text"></i> Network</span>
     </button>  
-    <div class="dd-content dd-button" id="netwrk-menu">
+    <div class="dd-content dd-optbtn" id="netwrk-menu">
       <a onclick="serverAction('files-netscan')"></i> IP Scanner</a>      
       <a onclick="GoToExtPage('router.home')"></i> Router</a>
       <a onclick="GoToExtPage('edgeswitch.home')"></i> Switch</a>
       <a onclick="wifiPrompt()"></i> WiFi Access</a>     
     </div>
   </div>
-
   <button type="button" class="button srvopt_button" onclick="serverAction('files-git_push')"> 
     <span class="button__text"></i>Sync Git</span>
   </button>    

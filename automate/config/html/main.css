@@ -388,16 +388,22 @@ input.chkbox {
   background-color: #000;
 }
 
-.dd-button {
-  position: absolute;
-  min-width: 130px;
-  z-index: 999;
-}
-
+/* dropdown menu on window */
 .dd-menu {
   position: fixed;
   min-width: 125px;
-  z-index: 999;
+}
+
+/* dropdown menu on buttons */
+.dd-button { 
+  position: absolute;
+  min-width: 130px;
+}
+
+/* dropdown menu on server option buttons */
+.dd-optbtn { 
+  position: absolute;
+  width: auto;
 }
 
 .dd-content {
@@ -507,7 +513,7 @@ input.chkbox {
   height: auto;
   padding: 16px; 
   color: #fff;
-  z-index: 9999; 
+  z-index: 998; 
 } 
 
 #pass__textbox {
@@ -529,7 +535,7 @@ input.chkbox {
   height: auto;
   padding: 16px; 
   color: #fff;
-  z-index: 9999; 
+  z-index: 998; 
 } 
 
 #pinet__ssidbox {
@@ -562,7 +568,7 @@ input.chkbox {
   height: auto;
   padding: 16px; 
   color: #fff;
-  z-index: 999;
+  z-index: 998;
 }
 
 #wifi__img {
@@ -602,7 +608,7 @@ input.chkbox {
   height: auto;
   width: 360px;
   color: #fff;
-  z-index: 999; 
+  z-index: 998; 
 }
 
 .editFav__button {
@@ -660,7 +666,7 @@ input.chkbox {
   height: 320px;
   padding: 15px; 
   color: #fff;
-  z-index: 999; 
+  z-index: 997; 
 }
 
 #about__btn {
@@ -692,11 +698,11 @@ input.chkbox {
   top: 10%;
   left: 3%;
   width: 455px;  
-  height: auto;
+  height: 330px;
   padding: 7px; 
-  overflow-y: auto;
+  overflow-y: visible;
   color: #fff;
-  z-index: 999; 
+  z-index: 998; 
 }
 
 .srvopt_button {
@@ -717,7 +723,7 @@ input.chkbox {
   height: auto;
   padding: 16px; 
   color: #fff;
-  z-index: 999; 
+  z-index: 998; 
 }
 
 #color__text {

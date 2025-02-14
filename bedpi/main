@@ -13,6 +13,18 @@ BLINKLED(){
 nohup python3 /opt/rpi/blinkled.py >/dev/null 2>&1 &
 }
 
+OPTA_MODE(){
+  echo "02002" > /dev/zterm
+}
+
+OPTB_MODE(){
+  echo "02001" > /dev/zterm
+}
+
+COAX_MODE(){
+  echo "02003" > /dev/zterm
+}
+
 case "$ARG1" in
 
 boot)
@@ -38,9 +50,8 @@ exit
 ;;
 
 relax)
-## Pi audio input
-/opt/rpi/main coaxial &
 ## Play sound in loop
+COAX_MODE
 systemctl stop rpi-relaxloop
 systemctl set-environment rpi_relaxmode=$ARG2
 systemctl start rpi-relaxloop
@@ -50,7 +61,7 @@ exit
 
 stoprelax)
 ## Apple TV input
-/opt/rpi/main opt-a &
+OPTA_MODE
 systemctl stop rpi-relaxloop
 BLINKLED
 exit
@@ -60,12 +71,12 @@ sleepmode)
 ## Toggle relax sounds
 if (systemctl is-active --quiet rpi-relaxloop.service); then
   ## Apple TV input
-  /opt/rpi/main opt-a &
+  OPTA_MODE
   echo "Stopping playback..."
   systemctl stop rpi-relaxloop
 else
   ## Pi audio input
-  /opt/rpi/main coaxial &
+  COAX_MODE
   echo "Starting sleep mode..."
   systemctl stop rpi-relaxloop
   systemctl set-environment rpi_relaxmode="fan"
@@ -76,19 +87,19 @@ exit
 ;;
 
 opt-a)
-echo "02002" > /dev/zterm
+OPTA_MODE
 BLINKLED
 exit
 ;;
 
 opt-b)
-echo "02001" > /dev/zterm
+OPTB_MODE
 BLINKLED
 exit
 ;;
 
 coaxial)
-echo "02003" > /dev/zterm
+COAX_MODE
 BLINKLED
 exit
 ;;

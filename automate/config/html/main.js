@@ -1252,6 +1252,7 @@ function closePopup() {
   document.getElementById("camForm").style.display = "none";
   document.getElementById("camImage").src = "";
   clearPendingCmd();
+  classDisplay("srvopt__prompt","none");
 }
 
 function closeSendbox() {

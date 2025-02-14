@@ -6,8 +6,6 @@
 // shared libraries
 #include <Wire.h>
 #include <Encoder.h>
-#include <stdio.h>
-#include <string.h>
 
 // local libraries
 #include "neotimer.h"
@@ -347,26 +345,28 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
     break;
   // input select
   case 2:
-    if (powerState == 1 && isMuted == 0) {
-      // optical in #1 (02001) 
-      if (_ctldata == 1) {
-        setBlinkFrontLED(300,1,0);
-        audioInput(1);
-      }
-      // optical in #2 (02002) 
-      if (_ctldata == 2) {
-        setBlinkFrontLED(300,1,0);
-        audioInput(2);
-      }
-      // coax input (02003)  
-      if (_ctldata == 3) {
-        setBlinkFrontLED(300,1,0);
-        audioInput(3);
-      }
-      // aux input (02004) 
-      if (_ctldata == 4) {
-        setBlinkFrontLED(300,1,0);
-        audioInput(4);
+    if (powerState == 1) {
+      if (isMuted == 0) {
+        // optical in #1 (02001) 
+        if (_ctldata == 1) {
+          setBlinkFrontLED(300,1,0);
+          audioInput(1);
+        }
+        // optical in #2 (02002) 
+        if (_ctldata == 2) {
+          setBlinkFrontLED(300,1,0);
+          audioInput(2);
+        }
+        // coax input (02003)  
+        if (_ctldata == 3) {
+          setBlinkFrontLED(300,1,0);
+          audioInput(3);
+        }
+        // aux input (02004) 
+        if (_ctldata == 4) {
+          setBlinkFrontLED(300,1,0);
+          audioInput(4);
+        }
       }
     }
     break;
@@ -377,15 +377,15 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
       if (_ctldata == 1) { 
         volumeMute();
       }
-    }
-    if (powerState == 1 && isMuted == 0) {
-      // volume up (03002) 
-      if (_ctldata == 2) { 
-        volumeUp(2);
-      }
-      // volume down (03003) 
-      if (_ctldata == 3) { 
-        volumeDown(2);
+      if (isMuted == 0) {
+        // volume up (03002) 
+        if (_ctldata == 2) { 
+          volumeUp(2);
+        }
+        // volume down (03003) 
+        if (_ctldata == 3) { 
+          volumeDown(2);
+        }
       }
     }
     break;

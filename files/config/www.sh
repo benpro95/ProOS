@@ -83,7 +83,7 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           echo "'Regions' share not found!"
         else
           echo "syncing 'Regions' share to $POOL drive..."
-          rsync $CHECKSUM -aP --exclude="Archived/yWFMCzfdS8eqLv6jly8s6g/pTnI6aNImyo1g0wLhVQPpg/" \
+          rsync $CHECKSUM -aP --exclude="Archive/ALUTqMiuxVtjfuair7WIgQ/" \
           /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
         fi
         ##### END BACKUP #####
@@ -221,19 +221,19 @@ function FUSEFS () {
   FUSEPWD="/mnt/ramdisk/fusearch.txt"
   if PATHMOUNTED "$FUSEPTH"
   then
-    echo "detaching FUSE volume..."
+    echo "detaching $VOLNME volume..."
     fusermount -u "$FUSEPTH"
     sleep 1
     rmdir "$FUSEPTH"
   fi
   if [[ $TOGGLE == "attach" ]]
   then
-    echo "attaching FUSE volume..."
+    echo "attaching $VOLNME volume..."
     mkdir -p "$FUSEPTH"
     if [[ -e "$FUSEPWD" ]]
     then
       gocryptfs -quiet -allow_other \
-       /mnt/.regions/"$VOLNME" \
+        /mnt/.regions/"$VOLNME" \
         "$FUSEPTH" -passfile "$FUSEPWD"
     else
       echo "password file not found!"
@@ -245,10 +245,10 @@ function FUSEFS () {
   fi
 }
 
-## Attach Archived Shares
+## Attach ArchivedShares
 if [[ $REPLY == "arch_region" ]]
 then
-  FUSEFS "Archived" "attach"
+  FUSEFS "Archive" "attach"
   exit
 fi
 
@@ -263,7 +263,7 @@ fi
 if [[ $REPLY == "detach_all_regions" ]]
 then
   ## FUSE volumes
-  FUSEFS "Archived"
+  FUSEFS "Archive"
   FUSEFS "Volumes"
   ## Symlinks
   echo "detaching all regions..."

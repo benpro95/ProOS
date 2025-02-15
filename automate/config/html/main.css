@@ -239,16 +239,6 @@ input.chkbox {
   line-height: 4.0; /* normal button width */
 }
 
-.button_right_txtwin { 
-  position: absolute;
-  width: 120px;
-  right: 5px;
-}
-
-.button_left_txtwin {
-  width: 100px;
-}
-
 .button__textsmall {
   line-height: 3.8; /* small button height */
   font-size: 20px;
@@ -321,29 +311,39 @@ input.chkbox {
 }
 
 /* Add styles to the form container */
-.form-container {
+.textBoxContainer {
   height: 100%;
   width: 100%;
-  padding-bottom: 155px; /* buttons position */
+  padding-bottom: 95px; /* buttons position */
   background-color: #2d353d; /* popup window frame color */
 }
 
 /* Full-width textarea */
-.form-container textarea {
+.textBoxContainer textarea {
   height: 100%;
   width: 100%;
   color: #fff; /* textbox font color */
   background: #000; /* textbox background color */
   resize: none;
   font-kerning: none;
-  font-family: "Consolas",monospace,system-ui,sans-serif; /* log window font */
+  font-family: "Monaco",monospace,system-ui,sans-serif; /* log window font */
   font-size: 15px; /* page default font size */
 }
 
 /* When the textarea gets focus, do something */
-.form-container textarea:focus {
+.textBoxContainer textarea:focus {
   background: #000; /* textbox selected background color */
   outline: none;
+}
+
+.button_left_txtwin {
+  width: 75px;
+}
+
+.button_right_txtwin { 
+  position: absolute;
+  width: 120px;
+  right: 5px;
 }
 
 /* log window top menu */
@@ -686,17 +686,17 @@ input.chkbox {
 
 .srvopt__prompt {
   display: none;
+  overflow-y: visible;
   background-color: black;
   border: 1px solid white;
   position: fixed;
-  top: 10%;
   left: 3%;
-  width: 455px;  
-  height: 335px;
+  top: 10%;
+  width: 455px;
+  height: auto;
   padding: 7px; 
-  overflow-y: visible;
+  z-index: 998;
   color: #fff;
-  z-index: 998; 
 }
 
 .srvopt_button {

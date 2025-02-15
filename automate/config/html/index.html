@@ -1014,60 +1014,20 @@
   <button type="button" class="button srvopt_button" onclick="serverAction('files-clearlog')">
     <span class="button__text"></i>Clear Log</span>
   </button>      
-  <button type="button" class="button srvopt_button" onclick="closeServerPrompt()">
+  <button type="button" class="button srvopt_button" onclick="srvPmtCloseBtn()">
     <span class="button__text"><i class="fa-solid fa-xmark"></i> Cancel</span>
   </button>
 </div>
 
 <div class="log-popup popup" id="logForm">
-  <form class="form-container">
-    <div class="scrollmenu">
-      <div class="server-grid">
-	      <div class="dropdown"> 
-	        <a class="dropbtn" onclick="serverPrompt()">Options</a>
-	      </div>
-	      <div class="dropdown"> 
-          <a class="dropbtn" onclick="showMenu('regionsmenu')">Regions</a>
-          <div class="dd-content dd-menu" id="regionsmenu">
-            <a onclick="serverAction('files-ext_region')">External</a>
-            <a onclick="getPassword('fusearch')">Archived</a>
-            <a onclick="serverAction('files-snap_region')">Snapshots</a>
-            <a onclick="serverAction('files-ram_region')">RAM Disk</a>
-            <a onclick="serverAction('files-detach_all_regions')">Detach All</a>
-          </div>
-	      </div>
-        <div class="dropdown">
-          <a class="dropbtn" onclick="showMenu('backupmenu')">Backup</a>
-          <div class="dd-content dd-menu" id="backupmenu">
-            <a onclick="serverAction('pve_vmsbkp')">Snapshot VM's</a>
-            <a onclick="serverAction('pve_listsnaps')">List Snapshots</a>
-            <a onclick="serverAction('files-last_backup_dates')">Backup Dates</a>
-            <a onclick="serverAction('files-backupchk')">Checksum</a>
-            <a onclick="serverAction('files-backupstd')">Standard</a>
-            <a onclick="serverAction('detach_bkps')">Detach</a>
-            <a onclick="getPassword('pwd')">Unlock</a>  
-          </div>
-        </div>
-	    </div>
-	    <div class="lcdpi-grid ledpi-grid pi-grid">
-        <div class="dropdown"> 
-	        <a class="dropbtn" onclick="showMenu('pi-options-menu')">Options</a>
-	        <div class="dd-content dd-menu" id="pi-options-menu">
-            <a onclick="showPiWiFiPrompt()"> Setup WiFi</a>
-            <a onclick="serverAction('temp')"> Temperature</a> 
-            <a onclick="serverAction('apd')"> Hotspot Network</a> 
-            <a onclick="serverAction('client')"> Client Network</a> 
-            <a onclick="serverAction('showwpa')"> Network Status</a> 
-	          <a onclick="serverAction('wifiscan')"> WiFi Scanner</a> 
-	          <a onclick="serverAction('clearlog')"> Clear Log</a>
-	        </div>
-	      </div>	  	
-	    </div>
-    </div>
+  <form class="textBoxContainer">
     <textarea readonly class="scroll-bar" id="logTextBox" spellcheck="false" placeholder="" required=""></textarea>  
     <button type="button" class="button winbtn button_left_txtwin" onclick="closePopup()">
           <span class="button__textsmall"></i> Close</span>
     </button>       
+    <button type="button" class="button winbtn button_left_txtwin" onclick="serverPrompt()">
+          <span class="button__textsmall"></i> Opt</span>
+    </button>           
     <button type="button" class="button winbtn button_left_txtwin" onclick="loadLog('sysout')">
           <span class="button__textsmall"></i> Load</span>
     </button>
@@ -1078,12 +1038,7 @@
 </div>
 
 <div class="msg-popup popup" id="sendForm">
-  <form class="form-container">
-    <div class="scrollmenu">
-      <div class="dropdown"> 
-        <a class="dropbtn">Send Message</a>
-      </div>  
-    </div>    
+  <form class="textBoxContainer">   
     <textarea class="scroll-bar" id="lcdTextBox" placeholder="" required=""></textarea>  
     <button type="button" class="button winbtn button_left_txtwin" onclick="closeSendbox()">
           <span class="button__textsmall"></i> Close</span>

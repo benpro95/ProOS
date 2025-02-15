@@ -20,7 +20,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "5.11";
+let siteVersion = "5.2";
 
 //////////////////////
 
@@ -124,6 +124,7 @@ function hidePages() {
   classDisplay('server-grid','none');
   classDisplay('ledpi-grid','none');
   classDisplay('led-grid','none');
+  closeServerPrompt();
 }
 
 function hideDropdowns() {
@@ -206,14 +207,21 @@ function starsAnimation(_state) {
   }
 }
 
+// oprn server options prompt
 function serverPrompt(){
   classDisplay("srvopt__prompt","block");
 }
 
+// close server options prompt
 function closeServerPrompt(){
+  classDisplay("srvopt__prompt","none");
+}
+
+// server options prompt close button action
+function srvPmtCloseBtn(){
   hideDropdowns();
   clearPendingCmd();
-  classDisplay("srvopt__prompt","none");
+  closeServerPrompt();
 }
 
 function piWiFiPrompt(){
@@ -473,7 +481,7 @@ async function serverSend() {
     if (sysModel === serverSite) {
       sendCmd('main','server',serverCmdData);
       // hide server window
-      classDisplay('srvopt__prompt','none');
+      
     } else {
       sendCmd('main-www','server',serverCmdData);
     }
@@ -1253,7 +1261,7 @@ function closePopup() {
   document.getElementById("camForm").style.display = "none";
   document.getElementById("camImage").src = "";
   clearPendingCmd();
-  classDisplay("srvopt__prompt","none");
+  closeServerPrompt();
 }
 
 function closeSendbox() {

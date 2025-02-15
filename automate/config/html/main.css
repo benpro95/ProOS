@@ -314,7 +314,7 @@ input.chkbox {
 .textBoxContainer {
   height: 100%;
   width: 100%;
-  padding-bottom: 95px; /* buttons position */
+  padding-bottom: 80px; /* buttons position */
   background-color: #2d353d; /* popup window frame color */
 }
 
@@ -326,7 +326,7 @@ input.chkbox {
   background: #000; /* textbox background color */
   resize: none;
   font-kerning: none;
-  font-family: "Monaco",monospace,system-ui,sans-serif; /* log window font */
+  font-family: monospace,system-ui; /* log window font */
   font-size: 15px; /* page default font size */
 }
 
@@ -337,11 +337,13 @@ input.chkbox {
 }
 
 .button_left_txtwin {
-  width: 75px;
+  height: 70px;
+  width: 80px;
 }
 
-.button_right_txtwin { 
+.button_right_txtwin {
   position: absolute;
+  height: 70px;
   width: 120px;
   right: 5px;
 }

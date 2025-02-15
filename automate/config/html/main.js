@@ -124,7 +124,7 @@ function hidePages() {
   classDisplay('server-grid','none');
   classDisplay('ledpi-grid','none');
   classDisplay('led-grid','none');
-  closeServerPrompt();
+  closeServerOptions();
 }
 
 function hideDropdowns() {
@@ -164,7 +164,7 @@ function GotoSubURL(_path) {
   window.location = location.protocol+"//"+location.hostname+"/"+_path;
 }
 
-// stars animation
+/// stars animation ///
 
 function resizeEvent() {
   timeStamp = new Date();
@@ -207,22 +207,72 @@ function starsAnimation(_state) {
   }
 }
 
-// oprn server options prompt
-function serverPrompt(){
+/// text popup window ///
+
+// send server action
+async function serverSend() {
+  if (serverCmdData === null) {
+    // load log data
+    document.getElementById("logTextBox").value = "select an option.";
+    sendBtnAlert("off");
+  } else {
+    // send command
+    if (sysModel === serverSite) {
+      sendCmd('main','server',serverCmdData);
+      // hide server window
+      
+    } else {
+      sendCmd('main-www','server',serverCmdData);
+    }
+    // display command sent
+    document.getElementById("logTextBox").value += "\n"+ serverCmdData + " command sent.";
+    // scroll to bottom of page
+    let txtArea = document.getElementById("logTextBox");
+    txtArea.scrollTop = txtArea.scrollHeight;
+    // animations
+    loadBar(2.5);
+    sendBtnAlert("off");
+  }  
+  serverCmdData = null;
+}
+
+function sendBtnAlert(state) {
+  let _elmid;
+  if (sysModel === serverSite) {
+    _elmid = "sendButton";
+  } else {
+    _elmid = "sendButtonLCDpi";
+  }
+  let _elem = document.getElementById(_elmid);
+  if (state === 'off') {
+    _elem.classList.remove("button-alert");
+  }
+  if (state === 'on') {  
+    _elem.classList.add("button-alert");
+  }
+}
+
+// clear pending server command 
+function clearPendingCmd() {
+  sendBtnAlert("off");
+  serverCmdData = null;
+}
+
+function openServerOptions(){
   classDisplay("srvopt__prompt","block");
 }
 
-// close server options prompt
-function closeServerPrompt(){
+function closeServerOptsBtn(){
+  hideDropdowns();
+  clearPendingCmd();
+  closeServerOptions();
+}
+
+function closeServerOptions(){
   classDisplay("srvopt__prompt","none");
 }
 
-// server options prompt close button action
-function srvPmtCloseBtn(){
-  hideDropdowns();
-  clearPendingCmd();
-  closeServerPrompt();
-}
+/// END- text popup window ///
 
 function piWiFiPrompt(){
   let pinetprompt = document.createElement("div"); 
@@ -470,53 +520,6 @@ async function getPassword(_type){
 
 function relaxSend(_cmd) {
   sendCmd('main','relax',_cmd);
-}
-
-// send server action
-async function serverSend() {
-  if (serverCmdData === null) {
-    document.getElementById("logTextBox").value = "select an option.";
-  } else {
-    // send command
-    if (sysModel === serverSite) {
-      sendCmd('main','server',serverCmdData);
-      // hide server window
-      
-    } else {
-      sendCmd('main-www','server',serverCmdData);
-    }
-    // display command sent
-    document.getElementById("logTextBox").value += "\n"+ serverCmdData + " command sent.";
-    // scroll to bottom of page
-    let txtArea = document.getElementById("logTextBox");
-    txtArea.scrollTop = txtArea.scrollHeight;
-    // animations
-    loadBar(2.5);
-    sendBtnAlert("off");
-  }  
-  serverCmdData = null;
-}
-
-function sendBtnAlert(state) {
-  let _elmid;
-  if (sysModel === serverSite) {
-    _elmid = "sendButton";
-  } else {
-    _elmid = "sendButtonLCDpi";
-  }
-  let _elem = document.getElementById(_elmid);
-  if (state === 'off') {
-    _elem.classList.remove("button-alert");
-  }
-  if (state === 'on') {  
-    _elem.classList.add("button-alert");
-  }
-}
-
-// clear pending server command 
-function clearPendingCmd() {
-  sendBtnAlert("off");
-  serverCmdData = null;
 }
 
 // transmit command
@@ -1244,8 +1247,9 @@ function openLogWindow() {
   // open server log window
   closePopup();
   // show log form window
-  document.getElementById("logTextBox").value = "select an option.";
   document.getElementById("logForm").style.display = "block";
+  // load log data
+  loadLog('sysout');
 }
 
 function openCamWindow() {
@@ -1261,7 +1265,7 @@ function closePopup() {
   document.getElementById("camForm").style.display = "none";
   document.getElementById("camImage").src = "";
   clearPendingCmd();
-  closeServerPrompt();
+  closeServerOptions();
 }
 
 function closeSendbox() {

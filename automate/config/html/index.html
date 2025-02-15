@@ -1008,31 +1008,32 @@
       <a onclick="GoToExtPage('router.home')"></i> Router</a>
     </div>
   </div>
+  <button type="button" class="button srvopt_button" onclick="closeServerOptsBtn()">
+    <span class="button__text"><i class="fa-solid fa-xmark"></i> Close</span>
+  </button>
   <button type="button" class="button srvopt_button" onclick="serverAction('files-git_push')"> 
     <span class="button__text"></i>Sync Git</span>
   </button>    
   <button type="button" class="button srvopt_button" onclick="serverAction('files-clearlog')">
     <span class="button__text"></i>Clear Log</span>
   </button>      
-  <button type="button" class="button srvopt_button" onclick="srvPmtCloseBtn()">
-    <span class="button__text"><i class="fa-solid fa-xmark"></i> Cancel</span>
-  </button>
 </div>
 
 <div class="log-popup popup" id="logForm">
   <form class="textBoxContainer">
-    <textarea readonly class="scroll-bar" id="logTextBox" spellcheck="false" placeholder="" required=""></textarea>  
+    <textarea readonly class="scroll-bar" id="logTextBox" spellcheck="false" placeholder="" required="">
+    </textarea>  
     <button type="button" class="button winbtn button_left_txtwin" onclick="closePopup()">
-          <span class="button__textsmall"></i> Close</span>
+          <span class="button__textsmall"><i class="fa-solid fa-xmark"></i></span>
     </button>       
-    <button type="button" class="button winbtn button_left_txtwin" onclick="serverPrompt()">
-          <span class="button__textsmall"></i> Opt</span>
+    <button type="button" class="button winbtn button_left_txtwin" onclick="openServerOptions()">
+          <span class="button__textsmall"><i class="fa-solid fa-xmark"></i></span>
     </button>           
     <button type="button" class="button winbtn button_left_txtwin" onclick="loadLog('sysout')">
-          <span class="button__textsmall"></i> Load</span>
+          <span class="button__textsmall"><i class="fa-solid fa-xmark"></i></span>
     </button>
     <button type="button" class="button winbtn button_right_txtwin" id="sendButton" onclick="serverSend()">
-          <span class="button__textsmall"></i> Send</span>
+          <span class="button__textsmall"><i class="fa-solid fa-xmark"></i></span>
     </button>
   </form>
 </div>

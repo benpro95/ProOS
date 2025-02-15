@@ -45,8 +45,9 @@ function handleClicks(event) {
         event.target.classList.contains('button__text') || // button text click
         event.target.classList.contains('mainmenu__anchor') || // main menu click
         event.target.classList.contains('bookmarked__item') || // bookmark menu click
-        event.target.classList.contains('fa-regular') || // icon click
-        event.target.classList.contains('fa-solid') || // icon click
+        event.target.classList.contains('fa-regular') || // font awesome icon clicks
+        event.target.classList.contains('fa-brands') ||
+        event.target.classList.contains('fa-solid') ||
         event.target.classList.contains('dropbtn') || // dropdown button click
         event.target.classList.contains('chkbox'))) { // checkbox click
     hideDropdowns(); // hide all dropdown menus

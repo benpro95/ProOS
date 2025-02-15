@@ -400,12 +400,6 @@ input.chkbox {
   min-width: 130px;
 }
 
-/* dropdown menu on server option buttons */
-.dd-optbtn { 
-  position: absolute;
-  width: auto;
-}
-
 .dd-content {
   cursor: pointer;
   display: none;
@@ -608,7 +602,7 @@ input.chkbox {
   height: auto;
   width: 360px;
   color: #fff;
-  z-index: 998; 
+  z-index: 999; 
 }
 
 .editFav__button {
@@ -698,7 +692,7 @@ input.chkbox {
   top: 10%;
   left: 3%;
   width: 455px;  
-  height: 330px;
+  height: 335px;
   padding: 7px; 
   overflow-y: visible;
   color: #fff;

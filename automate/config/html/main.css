@@ -314,7 +314,7 @@ input.chkbox {
 .textBoxContainer {
   height: 100%;
   width: 100%;
-  padding-bottom: 80px; /* buttons position */
+  padding-bottom: 103px; /* buttons position */
   background-color: #2d353d; /* popup window frame color */
 }
 
@@ -337,13 +337,13 @@ input.chkbox {
 }
 
 .button_left_txtwin {
-  height: 70px;
+  height: 80px;
   width: 80px;
 }
 
 .button_right_txtwin {
   position: absolute;
-  height: 70px;
+  height: 80px;
   width: 120px;
   right: 5px;
 }

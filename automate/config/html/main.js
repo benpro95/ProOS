@@ -473,17 +473,22 @@ function passwordPrompt(){
   pwinput.id = "pass__textbox"; //give it some id - not really used in this example...
   pwinput.type="password"; // makes the input of type password to not show plain-text
   pwprompt.appendChild(pwinput); //append it to password-prompt
+  // buttons 
+  let pwbtndiv = document.createElement("div");
+  pwbtndiv.id = "pass__prmbtnctr";
   let pwokbutton = document.createElement("button"); //the ok button
   pwokbutton.innerHTML = "Send";
-  pwokbutton.className ="button winbtn"; 
+  pwokbutton.className ="button pass__prompt_btn"; 
   pwokbutton.type="button"; 
   let pwcancelb = document.createElement("button"); //the cancel-button
   pwcancelb.innerHTML = "Cancel";
-  pwcancelb.className = "button winbtn"; 
+  pwcancelb.className = "button pass__prompt_btn"; 
   pwcancelb.type = "button"; 
-  pwprompt.appendChild(pwcancelb); //append cancel-button first
-  pwprompt.appendChild(pwokbutton); //append the ok-button
-  document.body.appendChild(pwprompt); //append the password-prompt so it gets visible
+  pwbtndiv.appendChild(pwcancelb); //append cancel-button first
+  pwbtndiv.appendChild(pwokbutton); //append the ok-button
+  pwprompt.appendChild(pwbtndiv); // append button center div to prompt div
+  //append the password-prompt so it gets visible
+  document.body.appendChild(pwprompt); 
   pwinput.focus(); //focus on the password-input-field so user does not need to click 
   /*now comes the magic: create and return a promise*/
   return new Promise(function(resolve, reject) {

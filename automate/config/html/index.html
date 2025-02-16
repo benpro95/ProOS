@@ -1023,7 +1023,7 @@
       </button>
     </div>   
     <div class="svropt__backup">
-      <a></i> Select Backup Type</a>
+      <a></i> Backup Type</a>
       <div class="svropt__bkp_brd">
         <div class="svropt__bkp_frame">
           <button type="button" class="button svropt__bkp_btn" onclick="serverAction('files-backupchk')">
@@ -1057,14 +1057,23 @@
       </button>
     </div>
     <div class="svropt__regions">
-      <button type="button" class="button svropt_button" onclick="()">
-        <span class="button__text"></i> TBD</span>
+      <button type="button" class="button svropt_button" onclick="serverAction('')">
+        <span class="button__text"></i> TBD I</span>
       </button>
-      <button type="button" class="button svropt_button" onclick="()">
-        <span class="button__text"></i> TBD</span>
+      <button type="button" class="button svropt_button" onclick="serverAction('')">
+        <span class="button__text"></i> TBD II</span>
+      </button>
+      <button type="button" class="button svropt_button" onclick="serverAction('files-ram_region')">
+        <span class="button__text"></i> RAM Disk</span>
       </button> 
-      <button type="button" class="button svropt_button" onclick="()">
-        <span class="button__text"></i> TBD</span>
+      <button type="button" class="button svropt_button" onclick="getPassword('fusearch')">
+        <span class="button__text"></i> Archive</span>
+      </button> 
+      <button type="button" class="button svropt_button" onclick="serverAction('files-ext_region')">
+        <span class="button__text"></i> External</span>
+      </button>
+      <button type="button" class="button svropt_button" onclick="serverAction('files-snap_region')">
+        <span class="button__text"></i> Snapshots</span>
       </button>    
       <button type="button" class="button svropt_button" onclick="closeServerOptions()">
         <span class="button__text"><i class="fa-solid fa-xmark"></i> Close</span>
@@ -1072,8 +1081,8 @@
       <button type="button" class="button svropt_button" onclick="openServerOptions()">
         <span class="button__text"><i class="fa fa-arrow-left"></i></span>
       </button>
-      <button type="button" class="button svropt_button" onclick="()">
-        <span class="button__text"></i> TBD</span>
+      <button type="button" class="button svropt_button" onclick="serverAction('files-detach_all_regions')">
+        <span class="button__text"></i> Detach All</span>
       </button>      
     </div>   
   </div>  

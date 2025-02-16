@@ -92,6 +92,18 @@ body {
   display: none;
 }
 
+.svropt-main {
+  display: none;
+}
+
+.svropt-regions {
+  display: none;
+}
+
+.svropt-backup {
+  display: none;
+}
+
 .dynamic-menus {
   display: block;
 }

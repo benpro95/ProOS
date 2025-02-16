@@ -214,13 +214,10 @@ async function serverSend() {
   if (serverCmdData === null) {
     // load log data
     document.getElementById("logTextBox").value = "select an option.";
-    sendBtnAlert("off");
   } else {
     // send command
     if (sysModel === serverSite) {
       sendCmd('main','server',serverCmdData);
-      // hide server window
-      
     } else {
       sendCmd('main-www','server',serverCmdData);
     }
@@ -231,16 +228,14 @@ async function serverSend() {
     txtArea.scrollTop = txtArea.scrollHeight;
     // animations
     loadBar(2.5);
-    sendBtnAlert("off");
-  }  
+  }
+  sendBtnAlert("off");
   serverCmdData = null;
 }
 
 function sendBtnAlert(state) {
-  let _elmid;
-  if (sysModel === serverSite) {
-    _elmid = "sendButton";
-  } else {
+  let _elmid = "sendButton";
+  if (sysModel === "LCDpi") {
     _elmid = "sendButtonLCDpi";
   }
   let _elem = document.getElementById(_elmid);
@@ -260,6 +255,7 @@ function clearPendingCmd() {
 
 function openServerOptions(){
   classDisplay("srvopt__prompt","block");
+  classDisplay("svropt_main","block");
 }
 
 function closeServerOptsBtn(){
@@ -270,6 +266,9 @@ function closeServerOptsBtn(){
 
 function closeServerOptions(){
   classDisplay("srvopt__prompt","none");
+  classDisplay("svropt_main","none");
+  classDisplay("svropt_regions","none");
+  classDisplay("svropt_backup","none");
 }
 
 /// END- text popup window ///

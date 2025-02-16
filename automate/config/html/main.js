@@ -20,7 +20,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "5.2";
+let siteVersion = "5.2.1";
 
 //////////////////////
 
@@ -192,16 +192,12 @@ function starsAnimation(_state) {
   // animated stars background
   let _itr;
   for (_itr = 1; _itr <= 12; _itr++) {
-    const _elm = document.getElementById("star-" + _itr);
-    const _class = "star-a-" + _itr;
+    let _elm = "star-" + _itr;
+    let _class = "star-a-" + _itr;
     if (_state === true) {
-      if (!(_elm.classList.contains(_class))) {
-        _elm.classList.add(_class);
-      }
+      elemToClass('show',_elm,_class);
     } else {
-      if (_elm.classList.contains(_class)) {
-        _elm.classList.remove(_class);
-      }
+      elemToClass('hide',_elm,_class);
     }
   }
 }
@@ -233,16 +229,13 @@ async function serverSend() {
 }
 
 function sendBtnAlert(state) {
-  let _elmid = "sendButton";
-  if (sysModel === "LCDpi") {
-    _elmid = "sendButtonLCDpi";
-  }
-  let _elem = document.getElementById(_elmid);
+  let _class = "button-alert";
+  let _elem = "sendButton";
   if (state === 'off') {
-    _elem.classList.remove("button-alert");
+    elemToClass('hide',_elem,_class);
   }
-  if (state === 'on') {  
-    _elem.classList.add("button-alert");
+  if (state === 'on') {
+    elemToClass('show',_elem,_class);
   }
 }
 
@@ -570,6 +563,7 @@ function subModeToggle() {
   } 
 }
 
+// add / remove a class from a element
 function elemToClass(_action,_elmid,_class) {
   let _elm = document.getElementById(_elmid);
   if (_action === 'show') {

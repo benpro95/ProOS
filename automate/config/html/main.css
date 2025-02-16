@@ -177,11 +177,6 @@ input.chkbox {
   }
 }
 
-#testmode {
-  /*display: inline-block;*/
-  display: none;
-}
-
 .banner__text {
   display: none;
   margin-top: 6px;
@@ -515,7 +510,7 @@ input.chkbox {
   background-color: black;
   border: 1px solid white;
   position: fixed;
-  top: 25%;
+  top: 30%;
   left: 10%;
   width: 350px;  
   height: auto;
@@ -550,7 +545,7 @@ input.chkbox {
   background-color: black;
   border: 1px solid white;
   position: fixed;
-  top: 25%;
+  top: 30%;
   left: 10%;
   width: 350px;  
   height: auto;

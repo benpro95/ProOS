@@ -58,8 +58,6 @@
     </a>
   </div>
 
-  <a id="testmode" class="banner__text"></a>
-
   <a onclick="GoToHomePage()" id="load__progress">
      <div id="load__bar"></div>
   </a>
@@ -499,53 +497,29 @@
     <div class="column-left">
 
       <p class="parstd"></p> 
-
-        <button type="button" class="button" onclick="sendCmd('leds','fc','10')">
-            <span class="button__text"><i class=""></i>10%</span>
-        </button>
-        <button type="button" class="button" onclick="sendCmd('leds','fc','20')">
-            <span class="button__text"><i class=""></i>20%</span>
-        </button>
-        <button type="button" class="button" onclick="sendCmd('leds','fc','30')">
-            <span class="button__text"><i class=""></i>30%</span>
-        </button>
-
-      <p class="parstd"></p>  
-
-        <button type="button" class="button" onclick="sendCmd('leds','fc','40')">   
-            <span class="button__text"><i class=""></i>40%</span>
-        </button>      
-        <button type="button" class="button" onclick="sendCmd('leds','fc','50')">
-            <span class="button__text"><i class=""></i>50%</span>
-        </button>      
-        <button type="button" class="button" onclick="sendCmd('leds','fc','60')">
-            <span class="button__text"><i class=""></i>60%</span>
-        </button>
-
-      <p class="parstd"></p>   
-
-        <button type="button" class="button" onclick="sendCmd('leds','fc','70')">
-            <span class="button__text"><i class=""></i>70%</span>
-        </button>
-        <button type="button" class="button" onclick="sendCmd('leds','fc','80')">
-            <span class="button__text"><i class=""></i>80%</span>
-        </button>
-        <button type="button" class="button" onclick="sendCmd('leds','fc','90')">   
-            <span class="button__text"><i class=""></i>90%</span>
-        </button>  
-
-      <p class="parstd"></p>   
-
-        <button type="button" class="button" onclick="sendCmd('leds','fc','100')">   
-            <span class="button__text"><i class=""></i>100%</span>
-        </button>  
         <button type="button" class="button" onclick="colorPrompt()">
             <span class="button__text"><i class="fa-solid fa-brush"></i> Colors</span>
         </button>
         <button type="button" class="button" onclick="sendCmd('leds','shuffle','')">
             <span class="button__text"><i class="fa-solid fa-shuffle"></i> Shuffle</span>
         </button>
-
+        <div class="dropdown">
+          <button type="button" class="button" onclick="showMenu('ledbright-menu')">
+            <span class="button__text"><i class="fa-solid fa-sun"></i> Brightness</span>
+          </button>
+          <div class="dd-content dd-button" id="ledbright-menu">
+            <a onclick="sendCmd('leds','fc','100')"></i> 100%</a>
+            <a onclick="sendCmd('leds','fc','90')"></i> 90%</a>
+            <a onclick="sendCmd('leds','fc','80')"></i> 80%</a>
+            <a onclick="sendCmd('leds','fc','70')"></i> 70%</a>
+            <a onclick="sendCmd('leds','fc','60')"></i> 60%</a>
+            <a onclick="sendCmd('leds','fc','50')"></i> 50%</a>
+            <a onclick="sendCmd('leds','fc','40')"></i> 40%</a>
+            <a onclick="sendCmd('leds','fc','30')"></i> 30%</a>
+            <a onclick="sendCmd('leds','fc','20')"></i> 20%</a>
+            <a onclick="sendCmd('leds','fc','10')"></i> 10%</a>
+          </div>
+        </div>
       <p class="parstd"></p> 
 
         <button type="button" class="button" onclick="sendCmd('leds','stop','')">
@@ -615,9 +589,7 @@
             <span class="button__text"><i class=""></i>Bubbles</span>
         </button>    
 
-    </div>
-    <div class="column-right">
-      <p class="parstd"></p> 
+      <p class="parstd"></p>  
 
         <button type="button" class="button" onclick="sendCmd('leds','ripple','')">
             <span class="button__text"><i class=""></i>Ripple</span>
@@ -629,7 +601,7 @@
             <span class="button__text"><i class=""></i>Fuse</span>
         </button>
 
-      <p class="parstd"></p>    
+      <p class="parstd"></p>   
 
         <button type="button" class="button" onclick="sendCmd('leds','lumin','')">
             <span class="button__text"><i class=""></i>Lumin</span>
@@ -641,7 +613,9 @@
             <span class="button__text"><i class=""></i>Fireworks</span>
         </button>    
 
-      <p class="parstd"></p> 
+    </div>
+    <div class="column-right">
+      <p class="parstd"></p>  
 
         <button type="button" class="button" onclick="sendCmd('leds','rays','')">
             <span class="button__text"><i class=""></i>Rays</span>
@@ -737,9 +711,6 @@
             <span class="button__text"><i class=""></i>Gold</span>
         </button>
 
-    </div>
-
-    <div class="column-right">
       <p class="parstd"></p>  
 
         <button type="button" class="button" onclick="sendCmd('leds','candle','')">
@@ -752,7 +723,9 @@
             <span class="button__text"><i class=""></i>Halogen</span>
         </button>
 
-      <p class="parstd"></p>   
+    </div>
+    <div class="column-right">
+      <p class="parstd"></p>  
 
         <button type="button" class="button" onclick="sendCmd('leds','sunlight','')">
             <span class="button__text"><i class=""></i>Sunlight</span>
@@ -1038,7 +1011,7 @@
         </div>
       </div>  
       <button type="button" class="button svropt_button" onclick="serverAction('files-last_backup_dates')">
-        <span class="button__text"></i> History</span>
+        <span class="button__text"><i class="fa-solid fa-clock-rotate-left"></i> History</span>
       </button>
       <button type="button" class="button svropt_button" onclick="serverAction('pve_listsnaps')">
         <span class="button__text"></i> Snapshots</span>
@@ -1104,7 +1077,7 @@
     <button type="button" class="button svropt_button" onclick="serverAction('temp')">
       <span class="button__text"></i> Temperature</span>
     </button> 
-    <button type="button" class="button svropt_button" onclick="closeServerOptsBtn()">
+    <button type="button" class="button svropt_button" onclick="closeServerOptions()">
       <span class="button__text"><i class="fa-solid fa-xmark"></i> Close</span>
     </button>  
     <button type="button" class="button svropt_button" onclick="serverAction('clearlog')">
@@ -1144,7 +1117,7 @@
     <button type="button" class="button winbtn button_left_txtwin" onclick="eraseText()">
           <span class="button__textsmall"></i> Erase</span>
     </button> 
-    <button type="button" class="button winbtn button_right_txtwin" id="sendButtonLCDpi" onclick="sendText()">
+    <button type="button" class="button winbtn button_right_txtwin" onclick="sendText()">
           <span class="button__textsmall"></i> Send</span>
     </button>
   </form>

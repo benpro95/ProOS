@@ -61,8 +61,6 @@ TCPKeepAlive yes
 # Allow client to pass locale environment variables
 AcceptEnv LANG LC_*
 
-Subsystem sftp /usr/lib/openssh/sftp-server
-
 # Change to no to disable tunnelled clear text passwords
 PasswordAuthentication yes
 
@@ -77,8 +75,9 @@ PasswordAuthentication yes
 # and ChallengeResponseAuthentication to 'no'.
 UsePAM yes
 
+## SFTP Folder
+Subsystem sftp internal-sftp
 Match User ben
-Match Group shared
 ChrootDirectory /home/ben
 ForceCommand internal-sftp
 PermitTunnel no

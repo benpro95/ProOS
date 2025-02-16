@@ -79,7 +79,7 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
         fi
         #### Regions Share ####
-        if [ ! -e /mnt/.regions/WWW ]; then
+        if [ ! -e /mnt/.regions/SFTP ]; then
           echo "'Regions' share not found!"
         else
           echo "syncing 'Regions' share to $POOL drive..."
@@ -105,7 +105,7 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
         fi
         #### Regions Share ####
-        if [ ! -e /mnt/.regions/WWW ]; then
+        if [ ! -e /mnt/.regions/SFTP ]; then
           echo "'Regions' share not found!"
         else
           echo "syncing 'Regions' share to $POOL drive..."

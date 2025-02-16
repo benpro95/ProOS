@@ -92,15 +92,15 @@ body {
   display: none;
 }
 
-.svropt-main {
+.svropt__main {
   display: none;
 }
 
-.svropt-regions {
+.svropt__regions {
   display: none;
 }
 
-.svropt-backup {
+.svropt__backup {
   display: none;
 }
 
@@ -572,7 +572,7 @@ input.chkbox {
   position: fixed;
   top: 25%;
   left: 15%;
-  width: 267px;  
+  width: auto;  
   height: auto;
   padding: 16px; 
   color: #fff;
@@ -588,14 +588,12 @@ input.chkbox {
   margin: auto;
   color: #a6a9ad;
   font-size: 18px;
-  margin-bottom: 55px;
+  margin-bottom: 10px;
 }
 
 #wifipmt__btn {
-  position: absolute;
-  margin-left: -60px;
   width: 120px;
-  height: 35px;
+  height: 60px;
   bottom: 15px;
   left: 50%;
 }
@@ -698,7 +696,7 @@ input.chkbox {
  *  Server Options Window
  */
 
-.srvopt__prompt {
+.svropt__prompt {
   display: none;
   overflow-y: visible;
   background-color: black;
@@ -713,7 +711,27 @@ input.chkbox {
   color: #fff;
 }
 
-.srvopt_button {
+.svropt__bkp_brd {
+  padding-top: 10px; 
+  padding-bottom: 10px; 
+  padding-left: 5px; 
+  padding-right: 5px; 
+}
+
+.svropt__bkp_frame {
+  border: 1px solid white;
+  color: #fff;
+  padding-top: 7px; 
+  padding-bottom: 7px; 
+  padding-left: 5px; 
+  padding-right: 5px; 
+}
+
+.svropt__bkp_btn {
+  width: 128px;  
+}
+
+.svropt_button {
   width: 135px;  
 }
 

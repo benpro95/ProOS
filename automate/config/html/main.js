@@ -124,7 +124,6 @@ function hidePages() {
   classDisplay('server-grid','none');
   classDisplay('ledpi-grid','none');
   classDisplay('led-grid','none');
-  closeServerOptions();
 }
 
 function hideDropdowns() {
@@ -254,21 +253,30 @@ function clearPendingCmd() {
 }
 
 function openServerOptions(){
-  classDisplay("srvopt__prompt","block");
-  classDisplay("svropt_main","block");
+  closeServerOptions();
+  classDisplay("svropt__prompt","block");
+  classDisplay("svropt__main","block");
 }
 
-function closeServerOptsBtn(){
-  hideDropdowns();
-  clearPendingCmd();
+function openRegionsOptions(){
   closeServerOptions();
+  classDisplay("svropt__prompt","block");
+  classDisplay("svropt__regions","block");
+}
+
+function openBackupOptions(){
+  closeServerOptions();
+  classDisplay("svropt__prompt","block");
+  classDisplay("svropt__backup","block");
 }
 
 function closeServerOptions(){
-  classDisplay("srvopt__prompt","none");
-  classDisplay("svropt_main","none");
-  classDisplay("svropt_regions","none");
-  classDisplay("svropt_backup","none");
+  hideDropdowns();
+  clearPendingCmd();
+  classDisplay("svropt__prompt","none");
+  classDisplay("svropt__main","none");
+  classDisplay("svropt__regions","none");
+  classDisplay("svropt__backup","none");
 }
 
 /// END- text popup window ///
@@ -425,7 +433,7 @@ function show_wifiPwdPrompt(){
   let wifiprompt = document.createElement("div");
   wifiprompt.id = "wifi__prompt";
   let wifitext = document.createElement("div");
-  wifitext.innerHTML = "Scan for WiFi Access:"; 
+  wifitext.innerHTML = "Scan for WiFi Access"; 
   wifiprompt.appendChild(wifitext);
   let img = document.createElement("img");
   img.src = "img/wifi.png";

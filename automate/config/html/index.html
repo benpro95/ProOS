@@ -948,11 +948,11 @@
     <p class="bottom"></p>  
 </div>
 
-<div class="srvopt__prompt">
+<div class="svropt__prompt">
   <div class="server-grid">
-    <div class="svropt_main">
+    <div class="svropt__main">
       <div class="dropdown">
-        <button type="button" class="button srvopt_button" onclick="showMenu('legacy-menu')">
+        <button type="button" class="button svropt_button" onclick="showMenu('legacy-menu')">
           <span class="button__text"><i class="fa-solid fa-floppy-disk"></i> Legacy</span>
         </button>  
         <div class="dd-content dd-button" id="legacy-menu">
@@ -961,7 +961,7 @@
         </div>
       </div>    
       <div class="dropdown">
-        <button type="button" class="button srvopt_button" onclick="showMenu('xana-menu')">
+        <button type="button" class="button svropt_button" onclick="showMenu('xana-menu')">
           <span class="button__text"><i class="fa-brands fa-linux"></i> Xana</span>
         </button>  
         <div class="dd-content dd-button" id="xana-menu">
@@ -971,7 +971,7 @@
         </div>
       </div>
       <div class="dropdown">
-        <button type="button" class="button srvopt_button" onclick="showMenu('unifi-menu')">
+        <button type="button" class="button svropt_button" onclick="showMenu('unifi-menu')">
           <span class="button__text"><i class="fa-solid fa-wifi"></i> UniFi</span>
         </button>  
         <div class="dd-content dd-button" id="unifi-menu">
@@ -981,7 +981,7 @@
         </div>
       </div>
       <div class="dropdown">
-        <button type="button" class="button srvopt_button" onclick="showMenu('pve-menu')">
+        <button type="button" class="button svropt_button" onclick="showMenu('pve-menu')">
           <span class="button__text"><i class="fa-solid fa-microchip"></i> Proxmox</span>
         </button>  
         <div class="dd-content dd-button" id="pve-menu">
@@ -991,16 +991,18 @@
         </div>
       </div>
       <div class="dropdown">
-        <button type="button" class="button srvopt_button" onclick="showMenu('files-menu')">
+        <button type="button" class="button svropt_button" onclick="showMenu('files-menu')">
           <span class="button__text"><i class="fa-solid fa-database"></i> Files</span>
         </button>  
         <div class="dd-content dd-button" id="files-menu">
+          <a onclick="openRegionsOptions()"></i> Regions</a>
+          <a onclick="openBackupOptions()"></i> Backup</a>          
           <a onclick="serverAction('files-scratchcopy')"></i> Copy to Scratch</a>      
           <a onclick="serverAction('files-lastlog')"></i> Last Login</a>
         </div>
       </div>
       <div class="dropdown">
-        <button type="button" class="button srvopt_button" onclick="showMenu('netwrk-menu')">
+        <button type="button" class="button svropt_button" onclick="showMenu('netwrk-menu')">
           <span class="button__text"><i class="fa-solid fa-sitemap"></i> Network</span>
         </button>  
         <div class="dd-content dd-button" id="netwrk-menu">
@@ -1010,26 +1012,74 @@
           <a onclick="GoToExtPage('router.home')"></i> Router</a>
         </div>
       </div>
-      <button type="button" class="button srvopt_button" onclick="closeServerOptsBtn()">
+      <button type="button" class="button svropt_button" onclick="closeServerOptions()">
         <span class="button__text"><i class="fa-solid fa-xmark"></i> Close</span>
       </button>
-      <button type="button" class="button srvopt_button" onclick="serverAction('files-git_push')"> 
+      <button type="button" class="button svropt_button" onclick="serverAction('files-git_push')"> 
         <span class="button__text"></i>Sync Git</span>
       </button>    
-      <button type="button" class="button srvopt_button" onclick="serverAction('files-clearlog')">
+      <button type="button" class="button svropt_button" onclick="serverAction('files-clearlog')">
         <span class="button__text"></i>Clear Log</span>
       </button>
     </div>   
-    <div class="svropt_backup">
-
+    <div class="svropt__backup">
+      <a></i> Select Backup Type</a>
+      <div class="svropt__bkp_brd">
+        <div class="svropt__bkp_frame">
+          <button type="button" class="button svropt__bkp_btn" onclick="serverAction('files-backupchk')">
+            <span class="button__text"></i> Checksum</span>
+          </button>
+          <button type="button" class="button svropt__bkp_btn" onclick="serverAction('files-backupstd')">
+            <span class="button__text"></i> Standard</span>
+          </button> 
+          <button type="button" class="button svropt__bkp_btn" onclick="serverAction('pve_vmsbkp')">
+            <span class="button__text"></i> VMs/LXCs</span>
+          </button>
+        </div>
+      </div>  
+      <button type="button" class="button svropt_button" onclick="serverAction('files-last_backup_dates')">
+        <span class="button__text"></i> History</span>
+      </button>
+      <button type="button" class="button svropt_button" onclick="serverAction('pve_listsnaps')">
+        <span class="button__text"></i> Snapshots</span>
+      </button>         
+      <button type="button" class="button svropt_button" onclick="getPassword('pwd')">
+        <span class="button__text"><i class="fa-solid fa-unlock"></i> Unlock</span>
+      </button>    
+      <button type="button" class="button svropt_button" onclick="closeServerOptions()">
+        <span class="button__text"><i class="fa-solid fa-xmark"></i> Close</span>
+      </button>
+      <button type="button" class="button svropt_button" onclick="openServerOptions()">
+        <span class="button__text"><i class="fa fa-arrow-left"></i></span>
+      </button>
+      <button type="button" class="button svropt_button" onclick="serverAction('detach_bkps')">
+        <span class="button__text"></i> Detach</span>
+      </button>
     </div>
-    <div class="svropt_regions">
-
+    <div class="svropt__regions">
+      <button type="button" class="button svropt_button" onclick="()">
+        <span class="button__text"></i> TBD</span>
+      </button>
+      <button type="button" class="button svropt_button" onclick="()">
+        <span class="button__text"></i> TBD</span>
+      </button> 
+      <button type="button" class="button svropt_button" onclick="()">
+        <span class="button__text"></i> TBD</span>
+      </button>    
+      <button type="button" class="button svropt_button" onclick="closeServerOptions()">
+        <span class="button__text"><i class="fa-solid fa-xmark"></i> Close</span>
+      </button>
+      <button type="button" class="button svropt_button" onclick="openServerOptions()">
+        <span class="button__text"><i class="fa fa-arrow-left"></i></span>
+      </button>
+      <button type="button" class="button svropt_button" onclick="()">
+        <span class="button__text"></i> TBD</span>
+      </button>      
     </div>   
   </div>  
   <div class="lcdpi-grid ledpi-grid pi-grid">
     <div class="dropdown">
-      <button type="button" class="button srvopt_button" onclick="showMenu('piwifi-menu')">
+      <button type="button" class="button svropt_button" onclick="showMenu('piwifi-menu')">
         <span class="button__text"><i class="fa-solid fa-wifi"></i> WiFi</span>
       </button>  
       <div class="dd-content dd-button" id="piwifi-menu">
@@ -1039,19 +1089,19 @@
         <a onclick="serverAction('wifiscan')"></i> WiFi Scanner</a>    
       </div>
     </div>
-    <button type="button" class="button srvopt_button" onclick="serverAction('showwpa')">
+    <button type="button" class="button svropt_button" onclick="serverAction('showwpa')">
       <span class="button__text"></i> Network</span>
     </button>
-    <button type="button" class="button srvopt_button" onclick="serverAction('temp')">
+    <button type="button" class="button svropt_button" onclick="serverAction('temp')">
       <span class="button__text"></i> Temperature</span>
     </button> 
-    <button type="button" class="button srvopt_button" onclick="closeServerOptsBtn()">
+    <button type="button" class="button svropt_button" onclick="closeServerOptsBtn()">
       <span class="button__text"><i class="fa-solid fa-xmark"></i> Close</span>
     </button>  
-    <button type="button" class="button srvopt_button" onclick="serverAction('clearlog')">
+    <button type="button" class="button svropt_button" onclick="serverAction('clearlog')">
       <span class="button__text"></i> Clear Log</span>
     </button> 
-    <button type="button" class="button srvopt_button" onclick="serverAction('resetbt')">
+    <button type="button" class="button svropt_button" onclick="serverAction('resetbt')">
       <span class="button__text"><i class="fa-brands fa-bluetooth"></i> Reset</span>
     </button>  
   </div>

@@ -226,6 +226,10 @@ async function serverSend() {
   }
   sendBtnAlert("off");
   serverCmdData = null;
+  // close options prompt
+  if (sysModel === serverSite) {
+    closeServerOptions(); 
+  }
 }
 
 function sendBtnAlert(state) {
@@ -276,7 +280,7 @@ function closeServerOptions(){
 
 function piWiFiPrompt(){
   let pinetprompt = document.createElement("div"); 
-  pinetprompt.id= "pinet__prompt"; 
+  pinetprompt.className= "prompt__win"; 
   // SSID text
   let pinettext1 = document.createElement("div"); 
   pinettext1.innerHTML = "Network (SSID):"; 
@@ -475,7 +479,7 @@ async function wifiPrompt(){
 
 function passwordPrompt(){
   let pwprompt = document.createElement("div"); //creates the div to be used as a prompt
-  pwprompt.id= "pass__prompt"; //gives the prompt an id - not used in my example but good for styling with css-file
+  pwprompt.className = "prompt__win"; //gives the prompt an id - not used in my example but good for styling with css-file
   let pwtextdiv = document.createElement("div"); //create the div for the password-text
   pwtextdiv.innerHTML = "Enter password:"; //put inside the text
   pwprompt.appendChild(pwtextdiv); //append the text-div to the password-prompt

@@ -20,7 +20,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "5.2.1";
+let siteVersion = "5.3.5";
 
 //////////////////////
 
@@ -1192,7 +1192,7 @@ function savePOST(file,data) {
         if (file === 'message') {
           sendCmd('main','message','');
         }
-        if (file === 'mnt_extbkps') {
+        if (file === 'pwd') {
           serverAction('attach_bkps');
           serverSend(0);
         }

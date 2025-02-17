@@ -283,7 +283,7 @@ fi
 if [ $REPLY == "unmnt_ram_region" ]
 then
   if [ -e "$REGROOT/RAM" ]; then
-    echo "detaching RAM disk regions..."
+    echo "detaching RAM disk region..."
     rm $REGROOT/RAM
   else
     echo "not attached."    
@@ -305,7 +305,7 @@ fi
 if [ $REPLY == "unmnt_snap_region" ]
 then
   if [ -e "$REGROOT/Snapshots" ]; then
-    echo "detaching ZFS snapshots regions..."
+    echo "detaching ZFS snapshots region..."
     rm $REGROOT/Snapshots
   else
     echo "not attached." 
@@ -327,7 +327,7 @@ fi
 if [ $REPLY == "unmnt_ext_region" ]
 then
   if [ -e "$REGROOT/External" ]; then
-    echo "detaching external regions..."
+    echo "detaching external region..."
     rm $REGROOT/External
   else
     echo "not attached." 
@@ -343,7 +343,7 @@ then
   	--exclude='.*' --exclude='$RECYCLE.BIN' \
   	/mnt/scratch/downloads/* /mnt/media/Downloads/
   else
-    echo "Downloads folder not found."  
+    echo "folder not found."  
   fi
   exit
 fi

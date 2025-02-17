@@ -226,10 +226,6 @@ async function serverSend() {
   }
   sendBtnAlert("off");
   serverCmdData = null;
-  // close options prompt
-  if (sysModel === serverSite) {
-    closeServerOptions(); 
-  }
 }
 
 function sendBtnAlert(state) {

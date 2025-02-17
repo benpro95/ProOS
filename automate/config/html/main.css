@@ -565,8 +565,14 @@ input.chkbox {
   width: 285px; 
   padding: 5px; 
   padding-bottom: 10px; 
-} 
+}
 
+.pinet__btn {
+  margin-left: 15px;
+  margin-right: 15px;
+  width: 127px; 
+  height: 70px; 
+}
 
 /*
  *  WiFi SSID Display Prompt Style
@@ -677,7 +683,7 @@ input.chkbox {
   margin-left: -125px;
   margin-top: -180px;
   width: 250px;
-  height: 320px;
+  height: 340px;
   padding: 15px; 
   color: #fff;
   z-index: 997; 
@@ -687,7 +693,7 @@ input.chkbox {
   position: absolute;
   margin-left: -75px;
   width: 150px;
-  height: 45px;
+  height: 70px;
   bottom: 20px;
   left: 50%;
 }

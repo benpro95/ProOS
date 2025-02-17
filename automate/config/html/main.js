@@ -297,12 +297,12 @@ function piWiFiPrompt(){
   // save button
   let pinetokbutton = document.createElement("button"); 
   pinetokbutton.innerHTML = "Save";
-  pinetokbutton.className ="button winbtn"; 
+  pinetokbutton.className ="button winbtn pinet__btn"; 
   pinetokbutton.type="button"; 
   // cancel button
   let pinetcancelb = document.createElement("button"); 
   pinetcancelb.innerHTML = "Cancel";
-  pinetcancelb.className ="button winbtn"; 
+  pinetcancelb.className ="button winbtn pinet__btn"; 
   pinetcancelb.type="button"; 
   // create window
   pinetprompt.appendChild(pinetcancelb); 

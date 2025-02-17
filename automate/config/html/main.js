@@ -405,6 +405,23 @@ async function aboutPrompt(){
   await show_aboutPrompt();
 }
 
+function mountFUSEvolume() {
+  let _elmvis = false;
+  let _elem = document.getElementById('about__prompt');
+  if (_elem) {
+    var _style = window.getComputedStyle(_elem)
+    if (_style.display !== 'none') {
+      _elmvis = true;
+    }
+  }
+  if (_elmvis === true) {
+    serverAction('files-mnt_vol_region');
+  } else {
+    serverAction('files-mnt_arch_region');
+  }
+  serverSend(0);
+}
+
 async function showPiWiFiPrompt(){
   let result;
   try {
@@ -1175,25 +1192,12 @@ function savePOST(file,data) {
         if (file === 'message') {
           sendCmd('main','message','');
         }
-        if (file === 'pwd') {
+        if (file === 'mnt_extbkps') {
           serverAction('attach_bkps');
           serverSend(0);
         }
         if (file === 'fusearch') {
-          let _elmvis = false;
-          let _elem = document.getElementById('about__prompt');
-          if (_elem) {
-            var _style = window.getComputedStyle(_elem)
-            if (_style.display !== 'none') {
-              _elmvis = true;
-            }
-          }
-          if (_elmvis === true) {
-            serverAction('files-vol_region');
-          } else {
-            serverAction('files-arch_region');
-          }
-          serverSend(0);
+          mountFUSEvolume();
         }
       }
       if (xhr.status !== 200) {

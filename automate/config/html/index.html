@@ -1016,7 +1016,7 @@
       <button type="button" class="button svropt_button" onclick="serverAction('pve_listsnaps')">
         <span class="button__text"></i> Snapshots</span>
       </button>         
-      <button type="button" class="button svropt_button" onclick="getPassword('pwd')">
+      <button type="button" class="button svropt_button" onclick="getPassword('mnt_extbkps')">
         <span class="button__text"><i class="fa-solid fa-unlock"></i> Unlock</span>
       </button>    
       <button type="button" class="button svropt_button" onclick="closeServerOptions()">
@@ -1030,33 +1030,48 @@
       </button>
     </div>
     <div class="svropt__regions">
-      <button type="button" class="button svropt_button" onclick="serverAction('')">
-        <span class="button__text"></i> TBD I</span>
-      </button>
-      <button type="button" class="button svropt_button" onclick="serverAction('')">
-        <span class="button__text"></i> TBD II</span>
-      </button>
-      <button type="button" class="button svropt_button" onclick="serverAction('files-ram_region')">
-        <span class="button__text"></i> RAM Disk</span>
-      </button> 
-      <button type="button" class="button svropt_button" onclick="getPassword('fusearch')">
-        <span class="button__text"></i> Archive</span>
-      </button> 
-      <button type="button" class="button svropt_button" onclick="serverAction('files-ext_region')">
-        <span class="button__text"></i> External</span>
-      </button>
-      <button type="button" class="button svropt_button" onclick="serverAction('files-snap_region')">
-        <span class="button__text"></i> Snapshots</span>
-      </button>    
+      <div class="dropdown">
+        <button type="button" class="button svropt_button" onclick="showMenu('archive-menu')">
+          <span class="button__text"></i> Archive</span>
+        </button>  
+        <div class="dd-content dd-button" id="archive-menu">
+          <a onclick="getPassword('fusearch')"><i class="fa-solid fa-link"></i> Attach</a>   
+          <a onclick="serverAction('files-unmnt_all_fuse')"><i class="fa-solid fa-eject"></i> Detach</a>
+        </div>
+      </div>
+      <div class="dropdown">
+        <button type="button" class="button svropt_button" onclick="showMenu('external-menu')">
+          <span class="button__text"></i> External</span>
+        </button>  
+        <div class="dd-content dd-button" id="external-menu">
+          <a onclick="serverAction('files-mnt_ext_region')"><i class="fa-solid fa-link"></i> Attach</a>   
+          <a onclick="serverAction('files-unmnt_ext_region')"><i class="fa-solid fa-eject"></i> Detach</a>
+        </div>
+      </div>
+      <div class="dropdown">
+        <button type="button" class="button svropt_button" onclick="showMenu('snapshots-menu')">
+          <span class="button__text"></i> Snapshots</span>
+        </button>  
+        <div class="dd-content dd-button" id="snapshots-menu">
+          <a onclick="serverAction('files-mnt_snap_region')"><i class="fa-solid fa-link"></i> Attach</a>   
+          <a onclick="serverAction('files-unmnt_snap_region')"><i class="fa-solid fa-eject"></i> Detach</a>
+        </div>
+      </div>
       <button type="button" class="button svropt_button" onclick="closeServerOptions()">
         <span class="button__text"><i class="fa-solid fa-xmark"></i> Close</span>
       </button>
       <button type="button" class="button svropt_button" onclick="openServerOptions()">
         <span class="button__text"><i class="fa fa-arrow-left"></i></span>
       </button>
-      <button type="button" class="button svropt_button" onclick="serverAction('files-detach_all_regions')">
-        <span class="button__text"></i> Detach All</span>
-      </button>      
+      <div class="dropdown">
+        <button type="button" class="button svropt_button" onclick="showMenu('ramdisk-menu')">
+          <span class="button__text"></i> RAM Disk</span>
+        </button>  
+        <div class="dd-content dd-button" id="ramdisk-menu">
+          <a onclick="serverAction('files-mnt_ram_region')"><i class="fa-solid fa-link"></i> Attach</a>   
+          <a onclick="serverAction('files-unmnt_ram_region')"><i class="fa-solid fa-eject"></i> Detach</a>
+        </div>
+      </div>  
     </div>   
   </div>  
   <div class="lcdpi-grid ledpi-grid pi-grid">

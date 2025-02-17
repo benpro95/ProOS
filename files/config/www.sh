@@ -214,30 +214,34 @@ REGROOT="/home/server/.regions"
 
 PATHMOUNTED() { findmnt --target "$1" >/dev/null;} 
 
-function FUSEFS () {
+function UMNT_FUSEFS () {
   VOLNME="$1"
-  TOGGLE="$2"
   FUSEPTH="$REGROOT/$VOLNME"
-  FUSEPWD="/mnt/ramdisk/fusearch.txt"
   if PATHMOUNTED "$FUSEPTH"
   then
-    echo "detaching $VOLNME volume..."
+    echo "detaching $VOLNME..."
     fusermount -u "$FUSEPTH"
     sleep 1
     rmdir "$FUSEPTH"
+  else 
+    echo "FUSE volume not attached."
   fi
-  if [[ $TOGGLE == "attach" ]]
+}
+
+function MNT_FUSEFS () {
+  VOLNME="$1"
+  FUSEPTH="$REGROOT/$VOLNME"
+  FUSEPWD="/mnt/ramdisk/fusearch.txt"
+  UMNT_FUSEFS "$VOLNME"
+  echo "attaching $VOLNME..."
+  mkdir -p "$FUSEPTH"
+  if [[ -e "$FUSEPWD" ]]
   then
-    echo "attaching $VOLNME volume..."
-    mkdir -p "$FUSEPTH"
-    if [[ -e "$FUSEPWD" ]]
-    then
-      gocryptfs -quiet -allow_other \
-        /mnt/.regions/"$VOLNME" \
-        "$FUSEPTH" -passfile "$FUSEPWD"
-    else
-      echo "password file not found!"
-    fi
+    gocryptfs -quiet -allow_other \
+      /mnt/.regions/"$VOLNME" \
+      "$FUSEPTH" -passfile "$FUSEPWD"
+  else
+    echo "password file not found!"
   fi
   if [[ -e "$FUSEPWD" ]]
   then
@@ -245,72 +249,88 @@ function FUSEFS () {
   fi
 }
 
-## Attach ArchivedShares
-if [[ $REPLY == "arch_region" ]]
+## Archive Region
+if [[ $REPLY == "mnt_arch_region" ]]
 then
-  FUSEFS "Archive" "attach"
+  MNT_FUSEFS "Archive"
+  exit
+fi
+## Volumes Region
+if [[ $REPLY == "mnt_vol_region" ]]
+then
+  MNT_FUSEFS "Volumes"
+  exit
+fi
+## Detach FUSE Regions
+if [[ $REPLY == "unmnt_all_fuse" ]]
+then
+  UMNT_FUSEFS "Archive"
+  UMNT_FUSEFS "Volumes"
   exit
 fi
 
-## Attach Volume Shares
-if [[ $REPLY == "vol_region" ]]
-then
-  FUSEFS "Volumes" "attach"
-  exit
-fi
-
-## Detach All Regions
-if [[ $REPLY == "detach_all_regions" ]]
-then
-  ## FUSE volumes
-  FUSEFS "Archive"
-  FUSEFS "Volumes"
-  ## Symlinks
-  echo "detaching all regions..."
-  if [ -e "$REGROOT/RAM" ]; then
-    rm $REGROOT/RAM
-  fi
-  if [ -e "$REGROOT/Snapshots" ]; then
-    rm $REGROOT/Snapshots
-  fi
-  if [ -e "$REGROOT/External" ]; then
-    rm $REGROOT/External
-  fi
-  exit
-fi
-
-## RAM Share
-if [ $REPLY == "ram_region" ]
+## RAM Disk Region
+if [ $REPLY == "mnt_ram_region" ]
 then
   if [ ! -e "$REGROOT/RAM" ]; then
-    echo "attaching RAM region..."
+    echo "attaching RAM disk region..."
     ln -s /mnt/ramdisk $REGROOT/RAM
   else
     echo "already attached."    
   fi
   exit
 fi
+if [ $REPLY == "unmnt_ram_region" ]
+then
+  if [ -e "$REGROOT/RAM" ]; then
+    echo "detaching RAM disk regions..."
+    rm $REGROOT/RAM
+  else
+    echo "not attached."    
+  fi
+  exit
+fi
 
-## Snapshot Share
-if [ $REPLY == "snap_region" ]
+## Snapshots Region
+if [ $REPLY == "mnt_snap_region" ]
 then
   if [ ! -e "$REGROOT/Snapshots" ]; then
-    echo "attaching snapshots region..."
+    echo "attaching ZFS snapshots region..."
     ln -s /mnt/snapshots $REGROOT/Snapshots
   else
     echo "already attached."
   fi
   exit
 fi
+if [ $REPLY == "unmnt_snap_region" ]
+then
+  if [ -e "$REGROOT/Snapshots" ]; then
+    echo "detaching ZFS snapshots regions..."
+    rm $REGROOT/Snapshots
+  else
+    echo "not attached." 
+  fi
+  exit
+fi
 
-## External Mountpoints Share
-if [ $REPLY == "ext_region" ]
+## External Region 
+if [ $REPLY == "mnt_ext_region" ]
 then
   if [ ! -e "$REGROOT/External" ]; then
     echo "attaching external region..."
     ln -s /mnt/extbkps $REGROOT/External
   else
     echo "already attached."
+  fi
+  exit
+fi
+if [ $REPLY == "unmnt_ext_region" ]
+then
+  if [ -e "$REGROOT/External" ]; then
+    echo "detaching external regions..."
+    rm $REGROOT/External
+  else
+    echo "not attached." 
   fi
   exit
 fi

@@ -24,7 +24,7 @@
     <a onclick="showDynMenu('mainmenu')" class="mainmenu__anchor">
       <i class="fa-solid fa-list"></i>
     </a>
-  </div>  
+  </div>
   <div class="ledpi-grid lcdpi-grid pi-grid">
     <a onclick="showMenu('pi-mainmenu')" class="mainmenu__anchor">
       <i class="fa-solid fa-list"></i>
@@ -122,7 +122,7 @@
       </div>
       <div class="dropdown">
         <button type="button" class="button" onclick="showMenu('lightmenu')">
-          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Lights</span>
+          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> All Lights</span>
         </button>  
         <div class="dd-content dd-button" id="lightmenu">
           <a onclick="sendCmd('main','lightson','')"><i class="fa-solid fa-toggle-on"></i> On</a>
@@ -150,23 +150,12 @@
           <a onclick="sendCmd('main','rfc1off','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
       </div>
-      <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('led-menu')">
-          <span class="button__text"><i class="fa-regular fa-sun"></i> LEDs</span>
-        </button>  
-        <div class="dd-content dd-button" id="led-menu">
-          <a onclick="showLEDsPage()"><i class="fa-solid fa-sliders"></i> More...</a>
-          <a onclick="sendCmd('leds','stop','')"><i class="fa-solid fa-stop"></i> Stop</a>
-          <a onclick="sendCmd('leds','pause','')"><i class="fa-solid fa-pause"></i> Pause</a>
-          <a onclick="sendCmd('leds','shuffle','')"><i class="fa-solid fa-shuffle"></i> Shuffle</a>
-          <a onclick="sendCmd('leds','abstract','')"><i></i> Abstract</a>
-          <a onclick="sendCmd('leds','flames','')"><i></i> Flames</a>
-          <a onclick="sendCmd('leds','prism','')"><i></i> Prism</a>
-        </div>
-      </div>
+      <button type="button" class="button" onclick="showLEDsPage()">
+        <span class="button__text"><i class="fa-regular fa-sun"></i> Effects</span>
+      </button>  
       <button type="button" class="button" onclick="sendCmd('main','ambient','')">
         <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Ambient</span>
-      </button>  
+      </button>
       <!---->
       <p class="parstd"></p>
       <!---->
@@ -175,7 +164,7 @@
       </button>
       <div class="dropdown">
         <button type="button" class="button" onclick="showDynMenu('statsmenu')">
-            <span class="button__text"><i class="fa-solid fa-info"></i>   Status</span>
+            <span class="button__text"><i class="fa-solid fa-info"></i> Status</span>
         </button>
         <div class="dd-content ind-button" id="statsmenu"></div>
       </div>
@@ -195,7 +184,7 @@
         </div>
       </div>
       <button type="button" class="button" onclick="sendCmd('main','pauseatv','')">
-        <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
+        <span class="button__text"><i class="fa-solid fa-pause"></i> Pause TV</span>
       </button>
       <button type="button" class="button" onclick="openLogWindow()">
           <span class="button__text"><i class="fa-solid fa-terminal"></i> Server</span>
@@ -492,6 +481,16 @@
     <div class="column-left">
 
       <p class="parstd"></p> 
+
+        <button type="button" class="button" onclick="sendCmd('leds','stop','')">
+            <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
+        </button>
+        <button type="button" class="button button__lgr" onclick="sendCmd('leds','pause','')">
+            <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
+        </button>
+        
+      <p class="parstd"></p> 
+
         <button type="button" class="button" onclick="colorPrompt()">
             <span class="button__text"><i class="fa-solid fa-brush"></i> Colors</span>
         </button>
@@ -515,14 +514,6 @@
             <a onclick="sendCmd('leds','fc','10')"></i> 10%</a>
           </div>
         </div>
-      <p class="parstd"></p> 
-
-        <button type="button" class="button" onclick="sendCmd('leds','stop','')">
-            <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
-        </button>
-        <button type="button" class="button button__lgr" onclick="sendCmd('leds','pause','')">
-            <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
-        </button>
 
       <p class="parstd"></p>  
 

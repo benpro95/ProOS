@@ -22,15 +22,17 @@ ATV_MAC="3E:08:87:30:B9:A8" ## Bedroom Apple TV MAC
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 3 --retry 1 --retry-delay 1 --no-keepalive"
 
 CALLAPI(){
-  ## Default Target
-  if [[ "$TARGET" == "" ]]; then
-    ## ESP32 Xmit API
-    /usr/bin/curl $CURLARGS --header "Accept: ####?|$XMITCMD" http://"$XMIT_IP":80
-  else
-    ## Pi PHP API 
-    /usr/bin/curl $CURLARGS --data "var=$SEC_ARG&arg=$XMITCMD&action=main" http://"$TARGET":80/exec.php
+  if [[ "$XMITCMD" != "" ]]; then
+    ## Xmit Default Target 
+    if [[ "$TARGET" == "" ]]; then
+      ## ESP32 Xmit API
+      /usr/bin/curl $CURLARGS --header "Accept: ####?|$XMITCMD" http://"$XMIT_IP":80
+    else
+      ## Pi PHP API 
+      /usr/bin/curl $CURLARGS --data "var=$SEC_ARG&arg=$XMITCMD&action=main" http://"$TARGET":80/exec.php
+    fi
   fi
-  ## Display Message
+  ## Display Message API
   if [[ "$LCDPI_MSG" != "" ]]; then
     /opt/system/lcdpi "$LCDPI_MSG" > /dev/null 2>&1
   fi
@@ -321,14 +323,12 @@ SEC_ARG=$2
 
 case "$FIRST_ARG" in
 
-sleep)
-## Send Command
-TARGET="$BEDPI_IP"
-LCDPI_MSG="sleep mode"
-XMITCMD="sleepmode"
-CALLAPI
+pauseatv)
 ## Pause Apple TV
 ATV_CMD="pause"; ATV_CTL
+XMITCMD=""
+LCDPI_MSG="paused apple TV"
+CALLAPI
 ;;
 
 relax)
@@ -359,6 +359,7 @@ exit
 ;;
 
 lcdpi_message)
+XMITCMD=""
 LCDPI_MSG="$SEC_ARG"
 CALLAPI
 exit

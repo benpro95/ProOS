@@ -156,8 +156,8 @@
         </button>  
         <div class="dd-content dd-button" id="led-menu">
           <a onclick="showLEDsPage()"><i class="fa-solid fa-sliders"></i> More...</a>
-          <a onclick="sendCmd('leds','pause','')"><i class="fa-solid fa-pause"></i> Pause</a>
           <a onclick="sendCmd('leds','stop','')"><i class="fa-solid fa-stop"></i> Stop</a>
+          <a onclick="sendCmd('leds','pause','')"><i class="fa-solid fa-pause"></i> Pause</a>
           <a onclick="sendCmd('leds','shuffle','')"><i class="fa-solid fa-shuffle"></i> Shuffle</a>
           <a onclick="sendCmd('leds','abstract','')"><i></i> Abstract</a>
           <a onclick="sendCmd('leds','flames','')"><i></i> Flames</a>
@@ -194,19 +194,9 @@
           <a onclick="sendCmd('main','pcoff','')"><i class="fa-solid fa-moon"></i> Sleep</a>
         </div>
       </div>
-      <div class="dropdown"> 
-        <button type="button" class="button" onclick="showMenu('heart-menu')">
-          <span class="button__text"><i class="fa-regular fa-heart"></i> Heart</span>
-        </button> 
-        <div class="dd-content dd-button" id="heart-menu">
-          <a onclick="sendCmd('main','htleds_off','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-          <a onclick="sendCmd('main','htleds_cyc','')"><i class="fa-solid fa-shuffle"></i> Cycle</a>
-          <a onclick="sendCmd('main','htleds_a','')"><i></i> Effect A:</a>
-          <a onclick="sendCmd('main','htleds_b','')"><i></i> Effect B:</a>
-          <a onclick="sendCmd('main','htleds_c','')"><i></i> Effect C:</a>
-          <a onclick="sendCmd('main','htleds_on','')"><i class="fa-solid fa-toggle-on"></i> Solid</a>
-        </div>
-      </div>
+      <button type="button" class="button" onclick="sendCmd('main','pauseatv','')">
+        <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
+      </button>
       <button type="button" class="button" onclick="openLogWindow()">
           <span class="button__text"><i class="fa-solid fa-terminal"></i> Server</span>
       </button>
@@ -216,11 +206,16 @@
         <p class="parstd"></p> 
         <!---->
         <div class="dropdown"> 
-          <button type="button" class="button" onclick="showMenu('sleep-menu')">
-            <span class="button__text"><i class="fa-solid fa-moon"></i> Sleep</span>
+          <button type="button" class="button" onclick="showMenu('heart-menu')">
+            <span class="button__text"><i class="fa-regular fa-heart"></i> Heart</span>
           </button> 
-          <div class="dd-content dd-button" id="sleep-menu">
-            <a onclick="sendCmd('main','sleep','')"><i class="fa-solid fa-toggle-on"></i> Sleepmode</a>
+          <div class="dd-content dd-button" id="heart-menu">
+            <a onclick="sendCmd('main','htleds_off','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+            <a onclick="sendCmd('main','htleds_cyc','')"><i class="fa-solid fa-shuffle"></i> Cycle</a>
+            <a onclick="sendCmd('main','htleds_a','')"><i></i> Effect A:</a>
+            <a onclick="sendCmd('main','htleds_b','')"><i></i> Effect B:</a>
+            <a onclick="sendCmd('main','htleds_c','')"><i></i> Effect C:</a>
+            <a onclick="sendCmd('main','htleds_on','')"><i class="fa-solid fa-toggle-on"></i> Solid</a>
           </div>
         </div>
         <div class="dropdown">

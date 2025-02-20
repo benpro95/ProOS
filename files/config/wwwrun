@@ -15,7 +15,8 @@ if [[ "$ARG" == "" ]]
 then
   ARG="placeholder"
 fi
-/usr/bin/www.sh $REPLY $ARG $RAMDISK $LOGFILE &>> $LOGFILE
+## Run in background
+nohup /usr/bin/www.sh $REPLY $ARG $RAMDISK $LOGFILE &> $LOGFILE &
 TRAILER=$(date)
 TRAILER+=" ("
 TRAILER+=$(hostname)

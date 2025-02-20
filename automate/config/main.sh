@@ -21,20 +21,21 @@ ATV_MAC="3E:08:87:30:B9:A8" ## Bedroom Apple TV MAC
 
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 3 --retry 1 --retry-delay 1 --no-keepalive"
 
+## API Gateway
 CALLAPI(){
   if [[ "$XMITCMD" != "" ]]; then
     ## Xmit Default Target 
     if [[ "$TARGET" == "" ]]; then
       ## ESP32 Xmit API
-      /usr/bin/curl $CURLARGS --header "Accept: ####?|$XMITCMD" http://"$XMIT_IP":80
+      /usr/bin/curl $CURLARGS --header "Accept: ####?|$XMITCMD" http://"$XMIT_IP":80 > /dev/null 2>&1 &
     else
       ## Pi PHP API 
-      /usr/bin/curl $CURLARGS --data "var=$SEC_ARG&arg=$XMITCMD&action=main" http://"$TARGET":80/exec.php
+      /usr/bin/curl $CURLARGS --data "var=$SEC_ARG&arg=$XMITCMD&action=main" http://"$TARGET":80/exec.php > /dev/null 2>&1 &
     fi
   fi
   ## Display Message API
   if [[ "$LCDPI_MSG" != "" ]]; then
-    /opt/system/lcdpi "$LCDPI_MSG" > /dev/null 2>&1
+    /opt/system/lcdpi "$LCDPI_MSG" > /dev/null 2>&1 &
   fi
   TARGET=""
   XMITCMD=""
@@ -43,11 +44,7 @@ CALLAPI(){
 
 ## Control Apple TV
 ATV_CTL(){
-  if [[ "$ATV_CMD" != "" ]]; then
-    source /opt/pyatv/bin/activate
-    atvremote --id "$ATV_MAC" "$ATV_CMD" 
-    deactivate
-  fi
+  /opt/system/atv "$ATV_MAC" "$ATV_CMD" > /dev/null 2>&1 &
   ATV_CMD=""
 }
 

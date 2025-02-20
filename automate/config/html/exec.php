@@ -5,21 +5,11 @@ header("Content-Type: application/json");
 // read and update a common file (API)
 
 if (isset($_REQUEST['action'], $_REQUEST['arg'], $_REQUEST['var'])) {
+	$action = $_REQUEST['action'];
     $arg = $_REQUEST['arg'];
     $var = $_REQUEST['var'];
-    $action = $_REQUEST['action'];
-
-    // run shell command
-	if ($action !== 'update' && $action !== 'read') {
-	  $cmd = "/usr/bin/screen -dm /usr/bin/sudo /opt/rpi/$action $arg $var";
-      system("$cmd");
-      http_response_code(200);
-      return;
-	}
-
-    // build paths
-    $basepath = '/var/www/html/ram/';
-    $filepath = $basepath . $arg . '.txt';	
+    
+    $filepath = '/var/www/html/ram/' . $arg . '.txt';	
 
     // read file action
     if ($action === 'read') {
@@ -51,8 +41,9 @@ if (isset($_REQUEST['action'], $_REQUEST['arg'], $_REQUEST['var'])) {
 			  http_response_code(500);
 			}
 			echo $json_out;
-			return;
+			http_response_code(200);
 	    }
+	    return;
     }
 
 	// update file action
@@ -69,12 +60,16 @@ if (isset($_REQUEST['action'], $_REQUEST['arg'], $_REQUEST['var'])) {
 			fwrite($fh, $text);
 			fclose($fh);
 			http_response_code(200);
-			return;
         }
+        return;
     }
 
-// catch errors
-    http_response_code(500);
+    $cmd = "/usr/bin/sudo /opt/rpi/$action $arg $var 2>&1";
+    $sysout = shell_exec("$cmd");
+    $json_out = json_encode($sysout);
+	echo $json_out;
+	http_response_code(200);
+
 } else {
   http_response_code(500);
 }

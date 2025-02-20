@@ -24,12 +24,12 @@ JSONDATA=$(echo "$CONV_MSG" | jq -Rsc '. / "\n" - [""]')
 /usr/bin/curl -silent --fail --ipv4 \
    --max-time 5 --retry 2 --no-keepalive \
    -X POST "http://$LCD_HOST/exec.php?var=&arg=message&action=update" \
-   -H "Content-Type", "text/plain" --data "$JSONDATA" > /dev/null 2>&1
+   -H "Content-Type", "text/plain" --data "$JSONDATA"
    
 ## Display Message
 /usr/bin/curl -silent --fail --ipv4 \
    --max-time 5 --retry 2 --no-keepalive \
-   --data "var=&arg=message&action=main" "http://$LCD_HOST/exec.php" > /dev/null 2>&1
+   --data "var=&arg=message&action=main" "http://$LCD_HOST/exec.php"
 
 exit
 

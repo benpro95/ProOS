@@ -77,6 +77,7 @@ chown root:root /etc/sysctl.conf
 ## System Resources
 rm -rf /opt/system
 mkdir -p /opt/system
+cp -v /tmp/config/atv.sh /opt/system/atv
 cp -v /tmp/config/leds.sh /opt/system/leds
 cp -v /tmp/config/main.sh /opt/system/main
 cp -v /tmp/config/lcdpi.sh /opt/system/lcdpi

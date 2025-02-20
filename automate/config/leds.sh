@@ -16,7 +16,7 @@ CALL_LCDPI(){
 	    LCDPI_MSG="paused LEDs"
 	  fi
 	fi
-    /opt/rpi/lcdpi "$LCDPI_MSG" &
+    /opt/rpi/lcdpi "$LCDPI_MSG" > /dev/null 2>&1 &
 }
 
 ## Read Input Arguments
@@ -43,7 +43,7 @@ if [ -e /var/www/html/ram/mainmenu.txt ]; then
     echo "$DATA" | xargs -P 5 -I % \
       /usr/bin/curl --fail --ipv4 --no-buffer \
        --max-time 5 --retry 1 --no-keepalive \
-       --data "var=$VARB&arg=$VARA&action=leds" %/exec.php
+       --data "var=$VARB&arg=$VARA&action=leds" %/exec.php > /dev/null 2>&1 &
   fi
   CALL_LCDPI     
 else

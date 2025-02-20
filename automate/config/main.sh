@@ -324,6 +324,14 @@ test)
 echo "TEST_DATA"
 ;;
 
+sitelookup)
+## Lookup Website Title
+if [ "$SEC_ARG" != "" ]; then
+  LINKTITLE=$(curl -s -X GET "$SEC_ARG" | xmllint -html -xpath "//head/title/text()" - 2>/dev/null)
+  echo "$LINKTITLE"
+fi
+;;
+
 pauseatv)
 ## Pause Apple TV
 ATV_CMD="pause"; ATV_CTL

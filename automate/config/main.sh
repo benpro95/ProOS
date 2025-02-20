@@ -558,25 +558,25 @@ exit
 
 active)
 echo "Active services."
-systemctl list-units --type=service --state=active
+systemctl list-units --type=service --state=active &>> $LOGFILE
 exit
 ;;
 
 running)
 echo "Running services."
-systemctl list-units --type=service --state=running
+systemctl list-units --type=service --state=running &>> $LOGFILE
 exit
 ;;
 
 timers)
 ## List Active Timers
-systemctl list-timers --all
+systemctl list-timers --all &>> $LOGFILE
 exit
 ;;
 
 loadtimes)
 ## Display list of system daemons and startup times
-systemd-analyze blame
+systemd-analyze blame &>> $LOGFILE
 exit
 ;;
 

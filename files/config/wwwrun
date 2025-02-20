@@ -16,7 +16,7 @@ then
   ARG="placeholder"
 fi
 ## Run in background
-nohup /usr/bin/www.sh $REPLY $ARG $RAMDISK $LOGFILE &> $LOGFILE &
+nohup /usr/bin/www.sh $REPLY $ARG $RAMDISK $LOGFILE &>> $LOGFILE &
 TRAILER=$(date)
 TRAILER+=" ("
 TRAILER+=$(hostname)

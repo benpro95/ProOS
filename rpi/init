@@ -320,19 +320,19 @@ exit
 
 delwifi)
 echo "resetting Wi-Fi settings..."
-/bin/bash /etc/netmode.sh delwifi > /dev/null 2>&1
+nohup /etc/netmode.sh delwifi > /dev/null 2>&1 &
 exit
 ;;
 
 client)
 echo 'enabling client network mode...'
-/bin/bash /etc/netmode.sh client > /dev/null 2>&1
+nohup /etc/netmode.sh client > /dev/null 2>&1 &
 exit
 ;;
 
 apd)
 echo 'enabling access point mode...'
-/bin/bash /etc/netmode.sh apd > /dev/null 2>&1
+nohup /etc/netmode.sh apd > /dev/null 2>&1 &
 exit
 ;;
 
@@ -341,10 +341,10 @@ togglenet)
 if pgrep -x "hostapd" > /dev/null 2> /dev/null
 then
   echo "APD running, switching to client..."
-  /bin/bash /etc/netmode.sh client
+  nohup /etc/netmode.sh client > /dev/null 2>&1 &
 else
   echo "APD not running, switching to hotspot..."
-  /bin/bash /etc/netmode.sh apd
+  nohup /etc/netmode.sh apd > /dev/null 2>&1 &
 fi
 exit
 ;;

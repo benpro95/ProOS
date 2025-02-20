@@ -320,6 +320,10 @@ SEC_ARG=$2
 
 case "$FIRST_ARG" in
 
+test)
+echo "TEST_DATA"
+;;
+
 pauseatv)
 ## Pause Apple TV
 ATV_CMD="pause"; ATV_CTL

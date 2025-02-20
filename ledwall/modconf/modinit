@@ -44,7 +44,7 @@ chmod -R 777 /var/www/html/device.js
 chown -R www-data:www-data /var/www/html/device.js
 
 ## Shortcut to main script
-ln -sf /opt/rpi/main /usr/bin/leds
+ln -sf /opt/rpi/leds /usr/bin/leds
 
 ## Replacement LED modules (for 93-pixel LED ring)
 cp -f $BIN/modconf/SpectroGraph.jar /opt/rpi/effects/spectro/lib/

@@ -14,6 +14,7 @@ let loadBarState = 0;
 let serverCmdData;
 let socket = null;
 let fileData = [];
+let cmdOutput = [];
 var timeStamp;
 let sysModel;
 
@@ -21,6 +22,8 @@ let sysModel;
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
 let siteVersion = "5.3.5";
+
+//sendCmd('main','sitelookup','https://www.youtube.com/watch?v=cravvLF6N44');
 
 //////////////////////
 
@@ -200,6 +203,32 @@ function starsAnimation(_state) {
       elemToClass('hide',_elm,_class);
     }
   }
+}
+
+// transmit command
+function sendCmd(act, arg1, arg2) {
+  // construct API string
+  const url = location.protocol+"//"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
+  // send data
+  fetch(url, {
+    method: 'GET'
+  })
+  .then(res => {
+    return res.json()
+  })
+  .then((response) => {
+    let _output = response.toString();
+    // ignore empty lines
+    if (_output) {
+      if (_output !== "" && _output !== "[object Object]") {
+        console.log(_output);
+      }
+    }
+  })  
+}
+
+function lookupURL(url) {
+  sendCmd('main','sitelookup',url);
 }
 
 /// text popup window ///
@@ -542,16 +571,6 @@ async function getPassword(_type){
 
 function relaxSend(_cmd) {
   sendCmd('main','relax',_cmd);
-}
-
-// transmit command
-function sendCmd(act, arg1, arg2) {
-  // construct API string
-  const url = location.protocol+"//"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
-  // send data
-  fetch(url, {
-    method: 'GET',
-  })
 }
 
 // volume controls

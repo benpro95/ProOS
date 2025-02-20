@@ -71,6 +71,8 @@ if (isset($_REQUEST['action'], $_REQUEST['arg'], $_REQUEST['var'])) {
       // return sysout
       $json_out = json_encode($sysout);
 	  echo $json_out;
+	} else {
+	  echo "{}";
 	}
 	http_response_code(200);
 

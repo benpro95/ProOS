@@ -64,10 +64,14 @@ if (isset($_REQUEST['action'], $_REQUEST['arg'], $_REQUEST['var'])) {
         return;
     }
 
+    // pass arguments to shell script
     $cmd = "/usr/bin/sudo /opt/rpi/$action $arg $var 2>&1";
     $sysout = shell_exec("$cmd");
     $json_out = json_encode($sysout);
-	echo $json_out;
+    if (!empty($json_out)) {
+      // return sysout
+	  echo $json_out;
+	}
 	http_response_code(200);
 
 } else {

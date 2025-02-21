@@ -882,7 +882,7 @@ async function drawBookmarkPrompt(add,url,name,elem){
       if (e.target === editFavDeleteBtn || e.target === editFavSaveBtn) {
         // save button only actions
         if (e.target === editFavSaveBtn) {
-          // do not allow empty URL
+          // do not allow empty URL or name
           var stopsave = false;
           if (editFavURL.value == null || editFavURL.value == "") {
             stopsave = true;

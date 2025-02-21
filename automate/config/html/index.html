@@ -25,11 +25,11 @@
       <i class="fa-solid fa-list"></i>
     </a>
   </div>
-  <div class="ledpi-grid lcdpi-grid pi-grid">
+  <div class="lcdpi-grid ledpi-grid pi-grid">
     <a onclick="showMenu('pi-mainmenu')" class="mainmenu__anchor">
       <i class="fa-solid fa-list"></i>
     </a>
-  </div> 
+  </div>
 
   <!-- themes button -->
   <a onclick="showDynMenu('thememenu')" class="dropbtn">
@@ -74,7 +74,7 @@
   </div>
 </div>
 
-<div class="lcdpi-grid ledpi-grid pi-grid">
+<div class="ledpi-grid pi-grid lcdpi-grid">
   <div class="main_dropdown">
     <div class="dd-content dd-menu" id="pi-mainmenu">
       <a onclick="GoToHomePage()"><i class="fa fa-home"></i>  Home</a>
@@ -100,7 +100,9 @@
 
 <div class="pi-grid">
   <div class="grid">
-      <p class="nolayout">Layout not found.</p> 
+    <button type="button" class="button" onclick="openLogWindow()">
+      <span class="button__text"><i class="fa-solid fa-gear"></i> System</span>
+    </button>
   </div>
 </div>
 
@@ -153,8 +155,8 @@
       <button type="button" class="button" onclick="showLEDsPage()">
         <span class="button__text"><i class="fa-regular fa-sun"></i> Effects</span>
       </button>  
-      <button type="button" class="button" onclick="lookupURL('https://www.youtube.com/watch?v=cravvLF6N44')">
-        <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Test</span>
+      <button type="button" class="button" onclick="sendCmd('main','ambient','')">
+        <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Ambient</span>
       </button>
       <!---->
       <p class="parstd"></p>
@@ -231,8 +233,8 @@
         <!---->
         <p class="parstd"></p>
         <!---->
-        <button type="button" class="button" onclick="sendCmd('main','toggletv','')">
-          <span class="button__text"><i class="fa-solid fa-tv"></i> TV</span>
+        <button type="button" class="button" onclick="sendCmd('main','bedpi','toggletv')">
+          <span class="button__text"><i class="fa-solid fa-tv"></i> Monitor</span>
         </button>
         <div class="dropdown">
           <button type="button" class="button" onclick="showMenu('br-menu')">

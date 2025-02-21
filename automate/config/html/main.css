@@ -611,6 +611,7 @@ input.chkbox {
   text-decoration: none;
   position: absolute;
   display: inline-block;
+  padding-bottom: 10px; 
   top: 20%;
   left: 20%;
   height: auto;
@@ -625,13 +626,6 @@ input.chkbox {
   margin-right: 5px;
   height: 50px;
   width: 150px;
-}
-
-.editFav__cancelbtn {
-  padding-top: 3px;
-  margin-bottom: 15px;
-  height: 50px;
-  width: 200px;
 }
 
 .editFav__textbox {

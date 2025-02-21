@@ -23,8 +23,6 @@ let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
 let siteVersion = "5.3.5";
 
-//sendCmd('main','sitelookup','https://www.youtube.com/watch?v=cravvLF6N44');
-
 //////////////////////
 
 // runs after DOM finishes loading
@@ -205,30 +203,37 @@ function starsAnimation(_state) {
   }
 }
 
-// transmit command
-function sendCmd(act, arg1, arg2) {
-  // construct API string
-  const url = location.protocol+"//"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
-  // send data
-  fetch(url, {
-    method: 'GET'
-  })
-  .then(res => {
-    return res.json()
-  })
-  .then((response) => {
-    let _output = response.toString();
-    // ignore empty lines
-    if (_output) {
-      if (_output !== "" && _output !== "[object Object]") {
-        console.log(_output);
-      }
-    }
-  })  
+// returns (true) if object is empty
+function isObjEmpty(obj) {
+  var isEmpty = true;
+  for (keys in obj) {
+     isEmpty = false;
+     break;
+  }
+  return isEmpty;
 }
 
-function lookupURL(url) {
-  sendCmd('main','sitelookup',url);
+// transmit a command
+function sendCmd(act, arg1, arg2) {
+  // construct API URL
+  const url = location.protocol+"//"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
+  // send request 
+  return fetch(url, {
+    method: 'GET'
+  }) 
+  // process JSON response
+  .then(response => {
+  return response.json().then((obj) => {
+      var out = null;
+      var empty = isObjEmpty(obj);
+      if (empty === false) {
+        out = obj.toString();
+      } // return string
+      return out;
+    }).catch((err) => {
+      console.log('sendCmd: ' + err);
+    })
+  });
 }
 
 /// text popup window ///
@@ -765,7 +770,7 @@ function clickBookmark(id) {
   }
 }
 
-function drawBookmarkPrompt(add,url,name,elem){
+async function drawBookmarkPrompt(add,url,name,elem){
   // create empty window
   let editFavPrompt = document.createElement("div"); 
   editFavPrompt.className = "editFav__win";
@@ -798,12 +803,20 @@ function drawBookmarkPrompt(add,url,name,elem){
   editFavText.innerHTML = bannerText; 
   // cancel button
   let editFavCancelBtn = document.createElement("button");
-  editFavCancelBtn.classList.add("editFav__cancelbtn");
+  editFavCancelBtn.classList.add("editFav__button");
   editFavCancelBtn.classList.add("button");
   editFavCancelBtn.classList.add("winbtn");
   editFavCancelBtn.classList.add("fa-solid");
   editFavCancelBtn.classList.add("fa-ban");
   editFavCancelBtn.type = "button";
+  // lookup favorites
+  let editFavLookupBtn = document.createElement("button");
+  editFavLookupBtn.classList.add("editFav__button");
+  editFavLookupBtn.classList.add("button");
+  editFavLookupBtn.classList.add("winbtn");
+  editFavLookupBtn.classList.add("fa-solid");
+  editFavLookupBtn.classList.add("fa-link");
+  editFavLookupBtn.type = "button";
   // save button
   let editFavSaveBtn = document.createElement("button");
   editFavSaveBtn.classList.add("editFav__button");
@@ -841,8 +854,9 @@ function drawBookmarkPrompt(add,url,name,elem){
   editFavPrompt.appendChild(editFavName); 
   editFavPrompt.appendChild(editFavURL); 
   editFavPrompt.appendChild(editFavUpBtn); 
-  editFavPrompt.appendChild(editFavSaveBtn); 
+  editFavPrompt.appendChild(editFavLookupBtn); 
   editFavPrompt.appendChild(editFavDownBtn);
+  editFavPrompt.appendChild(editFavSaveBtn); 
   editFavPrompt.appendChild(editFavDeleteBtn); 
   editFavPrompt.appendChild(editFavCancelBtn);  
   // display window on page
@@ -866,19 +880,26 @@ function drawBookmarkPrompt(add,url,name,elem){
       }
       // common save / delete actions
       if (e.target === editFavDeleteBtn || e.target === editFavSaveBtn) {
-        // do not allow empty name or URL
+        // save button only actions
         if (e.target === editFavSaveBtn) {
-          if (editFavURL.value == null || editFavURL.value == "" || 
-            editFavName.value == null || editFavName.value == "") {
-              editFavText.innerHTML = "Enter Bookmark Name & URL";
-              return;
-          }    
+          // do not allow empty URL
+          var stopsave = false;
+          if (editFavURL.value == null || editFavURL.value == "") {
+            stopsave = true;
+          }
+          if (editFavName.value == null || editFavName.value == "") {
+            stopsave = true;
+          }
+          if (stopsave === true){
+            return;
+          } 
         }
         // remove buttons
         editFavPrompt.removeChild(editFavUpBtn); 
         editFavPrompt.removeChild(editFavDownBtn); 
         editFavPrompt.removeChild(editFavDeleteBtn); 
         editFavPrompt.removeChild(editFavSaveBtn);
+        editFavPrompt.removeChild(editFavLookupBtn); 
         // cancel -> close button
         editFavCancelBtn.classList.remove("fa-solid");
         editFavCancelBtn.classList.remove("fa-ban");
@@ -919,6 +940,13 @@ function drawBookmarkPrompt(add,url,name,elem){
       }    
     });
   });   
+}
+
+function lookupURL(url) {
+  sendCmd('main','sitelookup',url).then((out) => {
+    console.log(out);
+    return out;
+  });
 }
 
 function shiftMenuUp(elem) {

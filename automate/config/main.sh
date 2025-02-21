@@ -333,9 +333,10 @@ fi
 ;;
 
 pauseatv)
-## Pause Apple TV
+## Pause Apple TV / Stop Sounds
 ATV_CMD="pause"; ATV_CTL
-XMITCMD=""
+TARGET="$BEDPI_IP"
+XMITCMD="stoprelax"
 LCDPI_MSG="paused apple TV"
 CALLAPI
 ;;
@@ -349,15 +350,6 @@ CALLAPI
 ## Pause Apple TV
 ATV_CMD="pause"; ATV_CTL
 exit
-;;
-
-toggletv)
-## Send Command
-TARGET="$BEDPI_IP"
-XMITCMD="toggletv"
-CALLAPI
-## Pause Apple TV
-ATV_CMD="pause"; ATV_CTL
 ;;
 
 bedpi)

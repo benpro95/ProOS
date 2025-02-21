@@ -205,7 +205,7 @@ input.chkbox {
   color: #fff; /* buttons font color */
   text-shadow: 1px 1px 1px #000;
   border-radius: 12px;
-  background-color: color-mix(in srgb, var(--main-color),#0000 40%);
+  background-color: color-mix(in srgb, var(--main-color),#0000 40%); /* % of transparency */  
   background-image: linear-gradient(to top left,
                                     rgba(0, 0, 0, .2),
                                     rgba(0, 0, 0, .2) 15%,
@@ -234,11 +234,11 @@ input.chkbox {
   background-color: #8d2a2a;
 }
 
-.button_win { /* button in window */
-  background-color: color-mix(in srgb, var(--main-color) 80%, black);
+.button_ctrl {
+  background-color: color-mix(in srgb, var(--main-color),#0000 70%); /* % of transparency */  
 }
 
-.button-alert {
+.button_alert {
   background-color: color-mix(in srgb, var(--main-color) 80%, white);
 }
 

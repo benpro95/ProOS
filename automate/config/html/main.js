@@ -21,7 +21,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "5.3.5";
+let siteVersion = "5.4.2";
 
 //////////////////////
 
@@ -263,7 +263,7 @@ async function serverSend() {
 }
 
 function sendBtnAlert(state) {
-  let _class = "button-alert";
+  let _class = "button_alert";
   let _elem = "sendButton";
   if (state === 'off') {
     elemToClass('hide',_elem,_class);
@@ -331,12 +331,12 @@ function piWiFiPrompt(){
   // save button
   let pinetokbutton = document.createElement("button"); 
   pinetokbutton.innerHTML = "Save";
-  pinetokbutton.className ="button button_win pinet__btn"; 
+  pinetokbutton.className ="button pinet__btn"; 
   pinetokbutton.type="button"; 
   // cancel button
   let pinetcancelb = document.createElement("button"); 
   pinetcancelb.innerHTML = "Cancel";
-  pinetcancelb.className ="button button_win pinet__btn"; 
+  pinetcancelb.className ="button pinet__btn"; 
   pinetcancelb.type="button"; 
   // create window
   pinetprompt.appendChild(pinetcancelb); 
@@ -421,7 +421,7 @@ function show_aboutPrompt(){
   // cancel button
   let aboutcancelb = document.createElement("button");
   aboutcancelb.innerHTML = "Close";
-  aboutcancelb.className ="button button_win"; 
+  aboutcancelb.className ="button"; 
   aboutcancelb.id = "about__btn";
   aboutcancelb.type="button"; 
   aboutprompt.appendChild(aboutcancelb); //append cancel-button
@@ -489,7 +489,7 @@ function show_wifiPwdPrompt(){
   wifiprompt.appendChild(wifipwd);
   let wificancelb = document.createElement("button");
   wificancelb.innerHTML = "Close";
-  wificancelb.className = "button button_win"; 
+  wificancelb.className = "button"; 
   wificancelb.type = "button"; 
   wificancelb.id = "wifipmt__btn";
   wifiprompt.appendChild(wificancelb);
@@ -807,7 +807,6 @@ async function drawBookmarkPrompt(add,url,name,elem){
   let editFavCancelBtn = document.createElement("button");
   editFavCancelBtn.classList.add("editFav__button");
   editFavCancelBtn.classList.add("button");
-  editFavCancelBtn.classList.add("button_win");
   editFavCancelBtn.classList.add("fa-solid");
   editFavCancelBtn.classList.add("fa-ban");
   editFavCancelBtn.type = "button";
@@ -815,7 +814,6 @@ async function drawBookmarkPrompt(add,url,name,elem){
   let editFavLookupBtn = document.createElement("button");
   editFavLookupBtn.classList.add("editFav__button");
   editFavLookupBtn.classList.add("button");
-  editFavLookupBtn.classList.add("button_win");
   editFavLookupBtn.classList.add("fa-solid");
   editFavLookupBtn.classList.add("fa-link");
   editFavLookupBtn.type = "button";
@@ -823,7 +821,6 @@ async function drawBookmarkPrompt(add,url,name,elem){
   let editFavSaveBtn = document.createElement("button");
   editFavSaveBtn.classList.add("editFav__button");
   editFavSaveBtn.classList.add("button");
-  editFavSaveBtn.classList.add("button_win");
   editFavSaveBtn.classList.add("fa-solid");
   editFavSaveBtn.classList.add("fa-floppy-disk");
   editFavSaveBtn.type = "button";
@@ -831,7 +828,6 @@ async function drawBookmarkPrompt(add,url,name,elem){
   let editFavDeleteBtn = document.createElement("button");
   editFavDeleteBtn.classList.add("editFav__button");
   editFavDeleteBtn.classList.add("button");
-  editFavDeleteBtn.classList.add("button_win");
   editFavDeleteBtn.classList.add("fa-solid");
   editFavDeleteBtn.classList.add("fa-trash-can");
   editFavDeleteBtn.type = "button";
@@ -839,7 +835,6 @@ async function drawBookmarkPrompt(add,url,name,elem){
   let editFavUpBtn = document.createElement("button");
   editFavUpBtn.classList.add("editFav__button");
   editFavUpBtn.classList.add("button");
-  editFavUpBtn.classList.add("button_win");
   editFavUpBtn.classList.add("fa-solid");
   editFavUpBtn.classList.add("fa-arrow-up");
   editFavUpBtn.type = "button"; 
@@ -847,7 +842,6 @@ async function drawBookmarkPrompt(add,url,name,elem){
   let editFavDownBtn = document.createElement("button");
   editFavDownBtn.classList.add("editFav__button");
   editFavDownBtn.classList.add("button");
-  editFavDownBtn.classList.add("button_win");
   editFavDownBtn.classList.add("fa-solid");
   editFavDownBtn.classList.add("fa-arrow-down");
   editFavDownBtn.type = "button";
@@ -1499,13 +1493,13 @@ function show_colorPrompt(text){
   // the cancel-button
   let colorcancelb = document.createElement("button"); 
   colorcancelb.innerHTML = "Close";
-  colorcancelb.className ="button button_win"; 
+  colorcancelb.className ="button"; 
   colorcancelb.type="button"; 
   colorprompt.appendChild(colorcancelb); //append cancel-button
   // the set color-button
   let colorsetb = document.createElement("button"); 
   colorsetb.innerHTML = "Apply";
-  colorsetb.className ="button button_win"; 
+  colorsetb.className ="button"; 
   colorsetb.type="button"; 
   colorprompt.appendChild(colorsetb); //append set-button
   // color selector box

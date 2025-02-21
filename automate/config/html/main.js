@@ -780,7 +780,8 @@ async function drawBookmarkPrompt(add,url,name,elem){
   editFavName.type = "text";
   editFavName.value = name;
   editFavName.autocorrect = "off";
-  editFavName.autocapitalize = "none";  
+  editFavName.autocapitalize = "none"; 
+  editFavName.id = "editFav__namebox";
   editFavName.classList.add("editFav__textbox");
   // URL edit box
   let editFavURL = document.createElement("input"); 
@@ -788,6 +789,7 @@ async function drawBookmarkPrompt(add,url,name,elem){
   editFavURL.value = url;
   editFavURL.autocorrect = "off";
   editFavURL.autocapitalize = "none";
+  editFavName.id = "editFav__urlbox";
   editFavURL.classList.add("editFav__textbox");
   let bannerText;
   if (add === true) { // add new mode
@@ -884,10 +886,12 @@ async function drawBookmarkPrompt(add,url,name,elem){
         if (e.target === editFavSaveBtn) {
           // do not allow empty URL or name
           var stopsave = false;
-          if (editFavURL.value == null || editFavURL.value == "") {
+          if (editFavName.value == null || editFavName.value == "") {
+            editFavName.placeholder = "Name cannot be empty";
             stopsave = true;
           }
-          if (editFavName.value == null || editFavName.value == "") {
+          if (editFavURL.value == null || editFavURL.value == "") {
+            editFavURL.placeholder = "URL cannot be empty";
             stopsave = true;
           }
           if (stopsave === true){

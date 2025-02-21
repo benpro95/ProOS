@@ -332,12 +332,12 @@ if [ "$SEC_ARG" != "" ]; then
 fi
 ;;
 
-pauseatv)
+pauseall)
 ## Pause Apple TV / Stop Sounds
 ATV_CMD="pause"; ATV_CTL
 TARGET="$BEDPI_IP"
 XMITCMD="stoprelax"
-LCDPI_MSG="paused apple TV"
+LCDPI_MSG="paused all"
 CALLAPI
 ;;
 

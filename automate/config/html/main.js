@@ -331,12 +331,12 @@ function piWiFiPrompt(){
   // save button
   let pinetokbutton = document.createElement("button"); 
   pinetokbutton.innerHTML = "Save";
-  pinetokbutton.className ="button winbtn pinet__btn"; 
+  pinetokbutton.className ="button button_win pinet__btn"; 
   pinetokbutton.type="button"; 
   // cancel button
   let pinetcancelb = document.createElement("button"); 
   pinetcancelb.innerHTML = "Cancel";
-  pinetcancelb.className ="button winbtn pinet__btn"; 
+  pinetcancelb.className ="button button_win pinet__btn"; 
   pinetcancelb.type="button"; 
   // create window
   pinetprompt.appendChild(pinetcancelb); 
@@ -421,7 +421,7 @@ function show_aboutPrompt(){
   // cancel button
   let aboutcancelb = document.createElement("button");
   aboutcancelb.innerHTML = "Close";
-  aboutcancelb.className ="button winbtn"; 
+  aboutcancelb.className ="button button_win"; 
   aboutcancelb.id = "about__btn";
   aboutcancelb.type="button"; 
   aboutprompt.appendChild(aboutcancelb); //append cancel-button
@@ -489,7 +489,7 @@ function show_wifiPwdPrompt(){
   wifiprompt.appendChild(wifipwd);
   let wificancelb = document.createElement("button");
   wificancelb.innerHTML = "Close";
-  wificancelb.className = "button winbtn"; 
+  wificancelb.className = "button button_win"; 
   wificancelb.type = "button"; 
   wificancelb.id = "wifipmt__btn";
   wifiprompt.appendChild(wificancelb);
@@ -789,7 +789,7 @@ async function drawBookmarkPrompt(add,url,name,elem){
   editFavURL.value = url;
   editFavURL.autocorrect = "off";
   editFavURL.autocapitalize = "none";
-  editFavName.id = "editFav__urlbox";
+  editFavURL.id = "editFav__urlbox";
   editFavURL.classList.add("editFav__textbox");
   let bannerText;
   if (add === true) { // add new mode
@@ -807,7 +807,7 @@ async function drawBookmarkPrompt(add,url,name,elem){
   let editFavCancelBtn = document.createElement("button");
   editFavCancelBtn.classList.add("editFav__button");
   editFavCancelBtn.classList.add("button");
-  editFavCancelBtn.classList.add("winbtn");
+  editFavCancelBtn.classList.add("button_win");
   editFavCancelBtn.classList.add("fa-solid");
   editFavCancelBtn.classList.add("fa-ban");
   editFavCancelBtn.type = "button";
@@ -815,7 +815,7 @@ async function drawBookmarkPrompt(add,url,name,elem){
   let editFavLookupBtn = document.createElement("button");
   editFavLookupBtn.classList.add("editFav__button");
   editFavLookupBtn.classList.add("button");
-  editFavLookupBtn.classList.add("winbtn");
+  editFavLookupBtn.classList.add("button_win");
   editFavLookupBtn.classList.add("fa-solid");
   editFavLookupBtn.classList.add("fa-link");
   editFavLookupBtn.type = "button";
@@ -823,7 +823,7 @@ async function drawBookmarkPrompt(add,url,name,elem){
   let editFavSaveBtn = document.createElement("button");
   editFavSaveBtn.classList.add("editFav__button");
   editFavSaveBtn.classList.add("button");
-  editFavSaveBtn.classList.add("winbtn");
+  editFavSaveBtn.classList.add("button_win");
   editFavSaveBtn.classList.add("fa-solid");
   editFavSaveBtn.classList.add("fa-floppy-disk");
   editFavSaveBtn.type = "button";
@@ -831,7 +831,7 @@ async function drawBookmarkPrompt(add,url,name,elem){
   let editFavDeleteBtn = document.createElement("button");
   editFavDeleteBtn.classList.add("editFav__button");
   editFavDeleteBtn.classList.add("button");
-  editFavDeleteBtn.classList.add("winbtn");
+  editFavDeleteBtn.classList.add("button_win");
   editFavDeleteBtn.classList.add("fa-solid");
   editFavDeleteBtn.classList.add("fa-trash-can");
   editFavDeleteBtn.type = "button";
@@ -839,7 +839,7 @@ async function drawBookmarkPrompt(add,url,name,elem){
   let editFavUpBtn = document.createElement("button");
   editFavUpBtn.classList.add("editFav__button");
   editFavUpBtn.classList.add("button");
-  editFavUpBtn.classList.add("winbtn");
+  editFavUpBtn.classList.add("button_win");
   editFavUpBtn.classList.add("fa-solid");
   editFavUpBtn.classList.add("fa-arrow-up");
   editFavUpBtn.type = "button"; 
@@ -847,7 +847,7 @@ async function drawBookmarkPrompt(add,url,name,elem){
   let editFavDownBtn = document.createElement("button");
   editFavDownBtn.classList.add("editFav__button");
   editFavDownBtn.classList.add("button");
-  editFavDownBtn.classList.add("winbtn");
+  editFavDownBtn.classList.add("button_win");
   editFavDownBtn.classList.add("fa-solid");
   editFavDownBtn.classList.add("fa-arrow-down");
   editFavDownBtn.type = "button";
@@ -879,6 +879,9 @@ async function drawBookmarkPrompt(add,url,name,elem){
       if (e.target === editFavCancelBtn) {
         editFavPrompt.removeEventListener('click', handleButtonClicks);
         hideDropdowns();
+      }
+      if (e.target === editFavLookupBtn) {
+        lookupURL();
       }
       // common save / delete actions
       if (e.target === editFavDeleteBtn || e.target === editFavSaveBtn) {
@@ -946,11 +949,24 @@ async function drawBookmarkPrompt(add,url,name,elem){
   });   
 }
 
-function lookupURL(url) {
-  sendCmd('main','sitelookup',url).then((out) => {
-    console.log(out);
-    return out;
-  });
+async function lookupURL() {
+  const urlBoxElem = document.getElementById("editFav__urlbox");
+  const nameBoxElem = document.getElementById("editFav__namebox");
+  if (urlBoxElem && nameBoxElem) {
+    nameBoxElem.value = "Processing...";
+    // read URL box
+    var url = urlBoxElem.value;
+    // search for URLs title
+    sendCmd('main','sitelookup',url).then((out) => {
+      // remove newline characters
+      out = out.replace(/(\r\n|\n|\r)/gm, ""); 
+      if (out == null || out == "") {
+        nameBoxElem.value = "Not Found";
+      } else { 
+        nameBoxElem.value = out;
+      }
+    });
+  }
 }
 
 function shiftMenuUp(elem) {
@@ -1483,13 +1499,13 @@ function show_colorPrompt(text){
   // the cancel-button
   let colorcancelb = document.createElement("button"); 
   colorcancelb.innerHTML = "Close";
-  colorcancelb.className ="button winbtn"; 
+  colorcancelb.className ="button button_win"; 
   colorcancelb.type="button"; 
   colorprompt.appendChild(colorcancelb); //append cancel-button
   // the set color-button
   let colorsetb = document.createElement("button"); 
   colorsetb.innerHTML = "Apply";
-  colorsetb.className ="button winbtn"; 
+  colorsetb.className ="button button_win"; 
   colorsetb.type="button"; 
   colorprompt.appendChild(colorsetb); //append set-button
   // color selector box

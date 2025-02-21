@@ -1082,16 +1082,16 @@
   <form class="textBoxContainer">
     <textarea readonly class="scroll-bar" id="logTextBox" spellcheck="false" placeholder="" required="">
     </textarea>  
-    <button type="button" class="button winbtn button_left_txtwin" onclick="closePopup()">
+    <button type="button" class="button button_win button_left_txtwin" onclick="closePopup()">
           <span class="button__textsmall"><i class="fa-solid fa-xmark"></i></span>
     </button>       
-    <button type="button" class="button winbtn button_left_txtwin" onclick="openServerOptions()">
+    <button type="button" class="button button_win button_left_txtwin" onclick="openServerOptions()">
           <span class="button__textsmall"><i class="fa-solid fa-gears"></i></span>
     </button>           
-    <button type="button" class="button winbtn button_left_txtwin" onclick="loadLog('sysout')">
+    <button type="button" class="button button_win button_left_txtwin" onclick="loadLog('sysout')">
           <span class="button__textsmall"><i class="fa-solid fa-arrows-rotate"></i></span>
     </button>
-    <button type="button" class="button winbtn button_right_txtwin" id="sendButton" onclick="serverSend()">
+    <button type="button" class="button button_win button_right_txtwin" id="sendButton" onclick="serverSend()">
           <span class="button__textsmall"><i class="fa-solid fa-upload"></i></span>
     </button>
   </form>
@@ -1100,13 +1100,13 @@
 <div class="msg-popup popup" id="sendForm">
   <form class="textBoxContainer">   
     <textarea class="scroll-bar" id="lcdTextBox" placeholder="" required=""></textarea>  
-    <button type="button" class="button winbtn button_left_txtwin" onclick="closeSendbox()">
+    <button type="button" class="button button_win button_left_txtwin" onclick="closeSendbox()">
           <span class="button__textsmall"></i> Close</span>
     </button>   
-    <button type="button" class="button winbtn button_left_txtwin" onclick="eraseText()">
+    <button type="button" class="button button_win button_left_txtwin" onclick="eraseText()">
           <span class="button__textsmall"></i> Erase</span>
     </button> 
-    <button type="button" class="button winbtn button_right_txtwin" onclick="sendText()">
+    <button type="button" class="button button_win button_right_txtwin" onclick="sendText()">
           <span class="button__textsmall"></i> Send</span>
     </button>
   </form>
@@ -1115,10 +1115,10 @@
 <div id="camForm">
   <div id="camDiv"> 
     <img id="camImage"></img>  
-    <button type="button" class="button winbtn" id="camButtonLeft" onclick="closePopup()">
+    <button type="button" class="button button_win" id="camButtonLeft" onclick="closePopup()">
       <span class="button__textsmall"></i> Close</span>
     </button>     
-    <button type="button" class="button winbtn" id="camButtonRight" onclick="GotoSubURL('cam1')">
+    <button type="button" class="button button_win" id="camButtonRight" onclick="GotoSubURL('cam1')">
       <span class="button__textsmall"></i> Fullscreen</span>
     </button>
   </div>    

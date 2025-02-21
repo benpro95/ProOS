@@ -234,7 +234,7 @@ input.chkbox {
   background-color: #8d2a2a;
 }
 
-.winbtn { /* button in window */
+.button_win { /* button in window */
   background-color: color-mix(in srgb, var(--main-color) 80%, black);
 }
 

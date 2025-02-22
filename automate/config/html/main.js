@@ -846,15 +846,15 @@ async function drawBookmarkPrompt(add,url,name,elem){
   editFavDownBtn.classList.add("fa-arrow-down");
   editFavDownBtn.type = "button";
   // append elements to window
-  editFavPrompt.appendChild(editFavText);
-  editFavPrompt.appendChild(editFavName); 
-  editFavPrompt.appendChild(editFavURL); 
-  editFavPrompt.appendChild(editFavUpBtn); 
-  editFavPrompt.appendChild(editFavLookupBtn); 
-  editFavPrompt.appendChild(editFavDownBtn);
-  editFavPrompt.appendChild(editFavSaveBtn); 
-  editFavPrompt.appendChild(editFavDeleteBtn); 
-  editFavPrompt.appendChild(editFavCancelBtn);  
+  editFavPrompt.appendChild(editFavText);      // window title text
+  editFavPrompt.appendChild(editFavName);      // name text box
+  editFavPrompt.appendChild(editFavURL);       // URL text box
+  editFavPrompt.appendChild(editFavUpBtn);     // button row #1
+  editFavPrompt.appendChild(editFavLookupBtn); // button row #1 
+  editFavPrompt.appendChild(editFavDownBtn);   // button row #2
+  editFavPrompt.appendChild(editFavSaveBtn);   // button row #2
+  editFavPrompt.appendChild(editFavCancelBtn); // button row #3
+  editFavPrompt.appendChild(editFavDeleteBtn); // button row #3
   // display window on page
   document.body.appendChild(editFavPrompt);
   // handle button actions
@@ -920,19 +920,19 @@ async function drawBookmarkPrompt(add,url,name,elem){
         if (e.target === editFavSaveBtn) {
           // update changed values
           if (elem) { 
-            // replace pipes with dashes
-            elem.innerText = editFavName.value.replaceAll("|", "-");
-            let _boxurl = editFavURL.value.replaceAll("|", "-");
-            let _lowerurl = _boxurl.toLowerCase();
-            // add HTTPS prefix if not defined
-            if (_lowerurl.startsWith('http://', 0) || 
-                _lowerurl.startsWith('https://', 0)) {
-              elem['url'] = _boxurl;
-            } else {
-              const _newurl = "https://" + _boxurl;
-              editFavURL.value = _newurl;
-              elem['url'] = _newurl;
+            // save name to menu object
+            let _boxname = editFavName.value.replaceAll("|", "-");
+            // name length limit
+            let maxNameLength = 42;
+            if (_boxname.length >= maxNameLength) {
+              _boxname = _boxname.substring(0,maxNameLength) + "...";
             }
+            elem.innerText = _boxname;
+            // save URL to menu object
+            let _boxurl = editFavURL.value.replaceAll("|", "-");
+            _boxurl = addHTTPtoURL(_boxurl);
+            elem['url'] = _boxurl;
+            editFavURL.value = _boxurl;
             editFavText.innerHTML = "Changes Saved"; 
           }
         }
@@ -943,6 +943,18 @@ async function drawBookmarkPrompt(add,url,name,elem){
   });   
 }
 
+// add HTTPs prefix if not defined
+function addHTTPtoURL(linkin) {
+  let linkout;
+  if (!(linkin.toLowerCase().startsWith('http://', 0) || 
+        linkin.toLowerCase().startsWith('https://', 0))) {
+    linkout = "https://" + linkin;
+  } else {
+    linkout = linkin;
+  }
+  return linkout;
+}
+
 async function lookupURL() {
   const urlBoxElem = document.getElementById("editFav__urlbox");
   const nameBoxElem = document.getElementById("editFav__namebox");
@@ -950,6 +962,8 @@ async function lookupURL() {
     nameBoxElem.value = "Processing...";
     // read URL box
     var url = urlBoxElem.value;
+    url = addHTTPtoURL(url);
+    urlBoxElem.value = url;
     // search for URLs title
     sendCmd('main','sitelookup',url).then((out) => {
       // remove newline characters

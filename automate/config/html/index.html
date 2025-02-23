@@ -185,8 +185,8 @@
           <a onclick="sendCmd('main','pcoff','')"><i class="fa-solid fa-moon"></i> Sleep</a>
         </div>
       </div>
-      <button type="button" class="button" onclick="sendCmd('main','pauseall','')">
-        <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
+      <button type="button" class="button" onclick="sendCmd('main','stop','')">
+        <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
       </button>
       <button type="button" class="button" onclick="openLogWindow()">
           <span class="button__text"><i class="fa-solid fa-terminal"></i> Server</span>
@@ -386,20 +386,20 @@
         <button type="button" class="button" onclick="relaxSend('fan')">
           <span class="button__text"></i>Fan</span>
         </button>
-        <button type="button" class="button" onclick="sendCmd('main','bedpi','stoprelax')">
-          <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
-        </button>         
+        <button type="button" class="button" onclick="relaxSend('rain')">
+            <span class="button__text"></i>Rain</span>
+        </button> 
         <button type="button" class="button" onclick="relaxSend('waterfall')">
             <span class="button__text"></i>Waterfall</span>
         </button>
 
         <p class="parstd"></p> 
 
-        <button type="button" class="button" onclick="relaxSend('wind')">
-            <span class="button__text"></i>Wind</span>
-        </button>
         <button type="button" class="button" onclick="relaxSend('element')">
           <span class="button__text"></i>Element</span>
+        </button>  
+        <button type="button" class="button" onclick="relaxSend('rain-2')">
+          <span class="button__text"></i>Rain II</span>
         </button>  
         <button type="button" class="button" onclick="relaxSend('coldwar')">
             <span class="button__text"></i>Cold War</span>
@@ -421,9 +421,9 @@
 
         <button type="button" class="button" onclick="relaxSend('forest')">
           <span class="button__text"></i>Forest</span>
-      </button> 
-        <button type="button" class="button" onclick="relaxSend('rain-2')">
-            <span class="button__text"></i>Rain</span>
+        </button> 
+        <button type="button" class="button" onclick="relaxSend('wind')">
+            <span class="button__text"></i>Wind</span>
         </button>
         <button type="button" class="button" onclick="relaxSend('storm')">
             <span class="button__text"></i>Storm</span>

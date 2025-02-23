@@ -922,15 +922,15 @@ async function drawBookmarkPrompt(add,url,name,elem){
           if (elem) { 
             // save name to menu object
             let _boxname = editFavName.value.replaceAll("|", "-");
-            // name length limit
+            // name length limiter
             let maxNameLength = 42;
             if (_boxname.length >= maxNameLength) {
-              _boxname = _boxname.substring(0,maxNameLength) + "...";
+              elem.innerText = _boxname.substring(0,maxNameLength) + "...";
+            } else {
+              elem.innerText = _boxname;
             }
-            elem.innerText = _boxname;
             // save URL to menu object
-            let _boxurl = editFavURL.value.replaceAll("|", "-");
-            _boxurl = addHTTPtoURL(_boxurl);
+            let _boxurl = addHTTPtoURL(editFavURL.value.replaceAll("|", "-"));
             elem['url'] = _boxurl;
             editFavURL.value = _boxurl;
             editFavText.innerHTML = "Changes Saved"; 
@@ -946,11 +946,15 @@ async function drawBookmarkPrompt(add,url,name,elem){
 // add HTTPs prefix if not defined
 function addHTTPtoURL(linkin) {
   let linkout;
-  if (!(linkin.toLowerCase().startsWith('http://', 0) || 
-        linkin.toLowerCase().startsWith('https://', 0))) {
-    linkout = "https://" + linkin;
-  } else {
-    linkout = linkin;
+  if (linkin === "" || linkin === null) {
+    linkout = "";
+  } else {  
+    if (!(linkin.toLowerCase().startsWith('http://', 0) || 
+          linkin.toLowerCase().startsWith('https://', 0))) {
+      linkout = "https://" + linkin;
+    } else {
+      linkout = linkin;
+    }
   }
   return linkout;
 }
@@ -961,17 +965,28 @@ async function lookupURL() {
   if (urlBoxElem && nameBoxElem) {
     nameBoxElem.value = "Processing...";
     // read URL box
-    var url = urlBoxElem.value;
-    url = addHTTPtoURL(url);
+    let urlin = urlBoxElem.value;
+    if (urlin === null || urlin === "") {
+      // read from clipboard if URL empty
+      urlin = await navigator.clipboard.readText();
+    }
+    // add HTTPs to URL
+    let url = addHTTPtoURL(urlin);
     urlBoxElem.value = url;
     // search for URLs title
-    sendCmd('main','sitelookup',url).then((out) => {
-      // remove newline characters
-      out = out.replace(/(\r\n|\n|\r)/gm, ""); 
-      if (out == null || out == "") {
+    sendCmd('main','sitelookup',url).then((data) => {
+      if (data === null || data === "" || data === "\n") {
+        // URL lookup failed actions
         nameBoxElem.value = "Not Found";
+        setTimeout(function() {
+          if (urlBoxElem && nameBoxElem) {
+            nameBoxElem.value = null;
+            urlBoxElem.value = null;
+          }
+        }, 2000);
       } else { 
-        nameBoxElem.value = out;
+        // remove invalid characters, write to name box
+        nameBoxElem.value = data.replace(/(\r\n|\n|\r)/gm, "");
       }
     });
   }

@@ -815,7 +815,7 @@ async function drawBookmarkPrompt(add,url,name,elem){
   editFavLookupBtn.classList.add("editFav__button");
   editFavLookupBtn.classList.add("button");
   editFavLookupBtn.classList.add("fa-solid");
-  editFavLookupBtn.classList.add("fa-link");
+  editFavLookupBtn.classList.add("fa-search");
   editFavLookupBtn.type = "button";
   // save button
   let editFavSaveBtn = document.createElement("button");

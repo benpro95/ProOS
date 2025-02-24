@@ -935,11 +935,11 @@ function addHTTPtoURL(linkin) {
   if (linkin === "" || linkin === null) {
     linkout = "";
   } else {  
-    if (!(linkin.toLowerCase().startsWith('http://', 0) || 
-          linkin.toLowerCase().startsWith('https://', 0))) {
-      linkout = "https://" + linkin;
-    } else {
+    if (linkin.toLowerCase().startsWith('http://', 0) || 
+        linkin.toLowerCase().startsWith('https://', 0)) {
       linkout = linkin;
+    } else {
+      linkout = "https://" + linkin;
     }
   }
   return linkout;

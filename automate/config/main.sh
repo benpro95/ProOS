@@ -328,7 +328,9 @@ sitelookup)
 ## Lookup Website Title
 if [ "$SEC_ARG" != "" ]; then
   LINKTITLE=$(curl -s -X GET "$SEC_ARG" | xmllint -html -xpath "//head/title/text()" - 2>/dev/null)
-  echo "$LINKTITLE"
+  if [[ "$LINKTITLE" != "" ]] && [[ "$LINKTITLE" != "\n" ]]; then
+    echo "$LINKTITLE"
+  fi
 fi
 ;;
 

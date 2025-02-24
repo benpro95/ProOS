@@ -874,70 +874,56 @@ async function drawBookmarkPrompt(add,url,name,elem){
         editFavPrompt.removeEventListener('click', handleButtonClicks);
         hideDropdowns();
       }
+      // lookup URL action
       if (e.target === editFavLookupBtn) {
         lookupURL();
       }
-      // common save / delete actions
-      if (e.target === editFavDeleteBtn || e.target === editFavSaveBtn) {
-        // save button only actions
-        if (e.target === editFavSaveBtn) {
-          // do not allow empty URL or name
-          var stopsave = false;
-          if (editFavName.value == null || editFavName.value == "") {
-            editFavName.placeholder = "Name cannot be empty";
-            stopsave = true;
-          }
-          if (editFavURL.value == null || editFavURL.value == "") {
-            editFavURL.placeholder = "URL cannot be empty";
-            stopsave = true;
-          }
-          if (stopsave === true){
-            return;
-          } 
+      // save button action
+      if (e.target === editFavSaveBtn) {
+        // do not allow empty URL or name
+        var stopsave = false;
+        if (editFavName.value == null || editFavName.value == "") {
+          editFavName.placeholder = "Name cannot be empty";
+          stopsave = true;
         }
-        // remove buttons
-        editFavPrompt.removeChild(editFavUpBtn); 
-        editFavPrompt.removeChild(editFavDownBtn); 
-        editFavPrompt.removeChild(editFavDeleteBtn); 
-        editFavPrompt.removeChild(editFavSaveBtn);
-        editFavPrompt.removeChild(editFavLookupBtn); 
-        // cancel -> close button
-        editFavCancelBtn.classList.remove("fa-solid");
-        editFavCancelBtn.classList.remove("fa-ban");
-        editFavCancelBtn.innerHTML = "Close"; 
-        // set text read-only
-        editFavName.readOnly = true;
-        editFavURL.readOnly = true;
-        // delete action
-        if (e.target === editFavDeleteBtn) {
-          editFavName.style.textDecoration = 'line-through';
-          editFavURL.style.textDecoration = 'line-through';
-          // remove element from menu
-          elem.remove();
-          editFavText.innerHTML = "Bookmark Deleted"; 
+        if (editFavURL.value == null || editFavURL.value == "") {
+          editFavURL.placeholder = "URL cannot be empty";
+          stopsave = true;
         }
-        // save action
-        if (e.target === editFavSaveBtn) {
-          // update changed values
-          if (elem) { 
-            // save name to menu object
-            let _boxname = editFavName.value.replaceAll("|", "-");
-            // name length limiter
-            let maxNameLength = 42;
-            if (_boxname.length >= maxNameLength) {
-              elem.innerText = _boxname.substring(0,maxNameLength) + "...";
-            } else {
-              elem.innerText = _boxname;
-            }
-            // save URL to menu object
-            let _boxurl = addHTTPtoURL(editFavURL.value.replaceAll("|", "-"));
-            elem['url'] = _boxurl;
-            editFavURL.value = _boxurl;
-            editFavText.innerHTML = "Changes Saved"; 
+        if (stopsave === true){
+          return;
+        }
+        // update changed values
+        if (elem) { 
+          // save name to menu object
+          let _boxname = editFavName.value.replaceAll("|", "-");
+          // name length limiter
+          let maxNameLength = 42;
+          if (_boxname.length >= maxNameLength) {
+            elem.innerText = _boxname.substring(0,maxNameLength) + "...";
+          } else {
+            elem.innerText = _boxname;
           }
+          // save URL to menu object
+          let _boxurl = addHTTPtoURL(editFavURL.value.replaceAll("|", "-"));
+          elem['url'] = _boxurl;
+          editFavURL.value = _boxurl;
+          editFavText.innerHTML = "Changes Saved"; 
         }
         // save to file
         saveBookmarks();
+        // close dropdown
+        editFavPrompt.removeEventListener('click', handleButtonClicks);
+        closeBookmarkPrompt();
+      }
+      // delete button action
+      if (e.target === editFavDeleteBtn) {
+        elem.remove();
+        // save to file
+        saveBookmarks();
+        // close dropdown
+        editFavPrompt.removeEventListener('click', handleButtonClicks);
+        closeBookmarkPrompt();
       }    
     });
   });   
@@ -975,7 +961,7 @@ async function lookupURL() {
     urlBoxElem.value = url;
     // search for URLs title
     sendCmd('main','sitelookup',url).then((data) => {
-      if (data === null || data === "" || data === "\n") {
+      if (data === null || data === "") {
         // URL lookup failed actions
         nameBoxElem.value = "Not Found";
         setTimeout(function() {

@@ -311,14 +311,14 @@ mount -o remount,ro /boot/firmware
 exit
 ;;
 
-wepmode)
+openapd)
 mount -o remount,rw /boot/firmware
-if [ -e /boot/firmware/wep.mode ]; then
-  echo 'Disabling WEP WiFi encryption mode...'
-  rm -f /boot/firmware/wep.mode 
+if [ -e /boot/firmware/apd-open.mode ]; then
+  echo 'Switching to WPA access point mode...'
+  rm -f /boot/firmware/apd-open.mode
 else
-  echo 'Enabling WEP WiFi encryption mode...'
-  touch /boot/firmware/wep.mode 
+  echo 'Switching to open access point mode...'
+  touch /boot/firmware/apd-open.mode
 fi
 mount -o remount,ro /boot/firmware
 exit

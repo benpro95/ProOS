@@ -24,8 +24,7 @@ echo "Starting $MODNAME configuration..."
 mount -o remount,rw /boot/firmware
 cp -fv $BIN/modconf/config.txt /boot/firmware/
 cp -fv $BIN/modconf/apd.conf /boot/firmware/
-echo 'Disabling Wi-Fi on startup...'
-touch /boot/firmware/disable.wifi
+touch /boot/firmware/apd-open.mode
 mount -o remount,ro /boot/firmware
 
 ## ALSA Configuration

@@ -12,13 +12,11 @@ if [ -e /sys/class/net/wlan0 ] ; then
   nmcli con down RPiHotspot
   nmcli con delete RPiHotspot
   nmcli radio wifi off
-  rfkill unblock wifi 
+  rfkill unblock wifi
   ## Turn on Wi-Fi
   nmcli radio wifi on
   ## Disable WiFi Power Management
   iw dev wlan0 set power_save off
-  ## Default Firewall Rule
-  iptables -t mangle -I POSTROUTING 1 -o wlan0 -p udp --dport 123 -j TOS --set-tos 0x00
   ## Turn off hotspot LED if exists
   /opt/rpi/main apdled-off || :
 fi
@@ -69,24 +67,25 @@ if [ -e /sys/class/net/wlan0 ] ; then
     APD_SSID=`cat /etc/hostname`
     APD_PWD="raspberry"
   fi
-  if [ -e /boot/firmware/wep.mode ]; then
-    ## WEP Encryption (insecure)
-    # * key must be 10 hex characters
-    # ** in Mac OS 9 add '0x' to the beginning of the key
-    nmcli device wifi hotspot ifname wlan0 con-name RPiHotspot ssid "$APD_SSID"
-    nmcli con modify RPiHotspot 802-11-wireless-security.auth-alg open
-    nmcli con modify RPiHotspot 802-11-wireless-security.key-mgmt none
-    nmcli con modify RPiHotspot 802-11-wireless-security.wep-key-type key
-    nmcli con modify RPiHotspot 802-11-wireless-security.wep-key0 "$APD_PWD"
-    nmcli con modify RPiHotspot 802-11-wireless-security.wep-key1 "$APD_PWD"
+  ## Hostspot Configuration
+  nmcli con add type wifi \
+    ifname wlan0 con-name RPiHotspot \
+    autoconnect no wifi.mode ap \
+    wifi.ssid "$APD_SSID" \
+    ipv4.method shared \
+    ipv6.method disabled
+  nmcli con modify RPiHotspot ipv4.addresses "192.168.42.1/24"
+  nmcli con modify RPiHotspot ipv4.dns "10.177.1.1"
+  if [ -e /boot/firmware/apd-open.mode ]; then
+    echo "Access point encryption disabled!"
   else
-    ## WPA Encryption (default)
-    nmcli device wifi hotspot ifname wlan0 con-name RPiHotspot ssid "$APD_SSID" password "$APD_PWD"
-    nmcli con modify RPiHotspot 802-11-wireless-security.key-mgmt wpa-psk
-    nmcli con modify RPiHotspot 802-11-wireless-security.pairwise ccmp
-    nmcli con modify RPiHotspot 802-11-wireless-security.proto wpa
-  fi  
-  nmcli con modify RPiHotspot autoconnect no
+    ## WPA1 Encryption Mode
+    nmcli con modify RPiHotspot wifi-sec.key-mgmt wpa-psk
+    nmcli con modify RPiHotspot wifi-sec.pairwise ccmp
+    nmcli con modify RPiHotspot wifi-sec.proto wpa
+    nmcli con modify RPiHotspot wifi-sec.psk "$APD_PWD"
+    nmcli con modify RPiHotspot wifi-sec.pmf 1
+  fi
   nmcli con down RPiHotspot
   nmcli con up RPiHotspot
 else

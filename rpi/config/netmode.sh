@@ -4,7 +4,12 @@
 
 STOP_NET() {
 ## Clear Firewall Tables
-iptables -F
+iptables -F        
+iptables -X        
+iptables -t nat -F        
+iptables -t nat -X
+## Allow port forwarding
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE  
 if [ -e /sys/class/net/wlan0 ] ; then
   ## Delete Existing Connections
   nmcli con down RPiWiFi
@@ -27,7 +32,7 @@ CLIENT_MODE(){
 ## Stop Networking
 STOP_NET
 if [ -e /boot/firmware/disable.wifi ]; then
-  echo "Wi-Fi Disabled"
+  echo "Wi-Fi Client Mode Disabled."
 else
   if [ -e /sys/class/net/wlan0 ] ; then
     ## Read Wi-Fi Configuration
@@ -74,12 +79,19 @@ if [ -e /sys/class/net/wlan0 ] ; then
     wifi.ssid "$APD_SSID" \
     ipv4.method shared \
     ipv6.method disabled
-  nmcli con modify RPiHotspot ipv4.addresses "192.168.42.1/24"
-  nmcli con modify RPiHotspot ipv4.dns "10.177.1.1"
+  ## Set Network IP Range
+  nmcli con modify RPiHotspot ipv4.addresses "192.168.10.1/24"
   if [ -e /boot/firmware/apd-open.mode ]; then
     echo "Access point encryption disabled!"
+    ## Reject all incoming access point traffic
+    iptables -I FORWARD -i wlan0 -o eth0 -j REJECT
+    ## Load allowed MAC addresses file 
+    iptables -I FORWARD -i wlan0 -o eth0 -m mac --mac-source "4C:79:75:BD:B3:E4" -j ACCEPT
+    iptables -I FORWARD -i wlan0 -o eth0 -m mac --mac-source "00:30:65:28:F1:47" -j ACCEPT
+    iptables -I FORWARD -i wlan0 -o eth0 -m mac --mac-source "00:0E:35:DC:C8:33" -j ACCEPT
+    #iptables -L -v
   else
-    ## WPA1 Encryption Mode
+    ## WPA1 Encryption (Default)
     nmcli con modify RPiHotspot wifi-sec.key-mgmt wpa-psk
     nmcli con modify RPiHotspot wifi-sec.pairwise ccmp
     nmcli con modify RPiHotspot wifi-sec.proto wpa

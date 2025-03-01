@@ -69,10 +69,23 @@ if [ -e /sys/class/net/wlan0 ] ; then
     APD_SSID=`cat /etc/hostname`
     APD_PWD="raspberry"
   fi
-  nmcli device wifi hotspot ifname wlan0 con-name RPiHotspot ssid "$APD_SSID" password "$APD_PWD"
-  nmcli con modify RPiHotspot 802-11-wireless-security.key-mgmt wpa-psk
-  nmcli con modify RPiHotspot 802-11-wireless-security.pairwise ccmp
-  nmcli con modify RPiHotspot 802-11-wireless-security.proto wpa
+  if [ -e /boot/firmware/wep.mode ]; then
+    ## WEP Encryption (insecure)
+    # * key must be 10 hex characters
+    # ** in Mac OS 9 add '0x' to the beginning of the key
+    nmcli device wifi hotspot ifname wlan0 con-name RPiHotspot ssid "$APD_SSID"
+    nmcli con modify RPiHotspot 802-11-wireless-security.auth-alg open
+    nmcli con modify RPiHotspot 802-11-wireless-security.key-mgmt none
+    nmcli con modify RPiHotspot 802-11-wireless-security.wep-key-type key
+    nmcli con modify RPiHotspot 802-11-wireless-security.wep-key0 "$APD_PWD"
+    nmcli con modify RPiHotspot 802-11-wireless-security.wep-key1 "$APD_PWD"
+  else
+    ## WPA Encryption (default)
+    nmcli device wifi hotspot ifname wlan0 con-name RPiHotspot ssid "$APD_SSID" password "$APD_PWD"
+    nmcli con modify RPiHotspot 802-11-wireless-security.key-mgmt wpa-psk
+    nmcli con modify RPiHotspot 802-11-wireless-security.pairwise ccmp
+    nmcli con modify RPiHotspot 802-11-wireless-security.proto wpa
+  fi  
   nmcli con modify RPiHotspot autoconnect no
   nmcli con down RPiHotspot
   nmcli con up RPiHotspot

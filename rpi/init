@@ -311,6 +311,19 @@ mount -o remount,ro /boot/firmware
 exit
 ;;
 
+wepmode)
+mount -o remount,rw /boot/firmware
+if [ -e /boot/firmware/wep.mode ]; then
+  echo 'Disabling WEP WiFi encryption mode...'
+  rm -f /boot/firmware/wep.mode 
+else
+  echo 'Enabling WEP WiFi encryption mode...'
+  touch /boot/firmware/wep.mode 
+fi
+mount -o remount,ro /boot/firmware
+exit
+;;
+
 netdetect)
 echo "switching to hotspot if network down."
 echo "log is written to '/tmp/netstat.txt'"

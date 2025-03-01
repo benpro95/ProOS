@@ -13,16 +13,16 @@ CPUTYPE=$(tr -d '\0' < /sys/firmware/devicetree/base/model)
 
 ## Pre-installation checks
 if [ ! -e /opt/rpi/init ]; then
-echo "Core components missing."
-exit
+  echo "Core components missing."
+  exit
 else
-echo "Core components integrity verified."
+  echo "Core components integrity verified."
 fi
 if [ ! -e /boot/config.txt ]; then
-echo "Not running on a Pi !!"
-exit
+  echo "Not running on a Pi !!"
+  exit
 else
-echo "Raspberry Pi detected."
+  echo "Raspberry Pi detected."
 fi
 OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
 if [ "${OSVER}" = "bookworm" ]; then
@@ -71,7 +71,6 @@ raspi-config nonint do_configure_keyboard us
 adduser pi
 chown -R pi:pi /home/pi
 chsh -s /bin/bash pi
-
 
 ## Update Sources
 apt-get -y update --allow-releaseinfo-change
@@ -138,8 +137,8 @@ apt-get install -y --no-upgrade --ignore-missing net-tools python3 \
  python3-rpi.gpio python3-ipython python3-pyaudio python3-numpy
 
 ## Light Web Server
-apt-get install -y --no-upgrade --ignore-missing lighttpd php-common php-cgi \
- php php-mysql perl perl-modules
+apt-get install -y --no-upgrade --ignore-missing lighttpd \
+  php-common php-cgi php php-mysql perl perl-modules
 chown www-data:www-data /var/www
 chmod 775 /var/www
 usermod -a -G www-data pi
@@ -444,7 +443,7 @@ mkdir -p /etc/systemd/system/bluealsa.service.d
 cp -f $BIN/bluealsa-override.conf /etc/systemd/system/bluealsa.service.d/override.conf
 chown root:root /etc/systemd/system/bluealsa.service.d/override.conf
 chmod 644 /etc/systemd/system/bluealsa.service.d/override.conf
-# Bluetooth Udev Script
+# Bluetooth UDEV Script
 cp -f $BIN/bluetooth-udev /usr/local/bin/bluetooth-udev
 chown root:root /usr/local/bin/bluetooth-udev
 chmod 755 /usr/local/bin/bluetooth-udev

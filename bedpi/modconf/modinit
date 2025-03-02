@@ -36,16 +36,20 @@ cp -f $BIN/modconf/asound.conf /etc/
 chmod 644 /etc/asound.conf
 chown root:root /etc/asound.conf
 
-## SAMBA Users 
-useradd media --password='' --shell=/bin/false
-groupadd shared
-usermod -a -G shared media
-#smbpasswd -a media
+## SMB / AppleTalk password
+SHRUSER="media"
+SHRPASS="ben1995"
 
-## SAMBA Configuration 
-cp -f $BIN/modconf/smb.conf /etc/samba/
-chmod 644 /etc/samba/smb.conf
-chown root:root /etc/samba/smb.conf
+## Shared User Configuration
+useradd "$SHRUSER" --password='' --shell=/bin/false
+passwd ${SHRUSER} << EOD
+${SHRPASS}
+${SHRPASS}
+EOD
+smbpasswd -a -s ${SHRUSER} << EOD
+${SHRPASS}
+${SHRPASS}
+EOD
 
 ## AutoFS Configuration
 cp -f $BIN/modconf/auto.master /etc/
@@ -59,10 +63,19 @@ chmod 400 /etc/auto.creds
 chown root:root /etc/auto.creds
 mkdir -p /mnt/smb
 
+## SAMBA Configuration 
+cp -f $BIN/modconf/smb.conf /etc/samba/
+chmod 644 /etc/samba/smb.conf
+chown root:root /etc/samba/smb.conf
+
+## AppleTalk Configuration
+cp -f $BIN/modconf/afp.conf /etc/netatalk/
+chmod 644 /etc/netatalk/afp.conf 
+chown root:root /etc/netatalk/afp.conf
+
 ## Arduino Configuration
-#/opt/rpi/arduino-cli core install arduino:avr
-#/opt/rpi/arduino-cli lib install Encoder@1.4.4
-#/opt/rpi/main update-fw
+/opt/rpi/arduino-cli core install arduino:avr
+/opt/rpi/arduino-cli lib install Encoder@1.4.4
 
 ## Link Main Script
 ln -sf /opt/rpi/main /usr/bin/main

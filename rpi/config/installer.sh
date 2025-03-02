@@ -75,27 +75,13 @@ chsh -s /bin/bash pi
 ## Update Sources
 apt-get -y update --allow-releaseinfo-change
 
-## Remove Packages
-apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp udhcpd usbmuxd usbmount pmount
-apt-get remove --purge -y cups cups-client cups-common cups-core-drivers cups-daemon \
-  cups-filters cups-filters-core-drivers cups-ipp-utils cups-ppdc cups-server-common dhdpcd
-apt-get remove --purge -y exim4 exim4-base exim4-config exim4-daemon-light udisks2 \
-  tigervnc-common tigervnc-standalone-server iptables-persistent bridge-utils vlc ntfs-3g \
-  lxlock xscreensaver xscreensaver-data gvfs gvfs-backends vnc4server libudisks2-0 \
-  wolfram-engine libssl-doc libatasmart4 libavahi-glib1 mpd mpc rng-tools rng-tools-debian
-apt-get remove --purge -y openjdk-17-jre-headless firefox pocketsphinx-en-us piwiz \
-  plymouth plymouth-label plymouth-themes dhcpcd dhcpcd-base dnsmasq
-dpkg -l | grep unattended-upgrades
-dpkg -r unattended-upgrades
-rm -rf /etc/cron.*
-
 ## Essential Packages
 apt-get install -y --no-upgrade --ignore-missing locales console-setup \
  aptitude libnss-mdns usbutils zsync v4l-utils libpq5 htop lsb-release \
  avahi-daemon avahi-discover avahi-utils hostapd dnsmasq-base unzip wget bc \
  uuid-runtime mpg321 mpv mplayer espeak tightvncserver iptables libnss3-tools jq \
  rsync screen parallel sudo sed nano curl insserv wireless-regdb wireless-tools \
- iw wpasupplicant dirmngr autofs triggerhappy apt-utils build-essential \
+ iw wpasupplicant dirmngr autofs triggerhappy apt-utils build-essential netatalk \
  git autoconf make libtool binutils i2c-tools cmake yasm libmariadb3 \
  texi2html socat nmap autoconf automake pkg-config cifs-utils neofetch\
  keyboard-configuration ncftp inxi gnucobol4 cryptsetup cryptsetup-bin
@@ -198,6 +184,19 @@ echo "Run command 'logread' to check system logs"
 dpkg --purge rsyslog
 rm -f /var/log/messages
 rm -f /var/log/syslog
+
+## Remove Packages
+apt-get remove --purge -y cron anacron logrotate fake-hwclock \
+  ntp udhcpd usbmuxd usbmount pmount cups cups-client cups-common cups-core-drivers cups-daemon \
+  cups-filters cups-filters-core-drivers cups-ipp-utils cups-ppdc cups-server-common upower \
+  exim4 exim4-base exim4-config exim4-daemon-light udisks2 tracker-extract tracker-miner-fs \
+  tigervnc-common tigervnc-standalone-server iptables-persistent bridge-utils vlc ntfs-3g \
+  lxlock xscreensaver xscreensaver-data gvfs gvfs-backends vnc4server libudisks2-0 dnsmasq \
+  wolfram-engine libssl-doc libatasmart4 libavahi-glib1 mpd mpc rng-tools rng-tools-debian \
+  openjdk-17-jre-headless firefox pocketsphinx-en-us piwiz plymouth plymouth-label plymouth-themes 
+dpkg -l | grep unattended-upgrades
+dpkg -r unattended-upgrades
+rm -rf /etc/cron.*
 
 ## Delete custom services
 rm -fr /etc/systemd/system/rpi-*
@@ -561,7 +560,7 @@ if [ ! -e /etc/rpi-conf.done ]; then
   systemctl disable serial-getty@ttyS0.service serial-getty@ttyAMA0.service  
   systemctl disable sysstat-summary.timer man-db.service man-db.timer
   systemctl disable hciuart bluetooth bthelper@hci0 bluealsa
-  systemctl disable usbplug nmbd smbd samba-ad-dc autofs 
+  systemctl disable usbplug nmbd smbd samba-ad-dc autofs netatalk
   systemctl disable glamor-test rp1-test rpi-netdetect
   echo "Initial setup (phase II) complete."
   touch /etc/rpi-conf.done
@@ -625,6 +624,14 @@ chown -R pi:pi /var/log/Xorg.0.log /var/log/Xorg.0.log.old /home/pi/.xsession-er
 ## File Permissions
 chmod -R 755 /opt/rpi
 chown -R root:root /opt/rpi
+
+## Remove First Boot Wizard
+userdel -f -r rpi-first-boot-wizard
+rm -f /etc/sudoers.d/010_wiz-nopasswd
+rm -f /etc/xdg/autostart/tracker-miner-fs-3.desktop
+rm -f /etc/ssh/sshd_config.d/rename_user.conf
+rm -f /etc/xdg/autostart/piwiz.desktop
+rm -f /var/lib/userconf-pi/autologin
 
 ## Remove Installer Files
 rm -rf /opt/rpi/config

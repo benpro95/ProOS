@@ -147,26 +147,37 @@ exit
 ;;
 
 apd-on)
-BLINKLED
-## Enable Hotspot Mode
-nohup /etc/netmode.sh apd >/dev/null 2>&1 &
-## SMB share server
-systemctl start smbd
-systemctl start nmbd
-# restart SMB client
-systemctl restart autofs
+CACHE_PATH="/mnt/smb/Downloads/.legacy-cache"
+if [ -e "${CACHE_PATH}" ]; then
+  BLINKLED
+  ## cache folders
+  mkdir -p "$CACHE_PATH/afp-db"
+  mkdir -p "$CACHE_PATH/smb-wtmp"
+  mkdir -p "$CACHE_PATH/smb-cache"
+  ## enable access point mode
+  nohup /etc/netmode.sh apd >/dev/null 2>&1 &
+  ## enable SMB share server
+  systemctl restart smbd
+  systemctl restart nmbd
+  ## enable AppleTalk server
+  systemctl restart avahi-daemon
+  systemctl restart netatalk
+else
+  echo "${CACHE_PATH} not found, exiting."
+fi
 exit
 ;;
 
 apd-off)
 BLINKLED
-## Disable Hotspot Mode
+## disable access point mode
 nohup /etc/netmode.sh client >/dev/null 2>&1 &
 ## disable SMB share server
 systemctl stop smbd
 systemctl stop nmbd
-# restart SMB client
-systemctl restart autofs
+## disable AppleTalk server
+systemctl stop netatalk
+systemctl stop avahi-daemon
 exit
 ;;
 

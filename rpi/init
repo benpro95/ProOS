@@ -311,19 +311,6 @@ mount -o remount,ro /boot/firmware
 exit
 ;;
 
-openapd)
-mount -o remount,rw /boot/firmware
-if [ -e /boot/firmware/apd-open.mode ]; then
-  echo 'Switching to WPA access point mode...'
-  rm -f /boot/firmware/apd-open.mode
-else
-  echo 'Switching to open access point mode...'
-  touch /boot/firmware/apd-open.mode
-fi
-mount -o remount,ro /boot/firmware
-exit
-;;
-
 netdetect)
 echo "switching to hotspot if network down."
 echo "log is written to '/tmp/netstat.txt'"

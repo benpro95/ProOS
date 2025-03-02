@@ -81,15 +81,23 @@ if [ -e /sys/class/net/wlan0 ] ; then
     ipv6.method disabled
   ## Set Network IP Range
   nmcli con modify RPiHotspot ipv4.addresses "192.168.10.1/24"
-  if [ -e /boot/firmware/apd-open.mode ]; then
-    echo "Access point encryption disabled!"
+  if [ -e /opt/rpi/openapd.mac ]; then
     ## Reject all incoming access point traffic
-    iptables -I FORWARD -i wlan0 -o eth0 -j REJECT
-    ## Load allowed MAC addresses file 
-    iptables -I FORWARD -i wlan0 -o eth0 -m mac --mac-source "4C:79:75:BD:B3:E4" -j ACCEPT
-    iptables -I FORWARD -i wlan0 -o eth0 -m mac --mac-source "00:30:65:28:F1:47" -j ACCEPT
-    iptables -I FORWARD -i wlan0 -o eth0 -m mac --mac-source "00:0E:35:DC:C8:33" -j ACCEPT
-    #iptables -L -v
+    iptables -I FORWARD -i wlan0 -j REJECT
+    iptables -I INPUT -i wlan0 -j REJECT
+    ## Load allowed MAC addresses file
+    readarray MAC_ARRAY < /opt/rpi/openapd.mac
+    for ELM in ${MAC_ARRAY[@]}; do
+      LINE=( ${ELM//|/ } )
+      HOST_DN="${LINE[0]}"
+      MAC_ADR="${LINE[1]}"
+      if [ MAC_ADR != "" ] ; then
+        echo "allowing $HOST_DN access"
+        iptables -I FORWARD -i wlan0 -m mac --mac-source "$MAC_ADR" -j ACCEPT
+        iptables -I INPUT -i wlan0 -m mac --mac-source "$MAC_ADR" -j ACCEPT
+      fi
+    done
+    iptables -L -v
   else
     ## WPA1 Encryption (Default)
     nmcli con modify RPiHotspot wifi-sec.key-mgmt wpa-psk

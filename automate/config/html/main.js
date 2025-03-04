@@ -1017,13 +1017,11 @@ function closeBookmarkPrompt() {
   }); 
   // un-highlight selected item
   for (var idx = 0; idx < fileData.length; idx++) {
-    if (idx !== 0) { // skip menu ID
-      const _menuid = "menu-" + idx.toString();
-      const elem = document.getElementById(_menuid);
-      if (elem) {
-        if(elem.classList.contains('dd-selected')) {
-          elem.classList.remove("dd-selected");
-        }
+    const _menuid = "menu-" + idx.toString();
+    const elem = document.getElementById(_menuid);
+    if (elem) {
+      if(elem.classList.contains('dd-selected')) {
+        elem.classList.remove("dd-selected");
       }
     }
   }
@@ -1047,55 +1045,35 @@ function showDynMenu(_menu) {
   }
 }
 
-// build menu
 function readMenuData(menu) {
   // build URL / append data
   const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+menu+"&action=read";
-  // read file action
-  fetch(url, {
-      method: 'GET'
-    })
-    .then(res => {
-      return res.json()
-    })
-    .then((response) => {
-      // clear global data
-      while (fileData.length) { fileData.pop(); }
-      // load JSON to global data
-      fileData[0] = menu;
-      for(var i in response) {
-        let _line = response[i].toString();
-        // ignore empty lines
-        if (_line) {
-          if (_line !== "") {
-            fileData.push(_line);
-          }
-        }
-      }
-      // action after loading
-      fileLoadAction(menu);
-    })
-}
-
-function fileLoadAction(_menu) {
-  // LED options menu
-  let _id = null;
-  // loop through menu items
-  for (var idx = 0; idx < fileData.length; idx++) {
-    let line = fileData[idx].toString();
-    if (idx == 0) { // store first line (ID)
-      _id = line;
-    } else { // verify data matches
-      if (_id == _menu) {
+  menuDataGET(url).then((data) => { // wait for response
+    // clear global data
+    while (fileData.length) { fileData.pop(); }
+    for (var idx in data) {
+      let line = data[idx].toString();
+      if (line != "") {
+        fileData.push(line);
         const item = line.split("|");
         const _col0 = item[0];
         const _col1 = item[1];
         const _col2 = item[2].trim();
         // 0=Host, 1=Type, 2=Name, Menu Name, Item Index
-        drawMenu(_col0,_col1,_col2,_menu,idx);
+        drawMenu(_col0,_col1,_col2,menu,idx);
       }
-    }
-  }  
+    } // store menu name at end of array
+    fileData.push(menu);
+  });
+}
+
+function menuDataGET(url) {
+  return fetch(url, {
+    method: "GET"
+  }).then(response => response.json().then(obj => obj).catch(err => {
+    console.log("readMenuData: " + err)
+  }
+));
 }
 
 // draws each menu item
@@ -1185,19 +1163,23 @@ function removeDynMenus() {
       boxChanged();
     }
     // remove dynamic menu elements (II)
-    for (var idx = 0; idx < fileData.length; idx++) {
-      if (idx !== 0) { // skip menu ID
-        const _menuid = "menu-" + idx.toString();
-        const menuRemove = document.getElementById(_menuid);
-        if (menuRemove != null) {
-          menuRemove.remove();
-        }
+    for (var idx = 0; idx < (fileData.length - 1); idx++) {
+      const _menuid = "menu-" + idx.toString();
+      const menuRemove = document.getElementById(_menuid);
+      if (menuRemove != null) {
+        menuRemove.remove();
       }
     }
     if (dynChkboxChanged == 1) {
       // write checkbox changes to file (III)
-      const id = fileData[0];
-      updateMenuData(id);
+      let end = fileData.length - 1;
+      console.log(end);
+      let menuid = fileData[end];
+      console.log(menuid);
+      // save to API
+      savePOST(menuid,fileData);
+      // clear global data
+      while (fileData.length) { fileData.pop(); }  
       dynChkboxChanged = 0;
     }  
     dynMenuActive = 0;
@@ -1206,48 +1188,28 @@ function removeDynMenus() {
 
 function boxChanged() {
   // loop through checkbox's state
-  let id = null;
-  for (var i = 0; i < fileData.length; i++) {
-    let line = fileData[i].toString();
-    if (i == 0) { // store menu ID
-      id = line;
-    } else {  
+  for (var i = 0; i < (fileData.length - 1); i++) {
+    if (fileData[i] =! null) {
+      let line = fileData[i].toString();
       // split up into array (host,state,name)
-      const linearr = line.split("|");
-      if (linearr) {
-        // only write box state on 0/1 state items
-        if (linearr[1] == '0' || linearr[1] == '1') {
-          // read elements checkbox then write state
-          const box = "chkbox-" + linearr[2].toString();
-          var boxelm = document.getElementById(box);
-          if (boxelm.checked === true) {
-            linearr[1] = '1';
-          } else {
-            linearr[1] = '0';
-          }
+      let linearr = line.split("|");
+      // only write box state on 0/1 state items
+      if (linearr[1] == '0' || linearr[1] == '1') {
+        // read elements checkbox then write state
+        const box = "chkbox-" + linearr[2].toString();
+        var boxelm = document.getElementById(box);
+        if (boxelm.checked === true) {
+          linearr[1] = '1';
+        } else {
+          linearr[1] = '0';
         }
-        // build new data
-        let _outstr = linearr.join('|')
-        // replace existing data
-        fileData[i] = _outstr;
       }
+      // build new data
+      let _outstr = linearr.join('|')
+      // replace existing data
+      fileData[i] = _outstr;
     }
   }
-}
-
-// API call POST (update menu file)
-function updateMenuData(file) {
-  let id = "";
-  // store ID object
-  id = fileData[0];
-  // remove first ID object
-  fileData.shift();
-  // verify correct menu is in array
-  if (id === file) {
-    savePOST(file,fileData);
-  }
-  // clear global data
-  while (fileData.length) { fileData.pop(); }      
 }
 
 //// End Dynamic Menus ////

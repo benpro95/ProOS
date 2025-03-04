@@ -1172,10 +1172,9 @@ function removeDynMenus() {
     }
     if (dynChkboxChanged == 1) {
       // write checkbox changes to file (III)
-      let end = fileData.length - 1;
-      console.log(end);
-      let menuid = fileData[end];
-      console.log(menuid);
+      let menuid = fileData[fileData.length - 1];
+      // remove menu item element
+      fileData.pop();
       // save to API
       savePOST(menuid,fileData);
       // clear global data
@@ -1189,23 +1188,22 @@ function removeDynMenus() {
 function boxChanged() {
   // loop through checkbox's state
   for (var i = 0; i < (fileData.length - 1); i++) {
-    if (fileData[i] =! null) {
-      let line = fileData[i].toString();
-      // split up into array (host,state,name)
-      let linearr = line.split("|");
-      // only write box state on 0/1 state items
-      if (linearr[1] == '0' || linearr[1] == '1') {
-        // read elements checkbox then write state
-        const box = "chkbox-" + linearr[2].toString();
-        var boxelm = document.getElementById(box);
-        if (boxelm.checked === true) {
-          linearr[1] = '1';
-        } else {
-          linearr[1] = '0';
-        }
+    let line = fileData[i].toString();
+    // split up into array (host,state,name)
+    const linearr = line.split("|");
+    // only write box state on 0/1 state items
+    if (linearr[1] == '0' || linearr[1] == '1') {
+      // read elements checkbox then write state
+      const box = "chkbox-" + linearr[2].toString();
+      var boxelm = document.getElementById(box);
+      if (boxelm.checked === true) {
+        linearr[1] = '1';
+      } else {
+        linearr[1] = '0';
       }
       // build new data
-      let _outstr = linearr.join('|')
+      let _outstr = linearr.join('|');
+      console.log(_outstr);
       // replace existing data
       fileData[i] = _outstr;
     }

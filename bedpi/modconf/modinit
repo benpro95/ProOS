@@ -37,16 +37,26 @@ chmod 644 /etc/asound.conf
 chown root:root /etc/asound.conf
 
 ## SMB / AppleTalk password
-SHRUSER="media"
+SHRUSER1="ben"
+SHRUSER2="media"
 SHRPASS="ben1995"
 
 ## Shared User Configuration
-useradd "$SHRUSER" --password='' --shell=/bin/false
-passwd ${SHRUSER} << EOD
+useradd "$SHRUSER1" --password='' --shell=/bin/false
+passwd ${SHRUSER1} << EOD
 ${SHRPASS}
 ${SHRPASS}
 EOD
-smbpasswd -a -s ${SHRUSER} << EOD
+smbpasswd -a -s ${SHRUSER1} << EOD
+${SHRPASS}
+${SHRPASS}
+EOD
+useradd "$SHRUSER2" --password='' --shell=/bin/false
+passwd ${SHRUSER2} << EOD
+${SHRPASS}
+${SHRPASS}
+EOD
+smbpasswd -a -s ${SHRUSER2} << EOD
 ${SHRPASS}
 ${SHRPASS}
 EOD

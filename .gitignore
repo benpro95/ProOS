@@ -10,6 +10,8 @@ retropi/retropie-setup
 automate/config/html/img/wifi.png
 automate/config/html/wifi.js
 xana
+*auto.creds*
+*openapd.mac*
 *authorized_keys*
 *Thumbs.db*
 *.pem*

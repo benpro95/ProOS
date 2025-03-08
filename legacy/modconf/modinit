@@ -42,6 +42,7 @@ SHRUSER2="media"
 SHRPASS="ben1995"
 
 ## Shared User Configuration
+groupadd -g 1015 shared
 useradd "$SHRUSER1" --password='' --shell=/bin/false
 passwd ${SHRUSER1} << EOD
 ${SHRPASS}
@@ -51,6 +52,7 @@ smbpasswd -a -s ${SHRUSER1} << EOD
 ${SHRPASS}
 ${SHRPASS}
 EOD
+usermod -a -G shared ${SHRUSER1}  
 useradd "$SHRUSER2" --password='' --shell=/bin/false
 passwd ${SHRUSER2} << EOD
 ${SHRPASS}
@@ -60,6 +62,7 @@ smbpasswd -a -s ${SHRUSER2} << EOD
 ${SHRPASS}
 ${SHRPASS}
 EOD
+usermod -a -G shared ${SHRUSER2}  
 
 ## AutoFS Configuration
 cp -f $BIN/modconf/auto.master /etc/

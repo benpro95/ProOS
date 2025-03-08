@@ -147,7 +147,7 @@ exit
 ;;
 
 apd-on)
-CACHE_PATH="/mnt/smb/Downloads/.legacy-cache"
+CACHE_PATH="/mnt/smb/Downloads/.legacy"
 if [ -e "${CACHE_PATH}" ]; then
   BLINKLED
   ## cache folders

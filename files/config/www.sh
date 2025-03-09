@@ -73,9 +73,10 @@ for _POOL in "${ZFSPOOLS[@]}"; do
         else
           echo "syncing 'Data' share to $POOL drive..."
           rsync $CHECKSUM -aP \
-          --exclude="Software/**.adi" --exclude="Games/" \
+          --exclude="Games/" --exclude="Software/**HD.img" \
           --exclude="Software/**VM.7z" --exclude="Software/**VM.zip" \
-          --exclude="Software/**HD.zip" --exclude="Software/**HD.7z" \
+          --exclude="Software/**HD.7z" --exclude="Software/**HD.zip" \
+          --exclude="Software/**.adi" --exclude="Software/**.vmdk" \
           /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
         fi
         #### Regions Share ####

@@ -66,12 +66,14 @@ if [ -e "$FILE" ]; then
           ## trigger update process
           UPDATE_STATES
           ## write changes to new file
-          echo "${HOST}|${STATE}|${NAME}|${ACTION}" >&3
+          NEWLINE = "${HOST}|${STATE}|${NAME}|${ACTION}" 
+          echo "$NEWLINE" >&3
         fi        
         ROWCOUNT=$((ROWCOUNT + 1))  
       done
     done <<< "$LINE"
   done < "$FILE"
+  cat "$FILE"
   ## replace existing file
   rm -rf "$FILE"
   mv -f "${FILE}.new" "$FILE"

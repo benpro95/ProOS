@@ -70,8 +70,6 @@ function loadPage() {
     ctlsMenu(ctlMode);
     // server home page
     classDisplay('server-grid','block');
-    // update system status
-    sendCmd('main','status','')
   } else { // pi's
     if (sysModel === 'Pi') {
       classDisplay('pi-grid','block');
@@ -1045,6 +1043,15 @@ function showDynMenu(_menu) {
   }
 }
 
+function menuDataGET(url) {
+  return fetch(url, {
+      method: "GET"
+    }).then(response => response.json().then(obj => obj).catch(err => {
+      console.log("readMenuData: " + err)
+    }
+  ));
+}
+
 function readMenuData(menu) {
   // build URL / append data
   const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+menu+"&action=read";
@@ -1055,30 +1062,21 @@ function readMenuData(menu) {
       let line = data[idx].toString();
       if (line != "") {
         fileData.push(line);
-        const item = line.split("|");
-        const _col0 = item[0];
-        const _col1 = item[1];
-        const _col2 = item[2].trim();
-        // 0=Host, 1=Type, 2=Name, Menu Name, Item Index
-        drawMenu(_col0,_col1,_col2,menu,idx);
+        drawMenu(line,menu,idx);
       }
     } // store menu name at end of array
     fileData.push(menu);
   });
 }
 
-function menuDataGET(url) {
-  return fetch(url, {
-    method: "GET"
-  }).then(response => response.json().then(obj => obj).catch(err => {
-    console.log("readMenuData: " + err)
-  }
-));
-}
-
 // draws each menu item
-function drawMenu(col0,col1,col2,menu,id) {
+function drawMenu(line,menu,id) {
   const navElement = document.getElementById(menu);
+  const linearr = line.split("|");
+  // 0=Host, 1=Type, 2=Name
+  const col0 = linearr[0];
+  const col1 = linearr[1];
+  const col2 = linearr[2].trim();
   // draw menu item
   navElement.appendChild(createListItem(col0,col1,col2,id));
   dynMenuActive = 1;

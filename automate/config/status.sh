@@ -12,7 +12,7 @@ OUT=""
 
 UPDATE_STATES () {
   if [ "$ACTION" == "ping" ]; then
-    if ping -c 1 -W 1 "$HOST"; then
+    if ping -4 -i 0.2 -c 1 -W 0.2 "$HOST"; then
       echo "{$HOST} online"
       STATE="4"
     else
@@ -64,16 +64,16 @@ if [ -e "$FILE" ]; then
         if [ "$ROWCOUNT" == 3 ]; then
           ACTION="$FIELD"
           ## trigger update process
-          UPDATE_STATES
+          UPDATE_STATES > /dev/null 2>&1
           ## write changes to new file
-          NEWLINE = "${HOST}|${STATE}|${NAME}|${ACTION}" 
+          NEWLINE="${HOST}|${STATE}|${NAME}|${ACTION}" 
           echo "$NEWLINE" >&3
+          echo "$NEWLINE"
         fi        
         ROWCOUNT=$((ROWCOUNT + 1))  
       done
     done <<< "$LINE"
   done < "$FILE"
-  cat "$FILE"
   ## replace existing file
   rm -rf "$FILE"
   mv -f "${FILE}.new" "$FILE"

@@ -369,7 +369,7 @@ exit
 ;;
 
 status)
-/opt/system/status > /dev/null 2> /dev/null
+/opt/system/status
 exit
 ;;
 

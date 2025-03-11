@@ -531,8 +531,7 @@ function passwordPrompt(){
   pwprompt.appendChild(pwbtndiv); // append button center div to prompt div
   //append the password-prompt so it gets visible
   document.body.appendChild(pwprompt); 
-  pwinput.focus(); //focus on the password-input-field so user does not need to click 
-  /*now comes the magic: create and return a promise*/
+  pwinput.focus(); //focus on the password-input-field so user does not need to click
   return new Promise(function(resolve, reject) {
       pwprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
         if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
@@ -1031,55 +1030,75 @@ function closeBookmarkPrompt() {
 
 //// Dynamic Menus ////
 
+function showStatusMenu() {
+  const _menu = 'statsmenu';
+  let _elem = document.getElementById(_menu);
+  if (_elem.style.display === 'block') {
+    _elem.style.display = 'none';
+  } else {
+    hideDropdowns();
+    sendCmd('main','status','').then((data) => {
+      let _rowarr = data.split('\n');
+      drawMenu(_rowarr,_menu);
+    });
+    _elem.style.display = 'block';
+  }    
+}
+
 function showDynMenu(_menu) {
   let _elem = document.getElementById(_menu);
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
   } else {
     hideDropdowns();
+     _elem.style.display = 'block';   
     // read menu data from file
     readMenuData(_menu);
-    _elem.style.display = 'block';
   }
-}
-
-function menuDataGET(url) {
-  return fetch(url, {
-      method: "GET"
-    }).then(response => response.json().then(obj => obj).catch(err => {
-      console.log("readMenuData: " + err)
-    }
-  ));
 }
 
 function readMenuData(menu) {
   // build URL / append data
   const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+menu+"&action=read";
   menuDataGET(url).then((data) => { // wait for response
-    // clear global data
-    while (fileData.length) { fileData.pop(); }
-    for (var idx in data) {
-      let line = data[idx].toString();
-      if (line != "") {
-        fileData.push(line);
-        drawMenu(line,menu,idx);
+    drawMenu(data,menu);
+  });  
+  function menuDataGET(url) {
+    return fetch(url, {
+        method: "GET"
+      }).then(response => response.json().then(obj => obj).catch(err => {
+        console.log("readMenuData: " + err)
       }
-    } // store menu name at end of array
-    fileData.push(menu);
-  });
+    ));
+  }
 }
 
 // draws each menu item
-function drawMenu(line,menu,id) {
-  const navElement = document.getElementById(menu);
-  const linearr = line.split("|");
-  // 0=Host, 1=Type, 2=Name
-  const col0 = linearr[0];
-  const col1 = linearr[1];
-  const col2 = linearr[2].trim();
-  // draw menu item
-  navElement.appendChild(createListItem(col0,col1,col2,id));
-  dynMenuActive = 1;
+function drawMenu(data,menu) {
+  if (!(data === null || data === "")) {
+    while (fileData.length) {
+      fileData.pop(); // erase register
+    } 
+    for (var idx in data) {
+      let line = data[idx].toString();
+      if (line != "") {
+        fileData.push(line); // write to register
+        const navElement = document.getElementById(menu);
+        const linearr = line.split("|");
+        // 0=Host, 1=Type, 2=Name
+        const col0 = linearr[0];
+        const col1 = linearr[1];
+        const col2 = linearr[2].trim();
+        // draw menu item
+        navElement.appendChild(createListItem(col0,col1,col2,idx));
+        dynMenuActive = 1;
+      }
+    }
+    // store menu name at end of register
+    fileData.push(menu);
+  } else {
+    console.log("drawMenu: no data");
+  }
 }
 
 function createListItem(_col0,_col1,_col2,_id) {

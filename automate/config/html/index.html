@@ -165,8 +165,10 @@
         <span class="button__text"><i class="fa-solid fa-envelope-open-text"></i> Message</span>
       </button>
       <div class="dropdown">
-        <button type="button" class="button" onclick="showStatusMenu();">
-            <span class="button__text"><i class="fa-solid fa-info"></i> Status</span>
+        <button type="button" class="button" onclick="showStatusMenu()">
+            <span class="button__text"><i class="fa-solid fa-info"></i></span>
+            <span class="button__text" id="stat-text"> Status </span>
+            <span class="button__text" id="stat-spinner"></span>
         </button>
         <div class="dd-content ind-button" id="statsmenu"></div>
       </div>

@@ -21,7 +21,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "5.4.2";
+let siteVersion = "5.5.1";
 
 //////////////////////
 
@@ -49,6 +49,7 @@ function handleClicks(event) {
         event.target.classList.contains('fa-regular') || // font awesome icon clicks
         event.target.classList.contains('fa-brands') ||
         event.target.classList.contains('fa-solid') ||
+        event.target.classList.contains('am-spinner') ||
         event.target.classList.contains('dropbtn') || // dropdown button click
         event.target.classList.contains('chkbox'))) { // checkbox click
     hideDropdowns(); // hide all dropdown menus
@@ -1036,13 +1037,21 @@ function showStatusMenu() {
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
   } else {
-    hideDropdowns();
-    sendCmd('main','status','').then((data) => {
+    // spinner animation
+    let btnText = document.getElementById('stat-text');
+    let btnSpinner = document.getElementById('stat-spinner');
+    btnText.style.display = 'none';
+    btnSpinner.style.display = 'inline-block';
+    hideDropdowns(); // hide all dropdown menus
+    _elem.style.display = 'block';
+    sendCmd('main','status','').then((data) => { // GET request
+      // draw menu items
       let _rowarr = data.split('\n');
       drawMenu(_rowarr,_menu);
+      btnText.style.display = 'inline-block';
+      btnSpinner.style.display = 'none';
     });
-    _elem.style.display = 'block';
-  }    
+  }   
 }
 
 function showDynMenu(_menu) {

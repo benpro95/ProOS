@@ -148,9 +148,6 @@ chown -R www-data:www-data /var/www/html
 
 ## USB File Service
 apt-get install -y --no-upgrade --ignore-missing samba samba-common-bin samba-libs 
-chmod 777 /media
-chmod 777 /media/usb*
-chown root:root /media/usb*
 
 ## Audio Support
 apt-get install -y --no-upgrade --ignore-missing alsa-base alsa-utils mpg321 lame sox \
@@ -193,7 +190,8 @@ apt-get remove --purge -y cron anacron logrotate fake-hwclock \
   tigervnc-common tigervnc-standalone-server iptables-persistent bridge-utils vlc ntfs-3g \
   lxlock xscreensaver xscreensaver-data gvfs gvfs-backends vnc4server libudisks2-0 dnsmasq \
   wolfram-engine libssl-doc libatasmart4 libavahi-glib1 mpd mpc rng-tools rng-tools-debian \
-  openjdk-17-jre-headless firefox pocketsphinx-en-us piwiz plymouth plymouth-label plymouth-themes 
+  openjdk-17-jre-headless firefox pocketsphinx-en-us piwiz plymouth pulseaudio pipewire \
+  plymouth-label plymouth-themes
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
 rm -rf /etc/cron.*

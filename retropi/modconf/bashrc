@@ -143,8 +143,8 @@ fi
 CONSOLE_TTY="$(ls -l `tty` | awk '{print $10}')"
 if [ "$CONSOLE_TTY" = "/dev/tty1" ]; then
     echo "Starting Emulationstation..."
-    sleep 5.25
-    /usr/bin/emulationstation
+    #sleep 5.25
+    #/usr/bin/emulationstation
 fi
 
 

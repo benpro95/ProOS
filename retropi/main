@@ -5,17 +5,15 @@
 case "$1" in
 
 boot)
-## Mount Flash Drive
-mkdir -p /home/pi/RetroPie
-mount /dev/sda1 /home/pi/RetroPie
 ## Turn on Swap File
+mkdir -p /home/pi
+mount /dev/sda1 /home/pi
 sleep 2.5
-swapon /home/pi/RetroPie/swapfile
+swapon /home/pi/swapfile
 exit
 ;;
 
 usbplug)
-## This script is ran after USB drive attached and when its removed.
 echo "no function assigned"
 exit
 ;;

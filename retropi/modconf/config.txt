@@ -15,7 +15,7 @@ max_usb_current=1
 
 #-------KMS Video Driver-------
 dtoverlay=vc4-kms-v3d
-max_framebuffers=1
+max_framebuffers=2
 gpu_mem=192
 
 #-------Force HDMI to 480i---------

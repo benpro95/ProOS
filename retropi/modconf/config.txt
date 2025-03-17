@@ -13,9 +13,8 @@ disable_fw_kms_setup=1
 #-------Max USB Current-------
 max_usb_current=1
 
-#-------KMS Video Driver-------
-dtoverlay=vc4-kms-v3d
-max_framebuffers=2
+#-------GPU OpenGLES Support-------
+dtoverlay=vc4-fkms-v3d
 gpu_mem=192
 
 #-------Force HDMI to 480i---------

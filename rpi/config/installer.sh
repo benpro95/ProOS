@@ -182,16 +182,16 @@ dpkg --purge rsyslog
 rm -f /var/log/messages
 rm -f /var/log/syslog
 
-## Remove Packages
+## Remove Packages 
 apt-get remove --purge -y cron anacron logrotate fake-hwclock \
   ntp udhcpd usbmuxd usbmount pmount cups cups-client cups-common cups-core-drivers cups-daemon \
   cups-filters cups-filters-core-drivers cups-ipp-utils cups-ppdc cups-server-common upower \
   exim4 exim4-base exim4-config exim4-daemon-light udisks2 tracker-extract tracker-miner-fs \
-  tigervnc-common tigervnc-standalone-server iptables-persistent bridge-utils vlc ntfs-3g \
+  tigervnc-common tigervnc-standalone-server iptables-persistent bridge-utils ntfs-3g \
   lxlock xscreensaver xscreensaver-data gvfs gvfs-backends vnc4server libudisks2-0 dnsmasq \
   wolfram-engine libssl-doc libatasmart4 libavahi-glib1 mpd mpc rng-tools rng-tools-debian \
-  openjdk-17-jre-headless firefox pocketsphinx-en-us piwiz plymouth pulseaudio pipewire \
-  plymouth-label plymouth-themes
+  openjdk-17-jre-headless firefox pocketsphinx-en-us piwiz plymouth plymouth-label plymouth-themes \
+  pulseaudio pulseaudio-utils pavucontrol pipewire pipewire-bin 
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
 rm -rf /etc/cron.*
@@ -231,7 +231,7 @@ fi
 cp -fv /boot/firmware/config.txt /boot/firmware/config.bak
 cp -f $BIN/config.txt /boot/firmware/
 
-## Text mode
+## Boot to Console
 systemctl set-default multi-user.target
 
 ## WiFi Configuration
@@ -550,7 +550,7 @@ if [ ! -e /etc/rpi-conf.done ]; then
    NetworkManager-wait-online NetworkManager-dispatcher   
   ## Disabled on startup
   systemctl disable rpi-ztermcom.service
-  systemctl disable hostapd keyboard-setup sysstat lighttpd wifiswitch motion userconfig
+  systemctl disable hostapd keyboard-setup sysstat lighttpd wifiswitch motion
   systemctl disable apt-daily.service apt-daily.timer apt-daily-upgrade.service \
    apt-daily-upgrade.timer sysstat-collect.timer 
   systemctl disable triggerhappy.service triggerhappy.socket \
@@ -582,7 +582,7 @@ systemctl start man-db.service
 ## Compile Z-Term COM Service
 /usr/bin/gcc /opt/rpi/ztermcom.c -o /usr/bin/ztermcom
 chmod +x /usr/bin/ztermcom 
-chown root:root /usr/bin/ztermcom 
+chown root:root /usr/bin/ztermcom
 
 ## Re-create Null Device
 rm -f /dev/null
@@ -623,9 +623,18 @@ chown -R pi:pi /var/log/Xorg.0.log /var/log/Xorg.0.log.old /home/pi/.xsession-er
 chmod -R 755 /opt/rpi
 chown -R root:root /opt/rpi
 
+## Autologin as pi
+cp -f $BIN/autologin.conf /etc/systemd/system/getty@tty1.service.d/
+chmod 644 /etc/systemd/system/getty@tty1.service.d/autologin.conf
+chown root:root /etc/systemd/system/getty@tty1.service.d/autologin.conf
+
 ## Remove First Boot Wizard
+systemctl stop userconfig
+systemctl disable userconfig
+systemctl mask userconfig
 userdel -f -r rpi-first-boot-wizard
 rm -f /etc/sudoers.d/010_wiz-nopasswd
+rm -f /etc/systemd/system/getty@tty1.service.d/raspi-config-override.conf
 rm -f /etc/xdg/autostart/tracker-miner-fs-3.desktop
 rm -f /etc/ssh/sshd_config.d/rename_user.conf
 rm -f /etc/xdg/autostart/piwiz.desktop

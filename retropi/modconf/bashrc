@@ -142,9 +142,25 @@ fi
 ## Run on console only
 CONSOLE_TTY="$(ls -l `tty` | awk '{print $10}')"
 if [ "$CONSOLE_TTY" = "/dev/tty1" ]; then
-    echo "Starting Emulationstation..."
-    sleep 5.25
-    /usr/bin/emulationstation
+    WAITIME=10
+    STARTMODE=""
+    for (( i="$WAITIME"; i>0; i--)); do
+        printf "\rStarting Emulationstation in $i seconds.  Hit any key to start X11."
+        read -s -n 1 -t 1 key
+        if [ $? -eq 0 ]
+        then
+            STARTMODE="x11"
+            break
+        fi
+    done
+    if [ "$STARTMODE" == "x11" ]; then
+      echo "Starting X11..."
+      sleep 3.25
+      startx
+    else
+      /usr/bin/emulationstation
+    fi
+
 fi
 
 

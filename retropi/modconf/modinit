@@ -28,10 +28,10 @@ cp -fv $BIN/modconf/config.txt /boot/firmware/
 mount -o remount,ro /boot/firmware
 
 ## Larger Console Font
-#cp -f $BIN/modconf/console-setup /etc/default/
-#chmod 644 /etc/default/console-setup
-#chown root:root /etc/default/console-setup
-#service console-setup restart
+cp -f $BIN/modconf/console-setup /etc/default/
+chmod 644 /etc/default/console-setup
+chown root:root /etc/default/console-setup
+service console-setup restart
 
 ## Start Emulationstation on Boot
 cp -rv $BIN/modconf/bashrc /home/pi/.bashrc

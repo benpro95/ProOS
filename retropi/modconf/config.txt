@@ -15,7 +15,7 @@ max_usb_current=1
 
 #-------GPU OpenGLES Support-------
 dtoverlay=vc4-fkms-v3d
-gpu_mem=192
+gpu_mem=128
 
 #-------Force HDMI to 480i---------
 hdmi_ignore_edid=0xa5000080

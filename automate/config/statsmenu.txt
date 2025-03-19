@@ -2,6 +2,7 @@ wkst.home|3|Desktop|ping
 hifipi.home|3|Hi-Fi|ping
 xmit.home|3|Xmit|ping
 xana.home|3|Xana|ping
+retropi.home|3|RetroPi|ping
 aptcam.home|3|Aptcam|ping
 legacy.home|3|Bedroom|ping
 bedroom.home|3|Apple TV|ping

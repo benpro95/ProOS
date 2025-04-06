@@ -1,12 +1,12 @@
-wkst.home|3|Desktop|ping
-hifipi.home|3|Hi-Fi|ping
-xmit.home|3|Xmit|ping
-xana.home|3|Xana|ping
-retropi.home|3|RetroPi|ping
-aptcam.home|3|Aptcam|ping
-legacy.home|3|Bedroom|ping
-bedroom.home|3|Apple TV|ping
-unifi.home|3|UniFi AP|ping
-ledstrip.home|3|LEDstrip|ping
-ledwall.home|3|LEDwall|ping
-lcdpi.home|3|LCDPi|ping
+wkst.home|Desktop|ping
+hifipi.home|Hi-Fi|ping
+xmit.home|Xmit|ping
+xana.home|Xana|ping
+retropi.home|RetroPi|ping
+aptcam.home|Aptcam|ping
+legacy.home|Bedroom|ping
+bedroom.home|Apple TV|ping
+unifi.home|UniFi AP|ping
+ledstrip.home|LEDstrip|ping
+ledwall.home|LEDwall|ping
+lcdpi.home|LCDPi|ping

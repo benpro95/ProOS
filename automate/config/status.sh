@@ -2,7 +2,7 @@
 ############################################################
 ##### Device Status Updater by Ben Provenzano III v1.0 #####
 ############################################################
-FILE="/var/www/html/ram/statsmenu.txt"
+FILE="/opt/system/statsmenu.txt"
 LOCK="/var/www/html/ram/status.lock"
 HOST=""
 STATE=""
@@ -40,43 +40,32 @@ echo $$ > $LOCK
 if [ -e "$FILE" ]; then
   ## create lock file
   touch "$LOCK"
-  ## open new file
-  rm -rf "${FILE}.new"
-  touch "${FILE}.new"
-  exec 3<> "${FILE}.new"
-  ## read each line
-  while read -r LINE
-  do
+  ## read through each line
+  mapfile -t FILE_ARR < "$FILE"
+  for LINE in "${FILE_ARR[@]}"; do
     ROWCOUNT=0
     while IFS='|' read -ra ROW; do
-      ## read each row
+      ## read through each row
       for FIELD in "${ROW[@]}"; do
-        ## read each field
+        ## read through each field
+        STATE=""
         if [ "$ROWCOUNT" == 0 ]; then
           HOST="$FIELD"
-        fi        
-        if [ "$ROWCOUNT" == 1 ]; then
-          STATE="$FIELD"
         fi
-        if [ "$ROWCOUNT" == 2 ]; then
+        if [ "$ROWCOUNT" == 1 ]; then
           NAME="$FIELD"
         fi
-        if [ "$ROWCOUNT" == 3 ]; then
+        if [ "$ROWCOUNT" == 2 ]; then
           ACTION="$FIELD"
           ## trigger update process
           UPDATE_STATES > /dev/null 2>&1
-          ## write changes to new file
           NEWLINE="${HOST}|${STATE}|${NAME}|${ACTION}" 
-          echo "$NEWLINE" >&3
           echo "$NEWLINE"
         fi        
         ROWCOUNT=$((ROWCOUNT + 1))  
       done
     done <<< "$LINE"
-  done < "$FILE"
-  ## replace existing file
-  rm -rf "$FILE"
-  mv -f "${FILE}.new" "$FILE"
+  done
 fi
 
 exit

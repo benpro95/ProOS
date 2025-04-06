@@ -93,14 +93,11 @@ if [ ! -e /var/www/html/ram/mainmenu.txt ]; then
   chown www-data:www-data /var/www/html/ram/mainmenu.txt
 fi
 if [ -e /var/www/html/ram/mainmenu.txt ]; then
-  cp -v /opt/system/statsmenu.txt /var/www/html/ram/
-  chmod 777 /var/www/html/ram/statsmenu.txt
-  chown www-data:www-data /var/www/html/ram/statsmenu.txt
   cp -v /opt/system/thememenu.txt /var/www/html/ram/
   chmod 777 /var/www/html/ram/thememenu.txt
   chown www-data:www-data /var/www/html/ram/thememenu.txt
 fi
-chmod -R 755 /opt/system/*
+chmod -R 755 /opt/system
 chown -R root:root /opt/system
 ln -sf /opt/system/main /opt/system/xmit
 ln -sf /opt/system /opt/rpi

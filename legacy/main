@@ -30,7 +30,6 @@ case "$ARG1" in
 boot)
 ## Amplifier communication
 ln -sf /dev/$ARDUINO_PORT /dev/zterm-tty
-systemctl start rpi-ztermcom
 ## Bluetooth audio
 systemctl start hciuart
 systemctl start bluetooth
@@ -184,7 +183,6 @@ exit
 update-fw)
 BLINKLED
 ## Stop Serial Communication
-systemctl stop rpi-ztermcom
 rm -rfv /dev/zterm-tty
 ## Update Arduino over USB
 rm -rf /opt/rpi/amp-fw/build
@@ -195,7 +193,6 @@ mkdir -p /opt/rpi/amp-fw/build
   --fqbn arduino:avr:uno --input-dir /opt/rpi/amp-fw/build
 ## Start Serial Communication
 ln -sf /dev/$ARDUINO_PORT /dev/zterm-tty
-systemctl start rpi-ztermcom
 exit
 ;;
 

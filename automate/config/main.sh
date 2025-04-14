@@ -9,14 +9,13 @@
 RAMDISK="/var/www/html/ram"
 LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
-LCDPI_MSG=""
 ATV_CMD=""
 XMITCMD=""
 TARGET=""
 
 FILES_IP="10.177.1.4" ## Files IP
 XMIT_IP="10.177.1.12" ## Xmit IP
-BEDPI_IP="10.177.1.15" ## BedPi IP
+BRPI_IP="10.177.1.15" ## Bedroom Pi IP
 ATV_MAC="3E:08:87:30:B9:A8" ## Bedroom Apple TV MAC
 
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 3 --retry 1 --retry-delay 1 --no-keepalive"
@@ -33,13 +32,8 @@ CALLAPI(){
       /usr/bin/curl $CURLARGS --data "var=$SEC_ARG&arg=$XMITCMD&action=main" http://"$TARGET":80/exec.php > /dev/null 2>&1 &
     fi
   fi
-  ## Display Message API
-  if [[ "$LCDPI_MSG" != "" ]]; then
-    /opt/system/lcdpi "$LCDPI_MSG" > /dev/null 2>&1 &
-  fi
   TARGET=""
   XMITCMD=""
-  LCDPI_MSG=""
 }
 
 ## Control Apple TV
@@ -60,7 +54,6 @@ case "$XMITCMD" in
     sleep 1
     ## Power Off Preamp  
     XMITCMD="0|0|1270227167"
-    LCDPI_MSG="system power"
     CALLAPI   
     ;;
   "hifioff")
@@ -70,55 +63,45 @@ case "$XMITCMD" in
     sleep 1
     ## Power Off Preamp  
     XMITCMD="0|0|1261859214"
-    LCDPI_MSG="system off"
     CALLAPI
     ;;
   "hifion")
     XMITCMD="0|0|1261869414"
     CALLAPI
-    LCDPI_MSG="system on"   
-    CALLAPI
     ;;
   ## DAC
   "dac")
     XMITCMD="0|0|1261793423"
-    LCDPI_MSG="DAC in"
     CALLAPI
     ;;
   ## Aux
   "aux")
     XMITCMD="0|0|1261826063"
-    LCDPI_MSG="aux in"
     CALLAPI   
     ;;
   ## Phono
   "phono")
     XMITCMD="0|0|1261766903"
-    LCDPI_MSG="phono in"
     CALLAPI   
     ;;
   ## Airplay
   "airplay-preamp")
     XMITCMD="0|0|1261799543"
-    LCDPI_MSG="AirPlay in"
     CALLAPI   
     ;;   
   ## Volume Limit Mode
   "vlimit")
     XMITCMD="0|0|1261783223"
-    LCDPI_MSG="volume limiter"
     CALLAPI   
     ;;  
   ## Optical Mode
   "optical-preamp")
     XMITCMD="0|0|1261824023"
-    LCDPI_MSG="optical in"
     CALLAPI   
     ;;
   ## Key Toggle Hi-Pass Filter
   "togglehpf")
     XMITCMD="0|0|1261875534"
-    LCDPI_MSG="toggle HPF"
     CALLAPI   
     ;;
   ## Key Mute / Toggle
@@ -152,21 +135,18 @@ case "$XMITCMD" in
   ## Mute Key
   "submute")
     XMITCMD="0|0|551506095"
-    LCDPI_MSG="toggle subwoofer amp"
     CALLAPI   
     ;;
   ##
   ## (0) Key
   "subon")
     XMITCMD="0|0|551504055"
-    LCDPI_MSG="subwoofer on"
     CALLAPI   
     ;;
   ##
   ## (1) Key
   "suboff")
     XMITCMD="0|0|551520375"
-    LCDPI_MSG="subwoofer off"
     CALLAPI   
     ;;
   ##
@@ -209,12 +189,10 @@ case "$XMITCMD" in
   ## Vintage Macs
   "rfa1on")
     XMITCMD="1|0|734733"
-    LCDPI_MSG="macs on"
     CALLAPI   
     ;;
   "rfa1off")
     XMITCMD="1|0|734734"
-    LCDPI_MSG="macs off"
     CALLAPI   
     ;;
   ## Dresser Lamp
@@ -229,12 +207,10 @@ case "$XMITCMD" in
   ## RetroPi
   "rfa3on")
     XMITCMD="1|0|734735"
-    LCDPI_MSG="accessory on"
     CALLAPI   
     ;;
   "rfa3off")
     XMITCMD="1|0|734736"
-    LCDPI_MSG="accessory off"
     CALLAPI   
     ;;
   ##
@@ -337,33 +313,25 @@ fi
 stop)
 ## Pause Apple TV / Stop Sounds
 ATV_CMD="pause"; ATV_CTL
-TARGET="$BEDPI_IP"
+TARGET="$BRPI_IP"
 XMITCMD="stoprelax"
-LCDPI_MSG="stop sounds"
 CALLAPI
 ;;
 
 relax)
 ## Send Command
-TARGET="$BEDPI_IP"
+TARGET="$BRPI_IP"
 XMITCMD="relax"
-LCDPI_MSG="playing $SEC_ARG"
 CALLAPI
 ## Pause Apple TV
 ATV_CMD="pause"; ATV_CTL
 exit
 ;;
 
-bedpi)
-TARGET="$BEDPI_IP"
+br)
+## API Call to Bedroom Pi
+TARGET="$BRPI_IP"
 XMITCMD="$SEC_ARG"
-CALLAPI
-exit
-;;
-
-lcdpi_message)
-XMITCMD=""
-LCDPI_MSG="$SEC_ARG"
 CALLAPI
 exit
 ;;
@@ -419,7 +387,6 @@ then
   echo "wkst.home is online"
 else
   XMITCMD="rfb3" ; XMIT 
-  LCDPI_MSG="PC on"
   CALLAPI  
 fi
 exit
@@ -429,7 +396,6 @@ pcoff)
 if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
 then
   XMITCMD="rfb3" ; XMIT
-  LCDPI_MSG="PC off"
   CALLAPI  
 else
   echo "wkst.home is offline"
@@ -491,10 +457,6 @@ fi
 /opt/system/leds abstract
 ## HeartLED mode C:
 XMITCMD="htleds_c" ; XMIT
-sleep 0.75
-## LCDpi message
-LCDPI_MSG="all power on"
-CALLAPI
 exit
 ;;
 
@@ -516,10 +478,6 @@ XMITCMD="hifioff" ; XMIT
 /opt/system/leds stop
 ## HeartLED off
 XMITCMD="htleds_off" ; XMIT
-sleep 0.75
-## LCDpi message
-LCDPI_MSG="all power off"
-CALLAPI
 ## Pause Apple TV
 ATV_CMD="pause"; ATV_CTL
 exit
@@ -542,17 +500,15 @@ fi
 ## start / stop legacy services
 if [ "$SERVERARG" == "startlegacy" ]; then
   echo "Starting legacy services..." &>> $LOGFILE
-  TARGET="$BEDPI_IP"
+  TARGET="$BRPI_IP"
   XMITCMD="apd-on"
-  LCDPI_MSG="Legacy services started."
   CALLAPI
   exit
 fi
 if [ "$SERVERARG" == "stoplegacy" ]; then
   echo "Stopping legacy services..." &>> $LOGFILE
-  TARGET="$BEDPI_IP"
+  TARGET="$BRPI_IP"
   XMITCMD="apd-off"
-  LCDPI_MSG="Legacy services stopped."
   CALLAPI
   exit
 fi

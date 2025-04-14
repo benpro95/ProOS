@@ -1,3 +1,2 @@
 http://ledstrip.home:80|1|LEDstrip
 http://ledwall.home:80|1|LEDwall
-http://lcdpi.home:80|2|LCDpi

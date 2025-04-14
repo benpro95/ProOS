@@ -14,15 +14,15 @@ nohup python3 /opt/rpi/blinkled.py >/dev/null 2>&1 &
 }
 
 OPTA_MODE(){
-  echo "02002" > /dev/zterm
+  ztermcom "02002"
 }
 
 OPTB_MODE(){
-  echo "02001" > /dev/zterm
+  ztermcom "02001" 
 }
 
 COAX_MODE(){
-  echo "02003" > /dev/zterm
+  ztermcom "02003" 
 }
 
 case "$ARG1" in
@@ -104,43 +104,43 @@ exit
 ;;
 
 aux)
-echo "02004" > /dev/zterm
+ztermcom "02004"
 BLINKLED
 exit
 ;;
 
 volup)
-echo "03002" > /dev/zterm
+ztermcom "03002"
 BLINKLED
 exit
 ;;
 
 voldwn)
-echo "03003" > /dev/zterm
+ztermcom "03003"
 BLINKLED
 exit
 ;;
 
 volmute)
-echo "03001" > /dev/zterm
+ztermcom "03001" 
 BLINKLED
 exit
 ;;
 
 poweron)
-echo "01001" > /dev/zterm
+ztermcom "01001" 
 BLINKLED
 exit
 ;;
 
 poweroff)
-echo "01002" > /dev/zterm
+ztermcom "01002" 
 BLINKLED
 exit
 ;;
 
 toggletv)
-echo "01004" > /dev/zterm
+ztermcom "01004" 
 BLINKLED
 exit
 ;;

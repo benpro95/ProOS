@@ -21,7 +21,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "5.5.1";
+let siteVersion = "5.6.0";
 
 //////////////////////
 
@@ -78,9 +78,6 @@ function loadPage() {
     if (sysModel === 'LEDpi') {
       classDisplay('ledpi-grid','block');
     }
-    if (sysModel === 'LCDpi') {
-      classDisplay('lcdpi-grid','block');
-    }
   }
   // set title
   let currentTheme;
@@ -120,7 +117,6 @@ function showLEDsPage() {
 
 function hidePages() {
   classDisplay('pi-grid','none'); 
-  classDisplay('lcdpi-grid','none');
   classDisplay('server-grid','none');
   classDisplay('ledpi-grid','none');
   classDisplay('led-grid','none');
@@ -583,7 +579,7 @@ function sendVol(_cmd) {
     sendCmd('main',_cmd,''); // living room system 
   }
   if (ctlCommand === 1 ){
-    sendCmd('main','bedpi','vol'+_cmd); // bedroom system
+    sendCmd('main','br','vol'+_cmd); // bedroom system
   }
   if (ctlCommand === 2 ){
     sendCmd('main','sub'+_cmd,''); // living room subwoofers
@@ -1351,41 +1347,6 @@ function openSendWindow() {
   closeSendbox();
   document.getElementById("sendForm").style.display = "block";
 }
-
-function sendText() {
-  const data = document.getElementById("lcdTextBox").value;
-  const sendtext = "enter a message before sending.";
-  if (data.trim() === "" || data === sendtext) {
-    document.getElementById("lcdTextBox").value = sendtext;
-  } else {
-    if (sysModel === serverSite) {
-      // transmit from remote connection
-      sendCmd('main','lcdpi_message',data.replace(/ /g,"~"));
-    } else {
-      // transmit from local connection
-      savePOST('message',[data]);  
-    }
-    loadBar(0.25);
-    clearMsgBox();
-  }
-}
-
-function eraseText() {
-  clearMsgBox();
-  // erase screen
-  if (sysModel === serverSite) {
-    sendCmd('main','lcdpi_message','!erase@');
-  } else {
-    sendCmd('main','erase','');
-  }
-}
-
-function clearMsgBox() {
-  // clear text window
-  document.getElementById("lcdTextBox").value = "";
-  clearPendingCmd();
-}
-
 
 // loading bar animation 
 async function loadBar(_interval) {

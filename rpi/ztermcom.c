@@ -1,10 +1,9 @@
 /////////////////////////////////////////////////////////////////////////
 /// Z-Terminal Serial Communication v1.0
-/// for GNU/Linux kernel versions 5.0+  
-/// by Ben Provenzano III - 07/01/2023
+/// for GNU/Linux kernel versions 6.0+  
+/// by Ben Provenzano III - 07/01/2023 v5 - 04/13/2025 v6
 /////////////////////////////////////////////////////////////////////////
 
-// Libraries //
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -15,31 +14,15 @@
 #include <errno.h>
 #include <ctype.h>
 
-// max buffer length
 #define buffLen 32
 char *line = NULL;
-// serial device
 int serial_port;
 const char device[] = "/dev/zterm-tty"; 
-// max serial data chunk bytes
-const size_t maxCmdLength = 32;
-// line output data
-size_t lineSize = 0;
+const size_t maxCmdLength = 16;
 size_t writeLineSize = 0;
 char serCharBuf[buffLen];
-// flags
 size_t enableSend = 0;
-//////////////////
-
-// reset line array
-void clearLine() {
-  enableSend = 0;
-  writeLineSize = 0;
-  lineSize = 0;
-  free(line);
-  line = (char*) malloc(1 * sizeof(char));
-  line[0] = '\0';
-}
+size_t lineSize = 0;
 
 int serialRead() {
  // Read from the serial port in a loop
@@ -97,7 +80,6 @@ int serialRead() {
   }
 }
 
-
 int serialWrite() {
   int status = 0;
   // check if the serial port is available
@@ -133,17 +115,29 @@ int serialWrite() {
   return status;
 }
 
+// reset line array
+void clearLine() {
+  enableSend = 0;
+  writeLineSize = 0;
+  lineSize = 0;
+  free(line);
+  line = (char*) malloc(1 * sizeof(char));
+  line[0] = '\0';
+}
+
+// main entry point //
 int main(int argc, char *argv[]) {
 // parse first command line argument
   for (int i = 0; i < argc; i++) {
     if (argc != 2) {
+      printf("Z-Terminal Xmit v2.00\n");
       printf("Invalid # of arguments!\n");
       return 1; 
     }
   }
   char * argData = malloc(strlen(argv[1]) + 1);
   strcpy(argData, argv[1]);
-  size_t argLength = sizeof(argData);
+  size_t argLength = strlen(argData);
   // open the serial port
   serial_port = open(device, O_RDWR);
   if (serial_port < 0) {
@@ -159,22 +153,21 @@ int main(int argc, char *argv[]) {
   // set the baud rate 
   cfsetospeed(&tty, B9600);
   cfsetispeed(&tty, B9600);
-  // set other settings (8N1)
-  tty.c_cflag &= ~PARENB;  // Disable parity bit
-  tty.c_cflag &= ~CSTOPB;  // Set one stop bit
-  tty.c_cflag &= ~CSIZE;   // Clear data size bits
-  tty.c_cflag |= CS8;      // Set 8 data bits
-  tty.c_cflag &= ~CRTSCTS; // Disable hardware flow control
+  tty.c_cflag &= ~PARENB;  // disable parity bit
+  tty.c_cflag &= ~CSTOPB;  // set one stop bit
+  tty.c_cflag &= ~CSIZE;   // clear data size bits
+  tty.c_cflag |= CS8;      // set 8 data bits
+  tty.c_cflag &= ~CRTSCTS; // disable hardware flow control
+  tty.c_cflag &= ~HUPCL;   // disable DST & RST (prevent system reset)
   // apply the serial settings
   if (tcsetattr(serial_port, TCSANOW, &tty) != 0) {
     perror("Error applying serial port settings");
     return 1;
   }
-  // program status 
+  // program status
   int status = 0;
-  printf("Z-Terminal Xmit v1.11\n");
   // read command line argument
-  for (int i = 0; i < argLength; i++) {
+  for (int i = 0; i <= argLength; i++) {
     // detect control mode (1st)
     char charin = argData[i];
     if (charin != '\r' && charin != '\n') {
@@ -182,7 +175,6 @@ int main(int argc, char *argv[]) {
       line = realloc(line, (lineSize + 1));
       // write to line data array
       line[lineSize] = charin;
-      //printf("Read: %c\n", charin);
       // increment index
       lineSize++;
     }
@@ -205,4 +197,3 @@ int main(int argc, char *argv[]) {
   free(argData);
   return status;
 }
-

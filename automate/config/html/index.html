@@ -25,7 +25,7 @@
       <i class="fa-solid fa-list"></i>
     </a>
   </div>
-  <div class="lcdpi-grid ledpi-grid pi-grid">
+  <div class="ledpi-grid pi-grid">
     <a onclick="showMenu('pi-mainmenu')" class="mainmenu__anchor">
       <i class="fa-solid fa-list"></i>
     </a>
@@ -74,7 +74,7 @@
   </div>
 </div>
 
-<div class="ledpi-grid pi-grid lcdpi-grid">
+<div class="ledpi-grid pi-grid">
   <div class="main_dropdown">
     <div class="dd-content dd-menu" id="pi-mainmenu">
       <a onclick="GoToHomePage()"><i class="fa fa-home"></i>  Home</a>
@@ -161,8 +161,8 @@
       <!---->
       <p class="parstd"></p>
       <!---->
-      <button type="button" class="button" onclick="openSendWindow()">
-        <span class="button__text"><i class="fa-solid fa-envelope-open-text"></i> Message</span>
+      <button type="button" class="button" onclick="">
+        <span class="button__text"><i class="fa-solid fa-envelope-open-text"></i> N/A</span>
       </button>
       <div class="dropdown">
         <button type="button" class="button" onclick="showStatusMenu()">
@@ -235,7 +235,7 @@
         <!---->
         <p class="parstd"></p>
         <!---->
-        <button type="button" class="button" onclick="sendCmd('main','bedpi','toggletv')">
+        <button type="button" class="button" onclick="sendCmd('main','br','toggletv')">
           <span class="button__text"><i class="fa-solid fa-tv"></i> Monitor</span>
         </button>
         <div class="dropdown">
@@ -284,8 +284,8 @@
             <span class="button__text"><i class="fa-solid fa-music"></i> Audio</span>
           </button>  
           <div class="dd-content dd-button" id="braudio-menu">
-            <a onclick="sendCmd('main','bedpi','poweron')"><i class="fa-solid fa-toggle-on"></i> On</a>
-            <a onclick="sendCmd('main','bedpi','poweroff')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+            <a onclick="sendCmd('main','br','poweron')"><i class="fa-solid fa-toggle-on"></i> On</a>
+            <a onclick="sendCmd('main','br','poweroff')"><i class="fa-solid fa-toggle-off"></i> Off</a>
           </div>
         </div>
         <div class="dropdown">
@@ -293,10 +293,10 @@
             <span class="button__text"><i class="fa-solid fa-sitemap"></i> Input</span>
           </button>
           <div class="dd-content dd-button" id="brinput-menu">
-            <a onclick="sendCmd('main','bedpi','opt-a')"></i> Apple TV</a>
-            <a onclick="sendCmd('main','bedpi','opt-b')"></i> Optical B:</a>
-            <a onclick="sendCmd('main','bedpi','coaxial')"></i> Bluetooth</a>
-            <a onclick="sendCmd('main','bedpi','aux')"></i> Analog In</a>
+            <a onclick="sendCmd('main','br','opt-a')"></i> Apple TV</a>
+            <a onclick="sendCmd('main','br','opt-b')"></i> Optical B:</a>
+            <a onclick="sendCmd('main','br','coaxial')"></i> Bluetooth</a>
+            <a onclick="sendCmd('main','br','aux')"></i> Analog In</a>
           </div>
         </div>
         <!---->
@@ -817,82 +817,6 @@
 
 </div>
 
-
-<div class="lcdpi-grid">
-    
-  <div class="grid">
-
-    <div class="column-left">
-
-      <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('delaymenu')">
-          <span class="button__text"><i class="fa-solid fa-forward-fast"></i> Speed</span>
-        </button>  
-        <div class="dd-content dd-button" id="delaymenu">
-          <a onclick="sendCmd('main','delay','2000')">2000 ms</a>
-          <a onclick="sendCmd('main','delay','1000')">1000 ms</a>
-          <a onclick="sendCmd('main','delay','700')">700 ms</a>
-          <a onclick="sendCmd('main','delay','500')">500 ms</a>
-          <a onclick="sendCmd('main','delay','350')">350 ms</a>
-          <a onclick="sendCmd('main','delay','200')">200 ms</a>
-          <a onclick="sendCmd('main','delay','150')">150 ms</a>
-          <a onclick="sendCmd('main','delay','90')">90 ms</a>
-          <a onclick="sendCmd('main','delay','50')">50 ms</a>
-          <a onclick="sendCmd('main','delay','20')">20 ms</a>
-          <a onclick="sendCmd('main','delay','5')">5 ms</a>
-        </div>
-      </div>
-      <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('blmenu')">
-          <span class="button__text"><i class="fa-solid fa-lightbulb"></i> Backlight</span>
-        </button>  
-        <div class="dd-content dd-button" id="blmenu">
-          <a onclick="sendCmd('main','backlight','0')">Auto</a>
-          <a onclick="sendCmd('main','backlight','2')">High</a>
-          <a onclick="sendCmd('main','backlight','1')">Low</a>
-        </div>
-      </div>
-      <button type="button" class="button" onclick="sendCmd('main','weather','')">
-          <span class="button__text"><i class="fa-solid fa-temperature-three-quarters"></i> Weather</span>
-      </button>              
-
-    <p class="parstd"></p>  
-
-      <button type="button" class="button button__lgr" onclick="openSendWindow()">
-          <span class="button__text"><i class="fa-solid fa-envelope-open-text"></i> Message</span>
-      </button>
-      <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('archmenu')">
-          <span class="button__text"><i class="fa-solid fa-reply-all"></i> Replay</span>
-        </button>  
-        <div class="dd-content dd-button" id="archmenu">
-          <a onclick="sendCmd('main','msgarchive','1')"><i class="fa-regular fa-envelope"></i> Last</a>
-          <a onclick="sendCmd('main','msgarchive','2')"><i class="fa-regular fa-envelope"></i> -1</a>
-          <a onclick="sendCmd('main','msgarchive','3')"><i class="fa-regular fa-envelope"></i> -2</a>
-          <a onclick="sendCmd('main','msgarchive','4')"><i class="fa-regular fa-envelope"></i> -3</a>
-          <a onclick="sendCmd('main','msgarchive','5')"><i class="fa-regular fa-envelope"></i> -4</a>
-          <a onclick="sendCmd('main','msgarchive','6')"><i class="fa-regular fa-envelope"></i> -5</a>
-        </div>
-      </div>
-
-    <p class="parstd"></p>   
-
-      <button type="button" class="button" onclick="sendCmd('main','stop','')">
-          <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
-      </button>
-      <button type="button" class="button button__lgr" onclick="sendCmd('main','erase','')">
-          <span class="button__text"><i class="fa-solid fa-eraser"></i> Erase</span>
-      </button>
- 
-      <p style="padding-bottom: 200px;"></p>  
-
-    </div>  
-
-  </div>
-
-</div>
-
-
 <div>
     <p class="bottom"></p>  
 </div>
@@ -1050,7 +974,7 @@
       </div>  
     </div>   
   </div>  
-  <div class="lcdpi-grid ledpi-grid pi-grid">
+  <div class="ledpi-grid pi-grid">
     <div class="dropdown">
       <button type="button" class="button svropt_button" onclick="showMenu('piwifi-menu')">
         <span class="button__text"><i class="fa-solid fa-wifi"></i> WiFi</span>
@@ -1096,22 +1020,7 @@
     <button type="button" class="button button_right_txtwin" id="sendButton" onclick="serverSend()">
           <span class="button__textsmall"><i class="fa-solid fa-upload"></i></span>
     </button>
-  </form>
-</div>
-
-<div class="msg-popup popup" id="sendForm">
-  <form class="textBoxContainer">   
-    <textarea class="scroll-bar" id="lcdTextBox" placeholder="" required=""></textarea>  
-    <button type="button" class="button button_left_txtwin" onclick="closeSendbox()">
-          <span class="button__textsmall"></i> Close</span>
-    </button>   
-    <button type="button" class="button button_left_txtwin" onclick="eraseText()">
-          <span class="button__textsmall"></i> Erase</span>
-    </button> 
-    <button type="button" class="button button_right_txtwin" onclick="sendText()">
-          <span class="button__textsmall"></i> Send</span>
-    </button>
-  </form>
+  </form> 
 </div>
 
 <div id="camForm">

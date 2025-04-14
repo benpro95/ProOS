@@ -9,4 +9,3 @@ bedroom.home|Apple TV|ping
 unifi.home|UniFi AP|ping
 ledstrip.home|LEDstrip|ping
 ledwall.home|LEDwall|ping
-lcdpi.home|LCDPi|ping

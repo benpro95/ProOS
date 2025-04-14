@@ -310,6 +310,11 @@ if [ "$SEC_ARG" != "" ]; then
 fi
 ;;
 
+play)
+## Play Current on Apple TV
+ATV_CMD="play"; ATV_CTL
+;;
+
 stop)
 ## Pause Apple TV / Stop Sounds
 ATV_CMD="pause"; ATV_CTL

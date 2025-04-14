@@ -161,9 +161,15 @@
       <!---->
       <p class="parstd"></p>
       <!---->
-      <button type="button" class="button" onclick="">
-        <span class="button__text"><i class="fa-solid fa-envelope-open-text"></i> N/A</span>
-      </button>
+      <div class="dropdown">
+        <button type="button" class="button" onclick="showMenu('pcmenu')">
+          <span class="button__text"><i class="fa-solid fa-computer"></i> Desktop</span>
+        </button>  
+        <div class="dd-content dd-button" id="pcmenu">
+          <a onclick="sendCmd('main','pcon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
+          <a onclick="sendCmd('main','pcoff','')"><i class="fa-solid fa-moon"></i> Sleep</a>
+        </div>
+      </div>
       <div class="dropdown">
         <button type="button" class="button" onclick="showStatusMenu()">
             <span class="button__text"><i class="fa-solid fa-info"></i></span>
@@ -178,15 +184,9 @@
       <!---->
       <p class="parstd"></p>
       <!---->
-      <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('pcmenu')">
-          <span class="button__text"><i class="fa-solid fa-computer"></i> Desktop</span>
-        </button>  
-        <div class="dd-content dd-button" id="pcmenu">
-          <a onclick="sendCmd('main','pcon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-          <a onclick="sendCmd('main','pcoff','')"><i class="fa-solid fa-moon"></i> Sleep</a>
-        </div>
-      </div>
+      <button type="button" class="button" onclick="sendCmd('main','play','')">
+        <span class="button__text"><i class="fa-solid fa-play"></i> Play</span>
+      </button>
       <button type="button" class="button" onclick="sendCmd('main','stop','')">
         <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
       </button>
@@ -236,7 +236,7 @@
         <p class="parstd"></p>
         <!---->
         <button type="button" class="button" onclick="sendCmd('main','br','toggletv')">
-          <span class="button__text"><i class="fa-solid fa-tv"></i> Monitor</span>
+          <span class="button__text"><i class="fa-solid fa-tv"></i> TV</span>
         </button>
         <div class="dropdown">
           <button type="button" class="button button_ctrl" onclick="showMenu('br-menu')">

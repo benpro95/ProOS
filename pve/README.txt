@@ -207,6 +207,8 @@ ls -la
 (Select the drive name without -part* on the end)
 (Use that name for NEW_DISK)
 
+ata-WDC_WD40EFPX-68C6CN0_WD-WX72AC26FDJP
+
 (Format the NEW_DISK using the above command)
 
 (Replace the word GOOD_DISK in the next command with name found in 'zpool status')

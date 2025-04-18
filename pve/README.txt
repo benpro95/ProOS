@@ -198,8 +198,8 @@ zpool status
 proxmox-boot-tool refresh
 
 ####################################################################
-## Add another drive to an existing mirror pool or
-## convert a single drive pool to a mirrored pool
+## Add another drive to an existing mirror pool
+## (or) convert a single drive pool to a mirrored pool
 
 (Find disk name)
 cd /dev/disk/by-id/

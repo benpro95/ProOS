@@ -105,12 +105,12 @@ zfs set com.sun:auto-snapshot=false BKP_POOL
 zfs set com.sun:auto-snapshot=false BKP_POOL/extbkp
 
 (Create directories)
-mkdir -p /mnt/extbkps/BKP_VOL/Ben
+mkdir -p /mnt/extbkps/BKP_VOL/Data
 mkdir -p /mnt/extbkps/BKP_VOL/Media
 mkdir -p /mnt/extbkps/BKP_VOL/.Regions
 
 (Run these in files VM as root)
-chown -R server:server /mnt/extbkps/BKP_VOL/Ben
+chown -R server:server /mnt/extbkps/BKP_VOL/Data
 chown -R server:server /mnt/extbkps/BKP_VOL/Media
 chown -R server:server /mnt/extbkps/BKP_VOL/.Regions
 
@@ -206,8 +206,6 @@ cd /dev/disk/by-id/
 ls -la
 (Select the drive name without -part* on the end)
 (Use that name for NEW_DISK)
-
-ata-WDC_WD40EFPX-68C6CN0_WD-WX72AC26FDJP
 
 (Format the NEW_DISK using the above command)
 

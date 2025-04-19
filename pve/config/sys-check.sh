@@ -33,9 +33,10 @@ echo ""
 echo "** Drive Status**"
 readarray -t DRIVES_TBL < /usr/lib/drives.txt
 for DISK_DRIVE in "${DRIVES_TBL[@]}"; do
-  echo "==========================================================================="
+  echo "==== $DISK_DRIVE ===="
   /usr/sbin/hddtemp --unit=F $DISK_DRIVE | grep -oP "($DISK_DRIVE: )\K.*" 
   /usr/sbin/smartctl --attributes --log=selftest --log=error --log=ssd $DISK_DRIVE
+  echo ""
 done
 
 echo ""

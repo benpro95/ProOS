@@ -17,8 +17,8 @@
 #define buffLen 32
 char *line = NULL;
 int serial_port;
-const char device[] = "/dev/zterm-tty"; 
-const size_t maxCmdLength = 16;
+const char device[] = "/dev/zterm-tty"; // serial port alias
+const size_t maxCmdLength = 32;
 size_t writeLineSize = 0;
 char serCharBuf[buffLen];
 size_t enableSend = 0;
@@ -26,9 +26,9 @@ size_t lineSize = 0;
 
 int serialRead() {
  // Read from the serial port in a loop
- char target_char = '*';
+ char target_char = '|';
  bool _return = 0;
- printf("Waiting for acknowledge...\n");
+ printf("Waiting for response...\n");
  while(1) {
     // set serial port to non-blocking mode
     int _serflags = fcntl(serial_port, F_GETFL, 0);   
@@ -52,20 +52,20 @@ int serialRead() {
     // response size check
     if (num_bytes > 0) {
       size_t i;
-      bool ack_resp = false;
+      size_t ack_resp = 0;
       for (i = 0; i < num_bytes; i++) {
         // read response
         char _curchar = serCharBuf[i];
-        if (_curchar != '\n') {
-          printf("%c", _curchar);
+        if (_curchar != '\r' && _curchar != '\n' && _curchar != '\0') {
+          printf("%c", _curchar); // write to console
         }
         // check target character is received
-        if (serCharBuf[i] == target_char) {
-          ack_resp = true;
+        if (_curchar == target_char) {
+          ack_resp++;
         }
       }
-      if (ack_resp == true) {
-        printf("\nReceived response.\n\n\n");
+      if (ack_resp == 2) { // two pipes received
+        printf("\n|OK|\n");
         return 0;
       }
     } else {
@@ -130,12 +130,12 @@ int main(int argc, char *argv[]) {
 // parse first command line argument
   for (int i = 0; i < argc; i++) {
     if (argc != 2) {
-      printf("Z-Terminal Xmit v2.00\n");
+      printf("Z-Terminal Xmit v2.1\n");
       printf("Invalid # of arguments!\n");
       return 1; 
     }
   }
-  char * argData = malloc(strlen(argv[1]) + 1);
+  char* argData = malloc(strlen(argv[1]) + 1);
   strcpy(argData, argv[1]);
   size_t argLength = strlen(argData);
   // open the serial port
@@ -164,13 +164,20 @@ int main(int argc, char *argv[]) {
     perror("Error applying serial port settings");
     return 1;
   }
+  // serial initialization mode
+  if (argLength == 1) {
+    if (argData[0] == 'i') {
+      printf("Serial port initialized\n");
+      return 0;
+    }
+  }
   // program status
   int status = 0;
   // read command line argument
   for (int i = 0; i <= argLength; i++) {
     // detect control mode (1st)
     char charin = argData[i];
-    if (charin != '\r' && charin != '\n') {
+    if (charin != '\r' && charin != '\n' && charin != '\0') {
       // allocate memory
       line = realloc(line, (lineSize + 1));
       // write to line data array

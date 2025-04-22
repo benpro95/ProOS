@@ -29,7 +29,7 @@ case "$ARG1" in
 
 boot)
 ## Amplifier communication
-ln -sf /dev/$ARDUINO_PORT /dev/zterm-tty
+ln -sf /dev/$ARDUINO_PORT /dev/zterm-tty; ztermcom i
 ## Bluetooth audio
 systemctl start hciuart
 systemctl start bluetooth
@@ -142,6 +142,11 @@ exit
 toggletv)
 ztermcom "01004" 
 BLINKLED
+exit
+;;
+
+ampstate)
+ztermcom "01005"
 exit
 ;;
 

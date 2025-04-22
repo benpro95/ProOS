@@ -13,8 +13,9 @@
 // serial resources
 #define serialBaudRate 9600
 const uint8_t maxMessage = 32;
-char serialMessage[maxMessage];
-uint8_t serialMessageEnd = 0;
+uint8_t serialMessageInEnd = 0;
+char serialMessageIn[maxMessage];
+char serialMessageOut[maxMessage];
 bool newData = 0;
 
 // GPIO pins
@@ -132,6 +133,7 @@ void setup() {
   selectedInput = 2; // optical #2
   lastInput = selectedInput;
   // start serial ports
+  serialMessageOut[0] = '\0';
   Serial.begin(serialBaudRate);
   delay(800);
   digitalWrite(LED_BUILTIN, LOW);
@@ -342,6 +344,19 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
       delay(250);
       writeMCP(trigger2Pin, HIGH);
     }
+    // power status (01005)
+    if (_ctldata == 5) {
+      if (powerState == 1) {
+        serialMessageOut[0] = '1';
+      } else {
+        serialMessageOut[0] = '0';
+      }
+      serialMessageOut[1] = '\0'; 
+    }
+    // volume level (01006)
+    if (_ctldata == 6) {
+          channelVolume
+    }
     break;
   // input select
   case 2:
@@ -406,8 +421,8 @@ void processMessage(uint8_t messageStart) {
   const uint8_t cmdDataLen = 3; // data length (**999)
   char _cmdarr[cmdLength + 1];
   // extract control code from message
-  for(uint8_t _idx = messageStart; _idx < serialMessageEnd; _idx++) {
-    char _curchar = serialMessage[_idx];
+  for(uint8_t _idx = messageStart; _idx < serialMessageInEnd; _idx++) {
+    char _curchar = serialMessageIn[_idx];
     if (isDigit(_curchar) && _numcnt < cmdLength) {
       _cmdarr[_numcnt] = _curchar;
       _numcnt++;
@@ -443,13 +458,13 @@ void processMessage(uint8_t messageStart) {
 // decode serial message
 void decodeMessage() {
   digitalWrite(LED_BUILTIN, HIGH);
-  uint8_t _end = serialMessageEnd;
+  uint8_t _end = serialMessageInEnd;
   // count delimiters
   uint8_t _delims = 0;
   uint8_t _maxchars = 10;
   char _delimiter = ',';
   for(uint8_t _idx = 0; _idx < _end; _idx++) {
-    char _vchr = serialMessage[_idx];  
+    char _vchr = serialMessageIn[_idx];  
     if (_vchr == _delimiter) {
       _delims++;
     }
@@ -461,7 +476,7 @@ void decodeMessage() {
   // find first delimiter position
   uint8_t _linepos = 0;
   for(uint8_t _idx = 0; _idx < _end; _idx++) {  
-    char _vchr = serialMessage[_idx];  
+    char _vchr = serialMessageIn[_idx];  
     if (_vchr == _delimiter) {
       // store index position
       _linepos = _idx;
@@ -476,7 +491,7 @@ void decodeMessage() {
       break;
     } 
     // store in new array
-    _linebuffer[_linecount] = serialMessage[_idx];
+    _linebuffer[_linecount] = serialMessageIn[_idx];
     _linecount++;
   } // terminate string
   _linebuffer[_linecount] = '\0';
@@ -486,7 +501,7 @@ void decodeMessage() {
   uint8_t _count = 0;
   uint8_t _cmd2pos = 0; 
   for(uint8_t _idx = 0; _idx < _end; _idx++) {
-    char _vchr = serialMessage[_idx];   
+    char _vchr = serialMessageIn[_idx];   
     if (_vchr == _delimiter) {
       if (_count == 1) {
         // store pointer position
@@ -500,9 +515,22 @@ void decodeMessage() {
   if (cmdFirstColumn == 0){
     processMessage(_cmd2pos + 1);
   }
-  // send ack to computer
-  Serial.println("*");
+  Serial.print('|'); // first acknowledgement 
+  writeSerial(); // write message to serial
+  Serial.print('|'); // second acknowledgement
+  Serial.print('\n'); // newline
   digitalWrite(LED_BUILTIN, LOW);
+}
+
+
+void writeSerial() { // write response back to computer
+  for(uint8_t _idx = 0; _idx <= maxMessage; _idx++) {  
+    char _chrout = serialMessageOut[_idx];  
+    if (_chrout == '\0') { // stop reading at end-of-message
+      break;
+    }
+    Serial.print(_chrout); // write character
+  }
 }
 
 void readSerial() {
@@ -515,15 +543,15 @@ void readSerial() {
     rc = Serial.read();
     if (recvInProgress == 1) {
       if (rc != endMarker) {
-        serialMessage[ndx] = rc;
+        serialMessageIn[ndx] = rc;
         ndx++;
         if (ndx >= maxMessage) {
           ndx = maxMessage - 1;
         }
       } else {
         // terminate the string
-        serialMessage[ndx] = '\0'; 
-        serialMessageEnd = ndx;
+        serialMessageIn[ndx] = '\0'; 
+        serialMessageInEnd = ndx;
         recvInProgress = 0;
         newData = 1;
         ndx = 0;
@@ -536,8 +564,10 @@ void readSerial() {
   if (newData == 1) {
     // End-of-data action
     decodeMessage();
-    serialMessageEnd = 0;
+    // Reset registers
     newData = 0;
+    serialMessageInEnd = 0;
+    serialMessageOut[0] = '\0';
   }
 }
 

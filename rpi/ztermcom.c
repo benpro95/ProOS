@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////
 /// Z-Terminal Serial Communication v1.0
 /// for GNU/Linux kernel versions 6.0+  
-/// by Ben Provenzano III - 07/01/2023 v5 - 04/13/2025 v6
+/// by Ben Provenzano III - 07/01/2023 v5 - 04/24/2025 v6
 /////////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>

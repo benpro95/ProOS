@@ -21,7 +21,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "5.7";
+let siteVersion = "5.8";
 
 //////////////////////
 
@@ -42,6 +42,7 @@ function handleClicks(event) {
     }
     return;
   }
+  showAmpStatus();
   // don't hide menus when clicking these elements
   if (!(event.target.classList.contains('button') || // button click
         event.target.classList.contains('button__text') || // button text click
@@ -1035,6 +1036,15 @@ function closeBookmarkPrompt() {
   if (favPrompt) {
     favPrompt.remove();
   }  
+}
+
+function showAmpStatus() {
+  sendCmd('main','br-resp','ampstate').then((data) => { // GET request
+    // draw menu items
+    let _rows = data.split('\n');
+    let _resp = _rows[0];
+    console.log(_resp);
+  });
 }
 
 //// Dynamic Menus ////

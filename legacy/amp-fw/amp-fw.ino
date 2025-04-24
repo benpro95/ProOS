@@ -354,9 +354,7 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
       serialMessageOut[1] = '\0'; 
     }
     // volume level (01006)
-    if (_ctldata == 6) {
-          channelVolume
-    }
+    
     break;
   // input select
   case 2:

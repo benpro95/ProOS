@@ -9,6 +9,7 @@
 RAMDISK="/var/www/html/ram"
 LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
+READ_RESP=false
 ATV_CMD=""
 XMITCMD=""
 TARGET=""
@@ -18,27 +19,40 @@ XMIT_IP="10.177.1.12" ## Xmit IP
 BRPI_IP="10.177.1.15" ## Bedroom Pi IP
 ATV_MAC="3E:08:87:30:B9:A8" ## Bedroom Apple TV MAC
 
-CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 3 --retry 1 --retry-delay 1 --no-keepalive"
+CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 10 --retry 1 --retry-delay 1 --no-keepalive"
 
 ## API Gateway
 CALLAPI(){
   if [[ "$XMITCMD" != "" ]]; then
     ## Xmit Default Target 
     if [[ "$TARGET" == "" ]]; then
-      ## ESP32 Xmit API
+      ## ESP32 Xmit (discard API response, runs in background)
       /usr/bin/curl $CURLARGS --header "Accept: ####?|$XMITCMD" http://"$XMIT_IP":80 > /dev/null 2>&1 &
     else
-      ## Pi PHP API 
-      /usr/bin/curl $CURLARGS --data "var=$SEC_ARG&arg=$XMITCMD&action=main" http://"$TARGET":80/exec.php > /dev/null 2>&1 &
+      ## ProOS home automation Pi
+      DATA="var=$SEC_ARG&arg=$XMITCMD&action=main"
+      SERVER="http://$TARGET:80/exec.php"
+      if [[ "$READ_RESP" == true ]]; then
+        ## wait then parse API response
+        DELIM="|"
+        APIRESP="$(/usr/bin/curl $CURLARGS --data $DATA $SERVER)"
+        TMPSTR="${APIRESP#*$DELIM}"
+        RESPOUT="${TMPSTR%$DELIM*}"
+        echo "$RESPOUT"
+      else
+        ## discard API response (runs in background)
+        /usr/bin/curl $CURLARGS --data $DATA $SERVER > /dev/null 2>&1 &
+      fi
     fi
   fi
   TARGET=""
   XMITCMD=""
+  READ_RESP=false
 }
 
 ## Control Apple TV
 ATV_CTL(){
-  /opt/system/atv "$ATV_MAC" "$ATV_CMD" > /dev/null 2>&1 &
+  /opt/system/atv $ATV_MAC $ATV_CMD > /dev/null 2>&1 &
   ATV_CMD=""
 }
 
@@ -296,23 +310,21 @@ SEC_ARG=$2
 
 case "$FIRST_ARG" in
 
-test)
-echo "TEST_DATA"
-;;
-
 sitelookup)
-## Lookup Website Title
+## Lookup Website Title from URL
 if [ "$SEC_ARG" != "" ]; then
   LINKTITLE=$(curl -s -X GET "$SEC_ARG" | xmllint -html -xpath "//head/title/text()" - 2>/dev/null)
   if [[ "$LINKTITLE" != "" ]] && [[ "$LINKTITLE" != "\n" ]]; then
     echo "$LINKTITLE"
   fi
 fi
+exit
 ;;
 
 play)
 ## Play Current on Apple TV
 ATV_CMD="play"; ATV_CTL
+exit
 ;;
 
 stop)
@@ -321,10 +333,11 @@ ATV_CMD="pause"; ATV_CTL
 TARGET="$BRPI_IP"
 XMITCMD="stoprelax"
 CALLAPI
+exit
 ;;
 
 relax)
-## Send Command
+## Relax Sounds on Bedroom Pi
 TARGET="$BRPI_IP"
 XMITCMD="relax"
 CALLAPI
@@ -334,7 +347,16 @@ exit
 ;;
 
 br)
-## API Call to Bedroom Pi
+## Bedroom Pi API (discard response)
+TARGET="$BRPI_IP"
+XMITCMD="$SEC_ARG"
+CALLAPI
+exit
+;;
+
+br-resp)
+## Bedroom Pi API (read response)
+READ_RESP=true
 TARGET="$BRPI_IP"
 XMITCMD="$SEC_ARG"
 CALLAPI

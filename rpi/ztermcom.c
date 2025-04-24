@@ -56,16 +56,15 @@ int serialRead() {
       for (i = 0; i < num_bytes; i++) {
         // read response
         char _curchar = serCharBuf[i];
-        if (_curchar != '\r' && _curchar != '\n' && _curchar != '\0') {
-          printf("%c", _curchar); // write to console
-        }
-        // check target character is received
+        // write to console
+        printf("%c", _curchar);
+        // check target characters have been received
         if (_curchar == target_char) {
           ack_resp++;
         }
       }
       if (ack_resp == 2) { // two pipes received
-        printf("\n|OK|\n");
+        printf("OK\n");
         return 0;
       }
     } else {
@@ -177,7 +176,9 @@ int main(int argc, char *argv[]) {
   for (int i = 0; i <= argLength; i++) {
     // detect control mode (1st)
     char charin = argData[i];
-    if (charin != '\r' && charin != '\n' && charin != '\0') {
+    if (charin != '\r' && 
+        charin != '\n' && 
+        charin != '\0') {
       // allocate memory
       line = realloc(line, (lineSize + 1));
       // write to line data array

@@ -21,7 +21,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "5.6.0";
+let siteVersion = "5.7";
 
 //////////////////////
 
@@ -33,11 +33,12 @@ window.addEventListener("DOMContentLoaded", () => {
   loadPage();
 });
 
+// runs on-each mouse click
 function handleClicks(event) {
   // disable click events when in bookmark edit mode
   if (bookmarkState === 2) {
     if (event.target.className !== "editFav__win") {
-      event.stopPropagation();
+      event.stopPropagation(); // disable clicks
     }
     return;
   }
@@ -46,10 +47,10 @@ function handleClicks(event) {
         event.target.classList.contains('button__text') || // button text click
         event.target.classList.contains('mainmenu__anchor') || // main menu click
         event.target.classList.contains('bookmarked__item') || // bookmark menu click
-        event.target.classList.contains('fa-regular') || // font awesome icon clicks
-        event.target.classList.contains('fa-brands') ||
-        event.target.classList.contains('fa-solid') ||
-        event.target.classList.contains('am-spinner') ||
+        event.target.classList.contains('fa-regular') || // font -
+        event.target.classList.contains('fa-brands') ||  // awesome -
+        event.target.classList.contains('fa-solid') ||   // icon clicks
+        event.target.classList.contains('am-spinner') || // spinner clicks
         event.target.classList.contains('dropbtn') || // dropdown button click
         event.target.classList.contains('chkbox'))) { // checkbox click
     hideDropdowns(); // hide all dropdown menus
@@ -66,7 +67,7 @@ function loadPage() {
     if (_mode === null || _mode === undefined || _mode === "") {
       ctlMode = 'lr'; // living room 
     } else {
-      ctlMode = localStorage.getItem("ctls-mode");
+      ctlMode = _mode;
     }  
     ctlsMenu(ctlMode);
     // server home page
@@ -708,7 +709,17 @@ function editBookmark() {
 function addBookmark() {
   enableEditAddMode();
   // create new unique menu ID
-  const _newid = fileData.length;
+  let _newid;
+  const _datalen = fileData.length;
+  if (_datalen <= 1) {
+    if (_datalen == 1) {
+      _newid = 1;
+    } else {
+      _newid = 0;
+    }
+  } else {
+    _newid = _datalen - 1;
+  }
   // add temporary entry to menu array
   fileData.push("placeholder");
   // create placeholder menu item
@@ -1011,7 +1022,7 @@ function closeBookmarkPrompt() {
     e.style.pointerEvents = "";
   }); 
   // un-highlight selected item
-  for (var idx = 0; idx < fileData.length; idx++) {
+  for (var idx = 0; idx <= fileData.length; idx++) {
     const _menuid = "menu-" + idx.toString();
     const elem = document.getElementById(_menuid);
     if (elem) {
@@ -1082,9 +1093,8 @@ function readMenuData(menu) {
 // draws each menu item
 function drawMenu(data,menu) {
   if (!(data === null || data === "")) {
-    while (fileData.length) {
-      fileData.pop(); // erase register
-    } 
+    // erase global data
+    while (fileData.length) { fileData.pop(); } 
     for (var idx in data) {
       let line = data[idx].toString();
       if (line != "") {
@@ -1186,7 +1196,7 @@ function removeDynMenus() {
       boxChanged();
     }
     // remove dynamic menu elements (II)
-    for (var idx = 0; idx < (fileData.length - 1); idx++) {
+    for (var idx = 0; idx <= fileData.length; idx++) {
       const _menuid = "menu-" + idx.toString();
       const menuRemove = document.getElementById(_menuid);
       if (menuRemove != null) {

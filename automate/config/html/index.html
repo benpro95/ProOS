@@ -280,13 +280,10 @@
           </div>
         </div>
         <div class="dropdown">
-          <button type="button" class="button" onclick="showMenu('braudio-menu')">
+          <button type="button" class="button" onclick="showAmpStatus()">
             <span class="button__text"><i class="fa-solid fa-music"></i> Audio</span>
           </button>  
-          <div class="dd-content dd-button" id="braudio-menu">
-            <a onclick="sendCmd('main','br','poweron')"><i class="fa-solid fa-toggle-on"></i> On</a>
-            <a onclick="sendCmd('main','br','poweroff')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-          </div>
+          <div class="dd-content ind-button" id="braudiomenu"></div>
         </div>
         <div class="dropdown">
           <button type="button" class="button" onclick="showMenu('brinput-menu')">

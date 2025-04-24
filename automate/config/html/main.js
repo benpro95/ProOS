@@ -42,7 +42,6 @@ function handleClicks(event) {
     }
     return;
   }
-  showAmpStatus();
   // don't hide menus when clicking these elements
   if (!(event.target.classList.contains('button') || // button click
         event.target.classList.contains('button__text') || // button text click
@@ -1039,12 +1038,22 @@ function closeBookmarkPrompt() {
 }
 
 function showAmpStatus() {
-  sendCmd('main','br-resp','ampstate').then((data) => { // GET request
-    // draw menu items
-    let _rows = data.split('\n');
-    let _resp = _rows[0];
-    console.log(_resp);
-  });
+  const _menu = 'braudiomenu';
+  let _elem = document.getElementById(_menu);
+  if (_elem.style.display === 'block') {
+    _elem.style.display = 'none';
+  } else {
+    hideDropdowns(); // hide all dropdown menus
+    _elem.style.display = 'block';
+    sendCmd('main','br-resp','ampstate').then((data) => { // GET request
+      // draw menu items
+      let _rows = data.split('\n');
+      let _resp = _rows[0];
+      console.log(_resp);
+    });
+    const _menudata = "pwron|4|On\npwroff|5|Off\n";
+    drawMenu(_menudata.split("\n"),_menu);
+  }
 }
 
 //// Dynamic Menus ////
@@ -1160,9 +1169,26 @@ function createListItem(_col0,_col1,_col2,_id) {
     _elm.href = _col0;
   }
   // indicator / status menu  
-  if (_col1 == '3' || _col1 == '4' || _col1 == '5') {
+  if (_col1 == '3' || // black indicator
+      _col1 == '4' || // green indicator
+      _col1 == '5' || // red indicator
+      _col1 == '6') { // no indicator
+    // power toggle type
+    const _icon = document.createElement('span');
+    if (_col0 == 'pwron') {
+      _icon.classList.add('fa-solid');
+      _icon.classList.add('fa-toggle-on');
+      _elm.appendChild(_icon);
+    }
+    if (_col0 == 'pwroff') {
+      _icon.classList.add('fa-solid');
+      _icon.classList.add('fa-toggle-off');
+      _elm.appendChild(_icon);
+    }
     const _dot = document.createElement('span');
-    _dot.classList.add('ind_dot');
+    if (_col1 == '3'){
+      _dot.classList.add('ind_dot');
+    }
     if (_col1 == '4'){
       _dot.classList.add('ind_dot_green');
     }

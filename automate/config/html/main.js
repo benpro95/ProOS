@@ -1038,22 +1038,63 @@ function closeBookmarkPrompt() {
 }
 
 function showAmpStatus() {
-  const _menu = 'braudiomenu';
+  const _host = "br"; // Bedroom Pi
+  const _menu = _host + "pwrmenu";
   let _elem = document.getElementById(_menu);
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
   } else {
     hideDropdowns(); // hide all dropdown menus
     _elem.style.display = 'block';
-    sendCmd('main','br-resp','ampstate').then((data) => { // GET request
+    let _call = _host + '-resp';
+    sendCmd('main',_call,'ampstate').then((data) => { // GET request
       // draw menu items
-      let _rows = data.split('\n');
-      let _resp = _rows[0];
-      console.log(_resp);
+      let resp = data.replace(/(\r\n|\n|\r)/gm, ""); // remove newlines
+      let _menubtn = ""; // menu type
+      let _cmd = "";     // remote host command 
+      let _indtype = ""; // indicator type
+      let _title = "";   // menu button title
+      let _error = true; // error flag
+      let _menudata = "";
+      // status display (I)
+      if (resp == '0') {
+        _indtype = '5';   
+        _title = "Offline";
+        _error = false;
+      }
+      if (resp == '1') {
+        _indtype = '4';  
+        _title = "Online";
+        _error = false;
+      }
+      if (_error == true) {
+        _indtype = '3';    
+        _title = "Unknown";
+      }
+      _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
+      // power on/off buttons (II)
+      if (resp == '0' || _error == true) {
+        _menubtn = "oncmd";
+        _cmd = "poweron"; 
+        _indtype = '6'; 
+        _title = "Turn-On"  
+        _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
+      }
+      if (resp == '1' || _error == true) {
+        _menubtn = "offcmd"; 
+        _cmd = "poweroff";  
+        _indtype = '6';     
+        _title = "Turn-Off"  
+        _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
+      }
+      drawMenu(_menudata.split("\n"),_menu); // draw menu 
     });
-    const _menudata = "pwron|4|On\npwroff|5|Off\n";
-    drawMenu(_menudata.split("\n"),_menu);
   }
+}
+
+function buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title) {
+  return _menubtn + '~' + _host + '~' + _cmd + 
+      '|' + _indtype + '|' + _title + '\n';
 }
 
 //// Dynamic Menus ////
@@ -1138,8 +1179,9 @@ function drawMenu(data,menu) {
 
 function createListItem(_col0,_col1,_col2,_id) {
   const _elm = document.createElement('a');
-  // add elements to menu
+  // assign menu ID
   _elm.id = "menu-" + _id.toString();
+  // set menu text
   _elm.innerText = _col2;
   // checkbox menu
   if (_col1 == '0' || _col1 == '1') {
@@ -1175,24 +1217,38 @@ function createListItem(_col0,_col1,_col2,_id) {
       _col1 == '6') { // no indicator
     // power toggle type
     const _icon = document.createElement('span');
-    if (_col0 == 'pwron') {
+    const field = _col0.split("~");
+    const menutype = field[0]; // menu button type
+    const target   = field[1]; // target server 
+    const cmd      = field[2]; // target command
+    if (menutype == 'oncmd') {
       _icon.classList.add('fa-solid');
       _icon.classList.add('fa-toggle-on');
+      _icon.classList.add('icon-right');
       _elm.appendChild(_icon);
+      _elm.addEventListener("click", function(event) {
+        sendCmd('main',target,cmd);
+      });
     }
-    if (_col0 == 'pwroff') {
+    if (menutype == 'offcmd') {
       _icon.classList.add('fa-solid');
       _icon.classList.add('fa-toggle-off');
+      _icon.classList.add('icon-right');
       _elm.appendChild(_icon);
+      _elm.addEventListener("click", function(event) {
+        sendCmd('main',target,cmd);
+      });
     }
     const _dot = document.createElement('span');
     if (_col1 == '3'){
       _dot.classList.add('ind_dot');
     }
     if (_col1 == '4'){
+      _dot.classList.add('ind_dot');
       _dot.classList.add('ind_dot_green');
     }
     if (_col1 == '5'){
+      _dot.classList.add('ind_dot');
       _dot.classList.add('ind_dot_red');
     }
     _dot.id = "ind-" + _col2;
@@ -1220,7 +1276,7 @@ function createListItem(_col0,_col1,_col2,_id) {
     _elm.addEventListener("click", function(event) {
       clickBookmark(_id);
     });
-  }  
+  }
   return _elm;
 }
 

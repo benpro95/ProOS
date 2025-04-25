@@ -1037,6 +1037,12 @@ function closeBookmarkPrompt() {
   }  
 }
 
+function buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title) {
+  return _menubtn + '~' + _host + '~' + _cmd
+                  + '|' + _indtype 
+                  + '|' + _title + '\n';
+}
+
 function showAmpStatus() {
   const _host = "br"; // Bedroom Pi
   const _menu = _host + "pwrmenu";
@@ -1046,19 +1052,18 @@ function showAmpStatus() {
   } else {
     hideDropdowns(); // hide all dropdown menus
     _elem.style.display = 'block';
-    let _call = _host + '-resp';
-    sendCmd('main',_call,'ampstate').then((data) => { // GET request
+    sendCmd('main',_host + '-resp','ampstate').then((data) => { // GET request
+      const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // remove newlines
       // draw menu items
-      let resp = data.replace(/(\r\n|\n|\r)/gm, ""); // remove newlines
-      let _menubtn = ""; // menu type
-      let _cmd = "";     // remote host command 
-      let _indtype = ""; // indicator type
-      let _title = "";   // menu button title
+      let _menubtn; // menu type
+      let _cmd;     // remote host command 
+      let _indtype; // indicator type
+      let _title;   // menu button title
       let _error = true; // error flag
       let _menudata = "";
       // status display (I)
       if (resp == '0') {
-        _indtype = '5';   
+        _indtype = '3';   
         _title = "Offline";
         _error = false;
       }
@@ -1068,14 +1073,14 @@ function showAmpStatus() {
         _error = false;
       }
       if (_error == true) {
-        _indtype = '3';    
+        _indtype = '5';    
         _title = "Unknown";
       }
       _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
       // power on/off buttons (II)
       if (resp == '0' || _error == true) {
         _menubtn = "oncmd";
-        _cmd = "poweron"; 
+        _cmd = "poweron";
         _indtype = '6'; 
         _title = "Turn-On"  
         _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
@@ -1092,10 +1097,6 @@ function showAmpStatus() {
   }
 }
 
-function buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title) {
-  return _menubtn + '~' + _host + '~' + _cmd + 
-      '|' + _indtype + '|' + _title + '\n';
-}
 
 //// Dynamic Menus ////
 

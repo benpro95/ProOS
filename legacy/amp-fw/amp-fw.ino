@@ -319,6 +319,11 @@ void cycleThruInputs() {
   }
 }
 
+void writeSerialMessage(int16_t value) {
+  uint16_t length = snprintf(NULL, 0, "%d", value);
+  snprintf(serialMessageOut, length + 1, "%d", value);
+}
+
 void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
   // process register
   switch (_register) {
@@ -346,39 +351,24 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
     }
     // power status (01005)
     if (_ctldata == 5) {
-      if (powerState == 1) {
-        serialMessageOut[0] = '1';
-      } else {
-        serialMessageOut[0] = '0';
-      }
-      serialMessageOut[1] = '\0'; 
+      writeSerialMessage(powerState);
     }
-    // volume level (01006)
-    
+    // input status (01006)
+    if (_ctldata == 6) {
+      writeSerialMessage(selectedInput);
+    }
     break;
   // input select
   case 2:
     if (powerState == 1) {
       if (isMuted == 0) {
         // optical in #1 (02001) 
-        if (_ctldata == 1) {
-          setBlinkFrontLED(300,1,0);
-          audioInput(1);
-        }
         // optical in #2 (02002) 
-        if (_ctldata == 2) {
-          setBlinkFrontLED(300,1,0);
-          audioInput(2);
-        }
-        // coax input (02003)  
-        if (_ctldata == 3) {
-          setBlinkFrontLED(300,1,0);
-          audioInput(3);
-        }
+        // coax input (02003)
         // aux input (02004) 
-        if (_ctldata == 4) {
+        if (_ctldata >= 1 && _ctldata <= 4) {
           setBlinkFrontLED(300,1,0);
-          audioInput(4);
+          audioInput(_ctldata);
         }
       }
     }

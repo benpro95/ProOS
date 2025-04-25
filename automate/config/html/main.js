@@ -1050,6 +1050,11 @@ function showAmpStatus() {
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
   } else {
+    // start spinner animation
+    let btnText = document.getElementById('amppwr-text');
+    let btnSpinner = document.getElementById('amppwr-spinner');
+    btnText.style.visibility = 'hidden';
+    btnSpinner.classList.add('btn-spinner');
     hideDropdowns(); // hide all dropdown menus
     _elem.style.display = 'block';
     sendCmd('main',_host + '-resp','ampstate').then((data) => { // GET request
@@ -1092,7 +1097,10 @@ function showAmpStatus() {
         _title = "Turn-Off"  
         _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
       }
-      drawMenu(_menudata.split("\n"),_menu); // draw menu 
+      drawMenu(_menudata.split("\n"),_menu); // draw menu
+      // stop spinner animation
+      btnText.style.visibility = 'visible';
+      btnSpinner.classList.remove('btn-spinner');
     });
   }
 }
@@ -1106,19 +1114,19 @@ function showStatusMenu() {
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
   } else {
-    // spinner animation
+    // start spinner animation
     let btnText = document.getElementById('stat-text');
     let btnSpinner = document.getElementById('stat-spinner');
-    btnText.style.display = 'none';
-    btnSpinner.style.display = 'inline-block';
+    btnText.style.visibility = 'hidden';
+    btnSpinner.classList.add('btn-spinner');
     hideDropdowns(); // hide all dropdown menus
     _elem.style.display = 'block';
     sendCmd('main','status','').then((data) => { // GET request
       // draw menu items
-      let _rowarr = data.split('\n');
-      drawMenu(_rowarr,_menu);
-      btnText.style.display = 'inline-block';
-      btnSpinner.style.display = 'none';
+      drawMenu(data.split("\n"),_menu);
+      // stop spinner animation
+      btnText.style.visibility = 'visible';
+      btnSpinner.classList.remove('btn-spinner');
     });
   }   
 }

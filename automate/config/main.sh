@@ -21,33 +21,42 @@ ATV_MAC="3E:08:87:30:B9:A8" ## Bedroom Apple TV MAC
 
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 10 --retry 1 --retry-delay 1 --no-keepalive"
 
+RESETVARS(){
+  READ_RESP=false
+  XMITCMD=""
+  TARGET=""
+}
+
 ## API Gateway
 CALLAPI(){
-  if [[ "$XMITCMD" != "" ]]; then
-    ## Xmit Default Target 
-    if [[ "$TARGET" == "" ]]; then
-      ## ESP32 Xmit (discard API response, runs in background)
-      /usr/bin/curl $CURLARGS --header "Accept: ####?|$XMITCMD" http://"$XMIT_IP":80 > /dev/null 2>&1 &
+  if [[ "$XMITCMD" == "" ]]; then
+    return
+  fi
+  ## Xmit Default Target 
+  if [[ "$TARGET" == "" ]]; then
+    ## ESP32 Xmit (discard API response, runs in background)
+    SERVER="http://$XMIT_IP:80"
+    /usr/bin/curl $CURLARGS --header "Accept: ####?|$XMITCMD" $SERVER > /dev/null 2>&1 &
+  else
+    ## ProOS home automation Pi
+    DATA="var=$SEC_ARG&arg=$XMITCMD&action=main"
+    SERVER="http://$TARGET:80/exec.php"
+    if [[ "$READ_RESP" == true ]]; then
+      ## wait then parse API response
+      DELIM="|"
+      APIRESP="$(/usr/bin/curl $CURLARGS --data $DATA $SERVER)"
+      TMPSTR="${APIRESP#*$DELIM}"
+      RESPOUT="${TMPSTR%$DELIM*}"
+      echo "$RESPOUT"
     else
-      ## ProOS home automation Pi
-      DATA="var=$SEC_ARG&arg=$XMITCMD&action=main"
-      SERVER="http://$TARGET:80/exec.php"
-      if [[ "$READ_RESP" == true ]]; then
-        ## wait then parse API response
-        DELIM="|"
-        APIRESP="$(/usr/bin/curl $CURLARGS --data $DATA $SERVER)"
-        TMPSTR="${APIRESP#*$DELIM}"
-        RESPOUT="${TMPSTR%$DELIM*}"
-        echo "$RESPOUT"
-      else
-        ## discard API response (runs in background)
-        /usr/bin/curl $CURLARGS --data $DATA $SERVER > /dev/null 2>&1 &
-      fi
+      ## discard API response (runs in background)
+      /usr/bin/curl $CURLARGS --data $DATA $SERVER > /dev/null 2>&1 &
     fi
   fi
-  TARGET=""
-  XMITCMD=""
+  ## Clear data
   READ_RESP=false
+  XMITCMD=""
+  TARGET=""
 }
 
 ## Control Apple TV

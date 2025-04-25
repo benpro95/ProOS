@@ -1,9 +1,10 @@
 #4b0606|8|Red
 #0d3d23|8|Green
+#455197|8|Blue
 #1f2051|8|Dark Blue
-#161c23|8|Blue Grey
+#233237|8|Blue Grey
 #133d61|8|Turquoise
 #6959cd|8|Lavender
-#cc5500|8|Orange
-#3d0c63|8|Purple
+#ff6633|8|Orange
+#9933ff|8|Purple
 #cd1076|8|Pink

@@ -83,9 +83,7 @@ cp -v /tmp/config/leds.sh /opt/system/leds
 cp -v /tmp/config/main.sh /opt/system/main
 cp -v /tmp/config/status.sh /opt/system/status
 ln -sf /opt/system/status /usr/bin/update-status
-cp -v /tmp/config/mainmenu.txt /opt/system/
-cp -v /tmp/config/thememenu.txt /opt/system/
-cp -v /tmp/config/statsmenu.txt /opt/system/
+cp -vr /tmp/config/menus/*.txt /opt/system/
 if [ ! -e /var/www/html/ram/mainmenu.txt ]; then
   cp -v /opt/system/mainmenu.txt /var/www/html/ram/
   chmod 777 /var/www/html/ram/mainmenu.txt

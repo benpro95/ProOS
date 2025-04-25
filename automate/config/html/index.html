@@ -280,21 +280,17 @@
         </div>
         <div class="dropdown">
           <button type="button" class="button" onclick="showAmpStatus()">
-              <span class="button__text" id="amppwr-text"><i class="fa-solid fa-music"></i> Audio </span>
+              <span class="button__text" id="amppwr-text"><i class="fa-solid fa-music"></i> Audio</span>
               <span class="button__text" id="amppwr-spinner"></span>
           </button>
           <div class="dd-content ind-button" id="brpwrmenu"></div>
         </div>
         <div class="dropdown">
           <button type="button" class="button" onclick="showAmpInput()">
-            <span class="button__text"><i class="fa-solid fa-sitemap"></i> Input</span>
+              <span class="button__text" id="ampinp-text"><i class="fa-solid fa-sitemap"></i> Input</span>
+              <span class="button__text" id="ampinp-spinner"></span>
           </button>
-          <div class="dd-content dd-button" id="brinput-menu">
-            <a onclick="sendCmd('main','br','opt-a')"></i> Apple TV</a>
-            <a onclick="sendCmd('main','br','opt-b')"></i> Optical B:</a>
-            <a onclick="sendCmd('main','br','coaxial')"></i> Bluetooth</a>
-            <a onclick="sendCmd('main','br','aux')"></i> Analog In</a>
-          </div>
+          <div class="dd-content ind-button" id="brinpmenu"></div>
         </div>
         <!---->
       </div>

@@ -1043,6 +1043,77 @@ function buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title) {
                   + '|' + _title + '\n';
 }
 
+function showAmpInput() {
+  const _host = "br"; // Bedroom Pi
+  const _menu = _host + "inpmenu";
+  let _elem = document.getElementById(_menu);
+  if (_elem.style.display === 'block') {
+    _elem.style.display = 'none';
+  } else {
+    // start spinner animation
+    let btnText = document.getElementById('ampinp-text');
+    let btnSpinner = document.getElementById('ampinp-spinner');
+    btnText.style.visibility = 'hidden';
+    btnSpinner.classList.add('btn-spinner');
+    hideDropdowns(); // hide all dropdown menus
+    _elem.style.display = 'block';
+    sendCmd('main',_host + '-resp','inputstate').then((data) => { // GET request
+      const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // remove newlines
+      // draw menu items
+      let _menubtn; // menu type
+      let _cmd;     // remote host command 
+      let _indtype; // indicator type
+      let _title;   // menu button title
+      let _menudata = "";
+      // apple TV input 
+      _menubtn = "gencmd";
+      _title = "Apple TV"  
+      _cmd = "opt-a";
+      if (resp == '2'){
+        _indtype = '4';
+      } else {
+        _indtype = '3';
+      }
+      _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
+      // aux optical input
+      _menubtn = "gencmd";
+      _title = "Optical"  
+      _cmd = "opt-b";  
+      if (resp == '1'){
+        _indtype = '4';
+      } else {
+        _indtype = '3';
+      }    
+      _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
+      // coaxial input
+      _menubtn = "gencmd";
+      _title = "Bluetooth"  
+      _cmd = "coaxial";  
+      if (resp == '3'){ 
+        _indtype = '4';
+      } else {
+        _indtype = '3';
+      }     
+      _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
+      // aux analog input
+      _menubtn = "gencmd";
+      _title = "Analog In"  
+      _cmd = "aux";
+      if (resp == '4'){
+        _indtype = '4';
+      } else {
+        _indtype = '3';
+      }     
+      _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
+      // draw menu items
+      drawMenu(_menudata.split("\n"),_menu);
+      // stop spinner animation
+      btnText.style.visibility = 'visible';
+      btnSpinner.classList.remove('btn-spinner');
+    });
+  }
+}
+
 function showAmpStatus() {
   const _host = "br"; // Bedroom Pi
   const _menu = _host + "pwrmenu";
@@ -1104,7 +1175,6 @@ function showAmpStatus() {
     });
   }
 }
-
 
 //// Dynamic Menus ////
 
@@ -1230,7 +1300,7 @@ function createListItem(_col0,_col1,_col2,_id) {
     const menutype = field[0]; // menu button type
     const target   = field[1]; // target server 
     const cmd      = field[2]; // target command
-    if (menutype == 'oncmd') {
+    if (menutype == 'oncmd') { // power-on remote API call on click
       _icon.classList.add('fa-solid');
       _icon.classList.add('fa-toggle-on');
       _icon.classList.add('icon-right');
@@ -1239,11 +1309,16 @@ function createListItem(_col0,_col1,_col2,_id) {
         sendCmd('main',target,cmd);
       });
     }
-    if (menutype == 'offcmd') {
+    if (menutype == 'offcmd') { // power-off remote API call on click
       _icon.classList.add('fa-solid');
       _icon.classList.add('fa-toggle-off');
       _icon.classList.add('icon-right');
       _elm.appendChild(_icon);
+      _elm.addEventListener("click", function(event) {
+        sendCmd('main',target,cmd);
+      });
+    }
+    if (menutype == 'gencmd') { // generic remote API call on click
       _elm.addEventListener("click", function(event) {
         sendCmd('main',target,cmd);
       });

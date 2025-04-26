@@ -4,7 +4,6 @@
 #1f2051|8|Dark Blue
 #233237|8|Blue Grey
 #133d61|8|Turquoise
-#6959cd|8|Lavender
 #ff6633|8|Orange
 #9933ff|8|Purple
 #cd1076|8|Pink

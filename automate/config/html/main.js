@@ -21,7 +21,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "5.8";
+let siteVersion = "6.0.1";
 
 //////////////////////
 
@@ -1139,17 +1139,17 @@ function showAmpStatus() {
       let _menudata = "";
       // status display (I)
       if (resp == '0') {
-        _indtype = '3';   
+        _indtype = '3'; // black indicator      
         _title = "Offline";
         _error = false;
       }
       if (resp == '1') {
-        _indtype = '4';  
+        _indtype = '4'; // green indicator     
         _title = "Online";
         _error = false;
       }
       if (_error == true) {
-        _indtype = '5';    
+        _indtype = '5'; // red indicator    
         _title = "Unknown";
       }
       _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
@@ -1158,14 +1158,14 @@ function showAmpStatus() {
         _menubtn = "oncmd";
         _cmd = "poweron";
         _indtype = '6'; 
-        _title = "Turn-On"  
+        _title = "On"  
         _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
       }
       if (resp == '1' || _error == true) {
         _menubtn = "offcmd"; 
         _cmd = "poweroff";  
         _indtype = '6';     
-        _title = "Turn-Off"  
+        _title = "Off"  
         _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
       }
       drawMenu(_menudata.split("\n"),_menu); // draw menu
@@ -1303,7 +1303,7 @@ function createListItem(_col0,_col1,_col2,_id) {
     if (menutype == 'oncmd') { // power-on remote API call on click
       _icon.classList.add('fa-solid');
       _icon.classList.add('fa-toggle-on');
-      _icon.classList.add('icon-right');
+      _icon.classList.add('leftjfy'); // left-justify icon
       _elm.appendChild(_icon);
       _elm.addEventListener("click", function(event) {
         sendCmd('main',target,cmd);
@@ -1312,7 +1312,7 @@ function createListItem(_col0,_col1,_col2,_id) {
     if (menutype == 'offcmd') { // power-off remote API call on click
       _icon.classList.add('fa-solid');
       _icon.classList.add('fa-toggle-off');
-      _icon.classList.add('icon-right');
+      _icon.classList.add('leftjfy'); // left-justify icon
       _elm.appendChild(_icon);
       _elm.addEventListener("click", function(event) {
         sendCmd('main',target,cmd);

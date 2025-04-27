@@ -14,21 +14,24 @@ nohup python3 /opt/rpi/blinkled.py >/dev/null 2>&1 &
 }
 
 OPTA_MODE(){
+  ## Optical A: input
   ztermcom "02002"
 }
 
 OPTB_MODE(){
+  ## Optical B: input
   ztermcom "02001" 
 }
 
 COAX_MODE(){
+  ## Coaxial input
   ztermcom "02003" 
 }
 
 case "$ARG1" in
 
 boot)
-## Amplifier communication
+## Start amplifier communication
 ln -sf /dev/$ARDUINO_PORT /dev/zterm-tty; ztermcom i
 ## Bluetooth audio
 systemctl start hciuart
@@ -201,8 +204,8 @@ mkdir -p /opt/rpi/amp-fw/build
   /opt/rpi/amp-fw/amp-fw.ino --build-path /opt/rpi/amp-fw/build
 /opt/rpi/arduino-cli -v upload -p /dev/$ARDUINO_PORT \
   --fqbn arduino:avr:uno --input-dir /opt/rpi/amp-fw/build
-## Start Serial Communication
-ln -sf /dev/$ARDUINO_PORT /dev/zterm-tty
+## Start amplifier communication
+ln -sf /dev/$ARDUINO_PORT /dev/zterm-tty; ztermcom i
 exit
 ;;
 

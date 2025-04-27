@@ -305,7 +305,7 @@ void audioInput(uint8_t _input) {
   selectedInput = _input;
 }
 
-  // cycle thru audio inputs
+// cycle thru audio inputs
 void cycleThruInputs() {
   if (selectedInput != 0) {
     uint8_t _input = selectedInput + 1;
@@ -319,11 +319,24 @@ void cycleThruInputs() {
   }
 }
 
+void writeVolumeStatus() {
+  if (powerState == 0) {
+    writeSerialMessage(-1); // when off 
+    return;
+  }
+  if (isMuted == 1) {
+    writeSerialMessage(0); // when muted
+    return;
+  }
+  writeSerialMessage(channelVolume);
+}
+
 void writeSerialMessage(int16_t value) {
   uint16_t length = snprintf(NULL, 0, "%d", value);
   snprintf(serialMessageOut, length + 1, "%d", value);
 }
 
+// RS-232 control functions
 void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
   // process register
   switch (_register) {
@@ -357,6 +370,10 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
     if (_ctldata == 6) {
       writeSerialMessage(selectedInput);
     }
+    // volume status (01007)
+    if (_ctldata == 7) {
+      writeVolumeStatus();
+    }
     break;
   // input select
   case 2:
@@ -379,15 +396,18 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
       // mute toggle (03001) 
       if (_ctldata == 1) { 
         volumeMute();
+        writeVolumeStatus();
       }
       if (isMuted == 0) {
         // volume up (03002) 
         if (_ctldata == 2) { 
           volumeUp(2);
+          writeVolumeStatus();
         }
         // volume down (03003) 
         if (_ctldata == 3) { 
           volumeDown(2);
+          writeVolumeStatus();
         }
       }
     }
@@ -484,7 +504,7 @@ void decodeMessage() {
   } // terminate string
   _linebuffer[_linecount] = '\0';
   // convert to integer, store line value
-  uint8_t cmdFirstColumn = atoi(_linebuffer); 
+  uint8_t controlData = atoi(_linebuffer); 
   // find second delimiter position
   uint8_t _count = 0;
   uint8_t _cmd2pos = 0; 
@@ -500,8 +520,10 @@ void decodeMessage() {
     }
   }
   // process command data
-  if (cmdFirstColumn == 0){
+  if (controlData == 9){
     processMessage(_cmd2pos + 1);
+  } else {
+    Serial.print('!');
   }
   Serial.print('|'); // first acknowledgement 
   writeSerial(); // write message to serial

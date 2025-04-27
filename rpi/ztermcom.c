@@ -94,11 +94,11 @@ int serialWrite() {
     char _rawData[buffLen];
     _chunkBuf[0] = '\0';
     _rawData[0] = '\0';
-    // build output string
-    strcat(_rawData, "<0,0,"); 
-    // Calculate the size of the current chunk
+    // output control characters
+    strcat(_rawData, "<9,9,");
+    // calculate the size of the current chunk
     int chunkLength = (i + maxCmdLength <= writeLineSize) ? maxCmdLength : writeLineSize - i;
-    // Copy the chunk from the input string to the buffer
+    // copy the chunk from the input string to the buffer
     strncpy(_chunkBuf, line + i, chunkLength);
     // null-terminate the buffer
     _chunkBuf[chunkLength] = '\0';

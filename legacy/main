@@ -158,6 +158,11 @@ ztermcom "01006"
 exit
 ;;
 
+volstate)
+ztermcom "01007"
+exit
+;;
+
 apd-on)
 CACHE_PATH="/mnt/smb/Downloads/.legacy"
 if [ -e "${CACHE_PATH}" ]; then

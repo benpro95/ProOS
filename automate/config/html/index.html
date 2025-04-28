@@ -478,16 +478,7 @@
     <div class="column-left">
 
       <p class="parstd"></p> 
-
-        <button type="button" class="button" onclick="sendCmd('leds','stop','')">
-            <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
-        </button>
-        <button type="button" class="button button__lgr" onclick="sendCmd('leds','pause','')">
-            <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
-        </button>
-        
-      <p class="parstd"></p> 
-
+      
         <button type="button" class="button" onclick="colorPrompt()">
             <span class="button__text"><i class="fa-solid fa-brush"></i> Colors</span>
         </button>
@@ -511,6 +502,15 @@
             <a onclick="sendCmd('leds','fc','10')"></i> 10%</a>
           </div>
         </div>
+        
+      <p class="parstd"></p> 
+
+        <button type="button" class="button button__lgr" onclick="sendCmd('leds','pause','')">
+            <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('leds','stop','')">
+            <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
+        </button>
 
       <p class="parstd"></p>  
 

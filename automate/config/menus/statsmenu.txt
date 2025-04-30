@@ -4,7 +4,7 @@ xmit.home|Xmit|ping
 xana.home|Xana|ping
 retropi.home|RetroPi|ping
 aptcam.home|Aptcam|ping
-legacy.home|Bedroom|ping
+brpi.home|Bedroom|ping
 bedroom.home|Apple TV|ping
 unifi.home|UniFi AP|ping
 ledstrip.home|LEDstrip|ping

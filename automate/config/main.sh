@@ -538,7 +538,8 @@ if [ "$SERVERARG" == "stoplegacy" ]; then
   exit
 fi
 ## Pass action file to the hypervisor
-echo "\n$SERVERARG sent." &>> $LOGFILE
+echo " " 
+echo "$SERVERARG sent." &>> $LOGFILE
 touch $RAMDISK/$SERVERARG.txt
 exit
 ;;

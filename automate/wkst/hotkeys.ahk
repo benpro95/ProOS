@@ -58,7 +58,7 @@ return
 ;; Volume Down #########
 
 F12::
-SoundSet, -3
+SoundSet, -2
 return
 
 !F12::
@@ -72,7 +72,7 @@ return
 ;; Volume Up ###########
 
 Insert::
-SoundSet, +3
+SoundSet, +2
 return
 
 !Insert::

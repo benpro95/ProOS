@@ -18,5 +18,6 @@ xana
 *.crt*
 *.key*
 *.rsa*
+*.pub*
 .ssh
 server/config/keys

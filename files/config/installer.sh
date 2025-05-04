@@ -97,7 +97,11 @@ chown root:root /usr/bin/savebookmarks
 ## Server Git Configuration 
 cp /tmp/config/git.config /home/ben/.gitconfig
 chown ben:shared /home/ben/.gitconfig
-chmod 600 /home/ben/.gitconfig
+chmod 644 /home/ben/.gitconfig
+cp -f /tmp/config/github.pub /home/ben/.ssh/id_rsa.pub
+cp -f /tmp/config/github.rsa /home/ben/.ssh/id_rsa
+chown ben:ben /home/ben/.ssh/id_rsa
+chmod 600 /home/ben/.ssh/id_rsa
 
 ## SSH Configuration
 cp /tmp/config/sshd_config /etc/ssh

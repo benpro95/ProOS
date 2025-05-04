@@ -56,7 +56,7 @@ passwd -d monitor
 if [ ! -e /home/ben ]; then
   echo "Creating [ben] home folder..."
   mkdir -p /home/ben
-  chown root:root /home/ben
+  chown ben:shared /home/ben
   usermod --home /home/ben ben
 fi
 if [ ! -e /home/ben/.regions ]; then
@@ -67,7 +67,7 @@ fi
 if [ ! -e /home/media ]; then
   echo "Creating [media] home folder..."
   mkdir -p /home/media
-  chown root:root /home/media
+  chown media:shared /home/media
   usermod --home /home/media media
 fi
 

@@ -77,7 +77,7 @@ fi
 ## Git configuration
 cp /tmp/config/git.config $HOMEDIR/.gitconfig
 chown ben:shared $HOMEDIR/.gitconfig
-chmod 644 $HOMEDIR/.gitconfig
+chmod 600 $HOMEDIR/.gitconfig
 mkdir -p $HOMEDIR/.ssh
 chmod 700 $HOMEDIR/.ssh
 cp -f /tmp/config/github.pub $HOMEDIR/.ssh/id_rsa.pub

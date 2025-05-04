@@ -189,8 +189,8 @@ if [ -e $TRIGGERS_DIR/pve_vmsbkp.txt ]; then
   echo ""
   echo "Backing-up Files LXC 101..."
   vzdump 101 --mode snapshot --compress zstd --node pve --storage local \
-   --maxfiles 1 --remove 1 --exclude-path /mnt --exclude-path /home/ben/sftp \
-   --exclude-path /home/server/.html --exclude-path /home/server/.regions 
+   --maxfiles 1 --remove 1 --exclude-path /mnt --exclude-path /home/ben/SFTP \
+   --exclude-path /home/ben/.regions
   cp -v /etc/pve/lxc/101.conf $VM_CONFS/files/lxc.conf
   chmod 777 $VM_CONFS/files/lxc.conf
   ###

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Cameras Cleanup Script
-### run as cameras user only!
+### run as ben user only!
 
 lockfile='/mnt/scratch/cameras/.camclean.pid'
 if [ -e $lockfile ]; then

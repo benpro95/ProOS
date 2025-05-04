@@ -46,11 +46,9 @@ chmod 777 /mnt/ramdisk/drives.txt
 ## Restore Bookmarks
 /usr/bin/sudo -u ben /usr/bin/savebookmarks
 
-## Clear Log File
-/usr/bin/sudo -u server /usr/bin/wwwrun clearlog
+## File Monitor API Trigger
+systemctl start file-monitor
 
-## Light Web Server
-systemctl start lighttpd
 ## Crontab
 systemctl start cron
 

@@ -2,11 +2,10 @@
 ###########################################################
 ###########################################################
 #### these are the whitelisted commands that can be called
-#### from the HTTP API, ran as the user 'server' on files.home
-REPLY="$1"
-ARG="$2"
-RAMDISK="$3"
-LOGFILE="$4"
+#### from SSH, ran as the user 'ben' on files.home
+CMD="$1"
+RAMDISK="$2"
+LOGFILE="$3"
 STATUSFILE="/mnt/extbkps/status.txt"
 
 CURBKPDTES=()
@@ -26,12 +25,12 @@ function BACKUPSVR () {
 WAIT_TIME=60
 
 ### Lock file
-if [ -f "/tmp/backupsvr.lock" ]; then
+if [ -f "$RAMDISK/backupsvr.lock" ]; then
   echo "already running!"
-  echo "delete '/tmp/backupsvr.lock' to remove lock if program failed"
+  echo "delete '$RAMDISK/backupsvr.lock' to remove lock if program failed"
   return
 else
-  touch /tmp/backupsvr.lock
+  touch $RAMDISK/backupsvr.lock
 fi
 
 echo "****************** starting backup **********************"
@@ -72,6 +71,12 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           echo "Data' share not found!"
         else
           echo "syncing 'Data' share to $POOL drive..."
+          PERMS_PATH="$POOL/Data"
+          if [ ! -e /mnt/extbkps/$PERMS_PATH/perm_set.txt ]; then
+            echo "re-setting permissions..."
+            chown -R ben:shared /mnt/extbkps/$PERMS_PATH
+            touch /mnt/extbkps/$PERMS_PATH/perm_set.txt
+          fi
           rsync $CHECKSUM -aP \
           --exclude="Games/" --exclude="Software/**HD.img" \
           --exclude="Software/**VM.7z" --exclude="Software/**VM.zip" \
@@ -84,6 +89,12 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           echo "'Regions' share not found!"
         else
           echo "syncing 'Regions' share to $POOL drive..."
+          PERMS_PATH="$POOL/Regions"
+          if [ ! -e /mnt/extbkps/$PERMS_PATH/perm_set.txt ]; then
+            echo "re-setting permissions..."
+            chown -R ben:shared /mnt/extbkps/$PERMS_PATH
+            touch /mnt/extbkps/$PERMS_PATH/perm_set.txt
+          fi
           rsync $CHECKSUM -aP --exclude="Archive/ALUTqMiuxVtjfuair7WIgQ/" \
           /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
         fi
@@ -102,6 +113,12 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           echo "Data' share not found!"
         else
           echo "syncing 'Data' share to $POOL drive..."
+          PERMS_PATH="$POOL/Data"
+          if [ ! -e /mnt/extbkps/$PERMS_PATH/perm_set.txt ]; then
+            echo "re-setting permissions..."
+            chown -R ben:shared /mnt/extbkps/$PERMS_PATH
+            touch /mnt/extbkps/$PERMS_PATH/perm_set.txt
+          fi
           rsync $CHECKSUM -aP \
           /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
         fi
@@ -110,6 +127,12 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           echo "'Regions' share not found!"
         else
           echo "syncing 'Regions' share to $POOL drive..."
+          PERMS_PATH="$POOL/Regions"
+          if [ ! -e /mnt/extbkps/$PERMS_PATH/perm_set.txt ]; then
+            echo "re-setting permissions..."
+            chown -R ben:shared /mnt/extbkps/$PERMS_PATH
+            touch /mnt/extbkps/$PERMS_PATH/perm_set.txt
+          fi
           rsync $CHECKSUM -aP \
           /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
         fi
@@ -118,6 +141,12 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           echo "'Media' share not found!"
         else
           echo "syncing 'Media' share to $POOL drive..."
+          PERMS_PATH="$POOL/Media"
+          if [ ! -e /mnt/extbkps/$PERMS_PATH/perm_set.txt ]; then
+            echo "re-setting permissions..."
+            chown -R ben:shared /mnt/extbkps/$PERMS_PATH
+            touch /mnt/extbkps/$PERMS_PATH/perm_set.txt
+          fi
           rsync -aP /mnt/media/ /mnt/extbkps/$POOL/Media/ -delete --delete-excluded
         fi
         ##### END BACKUP #####
@@ -181,7 +210,7 @@ sleep $WAIT_TIME
 ## Write drive detach trigger file
 touch $RAMDISK/detach_bkps.txt
 ## Unlock State File
-rm -f /tmp/backupsvr.lock
+rm -f $RAMDISK/backupsvr.lock
 
 ## Wait for drives to detach
 echo "wait $WAIT_TIME second(s) for drives to detach."
@@ -195,13 +224,13 @@ echo "****************** backup complete **********************"
 
 }
 
-### Only run if server user
-if [ "$USER" != "server" ]; then
-  echo "this script should only be ran by 'server' user, exiting..."
+### Only run if specific user
+if [ "$USER" != "ben" ]; then
+  echo "incorrect user, exiting..."
   exit
 fi
 
-if [[ $REPLY == "last_backup_dates" ]]
+if [[ $CMD == "last_backup_dates" ]]
 then
   echo " " 
   echo "last backup dates: "
@@ -212,7 +241,7 @@ then
   exit
 fi
 
-REGROOT="/home/server/.regions"
+REGROOT="/home/ben/.regions"
 
 PATHMOUNTED() { findmnt --target "$1" >/dev/null;} 
 
@@ -233,7 +262,7 @@ function UMNT_FUSEFS () {
 function MNT_FUSEFS () {
   VOLNME="$1"
   FUSEPTH="$REGROOT/$VOLNME"
-  FUSEPWD="/mnt/ramdisk/fusearch.txt"
+  FUSEPWD="$RAMDISK/fusearch.txt"
   UMNT_FUSEFS "$VOLNME"
   echo "attaching $VOLNME..."
   mkdir -p "$FUSEPTH"
@@ -252,19 +281,19 @@ function MNT_FUSEFS () {
 }
 
 ## Archive Region
-if [[ $REPLY == "mnt_arch_region" ]]
+if [[ $CMD == "mnt_arch_region" ]]
 then
   MNT_FUSEFS "Archive"
   exit
 fi
 ## Volumes Region
-if [[ $REPLY == "mnt_vol_region" ]]
+if [[ $CMD == "mnt_vol_region" ]]
 then
   MNT_FUSEFS "Volumes"
   exit
 fi
 ## Detach FUSE Regions
-if [[ $REPLY == "unmnt_all_fuse" ]]
+if [[ $CMD == "unmnt_all_fuse" ]]
 then
   UMNT_FUSEFS "Archive"
   UMNT_FUSEFS "Volumes"
@@ -272,17 +301,17 @@ then
 fi
 
 ## RAM Disk Region
-if [ $REPLY == "mnt_ram_region" ]
+if [ $CMD == "mnt_ram_region" ]
 then
   if [ ! -e "$REGROOT/RAM" ]; then
     echo "attaching RAM disk region..."
-    ln -s /mnt/ramdisk $REGROOT/RAM
+    ln -s $RAMDISK $REGROOT/RAM
   else
     echo "already attached."    
   fi
   exit
 fi
-if [ $REPLY == "unmnt_ram_region" ]
+if [ $CMD == "unmnt_ram_region" ]
 then
   if [ -e "$REGROOT/RAM" ]; then
     echo "detaching RAM disk region..."
@@ -294,7 +323,7 @@ then
 fi
 
 ## Snapshots Region
-if [ $REPLY == "mnt_snap_region" ]
+if [ $CMD == "mnt_snap_region" ]
 then
   if [ ! -e "$REGROOT/Snapshots" ]; then
     echo "attaching ZFS snapshots region..."
@@ -304,7 +333,7 @@ then
   fi
   exit
 fi
-if [ $REPLY == "unmnt_snap_region" ]
+if [ $CMD == "unmnt_snap_region" ]
 then
   if [ -e "$REGROOT/Snapshots" ]; then
     echo "detaching ZFS snapshots region..."
@@ -316,7 +345,7 @@ then
 fi
 
 ## External Region 
-if [ $REPLY == "mnt_ext_region" ]
+if [ $CMD == "mnt_ext_region" ]
 then
   if [ ! -e "$REGROOT/External" ]; then
     echo "attaching external region..."
@@ -326,7 +355,7 @@ then
   fi
   exit
 fi
-if [ $REPLY == "unmnt_ext_region" ]
+if [ $CMD == "unmnt_ext_region" ]
 then
   if [ -e "$REGROOT/External" ]; then
     echo "detaching external region..."
@@ -338,7 +367,7 @@ then
 fi
 
 ## Copy To Media
-if [[ $REPLY == "scratchcopy" ]]
+if [[ $CMD == "scratchcopy" ]]
 then
   if [ -e "/mnt/media/Downloads" ]; then
   	rsync -aPv --exclude='*humbs.db' --exclude='*esktop.ini' \
@@ -349,7 +378,7 @@ then
   fi
   exit
 fi
-if [[ $REPLY == "git_push" ]]
+if [[ $CMD == "git_push" ]]
 then
   TIMESTMP=$(date '+%Y-%m-%d %H:%M')
   echo "uploading all changes to GitHub..."
@@ -364,14 +393,14 @@ then
   exit
 fi
 
-if [[ $REPLY == "lastlog" ]]
+if [[ $CMD == "lastlog" ]]
 then
   lastlog
   echo ""   
   exit
 fi
 
-if [[ $REPLY == "clearlog" ]]
+if [[ $CMD == "clearlog" ]]
 then
   truncate -s 0 $LOGFILE
   neofetch --ascii_distro debian | \
@@ -380,21 +409,21 @@ then
   exit
 fi
 
-if [[ $REPLY == "backupstd" ]]
+if [[ $CMD == "backupstd" ]]
 then
   CHECKSUM="no"
   BACKUPSVR
   exit
 fi
 
-if [[ $REPLY == "backupchk" ]]
+if [[ $CMD == "backupchk" ]]
 then
   CHECKSUM="yes"
   BACKUPSVR
   exit
 fi
 
-if [[ $REPLY == "netscan" ]]
+if [[ $CMD == "netscan" ]]
 then
   echo "** network scan **"
   nmap --unprivileged -v --open -PT 10.177.1.0/24

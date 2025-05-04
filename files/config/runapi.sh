@@ -2,21 +2,20 @@
 ###########################################################
 ###########################################################
 ## Launcher for WWW actions script
-REPLY="$1"
-ARG="$2"
-RAMDISK="/home/server/.html/RAM"
+CALL="$1"
+RAMDISK="/mnt/ramdisk"
 LOGFILE="$RAMDISK/sysout.txt"
-if [[ "$REPLY" == "" ]]
+if [[ "$CALL" == "" ]]
 then
   echo "no argument."
   exit
 fi
 if [[ "$ARG" == "" ]]
 then
-  ARG="placeholder"
+  ARG="NULL"
 fi
-## Run in background
-nohup /usr/bin/www.sh $REPLY $ARG $RAMDISK $LOGFILE &>> $LOGFILE &
+## run-as specific user
+/usr/bin/sudo -u ben /usr/bin/apicmds $CALL $RAMDISK $LOGFILE &>> $LOGFILE
 TRAILER=$(date)
 TRAILER+=" ("
 TRAILER+=$(hostname)

@@ -1,4 +1,3 @@
 ## Files Mountpoints Configuration
 
-/mnt/ramdisk          /home/server/.html/RAM     auto defaults,nofail,nobootwait,bind 0 2
 /mnt/.regions/SFTP    /home/ben/SFTP             auto defaults,nofail,nobootwait,bind 0 2

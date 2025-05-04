@@ -12,7 +12,7 @@ apt-get install -y --no-upgrade --ignore-missing unzip wget \
  rsync curl screen scrub ethtool aptitude sudo samba sshpass \
  libdbus-1-dev libdbus-glib-1-dev bc git locales mailutils \
  neofetch apt-transport-https nmap bpytop binutils iperf3 cron \
- cron-daemon-common fuse gocryptfs
+ cron-daemon-common fuse gocryptfs inotify-tools
 
 ## Process Monitor
 if [ ! -e /usr/local/bin/htop ]; then
@@ -44,78 +44,60 @@ cp /tmp/config/authorized_keys /root/.ssh/
 chown root:root /root/.ssh/authorized_keys
 chmod 644 /root/.ssh/authorized_keys
 
-## SSH key for server user
-if [ ! -e /home/server ]; then
-  echo "Creating server home directory..."
-  mkdir -p /home/server
-  chown -R server:server /home/server
+## Disable interactive login
+usermod --shell /sbin/nologin ben
+usermod --shell /sbin/nologin media
+usermod --shell /sbin/nologin monitor
+
+## Disable password login
+passwd -d root
+passwd -d monitor
+
+if [ ! -e /home/ben ]; then
+  echo "Creating [ben] home folder..."
+  mkdir -p /home/ben
+  chown root:root /home/ben
+  usermod --home /home/ben ben
+fi
+if [ ! -e /home/ben/.regions ]; then
+  mkdir -p /home/ben/.regions
+  chown ben:shared /home/ben/.regions
+  chmod g+rx /home/ben/.regions
+fi
+if [ ! -e /home/media ]; then
+  echo "Creating [media] home folder..."
+  mkdir -p /home/media
+  chown root:root /home/media
+  usermod --home /home/media media
 fi
 
-## Regions Shared Folder
-if [ ! -e /home/server/.regions ]; then
-  mkdir -p /home/server/.regions
-  chown server:server /home/server/.regions
-  chmod g+rx /home/server/.regions
-fi
-
-## LightTPD Web Server
-apt-get install -y --no-upgrade lighttpd php-cgi php php-common
-cp -f /tmp/config/lighttpd.conf /etc/lighttpd
-chmod 644 /etc/lighttpd/lighttpd.conf
-chown root:root /etc/lighttpd/lighttpd.conf
-lighttpd-enable-mod fastcgi fastcgi-php
-lighty-enable-mod fastcgi-php
-systemctl disable lighttpd
-systemctl restart lighttpd
-
-## Base website files
-rm -rvf /var/www/html
-mkdir -p /var/www/sessions
-chmod -R g+rx /var/www/sessions
-chown -R www-data:www-data /var/www/sessions
-mkdir -p /var/www/uploads
-chmod -R g+rx /var/www/uploads
-chown -R www-data:www-data /var/www/uploads
-if [ ! -e /home/server/.html ]; then
-  mkdir -p /home/server/.html
-  chown www-data:www-data /home/server/.html
-  chmod g+rx /home/server/.html
-fi
-
-## Link external resources to web server
-cp -f /tmp/config/exec.php /home/server/.html/
-chmod +x /home/server/.html/exec.php
-chown root:root /home/server/.html/exec.php
-
-## WWW Permissions allow running as server user
+## permissions allow running scripts as elevated (ben) user
 rm -f /etc/sudoers.d/www-perms
 sh -c "touch /etc/sudoers.d/www-perms"
-sh -c "echo \"www-data ALL=(server) NOPASSWD:/usr/bin/wwwrun\" >> /etc/sudoers.d/www-perms"
+sh -c "echo \"monitor ALL=(ben) NOPASSWD:/usr/bin/apicmds\" >> /etc/sudoers.d/www-perms"
 chown root:root /etc/sudoers.d/www-perms
 chmod u=rwx,g=rx,o=rx /etc/sudoers.d/www-perms
 chmod u=r,g=r,o= /etc/sudoers.d/www-perms
 rm -f /etc/sudoers.d/nobody-perms
 
-### WWW Shell Commands
-cp -f /tmp/config/www.sh /usr/bin/
-chmod +x /usr/bin/www.sh
-chown root:root /usr/bin/www.sh
-cp -f /tmp/config/wwwrun /usr/bin/
-chmod +x /usr/bin/wwwrun
-chown root:root /usr/bin/wwwrun
+## API commands
+cp -f /tmp/config/apicmds.sh /usr/bin/apicmds
+chmod +x /usr/bin/apicmds
+chown root:root /usr/bin/apicmds
+cp -f /tmp/config/runapi.sh /usr/bin/runapi
+chmod +x /usr/bin/runapi
+chown root:root /usr/bin/runapi
+cp -f /tmp/config/file_monitor.sh /usr/bin/file_monitor
+chmod +x /usr/bin/file_monitor
+chown root:root /usr/bin/file_monitor
 cp -f /tmp/config/savebookmarks.sh /usr/bin/savebookmarks
 chmod +x /usr/bin/savebookmarks
 chown root:root /usr/bin/savebookmarks
 
 ## Server Git Configuration 
-cp /tmp/config/git.config /home/server/.gitconfig
-chown server:server /home/server/.gitconfig
-chmod 600 /home/server/.gitconfig
-
-## Remove Passwords
-passwd -d root
-passwd -d server
-passwd -d media
+cp /tmp/config/git.config /home/ben/.gitconfig
+chown ben:shared /home/ben/.gitconfig
+chmod 600 /home/ben/.gitconfig
 
 ## SSH Configuration
 cp /tmp/config/sshd_config /etc/ssh
@@ -156,6 +138,12 @@ chmod 755 /etc/rc.local
 chown root:root /etc/rc.local
 systemctl enable rc-local
 
+## Startup Configuration
+cp /tmp/config/file-monitor.service /etc/systemd/system/
+chmod 644 /etc/systemd/system/file-monitor.service
+chown root:root /etc/systemd/system/file-monitor.service
+systemctl restart file-monitor
+
 ## Main Cron Timer
 cp /tmp/config/rootcron.sh /etc/cron.d/rootcron
 chmod 644 /etc/cron.d/rootcron
@@ -193,7 +181,4 @@ chmod 777 /mnt/ramdisk/drives.txt
 ## Clean-up
 systemctl daemon-reload
 rm -r /tmp/config/
-apt-get autoremove -y
-sleep 2.5
-apt-get autoclean -y
 exit

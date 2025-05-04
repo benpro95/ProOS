@@ -1,0 +1,12 @@
+[Unit]
+Description=File Monitor API Trigger
+After=local-fs.target network.target
+
+[Service]
+User=monitor
+Group=monitor
+ExecStart=/usr/bin/file_monitor
+StandardOutput=append:/home/monitor/file_monitor.log
+Type=simple
+Restart=on-failure
+RestartSec=5

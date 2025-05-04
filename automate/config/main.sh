@@ -521,18 +521,7 @@ exit
 
 server)
 ## Read argument
-_SEC_ARG=${SEC_ARG//$'\n'/} 
-SERVERARG=${_SEC_ARG%-*}
-FILESCMD=${_SEC_ARG#*-}
-## transmit action to file server
-if [ "$SERVERARG" == "files" ]; then
-  if [ "$FILESCMD" != "" ]; then
-    TARGET="$FILES_IP"; 
-    XMITCMD="$FILESCMD"; 
-    CALLAPI
-  fi  
-  exit
-fi
+SERVERARG=${SEC_ARG//$'\n'/} 
 ## start / stop legacy services
 if [ "$SERVERARG" == "startlegacy" ]; then
   echo "Starting legacy services..." &>> $LOGFILE
@@ -549,7 +538,7 @@ if [ "$SERVERARG" == "stoplegacy" ]; then
   exit
 fi
 ## Pass action file to the hypervisor
-echo "action $SERVERARG submitted." &>> $LOGFILE
+echo "$SERVERARG sent." &>> $LOGFILE
 touch $RAMDISK/$SERVERARG.txt
 exit
 ;;

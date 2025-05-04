@@ -53,23 +53,37 @@ usermod --shell /sbin/nologin monitor
 passwd -d root
 passwd -d monitor
 
-if [ ! -e /home/ben ]; then
-  echo "Creating [ben] home folder..."
-  mkdir -p /home/ben
-  chown ben:shared /home/ben
-  usermod --home /home/ben ben
-fi
-if [ ! -e /home/ben/.regions ]; then
-  mkdir -p /home/ben/.regions
-  chown ben:shared /home/ben/.regions
-  chmod g+rx /home/ben/.regions
-fi
 if [ ! -e /home/media ]; then
   echo "Creating [media] home folder..."
   mkdir -p /home/media
   chown media:shared /home/media
   usermod --home /home/media media
 fi
+
+## Main user configuration
+HOMEDIR="/home/ben"
+if [ ! -e "$HOMEDIR" ]; then
+  echo "Creating [ben] home folder..."
+  mkdir -p "$HOMEDIR"
+  chown ben:shared "$HOMEDIR"
+  usermod --home "$HOMEDIR" ben
+fi
+if [ ! -e "$HOMEDIR/.regions" ]; then
+  mkdir -p $HOMEDIR/.regions
+  chown ben:shared $HOMEDIR/.regions
+  chmod g+rx $HOMEDIR/.regions
+fi
+
+## Git configuration
+cp /tmp/config/git.config $HOMEDIR/.gitconfig
+chown ben:shared $HOMEDIR/.gitconfig
+chmod 644 $HOMEDIR/.gitconfig
+mkdir -p $HOMEDIR/.ssh
+chmod 700 $HOMEDIR/.ssh
+cp -f /tmp/config/github.pub $HOMEDIR/.ssh/id_rsa.pub
+cp -f /tmp/config/github.rsa $HOMEDIR/.ssh/id_rsa
+chmod 600 $HOMEDIR/.ssh/id_rsa
+chown -R ben:shared $HOMEDIR/.ssh
 
 ## permissions allow running scripts as elevated (ben) user
 rm -f /etc/sudoers.d/www-perms
@@ -93,18 +107,6 @@ chown root:root /usr/bin/file_monitor
 cp -f /tmp/config/savebookmarks.sh /usr/bin/savebookmarks
 chmod +x /usr/bin/savebookmarks
 chown root:root /usr/bin/savebookmarks
-
-## Server Git Configuration
-HOMEDIR="/home/ben"
-cp /tmp/config/git.config $HOMEDIR/.gitconfig
-chown ben:shared $HOMEDIR/.gitconfig
-chmod 644 $HOMEDIR/.gitconfig
-mkdir -p $HOMEDIR/.ssh
-chmod 700 $HOMEDIR/.ssh
-cp -f /tmp/config/github.pub $HOMEDIR/.ssh/id_rsa.pub
-cp -f /tmp/config/github.rsa $HOMEDIR/.ssh/id_rsa
-chmod 600 $HOMEDIR/.ssh/id_rsa
-chown -R ben:shared $HOMEDIR/.ssh
 
 ## SSH Configuration
 cp /tmp/config/sshd_config /etc/ssh

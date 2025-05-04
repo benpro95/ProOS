@@ -94,14 +94,17 @@ cp -f /tmp/config/savebookmarks.sh /usr/bin/savebookmarks
 chmod +x /usr/bin/savebookmarks
 chown root:root /usr/bin/savebookmarks
 
-## Server Git Configuration 
-cp /tmp/config/git.config /home/ben/.gitconfig
-chown ben:shared /home/ben/.gitconfig
-chmod 644 /home/ben/.gitconfig
-cp -f /tmp/config/github.pub /home/ben/.ssh/id_rsa.pub
-cp -f /tmp/config/github.rsa /home/ben/.ssh/id_rsa
-chown ben:ben /home/ben/.ssh/id_rsa
-chmod 600 /home/ben/.ssh/id_rsa
+## Server Git Configuration
+HOMEDIR="/home/ben"
+cp /tmp/config/git.config $HOMEDIR/.gitconfig
+chown ben:shared $HOMEDIR/.gitconfig
+chmod 644 $HOMEDIR/.gitconfig
+mkdir -p $HOMEDIR/.ssh
+chmod 700 $HOMEDIR/.ssh
+cp -f /tmp/config/github.pub $HOMEDIR/.ssh/id_rsa.pub
+cp -f /tmp/config/github.rsa $HOMEDIR/.ssh/id_rsa
+chmod 600 $HOMEDIR/.ssh/id_rsa
+chown -R ben:shared $HOMEDIR/.ssh
 
 ## SSH Configuration
 cp /tmp/config/sshd_config /etc/ssh

@@ -71,12 +71,6 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           echo "Data' share not found!"
         else
           echo "syncing 'Data' share to $POOL drive..."
-          PERMS_PATH="$POOL/Data"
-          if [ ! -e /mnt/extbkps/$PERMS_PATH/perm_set.txt ]; then
-            echo "re-setting permissions..."
-            chown -R ben:shared /mnt/extbkps/$PERMS_PATH
-            touch /mnt/extbkps/$PERMS_PATH/perm_set.txt
-          fi
           rsync $CHECKSUM -aP \
           --exclude="Games/" --exclude="Software/**HD.img" \
           --exclude="Software/**VM.7z" --exclude="Software/**VM.zip" \
@@ -89,12 +83,6 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           echo "'Regions' share not found!"
         else
           echo "syncing 'Regions' share to $POOL drive..."
-          PERMS_PATH="$POOL/Regions"
-          if [ ! -e /mnt/extbkps/$PERMS_PATH/perm_set.txt ]; then
-            echo "re-setting permissions..."
-            chown -R ben:shared /mnt/extbkps/$PERMS_PATH
-            touch /mnt/extbkps/$PERMS_PATH/perm_set.txt
-          fi
           rsync $CHECKSUM -aP --exclude="Archive/ALUTqMiuxVtjfuair7WIgQ/" \
           /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
         fi
@@ -113,12 +101,6 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           echo "Data' share not found!"
         else
           echo "syncing 'Data' share to $POOL drive..."
-          PERMS_PATH="$POOL/Data"
-          if [ ! -e /mnt/extbkps/$PERMS_PATH/perm_set.txt ]; then
-            echo "re-setting permissions..."
-            chown -R ben:shared /mnt/extbkps/$PERMS_PATH
-            touch /mnt/extbkps/$PERMS_PATH/perm_set.txt
-          fi
           rsync $CHECKSUM -aP \
           /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
         fi
@@ -127,12 +109,6 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           echo "'Regions' share not found!"
         else
           echo "syncing 'Regions' share to $POOL drive..."
-          PERMS_PATH="$POOL/Regions"
-          if [ ! -e /mnt/extbkps/$PERMS_PATH/perm_set.txt ]; then
-            echo "re-setting permissions..."
-            chown -R ben:shared /mnt/extbkps/$PERMS_PATH
-            touch /mnt/extbkps/$PERMS_PATH/perm_set.txt
-          fi
           rsync $CHECKSUM -aP \
           /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
         fi
@@ -141,12 +117,6 @@ for _POOL in "${ZFSPOOLS[@]}"; do
           echo "'Media' share not found!"
         else
           echo "syncing 'Media' share to $POOL drive..."
-          PERMS_PATH="$POOL/Media"
-          if [ ! -e /mnt/extbkps/$PERMS_PATH/perm_set.txt ]; then
-            echo "re-setting permissions..."
-            chown -R ben:shared /mnt/extbkps/$PERMS_PATH
-            touch /mnt/extbkps/$PERMS_PATH/perm_set.txt
-          fi
           rsync -aP /mnt/media/ /mnt/extbkps/$POOL/Media/ -delete --delete-excluded
         fi
         ##### END BACKUP #####

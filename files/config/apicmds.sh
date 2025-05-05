@@ -17,183 +17,6 @@ function SAVEBKPDATES () {
   CURBKPDTES+=( $_CURBKPLNE )
 }
 
-function BACKUPSVR () {
-############################################
-#### Server Backup Program #################
-
-## Time to wait for PVE action timer
-WAIT_TIME=60
-
-### Lock file
-if [ -f "$RAMDISK/backupsvr.lock" ]; then
-  echo "already running!"
-  echo "delete '$RAMDISK/backupsvr.lock' to remove lock if program failed"
-  return
-else
-  touch $RAMDISK/backupsvr.lock
-fi
-
-echo "****************** starting backup **********************"
-echo " "
-
-## Turn on LED
-/usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 5 \
- --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive \
- --url "http://ledwall.home/exec.php?var=&arg=whtledon&action=main" > /dev/null 2>&1 &
-
-if [[ "$CHECKSUM" == "yes" ]]
-then
-  echo "checksum compare option selected, this backup will take awhile!"
-  echo " "
-  CHECKSUM="--checksum"
-else
-  CHECKSUM="" 
-fi
-
-## Read Backup Drive Names
-readarray -t ZFSPOOLS < $RAMDISK/drives.txt
-
-#######################
-#######################
-## Backup #############
-for _POOL in "${ZFSPOOLS[@]}"; do
-  ## Remove Invalid Characters
-  POOL=$(echo $_POOL | sed -e 's/\r//g')
-  if [ ! "$POOL" == "" ]; then
-    ## USB Flash Drives
-    if [[ ${POOL::3} == "usb" ]]; then
-      #################################
-      if [ ! -e /mnt/extbkps/$POOL/Data ]; then
-        echo "flash drive not connected $POOL"
-      else
-        #### Data Share ####
-        if [ ! -e /mnt/data/ProOS ]; then
-          echo "Data' share not found!"
-        else
-          echo "syncing 'Data' share to $POOL drive..."
-          rsync $CHECKSUM -aP \
-          --exclude="Games/" --exclude="Software/**HD.img" \
-          --exclude="Software/**VM.7z" --exclude="Software/**VM.zip" \
-          --exclude="Software/**HD.7z" --exclude="Software/**HD.zip" \
-          --exclude="Software/**.adi" --exclude="Software/**.vmdk" \
-          /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
-        fi
-        #### Regions Share ####
-        if [ ! -e /mnt/.regions/SFTP ]; then
-          echo "'Regions' share not found!"
-        else
-          echo "syncing 'Regions' share to $POOL drive..."
-          rsync $CHECKSUM -aP --exclude="Archive/ALUTqMiuxVtjfuair7WIgQ/" \
-          /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
-        fi
-        ##### END BACKUP #####
-        SAVEBKPDATES "$POOL"
-      fi  
-    fi
-    ## Hard Drives
-    if [[ ${POOL::3} == "hdd" ]]; then
-      #################################
-      if [ ! -e /mnt/extbkps/$POOL/Data ]; then
-        echo "hard drive not connected $POOL"
-      else      
-        #### Data Share ####
-        if [ ! -e /mnt/data/ProOS ]; then
-          echo "Data' share not found!"
-        else
-          echo "syncing 'Data' share to $POOL drive..."
-          rsync $CHECKSUM -aP \
-          /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
-        fi
-        #### Regions Share ####
-        if [ ! -e /mnt/.regions/SFTP ]; then
-          echo "'Regions' share not found!"
-        else
-          echo "syncing 'Regions' share to $POOL drive..."
-          rsync $CHECKSUM -aP \
-          /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
-        fi
-        #### Media Share ####
-        if [ ! -e /mnt/media/Music ]; then
-          echo "'Media' share not found!"
-        else
-          echo "syncing 'Media' share to $POOL drive..."
-          rsync -aP /mnt/media/ /mnt/extbkps/$POOL/Media/ -delete --delete-excluded
-        fi
-        ##### END BACKUP #####
-        SAVEBKPDATES "$POOL"
-      fi
-    fi
-    echo "" 
-  fi  
-done
-
-if [ -f "$STATUSFILE" ]; then
-  ## Read status file into array
-  echo " " 
-  echo "last backup dates: "
-  readarray -t STATFILEARR < "$STATUSFILE"
-  for STATFILE_LAST in "${STATFILEARR[@]}"; do
-    echo "$STATFILE_LAST"
-  done
-  ## Backup last file
-  cp -f "$STATUSFILE" "$STATUSFILE.bak"
-  ## Delete status files content
-  truncate -s 0 "$STATUSFILE"
-  ## Read through each item in current drive status array
-  for CURBKP_ITEM in ${CURBKPDTES[@]}; do
-    ENTRY_FOUND=""
-    CURBKP_DRIVE=${CURBKP_ITEM%|*}
-    CURBKP_DATE=${CURBKP_ITEM#*|}
-    ## Read through each item in status file array
-    for STATIDX in "${!STATFILEARR[@]}"; do
-      STATFILE_ITEM=${STATFILEARR[$STATIDX]}
-      STATFILE_DRIVE=${STATFILE_ITEM%|*}
-      STATFILE_DATE=${STATFILE_ITEM#*|}
-      ## Scan for matching drive entry
-      if [[ "$STATFILE_DRIVE" == "$CURBKP_DRIVE" ]]; then
-        ## Update existing entry
-        STATFILEARR[$STATIDX]="$STATFILE_DRIVE|$CURBKP_DATE"
-        ENTRY_FOUND="yes"
-        break
-      fi
-    done
-    ## Add new entry if no exisiting data found
-    if [[ "$ENTRY_FOUND" != "yes" ]]; then
-      STATFILEARR+=("$CURBKP_DRIVE|$CURBKP_DATE")
-    fi
-  done
-  ## Write array to new file
-  echo " " 
-  echo "current backup dates: "
-  for NEWSTATFILE_ITEM in "${STATFILEARR[@]}"; do
-    echo "$NEWSTATFILE_ITEM" >> "$STATUSFILE"
-    echo "$NEWSTATFILE_ITEM"
-  done
-  echo " "
-fi
-
-################################
-## Wait for drives to settle after backup complete
-echo "triggering drive detach in $WAIT_TIME second(s)."
-sleep $WAIT_TIME
-
-## Write drive detach trigger file
-touch $RAMDISK/detach_bkps.txt
-## Unlock State File
-rm -f $RAMDISK/backupsvr.lock
-
-## Wait for drives to detach
-echo "wait $WAIT_TIME second(s) for drives to detach."
-
-## Turn off LED
-/usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 30 \
- --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive \
- --url "http://ledwall.home/exec.php?var=&arg=whtledoff&action=main" > /dev/null 2>&1 &
-
-echo "****************** backup complete **********************"
-
-}
-
 ### Only run if specific user
 if [ "$USER" != "ben" ]; then
   echo "incorrect user, exiting..."
@@ -278,7 +101,7 @@ then
     echo "attaching RAM disk region..."
     ln -s $RAMDISK $REGROOT/RAM
   else
-    echo "already attached."    
+    echo "RAM already attached."    
   fi
   exit
 fi
@@ -288,7 +111,7 @@ then
     echo "detaching RAM disk region..."
     rm $REGROOT/RAM
   else
-    echo "not attached."    
+    echo "RAM not attached."    
   fi
   CMD="unmnt_all"
 fi
@@ -300,7 +123,7 @@ then
     echo "attaching ZFS snapshots region..."
     ln -s /mnt/snapshots $REGROOT/Snapshots
   else
-    echo "already attached."
+    echo "snapshots already attached."
   fi
   exit
 fi
@@ -310,7 +133,7 @@ then
     echo "detaching ZFS snapshots region..."
     rm $REGROOT/Snapshots
   else
-    echo "not attached." 
+    echo "snapshots not attached." 
   fi
   CMD="unmnt_all"
 fi
@@ -322,7 +145,7 @@ then
     echo "attaching external region..."
     ln -s /mnt/extbkps $REGROOT/External
   else
-    echo "already attached."
+    echo "external already attached."
   fi
   exit
 fi
@@ -332,7 +155,7 @@ then
     echo "detaching external region..."
     rm $REGROOT/External
   else
-    echo "not attached." 
+    echo "external not attached." 
   fi
   CMD="unmnt_all"
 fi
@@ -344,7 +167,7 @@ then
     echo "attaching cameras region..."
     ln -s /mnt/scratch/cameras $REGROOT/Cameras
   else
-    echo "already attached."
+    echo "cameras already attached."
   fi
   exit
 fi
@@ -354,7 +177,29 @@ then
     echo "detaching cameras region..."
     rm $REGROOT/Cameras
   else
-    echo "not attached." 
+    echo "cameras not attached." 
+  fi
+  CMD="unmnt_all"
+fi
+
+## Documents Region
+if [[ $CMD == "mnt_docs_region" ]]
+then
+  if [ ! -e "$REGROOT/Documents" ]; then
+    echo "attaching documents region..."
+    ln -s /mnt/.regions/Documents $REGROOT/Documents
+  else
+    echo "documents already attached."
+  fi
+  exit
+fi
+if [[ $CMD == "unmnt_docs_region" || $CMD == "unmnt_all" ]]
+then
+  if [ -e "$REGROOT/Documents" ]; then
+    echo "detaching documents region..."
+    rm $REGROOT/Documents
+  else
+    echo "documents not attached." 
   fi
   CMD="unmnt_all"
 fi
@@ -404,25 +249,181 @@ then
   exit
 fi
 
-if [[ $CMD == "backupstd" ]]
-then
-  CHECKSUM="no"
-  BACKUPSVR
-  exit
-fi
-
-if [[ $CMD == "backupchk" ]]
-then
-  CHECKSUM="yes"
-  BACKUPSVR
-  exit
-fi
-
 if [[ $CMD == "netscan" ]]
 then
   echo "** network scan **"
   nmap --unprivileged -v --open -PT 10.177.1.0/24
   nmap --unprivileged -v --open -sn 10.177.1.0/24
+  exit
+fi
+
+## External Drive Backups ##
+if [[ $CMD == "backupstd" || $CMD == "backupchk" ]]
+then
+  ## Standard or Checksum RSYNC
+  if [[ $CMD == "backupstd" ]]
+  then
+    CHECKSUM=""
+  fi
+  if [[ $CMD == "backupchk" ]]
+  then
+    echo "checksum compare option selected, this backup will take awhile!"
+    CHECKSUM="--checksum"
+  fi
+  ## Time to wait for PVE response
+  WAIT_TIME=60
+  ### Lock file
+  if [ -f "$RAMDISK/backupsvr.lock" ]; then
+    echo "already running!"
+    echo "delete '$RAMDISK/backupsvr.lock' to remove lock if program failed"
+    return
+  else
+    touch $RAMDISK/backupsvr.lock
+  fi
+  echo "****************** starting backup **********************"
+  echo " "
+  ## Turn on LED
+  /usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 5 \
+  --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive \
+  --url "http://ledwall.home/exec.php?var=&arg=whtledon&action=main" > /dev/null 2>&1 &
+  ## Read Backup Drive Names
+  readarray -t ZFSPOOLS < $RAMDISK/drives.txt
+  #######################
+  #######################
+  ## RSYNC ##############
+  for _POOL in "${ZFSPOOLS[@]}"; do
+    ## Remove Invalid Characters
+    POOL=$(echo $_POOL | sed -e 's/\r//g')
+    if [ ! "$POOL" == "" ]; then
+      ## USB Flash Drives
+      if [[ ${POOL::3} == "usb" ]]; then
+        #################################
+        if [ ! -e /mnt/extbkps/$POOL/Data ]; then
+          echo "flash drive not connected $POOL"
+        else
+          #### Data Share ####
+          if [ ! -e /mnt/data/ProOS ]; then
+            echo "Data' share not found!"
+          else
+            echo "syncing 'Data' share to $POOL drive..."
+            rsync $CHECKSUM -aP \
+            --exclude="Games/" --exclude="Software/**HD.img" \
+            --exclude="Software/**VM.7z" --exclude="Software/**VM.zip" \
+            --exclude="Software/**HD.7z" --exclude="Software/**HD.zip" \
+            --exclude="Software/**.adi" --exclude="Software/**.vmdk" \
+            /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
+          fi
+          #### Regions Share ####
+          if [ ! -e /mnt/.regions/SFTP ]; then
+            echo "'Regions' share not found!"
+          else
+            echo "syncing 'Regions' share to $POOL drive..."
+            rsync $CHECKSUM -aP --exclude="Archive/ALUTqMiuxVtjfuair7WIgQ/" \
+            /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
+          fi
+          ##### END BACKUP #####
+          SAVEBKPDATES "$POOL"
+        fi  
+      fi
+      ## Hard Drives
+      if [[ ${POOL::3} == "hdd" ]]; then
+        #################################
+        if [ ! -e /mnt/extbkps/$POOL/Data ]; then
+          echo "hard drive not connected $POOL"
+        else      
+          #### Data Share ####
+          if [ ! -e /mnt/data/ProOS ]; then
+            echo "Data' share not found!"
+          else
+            echo "syncing 'Data' share to $POOL drive..."
+            rsync $CHECKSUM -aP \
+            /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
+          fi
+          #### Regions Share ####
+          if [ ! -e /mnt/.regions/SFTP ]; then
+            echo "'Regions' share not found!"
+          else
+            echo "syncing 'Regions' share to $POOL drive..."
+            rsync $CHECKSUM -aP \
+            /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
+          fi
+          #### Media Share ####
+          if [ ! -e /mnt/media/Music ]; then
+            echo "'Media' share not found!"
+          else
+            echo "syncing 'Media' share to $POOL drive..."
+            rsync -aP /mnt/media/ /mnt/extbkps/$POOL/Media/ -delete --delete-excluded
+          fi
+          ##### END BACKUP #####
+          SAVEBKPDATES "$POOL"
+        fi
+      fi
+      echo "" 
+    fi  
+  done
+  ################################
+  ################################
+  ## Write backup dates to file ##
+  if [ -f "$STATUSFILE" ]; then
+    ## Read status file into array
+    echo " " 
+    echo "last backup dates: "
+    readarray -t STATFILEARR < "$STATUSFILE"
+    for STATFILE_LAST in "${STATFILEARR[@]}"; do
+      echo "$STATFILE_LAST"
+    done
+    ## Backup last file
+    cp -f "$STATUSFILE" "$STATUSFILE.bak"
+    ## Delete status files content
+    truncate -s 0 "$STATUSFILE"
+    ## Read through each item in current drive status array
+    for CURBKP_ITEM in ${CURBKPDTES[@]}; do
+      ENTRY_FOUND=""
+      CURBKP_DRIVE=${CURBKP_ITEM%|*}
+      CURBKP_DATE=${CURBKP_ITEM#*|}
+      ## Read through each item in status file array
+      for STATIDX in "${!STATFILEARR[@]}"; do
+        STATFILE_ITEM=${STATFILEARR[$STATIDX]}
+        STATFILE_DRIVE=${STATFILE_ITEM%|*}
+        STATFILE_DATE=${STATFILE_ITEM#*|}
+        ## Scan for matching drive entry
+        if [[ "$STATFILE_DRIVE" == "$CURBKP_DRIVE" ]]; then
+          ## Update existing entry
+          STATFILEARR[$STATIDX]="$STATFILE_DRIVE|$CURBKP_DATE"
+          ENTRY_FOUND="yes"
+          break
+        fi
+      done
+      ## Add new entry if no exisiting data found
+      if [[ "$ENTRY_FOUND" != "yes" ]]; then
+        STATFILEARR+=("$CURBKP_DRIVE|$CURBKP_DATE")
+      fi
+    done
+    ## Write array to new file
+    echo " " 
+    echo "current backup dates: "
+    for NEWSTATFILE_ITEM in "${STATFILEARR[@]}"; do
+      echo "$NEWSTATFILE_ITEM" >> "$STATUSFILE"
+      echo "$NEWSTATFILE_ITEM"
+    done
+    echo " "
+  fi
+  ################################
+  ################################
+  ## Wait for drives to settle after backup complete ##
+  echo "triggering drive detach in $WAIT_TIME second(s)."
+  sleep $WAIT_TIME
+  ## Write drive detach trigger file
+  touch $RAMDISK/detach_bkps.txt
+  ## Unlock State File
+  rm -f $RAMDISK/backupsvr.lock
+  ## Wait for drives to detach
+  echo "wait $WAIT_TIME second(s) for drives to detach."
+  ## Turn off LED
+  /usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 30 \
+  --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive \
+  --url "http://ledwall.home/exec.php?var=&arg=whtledoff&action=main" > /dev/null 2>&1 &
+  echo "****************** backup complete **********************"
   exit
 fi
 

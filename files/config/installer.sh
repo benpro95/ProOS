@@ -52,31 +52,38 @@ passwd -d monitor
 usermod --shell /sbin/nologin monitor
 
 ## Media user configuration
-mkdir -p /home/media
-chown root:shared /home/media
-usermod --home /home/media media
-usermod --shell /sbin/nologin media
+LXUSER="media"
+HOMEDIR="/home/$LXUSER"
+mkdir -p $HOMEDIR
+chown root:shared $HOMEDIR
+usermod --home $HOMEDIR $LXUSER
+usermod --shell /sbin/nologin $LXUSER
 
 ## Ben user configuration
-HOMEDIR="/home/ben"
-mkdir -p "$HOMEDIR"
-chown root:shared "$HOMEDIR"
-usermod --home "$HOMEDIR" ben
-usermod --shell /sbin/nologin ben
+LXUSER="ben"
+HOMEDIR="/home/$LXUSER"
+mkdir -p $HOMEDIR
+chown root:shared $HOMEDIR
+usermod --home $HOMEDIR $LXUSER
+usermod --shell /sbin/nologin $LXUSER
 mkdir -p $HOMEDIR/.regions
-chown ben:shared $HOMEDIR/.regions
+chown $LXUSER:shared $HOMEDIR/.regions
 chmod g+rx $HOMEDIR/.regions
-
-## Git configuration
-cp /tmp/config/git.config $HOMEDIR/.gitconfig
-chown ben:shared $HOMEDIR/.gitconfig
-chmod 644 $HOMEDIR/.gitconfig
+chown root:shared $HOMEDIR/SFTP
+## Github configuration
+rm -f $HOMEDIR/.gitconfig
+mkdir -p $HOMEDIR/.config
+mkdir -p $HOMEDIR/.config/git
+cp /tmp/config/git.config $HOMEDIR/.config/git/config
+chmod 644 $HOMEDIR/.config/git/config
+chown -R $LXUSER:shared $HOMEDIR/.config
+## Github SSH keys
 mkdir -p $HOMEDIR/.ssh
 chmod 700 $HOMEDIR/.ssh
 cp -f /tmp/config/github.pub $HOMEDIR/.ssh/id_rsa.pub
 cp -f /tmp/config/github.rsa $HOMEDIR/.ssh/id_rsa
 chmod 600 $HOMEDIR/.ssh/id_rsa
-chown -R ben:shared $HOMEDIR/.ssh
+chown -R $LXUSER:shared $HOMEDIR/.ssh
 
 ## permissions allow running scripts as elevated (ben) user
 rm -f /etc/sudoers.d/www-perms

@@ -389,7 +389,6 @@ then
   git add .
   git commit -m "$TIMESTMP"
   git push
-  cd -
   exit
 fi
 

@@ -211,6 +211,7 @@ then
   exit
 fi
 
+## BEGIN REGIONS ##
 REGROOT="/home/ben/.regions"
 
 PATHMOUNTED() { findmnt --target "$1" >/dev/null;} 
@@ -263,15 +264,15 @@ then
   exit
 fi
 ## Detach FUSE Regions
-if [[ $CMD == "unmnt_all_fuse" ]]
+if [[ $CMD == "unmnt_all_fuse" || $CMD == "unmnt_all" ]]
 then
   UMNT_FUSEFS "Archive"
   UMNT_FUSEFS "Volumes"
-  exit
+  CMD="unmnt_all"
 fi
 
 ## RAM Disk Region
-if [ $CMD == "mnt_ram_region" ]
+if [[ $CMD == "mnt_ram_region" ]]
 then
   if [ ! -e "$REGROOT/RAM" ]; then
     echo "attaching RAM disk region..."
@@ -281,7 +282,7 @@ then
   fi
   exit
 fi
-if [ $CMD == "unmnt_ram_region" ]
+if [[ $CMD == "unmnt_ram_region" || $CMD == "unmnt_all" ]]
 then
   if [ -e "$REGROOT/RAM" ]; then
     echo "detaching RAM disk region..."
@@ -289,11 +290,11 @@ then
   else
     echo "not attached."    
   fi
-  exit
+  CMD="unmnt_all"
 fi
 
 ## Snapshots Region
-if [ $CMD == "mnt_snap_region" ]
+if [[ $CMD == "mnt_snap_region" ]]
 then
   if [ ! -e "$REGROOT/Snapshots" ]; then
     echo "attaching ZFS snapshots region..."
@@ -303,7 +304,7 @@ then
   fi
   exit
 fi
-if [ $CMD == "unmnt_snap_region" ]
+if [[ $CMD == "unmnt_snap_region" || $CMD == "unmnt_all" ]]
 then
   if [ -e "$REGROOT/Snapshots" ]; then
     echo "detaching ZFS snapshots region..."
@@ -311,11 +312,11 @@ then
   else
     echo "not attached." 
   fi
-  exit
+  CMD="unmnt_all"
 fi
 
 ## External Region 
-if [ $CMD == "mnt_ext_region" ]
+if [[ $CMD == "mnt_ext_region" ]]
 then
   if [ ! -e "$REGROOT/External" ]; then
     echo "attaching external region..."
@@ -325,7 +326,7 @@ then
   fi
   exit
 fi
-if [ $CMD == "unmnt_ext_region" ]
+if [[ $CMD == "unmnt_ext_region" || $CMD == "unmnt_all" ]]
 then
   if [ -e "$REGROOT/External" ]; then
     echo "detaching external region..."
@@ -333,8 +334,37 @@ then
   else
     echo "not attached." 
   fi
+  CMD="unmnt_all"
+fi
+
+## Cameras Region
+if [[ $CMD == "mnt_cam_region" ]]
+then
+  if [ ! -e "$REGROOT/Cameras" ]; then
+    echo "attaching cameras region..."
+    ln -s /mnt/scratch/cameras $REGROOT/Cameras
+  else
+    echo "already attached."
+  fi
   exit
 fi
+if [[ $CMD == "unmnt_cam_region" || $CMD == "unmnt_all" ]]
+then
+  if [ -e "$REGROOT/Cameras" ]; then
+    echo "detaching cameras region..."
+    rm $REGROOT/Cameras
+  else
+    echo "not attached." 
+  fi
+  CMD="unmnt_all"
+fi
+
+if [[ $CMD == "unmnt_all" ]]
+then
+  echo "detached region(s)."
+  exit
+fi
+## END REGIONS ##
 
 ## Copy To Media
 if [[ $CMD == "scratchcopy" ]]

@@ -93,16 +93,16 @@ function loadPage() {
   }  
   setTheme(currentTheme);
   // not on Safari
-  if (!(navigator.vendor.match(/apple/i))) {
-    setTimeout(function() {
-      // enable stars animation 
-      starsAnimation(true);
-      // pause stars animation on window resize
-      window.addEventListener("resize", function() {
-        resizeEvent(); // on window resize
-      });
-    }, resizeTimeout);
-  }
+  //if (!(navigator.vendor.match(/apple/i))) {
+  //  setTimeout(function() {
+  //    // enable stars animation 
+  //    starsAnimation(true);
+  //    // pause stars animation on window resize
+  //   window.addEventListener("resize", function() {
+  //      resizeEvent(); // on window resize
+  //    });
+  //  }, resizeTimeout);
+  //}
 }
 
 function setTheme(newTheme) {

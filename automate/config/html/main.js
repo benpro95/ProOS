@@ -92,17 +92,28 @@ function loadPage() {
     currentTheme = localStorage.getItem("main-color");
   }  
   setTheme(currentTheme);
-  // not on Safari
-  //if (!(navigator.vendor.match(/apple/i))) {
-  //  setTimeout(function() {
-  //    // enable stars animation 
-  //    starsAnimation(true);
-  //    // pause stars animation on window resize
-  //   window.addEventListener("resize", function() {
-  //      resizeEvent(); // on window resize
-  //    });
-  //  }, resizeTimeout);
-  //}
+  enableAnimatedStars();
+}
+
+function enableAnimatedStars() {
+  const avalRAM = navigator.deviceMemory;
+  const iOS = /^(iPhone|iPad|iPod)/.test(navigator.platform);
+  if (iOS == false) {
+    if (avalRAM >= 2) { // GT 2GB of RAM 
+      setTimeout(function() {
+        // start stars animation 
+        starsAnimation(true);
+        // pause stars animation on window resize
+        window.addEventListener("resize", function() {
+          resizeEvent(); // on window resize
+        });
+      }, resizeTimeout);
+    } else {
+      console.log('stars disabled < 2GB RAM');
+    }
+  } else {
+    console.log('stars disabled on iOS');
+  }
 }
 
 function setTheme(newTheme) {
@@ -188,6 +199,7 @@ function resizeDone() {
 function starsAnimation(_state) {
   // animated stars background
   let _itr;
+  console.log('stars state: ' + _state);
   for (_itr = 1; _itr <= 12; _itr++) {
     let _elm = "star-" + _itr;
     let _class = "star-a-" + _itr;

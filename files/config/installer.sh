@@ -44,35 +44,28 @@ cp /tmp/config/authorized_keys /root/.ssh/
 chown root:root /root/.ssh/authorized_keys
 chmod 644 /root/.ssh/authorized_keys
 
-## Disable interactive login
-usermod --shell /sbin/nologin ben
-usermod --shell /sbin/nologin media
+## Disable root password
+passwd -d root
+
+## Monitor user configuration
+passwd -d monitor
 usermod --shell /sbin/nologin monitor
 
-## Disable password login
-passwd -d root
-passwd -d monitor
+## Media user configuration
+mkdir -p /home/media
+chown root:shared /home/media
+usermod --home /home/media media
+usermod --shell /sbin/nologin media
 
-if [ ! -e /home/media ]; then
-  echo "Creating [media] home folder..."
-  mkdir -p /home/media
-  chown media:shared /home/media
-  usermod --home /home/media media
-fi
-
-## Main user configuration
+## Ben user configuration
 HOMEDIR="/home/ben"
-if [ ! -e "$HOMEDIR" ]; then
-  echo "Creating [ben] home folder..."
-  mkdir -p "$HOMEDIR"
-  chown ben:shared "$HOMEDIR"
-  usermod --home "$HOMEDIR" ben
-fi
-if [ ! -e "$HOMEDIR/.regions" ]; then
-  mkdir -p $HOMEDIR/.regions
-  chown ben:shared $HOMEDIR/.regions
-  chmod g+rx $HOMEDIR/.regions
-fi
+mkdir -p "$HOMEDIR"
+chown root:shared "$HOMEDIR"
+usermod --home "$HOMEDIR" ben
+usermod --shell /sbin/nologin ben
+mkdir -p $HOMEDIR/.regions
+chown ben:shared $HOMEDIR/.regions
+chmod g+rx $HOMEDIR/.regions
 
 ## Git configuration
 cp /tmp/config/git.config $HOMEDIR/.gitconfig

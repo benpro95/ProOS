@@ -80,9 +80,7 @@ Subsystem sftp internal-sftp
 ## Chroot Ben User (SFTP-only)
 Match User ben
 PasswordAuthentication yes
-ChrootDirectory /home/ben
+ChrootDirectory %h
 ForceCommand internal-sftp
-PermitTunnel no
 AllowAgentForwarding no
 AllowTcpForwarding no
-X11Forwarding no

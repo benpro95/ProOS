@@ -1160,20 +1160,20 @@ function showAmpStatus() {
         _title = "Online";
         _error = false;
       }
-      if (_error == true) {
+      if (_error === true) {
         _indtype = '5'; // red indicator    
         _title = "Unknown";
       }
       _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
       // power on/off buttons (II)
-      if (resp == '0' || _error == true) {
+      if (resp === '0' || _error === true) {
         _menubtn = "oncmd";
         _cmd = "poweron";
         _indtype = '6'; 
         _title = "On"  
         _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
       }
-      if (resp == '1' || _error == true) {
+      if (resp === '1' || _error === true) {
         _menubtn = "offcmd"; 
         _cmd = "poweroff";  
         _indtype = '6';     

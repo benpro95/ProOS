@@ -151,19 +151,16 @@ systemctl enable rc-local
 cp /tmp/config/file-monitor.service /etc/systemd/system/
 chmod 644 /etc/systemd/system/file-monitor.service
 chown root:root /etc/systemd/system/file-monitor.service
-systemctl restart file-monitor
 
 ## Main Cron Timer
 cp /tmp/config/rootcron.sh /etc/cron.d/rootcron
 chmod 644 /etc/cron.d/rootcron
 chown root:root /etc/cron.d/rootcron
-systemctl restart cron
 
 ## Supress Slice Log Entries
 cp /tmp/config/ignore-session-slice.conf /etc/rsyslog.d/
 chmod 644 /etc/rsyslog.d/ignore-session-slice.conf
 chown root:root /etc/rsyslog.d/ignore-session-slice.conf
-systemctl restart rsyslog
 
 ## Camera Cleanup Script
 cp /tmp/config/camcleanup.sh /usr/bin/camcleanup
@@ -186,6 +183,14 @@ chmod 644 /opt/drives.txt
 chown root:root /opt/drives.txt
 cp -v /opt/drives.txt /mnt/ramdisk/
 chmod 777 /mnt/ramdisk/drives.txt
+
+## Reload services
+systemctl daemon-reload
+
+## Restart services
+systemctl restart file-monitor
+systemctl restart cron
+systemctl restart rsyslog
 
 ## Clean-up
 systemctl daemon-reload

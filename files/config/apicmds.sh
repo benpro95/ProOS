@@ -381,9 +381,7 @@ fi
 if [[ $CMD == "git_push" ]]
 then
   TIMESTMP=$(date '+%Y-%m-%d %H:%M')
-  echo "uploading all changes to GitHub..."
-  echo ""
-  echo "*** ProOS repository ***"  
+  echo "uploading changes to GitHub..."
   git config --global --add safe.directory /mnt/data/ProOS
   cd /mnt/data/ProOS
   git add .

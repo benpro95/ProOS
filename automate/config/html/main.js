@@ -1049,6 +1049,7 @@ function closeBookmarkPrompt() {
   }  
 }
 
+// concat and add delimiters to dynamic menu data
 function buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title) {
   return _menubtn + '~' + _host + '~' + _cmd
                   + '|' + _indtype 
@@ -1061,13 +1062,13 @@ function showAmpInput() {
   let _elem = document.getElementById(_menu);
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
+    hideDropdowns();
   } else {
     // start spinner animation
     let btnText = document.getElementById('ampinp-text');
     let btnSpinner = document.getElementById('ampinp-spinner');
     btnText.style.visibility = 'hidden';
     btnSpinner.classList.add('btn-spinner');
-    hideDropdowns(); // hide all dropdown menus
     _elem.style.display = 'block';
     sendCmd('main',_host + '-resp','inputstate').then((data) => { // GET request
       const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // remove newlines
@@ -1117,6 +1118,8 @@ function showAmpInput() {
         _indtype = '3';
       }     
       _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
+      // remove any current dynamic menus
+      removeDynMenus();
       // draw menu items
       drawMenu(_menudata.split("\n"),_menu);
       // stop spinner animation
@@ -1132,13 +1135,13 @@ function showAmpStatus() {
   let _elem = document.getElementById(_menu);
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
+    hideDropdowns();
   } else {
     // start spinner animation
     let btnText = document.getElementById('amppwr-text');
     let btnSpinner = document.getElementById('amppwr-spinner');
     btnText.style.visibility = 'hidden';
     btnSpinner.classList.add('btn-spinner');
-    hideDropdowns(); // hide all dropdown menus
     _elem.style.display = 'block';
     sendCmd('main',_host + '-resp','ampstate').then((data) => { // GET request
       const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // remove newlines
@@ -1180,6 +1183,8 @@ function showAmpStatus() {
         _title = "Off"  
         _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
       }
+      // remove any current dynamic menus
+      removeDynMenus();
       drawMenu(_menudata.split("\n"),_menu); // draw menu
       // stop spinner animation
       btnText.style.visibility = 'visible';
@@ -1195,15 +1200,17 @@ function showStatusMenu() {
   let _elem = document.getElementById(_menu);
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
+    hideDropdowns();
   } else {
     // start spinner animation
     let btnText = document.getElementById('stat-text');
     let btnSpinner = document.getElementById('stat-spinner');
     btnText.style.visibility = 'hidden';
     btnSpinner.classList.add('btn-spinner');
-    hideDropdowns(); // hide all dropdown menus
     _elem.style.display = 'block';
     sendCmd('main','status','').then((data) => { // GET request
+      // remove any current dynamic menus
+      removeDynMenus();
       // draw menu items
       drawMenu(data.split("\n"),_menu);
       // stop spinner animation

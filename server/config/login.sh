@@ -15,36 +15,6 @@ else
 fi
 }
 
-
-## Deploy server configuration
-DEPLOY_SERVER(){
-echo "Deploying server $MODULE..."
-## Create work folder
-if [ -e /mnt/scratch/downloads ]; then
-  mkdir -p /mnt/scratch/downloads/.ptmp
-  TMPFLDR=$(mktemp -d /mnt/scratch/downloads/.ptmp/XXXXXXXXX)
-else
-  echo "Scratch drive not connected using /tmp" 	
-  TMPFLDR=$(mktemp -d /tmp/protmp.XXXXXXXXX)
-fi
-echo "created work directory $TMPFLDR"
-## Copying files to work folder
-cp -r $ROOTDIR/$MODULE/config $TMPFLDR/
-## Compressing files
-cd $TMPFLDR
-export COPYFILE_DISABLE=true
-tar -cvf config.tar config
-cd -
-## Downloading host bundle
-scp -i $KEYS/$MODULE.rsa -p $TMPFLDR/config.tar root@$HOST:/tmp/
-## Install files
-ssh -t -i $KEYS/$MODULE.rsa root@$HOST \
- "cd /tmp/; tar -xvf config.tar; rm -f config.tar; chmod +x /tmp/config/installer.sh; /tmp/config/installer.sh"
-## Clean-up installer files
-rm -r $TMPFLDR
-}
-
-
 ## Local domain name
 #DOMAIN=".local"
 #DOMAIN=".home"
@@ -60,6 +30,35 @@ KEYS="/root/.ssh"
 MODULE=$1
 ARG2=$2
 HOST=$3
+
+## Work Folder
+DOWNLOADS="/mnt/scratch/downloads"
+
+## Deploy server configuration
+DEPLOY_SERVER(){
+## Create work folder
+if [ -e $DOWNLOADS ]; then
+  mkdir -p $DOWNLOADS/.ptmp
+  TMPFLDR=$(mktemp -d $DOWNLOADS/.ptmp/XXXXXXXXX)
+else
+  echo "Scratch drive not connected using /tmp" 	
+  TMPFLDR=$(mktemp -d /tmp/protmp.XXXXXXXXX)
+fi
+echo "Copying files to work folder $TMPFLDR..."
+cp -r $ROOTDIR/$MODULE/config $TMPFLDR/
+echo "Compressing files..."
+cd $TMPFLDR
+export COPYFILE_DISABLE=true
+tar -cf config.tar config
+cd -
+echo "Uploading files..."
+scp -i $KEYS/$MODULE.rsa -p $TMPFLDR/config.tar root@$HOST:/tmp/
+echo "Running $MODULE deployment script..."
+ssh -t -i $KEYS/$MODULE.rsa root@$HOST \
+ "cd /tmp/; tar -xf config.tar; rm -f config.tar; chmod +x /tmp/config/installer.sh; /tmp/config/installer.sh"
+## Clean-up installer files
+rm -r $TMPFLDR
+}
 
 ### ProServer Help Menu
 if [ "$MODULE" == "" ]; then
@@ -129,8 +128,8 @@ fi
 if [ "$MODULE" == "rmtmp" ]; then
 echo "Removing temporary files..."
 pkill ssh-agent
- if [ -e /mnt/scratch/downloads ]; then
-  rm -rfv /mnt/scratch/downloads/.ptmp
+ if [ -e $DOWNLOADS ]; then
+  rm -rfv $DOWNLOADS/.ptmp
  else
   rm -rfv /tmp/protmp.*
  fi

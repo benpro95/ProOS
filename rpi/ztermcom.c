@@ -17,6 +17,8 @@
 #define buffLen 32
 char *line = NULL;
 int serial_port;
+const char targetChar = '|';
+const size_t sleepInverval = 100; // µs
 const char device[] = "/dev/zterm-tty"; // serial port alias
 const size_t maxCmdLength = 32;
 size_t writeLineSize = 0;
@@ -25,11 +27,11 @@ size_t enableSend = 0;
 size_t lineSize = 0;
 
 int serialRead() {
- // Read from the serial port in a loop
- char target_char = '|';
- bool _return = 0;
- printf("Waiting for response...\n");
- while(1) {
+  // Read from the serial port in a loop
+  size_t readTime = 0;
+  bool _return = 0;
+  printf("Waiting for response...\n");
+  while(1) {
     // set serial port to non-blocking mode
     int _serflags = fcntl(serial_port, F_GETFL, 0);   
     if (_serflags == -1) {
@@ -59,13 +61,13 @@ int serialRead() {
         // write to console
         printf("%c", _curchar);
         // check target characters have been received
-        if (_curchar == target_char) {
+        if (_curchar == targetChar) {
           ack_resp++;
         }
       }
       if (ack_resp == 2) { // two pipes received
         printf("OK\n");
-        return 0;
+        return 0; // success
       }
     } else {
       // no data available, continue reading input
@@ -75,6 +77,12 @@ int serialRead() {
         return 1;
       }
     }
+    if (readTime >= 1000000) { // max time to wait for serial response in µs
+      printf("Max response wait time exceeded\n");
+      return 1;
+    }
+    usleep(sleepInverval); // limit CPU when reading
+    readTime = sleepInverval + readTime;
    // END num_bytes COND // 
   }
 }

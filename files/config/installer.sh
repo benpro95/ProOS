@@ -69,7 +69,7 @@ usermod --shell /sbin/nologin $LXUSER
 mkdir -p $HOMEDIR/.regions
 chown $LXUSER:shared $HOMEDIR/.regions
 chmod g+rx $HOMEDIR/.regions
-chown root:shared $HOMEDIR/SFTP
+chown $LXUSER:shared $HOMEDIR/SFTP
 ## Github configuration
 rm -f $HOMEDIR/.gitconfig
 mkdir -p $HOMEDIR/.config

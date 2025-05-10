@@ -21,13 +21,13 @@ fi
 DOMAIN=""
 
 ## Modules folder
-ROOTDIR="/root/ProOS"
+ROOTDIR="/mnt/z"
 
 ## SSH keys folder
-KEYS="/root/.ssh"
+KEYS="~/.keys"
 
 ## Work folder
-DOWNLOADS="/mnt/scratch/downloads"
+DOWNLOADS="/mnt/d/Scratch"
 
 ## Read variables
 MODULE=$1
@@ -63,38 +63,39 @@ rm -r $TMPFLDR
 ### ProServer Help Menu
 if [ "$MODULE" == "" ]; then
 printf \
-'* Pi / Server Configuration and Login Script
+'* Pi / Server Configuration and Logon Script
 by Ben Provenzano III
 
-Login to ProOS Pi / Server
-./login "Hostname"
+Logon to ProOS Pi / Server
+./logon "Hostname"
 
 Sync ProOS (quick run config script) Pi / Server
-./login "Hostname" sync
+./logon "Hostname" sync
 
 Reset ProOS (full config script) Pi Only
-./login "Hostname" reset
+./logon "Hostname" reset
 
 Reset ProOS & Reinstall Packages (full config script) Pi Only
-./login "Hostname" reinstall
+./logon "Hostname" reinstall
 
 Clean/Restore ProOS (delete /opt/rpi and run full config script) Pi Only
-./login "Hostname" clean
+./logon "Hostname" clean
 
 Initialize ProOS (configure a base Pi or reconfigure one) Pi Only
-./login "Module" init "Hostname"
+./logon "Module" init "Hostname"
 
 Command Reference List
-./login cmds
+./logon cmds
 
 Clean-up Temporary Files
-./login rmtmp
+./logon rmtmp
 \n'
 exit
 fi
 
 ### Exit if matches this hosts
 if [ "$MODULE" == "router" ] || \
+   [ "$MODULE" == "logon" ] || \
    [ "$MODULE" == "login" ] || \
    [ "$MODULE" == ".ssh" ] || \
    [ "$MODULE" == "rpi" ] || \
@@ -294,7 +295,7 @@ if [ "$SYNCSTATE" == "start" ]; then
   rsync -e "ssh -i $KEYS/rpi.rsa" --progress --checksum -rtv \
    --exclude=photos --exclude=sources $ROOTDIR/rpi root@$HOST:/opt/
   rsync -e "ssh -i $KEYS/rpi.rsa" --progress --checksum -rtv \
-   $ROOTDIR/automate/config/thememenu.txt root@$HOST:/opt/rpi/config/
+   $ROOTDIR/automate/config/menus/thememenu.txt root@$HOST:/opt/rpi/config/
   rsync -e "ssh -i $KEYS/rpi.rsa" --progress --checksum -rtv \
    --mkpath $ROOTDIR/automate/config/html/* root@$HOST:/opt/rpi/config/html-base/ 
   ## Install module-specific software

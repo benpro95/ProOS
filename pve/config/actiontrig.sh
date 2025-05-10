@@ -195,13 +195,6 @@ if [ -e $TRIGGERS_DIR/pve_vmsbkp.txt ]; then
   chmod 777 $VM_CONFS/files/lxc.conf
   ###
   echo ""
-  echo "Backing-up Server LXC 102..."
-  vzdump 102 --mode snapshot --compress zstd --node pve --storage local \
-   --maxfiles 1 --remove 1 --exclude-path /mnt --exclude-path /root/ProOS
-  cp -v /etc/pve/lxc/102.conf $VM_CONFS/server/lxc.conf
-  chmod 777 $VM_CONFS/server/lxc.conf
-  ###
-  echo ""
   echo "Backing-up Plex LXC 104..."
   vzdump 104 --mode snapshot --compress zstd --node pve --storage local \
    --maxfiles 1 --remove 1 --exclude-path /mnt/transcoding

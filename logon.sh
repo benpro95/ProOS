@@ -26,13 +26,13 @@ ROOTDIR="/root/ProOS"
 ## SSH keys folder
 KEYS="/root/.ssh"
 
+## Work folder
+DOWNLOADS="/mnt/scratch/downloads"
+
 ## Read variables
 MODULE=$1
 ARG2=$2
 HOST=$3
-
-## Work Folder
-DOWNLOADS="/mnt/scratch/downloads"
 
 ## Deploy server configuration
 DEPLOY_SERVER(){

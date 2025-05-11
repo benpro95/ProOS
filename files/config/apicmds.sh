@@ -34,14 +34,18 @@ then
   exit
 fi
 
-## BEGIN REGIONS ##
-REGROOT="/home/ben/.regions"
+#### BEGIN REGIONS ####
+
+## Regions Mountpoints Folder
+REGMNTS="/mnt/regmnts"
+## Regions Data Folder
+REGDATA="/mnt/.regions"
 
 PATHMOUNTED() { findmnt --target "$1" >/dev/null;} 
 
 function UMNT_FUSEFS () {
   VOLNME="$1"
-  FUSEPTH="$REGROOT/$VOLNME"
+  FUSEPTH="$REGMNTS/$VOLNME"
   if PATHMOUNTED "$FUSEPTH"
   then
     echo "detaching $VOLNME..."
@@ -55,7 +59,7 @@ function UMNT_FUSEFS () {
 
 function MNT_FUSEFS () {
   VOLNME="$1"
-  FUSEPTH="$REGROOT/$VOLNME"
+  FUSEPTH="$REGMNTS/$VOLNME"
   FUSEPWD="$RAMDISK/fusearch.txt"
   UMNT_FUSEFS "$VOLNME"
   echo "attaching $VOLNME..."
@@ -63,7 +67,7 @@ function MNT_FUSEFS () {
   if [[ -e "$FUSEPWD" ]]
   then
     gocryptfs -quiet -allow_other \
-      /mnt/.regions/"$VOLNME" \
+      $REGDATA/"$VOLNME" \
       "$FUSEPTH" -passfile "$FUSEPWD"
   else
     echo "password file not found!"
@@ -80,135 +84,168 @@ then
   MNT_FUSEFS "Archive"
   exit
 fi
+
 ## Volumes Region
 if [[ $CMD == "mnt_vol_region" ]]
 then
   MNT_FUSEFS "Volumes"
   exit
 fi
-## Detach FUSE Regions
-if [[ $CMD == "unmnt_all_fuse" || $CMD == "unmnt_all" ]]
-then
+
+UMOUNT_ALLFUSE(){
   UMNT_FUSEFS "Archive"
   UMNT_FUSEFS "Volumes"
-  CMD="unmnt_all"
+}
+
+## Detach FUSE Regions
+if [[ $CMD == "unmnt_all_fuse" ]]
+then
+  UMOUNT_ALLFUSE
+  exit
 fi
+
+UMOUNT_RAMDSK(){
+  if [ -e "$REGMNTS/RAM" ]; then
+    echo "detaching RAM disk region..."
+    rm $REGMNTS/RAM
+  else
+    echo "RAM not attached."    
+  fi
+}
 
 ## RAM Disk Region
 if [[ $CMD == "mnt_ram_region" ]]
 then
-  if [ ! -e "$REGROOT/RAM" ]; then
+  if [ ! -e "$REGMNTS/RAM" ]; then
     echo "attaching RAM disk region..."
-    ln -s $RAMDISK $REGROOT/RAM
+    ln -s $RAMDISK $REGMNTS/RAM
   else
     echo "RAM already attached."    
   fi
   exit
 fi
-if [[ $CMD == "unmnt_ram_region" || $CMD == "unmnt_all" ]]
+if [[ $CMD == "unmnt_ram_region" ]]
 then
-  if [ -e "$REGROOT/RAM" ]; then
-    echo "detaching RAM disk region..."
-    rm $REGROOT/RAM
-  else
-    echo "RAM not attached."    
-  fi
-  CMD="unmnt_all"
+  UMOUNT_RAMDSK
+  exit
 fi
+
+UMOUNT_SNAP(){
+  if [ -e "$REGMNTS/Snapshots" ]; then
+    echo "detaching ZFS snapshots region..."
+    rm $REGMNTS/Snapshots
+  else
+    echo "snapshots not attached." 
+  fi
+}
 
 ## Snapshots Region
 if [[ $CMD == "mnt_snap_region" ]]
 then
-  if [ ! -e "$REGROOT/Snapshots" ]; then
+  if [ ! -e "$REGMNTS/Snapshots" ]; then
     echo "attaching ZFS snapshots region..."
-    ln -s /mnt/snapshots $REGROOT/Snapshots
+    ln -s /mnt/snapshots $REGMNTS/Snapshots
   else
     echo "snapshots already attached."
   fi
   exit
 fi
-if [[ $CMD == "unmnt_snap_region" || $CMD == "unmnt_all" ]]
+if [[ $CMD == "unmnt_snap_region" ]]
 then
-  if [ -e "$REGROOT/Snapshots" ]; then
-    echo "detaching ZFS snapshots region..."
-    rm $REGROOT/Snapshots
-  else
-    echo "snapshots not attached." 
-  fi
-  CMD="unmnt_all"
+  UMOUNT_SNAP
+  exit
 fi
+
+UMOUNT_EXTREG(){
+  if [ -e "$REGMNTS/External" ]; then
+    echo "detaching external region..."
+    rm $REGMNTS/External
+  else
+    echo "external not attached." 
+  fi
+}
 
 ## External Region 
 if [[ $CMD == "mnt_ext_region" ]]
 then
-  if [ ! -e "$REGROOT/External" ]; then
+  if [ ! -e "$REGMNTS/External" ]; then
     echo "attaching external region..."
-    ln -s /mnt/extbkps $REGROOT/External
+    ln -s /mnt/extbkps $REGMNTS/External
   else
     echo "external already attached."
   fi
   exit
 fi
-if [[ $CMD == "unmnt_ext_region" || $CMD == "unmnt_all" ]]
+if [[ $CMD == "unmnt_ext_region" ]]
 then
-  if [ -e "$REGROOT/External" ]; then
-    echo "detaching external region..."
-    rm $REGROOT/External
-  else
-    echo "external not attached." 
-  fi
-  CMD="unmnt_all"
+  UMOUNT_EXTREG
+  exit
 fi
+
+UMOUNT_CAMS(){
+  if [ -e "$REGMNTS/Cameras" ]; then
+    echo "detaching cameras region..."
+    rm $REGMNTS/Cameras
+  else
+    echo "cameras not attached." 
+  fi
+}
 
 ## Cameras Region
 if [[ $CMD == "mnt_cam_region" ]]
 then
-  if [ ! -e "$REGROOT/Cameras" ]; then
+  if [ ! -e "$REGMNTS/Cameras" ]; then
     echo "attaching cameras region..."
-    ln -s /mnt/scratch/cameras $REGROOT/Cameras
+    ln -s /mnt/scratch/cameras $REGMNTS/Cameras
   else
     echo "cameras already attached."
   fi
   exit
 fi
-if [[ $CMD == "unmnt_cam_region" || $CMD == "unmnt_all" ]]
+if [[ $CMD == "unmnt_cam_region" ]]
 then
-  if [ -e "$REGROOT/Cameras" ]; then
-    echo "detaching cameras region..."
-    rm $REGROOT/Cameras
-  else
-    echo "cameras not attached." 
-  fi
-  CMD="unmnt_all"
+  UMOUNT_CAMS
+  exit
 fi
+
+UMOUNT_DOCS(){
+  if [ -e "$REGMNTS/Documents" ]; then
+    echo "detaching documents region..."
+    rm $REGMNTS/Documents
+  else
+    echo "documents not attached." 
+  fi
+}
 
 ## Documents Region
 if [[ $CMD == "mnt_docs_region" ]]
 then
-  if [ ! -e "$REGROOT/Documents" ]; then
+  if [ ! -e "$REGMNTS/Documents" ]; then
     echo "attaching documents region..."
-    ln -s /mnt/.regions/Documents $REGROOT/Documents
+    ln -s $REGDATA/Documents $REGMNTS/Documents
   else
     echo "documents already attached."
   fi
   exit
 fi
-if [[ $CMD == "unmnt_docs_region" || $CMD == "unmnt_all" ]]
+if [[ $CMD == "unmnt_docs_region" ]]
 then
-  if [ -e "$REGROOT/Documents" ]; then
-    echo "detaching documents region..."
-    rm $REGROOT/Documents
-  else
-    echo "documents not attached." 
-  fi
-  CMD="unmnt_all"
+  UMOUNT_DOCS
+  exit
 fi
 
 if [[ $CMD == "unmnt_all" ]]
 then
-  echo "detached region(s)."
+  UMOUNT_RAMDSK
+  UMOUNT_EXTREG
+  UMOUNT_CAMS
+  UMOUNT_DOCS
+  UMOUNT_SNAP
+  UMOUNT_ALLFUSE
+  echo "detached all region(s)."
   exit
 fi
+
 ## END REGIONS ##
 
 ## Copy To Media
@@ -314,12 +351,12 @@ then
             /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
           fi
           #### Regions Share ####
-          if [ ! -e /mnt/.regions/SFTP ]; then
+          if [ ! -e $REGDATA/SFTP ]; then
             echo "'Regions' share not found!"
           else
             echo "syncing 'Regions' share to $POOL drive..."
             rsync $CHECKSUM -aP --exclude="Archive/ALUTqMiuxVtjfuair7WIgQ/" \
-            /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
+            $REGDATA/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
           fi
           ##### END BACKUP #####
           SAVEBKPDATES "$POOL"
@@ -340,12 +377,12 @@ then
             /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
           fi
           #### Regions Share ####
-          if [ ! -e /mnt/.regions/SFTP ]; then
+          if [ ! -e $REGDATA/SFTP ]; then
             echo "'Regions' share not found!"
           else
             echo "syncing 'Regions' share to $POOL drive..."
             rsync $CHECKSUM -aP \
-            /mnt/.regions/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
+            $REGDATA/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
           fi
           #### Media Share ####
           if [ ! -e /mnt/media/Music ]; then

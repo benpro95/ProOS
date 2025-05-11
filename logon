@@ -12,7 +12,7 @@ DOMAIN=""
 ROOTDIR="/mnt/ProOS"
 
 ## SSH keys folder
-KEYS="~/.keys"
+KEYS="/home/ben/.keys"
 
 ## Work folder
 DOWNLOADS="/tmp/scratch"
@@ -37,32 +37,6 @@ else
   echo "Host $HOST is down, exiting..."
   exit
 fi
-}
-
-## Deploy server configuration
-DEPLOY_SERVER(){
-## Create work folder
-if [ -e $DOWNLOADS ]; then
-  mkdir -p $DOWNLOADS/.ptmp
-  TMPFLDR=$(mktemp -d $DOWNLOADS/.ptmp/XXXXXXXXX)
-else
-  echo "Scratch drive not connected using /tmp" 	
-  TMPFLDR=$(mktemp -d /tmp/protmp.XXXXXXXXX)
-fi
-echo "Copying files to work folder $TMPFLDR..."
-cp -r $ROOTDIR/$MODULE/config $TMPFLDR/
-echo "Compressing files..."
-cd $TMPFLDR
-export COPYFILE_DISABLE=true
-tar -cf config.tar config
-cd -
-echo "Uploading files..."
-scp -i $KEYS/$MODULE.rsa -p $TMPFLDR/config.tar root@$HOST:/tmp/
-echo "Running $MODULE deployment script..."
-ssh -t -i $KEYS/$MODULE.rsa root@$HOST \
- "cd /tmp/; tar -xf config.tar; rm -f config.tar; chmod +x /tmp/config/installer.sh; /tmp/config/installer.sh"
-## Clean-up installer files
-rm -r $TMPFLDR
 }
 
 ### ProServer Help Menu
@@ -147,8 +121,34 @@ pkill ssh-agent
 exit
 fi
 
+## Deploy server configuration
+DEPLOY_SERVER(){
+## Create work folder
+if [ -e $DOWNLOADS ]; then
+  mkdir -p $DOWNLOADS/.ptmp
+  TMPFLDR=$(mktemp -d $DOWNLOADS/.ptmp/XXXXXXXXX)
+else
+  echo "Scratch drive not connected using /tmp" 	
+  TMPFLDR=$(mktemp -d /tmp/protmp.XXXXXXXXX)
+fi
+echo "Copying files to work folder $TMPFLDR..."
+cp -r $ROOTDIR/$MODULE/config $TMPFLDR/
+echo "Compressing files..."
+cd $TMPFLDR
+export COPYFILE_DISABLE=true
+tar -cf config.tar config
+cd -
+echo "Uploading files..."
+scp -p $TMPFLDR/config.tar root@$HOST:/tmp/
+echo "Running $MODULE deployment script..."
+ssh -t root@$HOST \
+ "cd /tmp/; tar -xf config.tar; rm -f config.tar; chmod +x /tmp/config/installer.sh; /tmp/config/installer.sh"
+## Clean-up installer files
+rm -r $TMPFLDR
+}
+
 ### ProServer Configurator (only these hosts)
-if [ -e $MODULE/qemu.conf ] || [ -e $MODULE/lxc.conf ] ; then
+if [ -e $ROOTDIR/$MODULE/qemu.conf ] || [ -e $ROOTDIR/$MODULE/lxc.conf ] ; then
 ######################################
   ## Set hostname
   HOST="$MODULE$DOMAIN"
@@ -161,7 +161,8 @@ if [ -e $MODULE/qemu.conf ] || [ -e $MODULE/lxc.conf ] ; then
   fi
   ## SSH key prompt
   eval `ssh-agent -s`
-  ssh-add $KEYS/$MODULE.rsa 2>/dev/null
+  #ssh-add $KEYS/$MODULE.rsa 2>/dev/null
+  ssh-add $KEYS/$MODULE.rsa
   ### AutoSync
   if [ "$ARG2" == "sync" ]; then
     DEPLOY_SERVER

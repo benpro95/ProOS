@@ -4,6 +4,10 @@
 ### by Ben Provenzano III
 ###
 
+## Usernames
+B_USER="ben"
+M_USER="media"
+
 ## Update Sources
 apt-get --yes update
 
@@ -44,46 +48,46 @@ cp /tmp/config/authorized_keys /root/.ssh/
 chown root:root /root/.ssh/authorized_keys
 chmod 644 /root/.ssh/authorized_keys
 
-## Disable root password
+## Disable password login
 passwd -d root
+passwd -d ben
 
 ## Monitor user configuration
 passwd -d monitor
 usermod --shell /sbin/nologin monitor
 
 ## Media user configuration
-LXUSER="media"
-HOMEDIR="/home/$LXUSER"
-mkdir -p $HOMEDIR
-chown root:shared $HOMEDIR
-usermod --home $HOMEDIR $LXUSER
-usermod --shell /sbin/nologin $LXUSER
+M_HOMEDIR="/home/$M_USER"
+mkdir -p $M_HOMEDIR
+chown root:shared $M_HOMEDIR
+usermod --home $M_HOMEDIR $M_USER
+usermod --shell /sbin/nologin $M_USER
 
 ## Ben user configuration
-LXUSER="ben"
-HOMEDIR="/home/$LXUSER"
-mkdir -p $HOMEDIR
-chown root:shared $HOMEDIR
-usermod --home $HOMEDIR $LXUSER
-usermod --shell /sbin/nologin $LXUSER
-mkdir -p $HOMEDIR/.regions
-chown $LXUSER:shared $HOMEDIR/.regions
-chmod g+rx $HOMEDIR/.regions
-chown $LXUSER:shared $HOMEDIR/SFTP
+B_HOMEDIR="/home/$B_USER"
+mkdir -p $B_HOMEDIR
+chown root:shared $B_HOMEDIR
+usermod --home $B_HOMEDIR $B_USER
+usermod --shell /sbin/nologin $B_USER
+mkdir -p $B_HOMEDIR/SFTP
+chown $B_USER:shared $B_HOMEDIR/SFTP
+mkdir -p /mnt/regmnts
+chown $B_USER:shared /mnt/regmnts
+
 ## Github configuration
-rm -f $HOMEDIR/.gitconfig
-mkdir -p $HOMEDIR/.config
-mkdir -p $HOMEDIR/.config/git
-cp /tmp/config/git.config $HOMEDIR/.config/git/config
-chmod 644 $HOMEDIR/.config/git/config
-chown -R $LXUSER:shared $HOMEDIR/.config
+rm -f $B_HOMEDIR/.gitconfig
+mkdir -p $B_HOMEDIR/.config
+mkdir -p $B_HOMEDIR/.config/git
+cp /tmp/config/git.config $B_HOMEDIR/.config/git/config
+chmod 644 $B_HOMEDIR/.config/git/config
+chown -R $B_USER:shared $B_HOMEDIR/.config
 ## Github SSH keys
-mkdir -p $HOMEDIR/.ssh
-chmod 700 $HOMEDIR/.ssh
-cp -f /tmp/config/github.pub $HOMEDIR/.ssh/id_rsa.pub
-cp -f /tmp/config/github.rsa $HOMEDIR/.ssh/id_rsa
-chmod 600 $HOMEDIR/.ssh/id_rsa
-chown -R $LXUSER:shared $HOMEDIR/.ssh
+mkdir -p $B_HOMEDIR/.ssh
+chmod 700 $B_HOMEDIR/.ssh
+cp -f /tmp/config/github.pub $B_HOMEDIR/.ssh/id_rsa.pub
+cp -f /tmp/config/github.rsa $B_HOMEDIR/.ssh/id_rsa
+chmod 600 $B_HOMEDIR/.ssh/id_rsa
+chown -R $B_USER:shared $B_HOMEDIR/.ssh
 
 ## permissions allow running scripts as elevated (ben) user
 rm -f /etc/sudoers.d/www-perms
@@ -181,7 +185,7 @@ chown root:root /etc/fstab
 cp -f /tmp/config/drives.txt /opt/
 chmod 644 /opt/drives.txt
 chown root:root /opt/drives.txt
-cp -v /opt/drives.txt /mnt/ramdisk/
+cp -f /opt/drives.txt /mnt/ramdisk/
 chmod 777 /mnt/ramdisk/drives.txt
 
 ## Reload services

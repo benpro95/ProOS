@@ -79,7 +79,6 @@ Subsystem sftp internal-sftp
 
 ## Chroot Ben User (SFTP-only)
 Match User ben
-PasswordAuthentication yes
 ChrootDirectory %h
 ForceCommand internal-sftp
 AllowAgentForwarding no

@@ -3,6 +3,30 @@
 ### by Ben Provenzano III
 ###
 
+## Local domain name
+#DOMAIN=".local"
+#DOMAIN=".home"
+DOMAIN=""
+
+## Modules folder
+ROOTDIR="/mnt/ProOS"
+
+## SSH keys folder
+KEYS="~/.keys"
+
+## Work folder
+DOWNLOADS="/tmp/scratch"
+
+## Read variables
+MODULE=$1
+ARG2=$2
+HOST=$3
+
+## Fileshare attach command
+SSHFS_CMD(){
+  sshfs ben@10.177.1.4:/ProOS $ROOTDIR -o _netdev,reconnect,identityfile=/home/ben/.keys/files_sftp.rsa,allow_other
+}
+
 ## Check if host is up
 HOSTCHK(){
 echo "Attempting connection..."
@@ -14,25 +38,6 @@ else
   exit
 fi
 }
-
-## Local domain name
-#DOMAIN=".local"
-#DOMAIN=".home"
-DOMAIN=""
-
-## Modules folder
-ROOTDIR="/mnt/z"
-
-## SSH keys folder
-KEYS="~/.keys"
-
-## Work folder
-DOWNLOADS="/mnt/d/Scratch"
-
-## Read variables
-MODULE=$1
-ARG2=$2
-HOST=$3
 
 ## Deploy server configuration
 DEPLOY_SERVER(){
@@ -123,6 +128,11 @@ dd bs=128k if=/dev/rpool/proxmox/vm-100-disk-0 of=file.raw
 qemu-img convert -f raw -O qcow2 /dev/rpool/proxmox/vm-100-disk-0 file.qcow2
 \n'
 exit
+fi
+
+## Attach SSH fileshare
+if [ ! -e $ROOTDIR/logon ]; then
+  SSHFS_CMD
 fi
 
 ### Remove temp files argument
@@ -292,14 +302,17 @@ if [ "$SYNCSTATE" == "start" ]; then
   fi
 
   ## Install base software
-  rsync -e "ssh -i $KEYS/rpi.rsa" --progress --checksum -rtv \
+  rsync -e "ssh -i $KEYS/rpi.rsa" --progress -rtv \
    --exclude=photos --exclude=sources $ROOTDIR/rpi root@$HOST:/opt/
-  rsync -e "ssh -i $KEYS/rpi.rsa" --progress --checksum -rtv \
+
+  ## Shared server software   
+  rsync -e "ssh -i $KEYS/rpi.rsa" --progress -rtv \
    $ROOTDIR/automate/config/menus/thememenu.txt root@$HOST:/opt/rpi/config/
-  rsync -e "ssh -i $KEYS/rpi.rsa" --progress --checksum -rtv \
-   --mkpath $ROOTDIR/automate/config/html/* root@$HOST:/opt/rpi/config/html-base/ 
+  rsync -e "ssh -i $KEYS/rpi.rsa" --progress -rtv \
+   --mkpath $ROOTDIR/automate/config/html/* root@$HOST:/opt/rpi/config/html-base/
+
   ## Install module-specific software
-  rsync -e "ssh -i $KEYS/rpi.rsa" --progress --checksum -rtv \
+  rsync -e "ssh -i $KEYS/rpi.rsa" --progress -rtv \
    --exclude=photos --exclude=sources $ROOTDIR/$MODULE/* root@$HOST:/opt/rpi/
 
   ## Write hostname to Pi

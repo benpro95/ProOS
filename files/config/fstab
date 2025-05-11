@@ -1,3 +1,4 @@
 ## Files Mountpoints Configuration
 
-/mnt/.regions/SFTP    /home/ben/SFTP             auto defaults,nofail,nobootwait,bind 0 2
+/mnt/.regions/SFTP   /home/ben/SFTP      auto defaults,nofail,nobootwait,bind 0 2
+/mnt/data/ProOS      /home/ben/ProOS     auto defaults,nofail,nobootwait,bind 0 2

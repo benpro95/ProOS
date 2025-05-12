@@ -15,7 +15,7 @@ ROOTDIR="/mnt/ProOS"
 KEYS="/home/ben/.keys"
 
 ## Work folder
-DOWNLOADS="/tmp/scratch"
+DOWNLOADS="/home/ben/.work"
 
 ## Read variables
 MODULE=$1
@@ -24,7 +24,7 @@ HOST=$3
 
 ## Fileshare attach command
 SSHFS_CMD(){
-  sshfs ben@10.177.1.4:/ProOS $ROOTDIR -o _netdev,reconnect,identityfile=/home/ben/.keys/files_sftp.rsa,allow_other
+  sshfs ben@files:/ProOS $ROOTDIR -o _netdev,reconnect,identityfile=/home/ben/.keys/files_sftp.rsa,allow_other
 }
 
 ## Check if host is up
@@ -42,32 +42,32 @@ fi
 ### ProServer Help Menu
 if [ "$MODULE" == "" ]; then
 printf \
-'* Pi / Server Configuration and Logon Script
+'* Pi / Server Configuration and Login Script
 by Ben Provenzano III
 
 Logon to ProOS Pi / Server
-./logon "Hostname"
+login "Hostname"
 
 Sync ProOS (quick run config script) Pi / Server
-./logon "Hostname" sync
+login "Hostname" sync
 
 Reset ProOS (full config script) Pi Only
-./logon "Hostname" reset
+login "Hostname" reset
 
 Reset ProOS & Reinstall Packages (full config script) Pi Only
-./logon "Hostname" reinstall
+login "Hostname" reinstall
 
 Clean/Restore ProOS (delete /opt/rpi and run full config script) Pi Only
-./logon "Hostname" clean
+login "Hostname" clean
 
 Initialize ProOS (configure a base Pi or reconfigure one) Pi Only
-./logon "Module" init "Hostname"
+login "Module" init "Hostname"
 
 Command Reference List
-./logon cmds
+login cmds
 
 Clean-up Temporary Files
-./logon rmtmp
+login rmtmp
 \n'
 exit
 fi
@@ -128,8 +128,8 @@ if [ -e $DOWNLOADS ]; then
   mkdir -p $DOWNLOADS/.ptmp
   TMPFLDR=$(mktemp -d $DOWNLOADS/.ptmp/XXXXXXXXX)
 else
-  echo "Scratch drive not connected using /tmp" 	
-  TMPFLDR=$(mktemp -d /tmp/protmp.XXXXXXXXX)
+  echo "Scratch path not found, exiting!"
+  exit
 fi
 echo "Copying files to work folder $TMPFLDR..."
 cp -r $ROOTDIR/$MODULE/config $TMPFLDR/
@@ -142,7 +142,7 @@ echo "Uploading files..."
 scp -p $TMPFLDR/config.tar root@$HOST:/tmp/
 echo "Running $MODULE deployment script..."
 ssh -t root@$HOST \
- "cd /tmp/; tar -xf config.tar; rm -f config.tar; chmod +x /tmp/config/installer.sh; /tmp/config/installer.sh"
+ "cd /tmp/; tar -xmf config.tar; rm -f config.tar; chmod +x /tmp/config/installer.sh; /tmp/config/installer.sh"
 ## Clean-up installer files
 rm -r $TMPFLDR
 }
@@ -294,19 +294,19 @@ if [ "$SYNCSTATE" == "start" ]; then
 
   ## Check for restore
   if [ "$ARG2" == "restore" ] || [ "$ARG2" == "clean" ] ; then
-    echo "Erasing software..."
+    echo "Un-Installing software..."
     ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
      $KEYS/rpi.rsa root@$HOST "rm -rfv /opt/rpi"
-    echo "Downloading software..."
+    echo "Installing software..."
   else 
-    echo "Syncing software..."
+    echo "Updating software..."
   fi
 
   ## Install base software
   rsync -e "ssh -i $KEYS/rpi.rsa" --progress -rtv \
    --exclude=photos --exclude=sources $ROOTDIR/rpi root@$HOST:/opt/
 
-  ## Shared server software   
+  ## Install shared software   
   rsync -e "ssh -i $KEYS/rpi.rsa" --progress -rtv \
    $ROOTDIR/automate/config/menus/thememenu.txt root@$HOST:/opt/rpi/config/
   rsync -e "ssh -i $KEYS/rpi.rsa" --progress -rtv \
@@ -316,12 +316,11 @@ if [ "$SYNCSTATE" == "start" ]; then
   rsync -e "ssh -i $KEYS/rpi.rsa" --progress -rtv \
    --exclude=photos --exclude=sources $ROOTDIR/$MODULE/* root@$HOST:/opt/rpi/
 
-  ## Write hostname to Pi
+  ## Write hostname
   ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
    $KEYS/rpi.rsa root@$HOST "echo $MODULE > /opt/rpi/config/hostname"
 
-  ## Installing on Pi
-  echo "Installing software..."
+  ## Run installer
   ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
    $KEYS/rpi.rsa root@$HOST "cd /opt/rpi/config; chmod +x installer.sh; ./installer.sh"
 

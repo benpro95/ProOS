@@ -6,6 +6,6 @@ retropi.home|RetroPi|ping
 aptcam.home|Aptcam|ping
 brpi.home|Bedroom|ping
 bedroom.home|Apple TV|ping
-unifi.home|UniFi AP|ping
+unifi.home|UniFi|ping
 ledstrip.home|LEDstrip|ping
 ledwall.home|LEDwall|ping

@@ -604,7 +604,7 @@ function mapNumber(num, inMin, inMax, outMin, outMax) {
   return (num - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 }
 
-function setAmpVolume(_state){
+async function setAmpVolume(_state) {
   sendCmd('main','br-resp','vol'+_state).then((data) => { // GET request
     const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // remove newlines
     const vol = Math.round(mapNumber(resp,0,192,0,100));
@@ -612,11 +612,15 @@ function setAmpVolume(_state){
   });
 }
 
-function showVolumePopup(vol){
-  document.getElementById("vol-popup").innerHTML = vol + "%";
-  document.getElementById("vol-popup").style.visibility = "visible";
+function showVolumePopup(vol) {
+  let elem = document.getElementById('vol-popup');
+  elem.innerHTML = vol + "%";
+  let visible = elem.checkVisibility({visibilityProperty: true});
+  elem.style.visibility = "visible";
   setTimeout(function(){
-    document.getElementById("vol-popup").style.visibility = "hidden";
+    elem.style.visibility = "hidden";
+    visibilityCheck = elem.checkVisibility({visibilityProperty: true});
+    console.log(visibilityCheck);
   }, 2000);
 }
 

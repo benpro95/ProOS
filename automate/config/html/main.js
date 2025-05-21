@@ -606,8 +606,9 @@ function mapNumber(num, inMin, inMax, outMin, outMax) {
 
 async function setAmpVolume(_state) {
   sendCmd('main','br-resp','vol'+_state).then((data) => { // GET request
+    const maxAmpData = 192;
     const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // remove newlines
-    const vol = Math.round(mapNumber(resp,0,192,0,100));
+    const vol = Math.round(mapNumber(resp,0,maxAmpData,0,100)); // re-map volume data to 100%
     showVolumePopup(vol);
   });
 }
@@ -616,12 +617,12 @@ function showVolumePopup(vol) {
   let elem = document.getElementById('vol-popup');
   elem.innerHTML = vol + "%";
   let visible = elem.checkVisibility({visibilityProperty: true});
-  elem.style.visibility = "visible";
-  setTimeout(function(){
-    elem.style.visibility = "hidden";
-    visibilityCheck = elem.checkVisibility({visibilityProperty: true});
-    console.log(visibilityCheck);
-  }, 2000);
+  if (visible === false) {
+    elem.style.visibility = "visible";
+    setTimeout(function(){
+      elem.style.visibility = "hidden";
+    }, 2500);
+  }
 }
 
 function subModeToggle() {

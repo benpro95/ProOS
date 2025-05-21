@@ -593,11 +593,31 @@ function sendVol(_cmd) {
     sendCmd('main',_cmd,''); // living room system 
   }
   if (ctlCommand === 1 ){
-    sendCmd('main','br','vol'+_cmd); // bedroom system
+    setAmpVolume(_cmd); // bedroom system
   }
   if (ctlCommand === 2 ){
     sendCmd('main','sub'+_cmd,''); // living room subwoofers
   }
+}
+
+function mapNumber(num, inMin, inMax, outMin, outMax) {
+  return (num - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+}
+
+function setAmpVolume(_state){
+  sendCmd('main','br-resp','vol'+_state).then((data) => { // GET request
+    const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // remove newlines
+    const vol = Math.round(mapNumber(resp,0,192,0,100));
+    showVolumePopup(vol);
+  });
+}
+
+function showVolumePopup(vol){
+  document.getElementById("vol-popup").innerHTML = vol + "%";
+  document.getElementById("vol-popup").style.visibility = "visible";
+  setTimeout(function(){
+    document.getElementById("vol-popup").style.visibility = "hidden";
+  }, 2000);
 }
 
 function subModeToggle() {

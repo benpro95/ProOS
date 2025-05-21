@@ -1022,4 +1022,25 @@ input.chkbox {
   100% {
     transform: rotate(360deg);
   }
-} 
+}
+
+#vol-popup{
+  background-color: black;
+  border: 1px solid white;
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  margin-left: -75px;
+  width: 150px;
+  height: 80px;
+  padding: 8px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 50px;
+  color: #ffffffe2;
+  z-index: 998; 
+  overflow: hidden;
+  resize: none;
+  display: block;
+  visibility: hidden;
+}

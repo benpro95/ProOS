@@ -3,7 +3,6 @@
 header("Content-Type: application/json");
 
 // read and update a common file (API)
-
 if (isset($_REQUEST['action'], $_REQUEST['arg'], $_REQUEST['var'])) {
 	$action = $_REQUEST['action'];
     $arg = $_REQUEST['arg'];

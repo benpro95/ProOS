@@ -21,7 +21,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "6.0.1";
+let siteVersion = "7.2";
 
 //////////////////////
 
@@ -55,6 +55,10 @@ function handleClicks(event) {
         event.target.classList.contains('chkbox'))) { // checkbox click
     hideDropdowns(); // hide all dropdown menus
   }
+}
+
+function mapNumber(num, inMin, inMax, outMin, outMax) {
+  return (num - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 }
 
 // runs on page load
@@ -600,26 +604,29 @@ function sendVol(_cmd) {
   }
 }
 
-function mapNumber(num, inMin, inMax, outMin, outMax) {
-  return (num - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
-}
-
 async function setAmpVolume(_state) {
   sendCmd('main','br-resp','vol'+_state).then((data) => { // GET request
     const maxAmpData = 192;
-    const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // remove newlines
-    const vol = Math.round(mapNumber(resp,0,maxAmpData,0,100)); // re-map volume data to 100%
-    showVolumePopup(vol);
+    let ampVol = Number(data.replace(/(\r\n|\n|\r)/gm, "")); // remove newlines, convert to number
+    if (!(isNaN(ampVol))) {
+      // re-map volume data to 0-100%, show volume pop-up
+      showVolumePopup(Math.round(mapNumber(ampVol,0,maxAmpData,0,100))); 
+    }
   });
 }
 
 function showVolumePopup(vol) {
   let elem = document.getElementById('vol-popup');
-  elem.innerHTML = vol + "%";
-  let visible = elem.checkVisibility({visibilityProperty: true});
-  if (visible === false) {
+  if (vol == 0) {
+    elem.innerHTML = "Mute";
+  } else {
+    elem.innerHTML = vol + "%";
+  }
+  // check window is not already visible 
+  if (elem.checkVisibility({visibilityProperty: true}) === false) {
     elem.style.visibility = "visible";
     setTimeout(function(){
+      // hide after 2.5 seconds
       elem.style.visibility = "hidden";
     }, 2500);
   }

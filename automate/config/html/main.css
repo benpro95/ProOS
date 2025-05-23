@@ -1027,17 +1027,17 @@ input.chkbox {
 #vol-popup{
   background-color: black;
   border: 1px solid white;
-  position: absolute;
-  top: 5%;
+  position: fixed;
+  top: 50px;
+  height: 80px;
+  width: 150px;
   left: 50%;
   margin-left: -75px;
-  width: 150px;
-  height: 80px;
   padding: 8px;
   text-align: center;
   text-decoration: none;
   font-size: 50px;
-  color: #ffffffe2;
+  color: color-mix(in srgb, var(--main-color) 40%, white);
   z-index: 998; 
   overflow: hidden;
   resize: none;

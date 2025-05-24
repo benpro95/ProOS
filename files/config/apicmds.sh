@@ -48,7 +48,8 @@ function UMNT_FUSEFS () {
   FUSEPTH="$REGMNTS/$VOLNME"
   if PATHMOUNTED "$FUSEPTH"
   then
-    echo "detaching $VOLNME..."
+    UNCAPSTR="${VOLNME,,}"
+    echo "detaching $UNCAPSTR..."
     fusermount -u "$FUSEPTH"
     sleep 1
     rmdir "$FUSEPTH"
@@ -62,7 +63,8 @@ function MNT_FUSEFS () {
   FUSEPTH="$REGMNTS/$VOLNME"
   FUSEPWD="$RAMDISK/fusearch.txt"
   UMNT_FUSEFS "$VOLNME"
-  echo "attaching $VOLNME..."
+  UNCAPSTR="${VOLNME,,}"
+  echo "attaching $UNCAPSTR..."
   mkdir -p "$FUSEPTH"
   if [[ -e "$FUSEPWD" ]]
   then
@@ -104,6 +106,7 @@ then
   exit
 fi
 
+## RAM Disk Region
 UMOUNT_RAMDSK(){
   if [ -e "$REGMNTS/RAM" ]; then
     echo "detaching RAM disk region..."
@@ -112,8 +115,6 @@ UMOUNT_RAMDSK(){
     echo "RAM not attached."    
   fi
 }
-
-## RAM Disk Region
 if [[ $CMD == "mnt_ram_region" ]]
 then
   if [ ! -e "$REGMNTS/RAM" ]; then
@@ -130,6 +131,7 @@ then
   exit
 fi
 
+## Snapshots Region
 UMOUNT_SNAP(){
   if [ -e "$REGMNTS/Snapshots" ]; then
     echo "detaching ZFS snapshots region..."
@@ -138,8 +140,6 @@ UMOUNT_SNAP(){
     echo "snapshots not attached." 
   fi
 }
-
-## Snapshots Region
 if [[ $CMD == "mnt_snap_region" ]]
 then
   if [ ! -e "$REGMNTS/Snapshots" ]; then
@@ -156,6 +156,7 @@ then
   exit
 fi
 
+## External Region 
 UMOUNT_EXTREG(){
   if [ -e "$REGMNTS/External" ]; then
     echo "detaching external region..."
@@ -164,8 +165,6 @@ UMOUNT_EXTREG(){
     echo "external not attached." 
   fi
 }
-
-## External Region 
 if [[ $CMD == "mnt_ext_region" ]]
 then
   if [ ! -e "$REGMNTS/External" ]; then
@@ -182,32 +181,7 @@ then
   exit
 fi
 
-UMOUNT_CAMS(){
-  if [ -e "$REGMNTS/Cameras" ]; then
-    echo "detaching cameras region..."
-    rm $REGMNTS/Cameras
-  else
-    echo "cameras not attached." 
-  fi
-}
-
-## Cameras Region
-if [[ $CMD == "mnt_cam_region" ]]
-then
-  if [ ! -e "$REGMNTS/Cameras" ]; then
-    echo "attaching cameras region..."
-    ln -s /mnt/scratch/cameras $REGMNTS/Cameras
-  else
-    echo "cameras already attached."
-  fi
-  exit
-fi
-if [[ $CMD == "unmnt_cam_region" ]]
-then
-  UMOUNT_CAMS
-  exit
-fi
-
+## Documents Region
 UMOUNT_DOCS(){
   if [ -e "$REGMNTS/Documents" ]; then
     echo "detaching documents region..."
@@ -216,8 +190,6 @@ UMOUNT_DOCS(){
     echo "documents not attached." 
   fi
 }
-
-## Documents Region
 if [[ $CMD == "mnt_docs_region" ]]
 then
   if [ ! -e "$REGMNTS/Documents" ]; then
@@ -234,11 +206,12 @@ then
   exit
 fi
 
+## Detach All Regions
 if [[ $CMD == "unmnt_all" ]]
 then
   UMOUNT_RAMDSK
   UMOUNT_EXTREG
-  UMOUNT_CAMS
+  UMOUNT_NET
   UMOUNT_DOCS
   UMOUNT_SNAP
   UMOUNT_ALLFUSE

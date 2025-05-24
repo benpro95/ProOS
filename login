@@ -22,11 +22,6 @@ MODULE=$1
 ARG2=$2
 HOST=$3
 
-## Fileshare attach command
-SSHFS_CMD(){
-  sshfs ben@files:/ProOS $ROOTDIR -o _netdev,reconnect,identityfile=/home/ben/.keys/files_sftp.rsa,allow_other
-}
-
 ## Check if host is up
 HOSTCHK(){
 echo "Attempting connection..."
@@ -102,11 +97,6 @@ dd bs=128k if=/dev/rpool/proxmox/vm-100-disk-0 of=file.raw
 qemu-img convert -f raw -O qcow2 /dev/rpool/proxmox/vm-100-disk-0 file.qcow2
 \n'
 exit
-fi
-
-## Attach SSH fileshare
-if [ ! -e $ROOTDIR/logon ]; then
-  SSHFS_CMD
 fi
 
 ### Remove temp files argument

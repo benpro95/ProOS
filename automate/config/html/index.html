@@ -953,12 +953,12 @@
         </div>
       </div>
       <div class="dropdown">
-        <button type="button" class="button svropt_button" onclick="showMenu('cameras-menu')">
-          <span class="button__text"></i> Cameras</span>
+        <button type="button" class="button svropt_button" onclick="showMenu('ramdisk-menu')">
+          <span class="button__text"></i> RAM Disk</span>
         </button>  
-        <div class="dd-content dd-button" id="cameras-menu">
-          <a onclick="serverAction('files-mnt_cam_region')"><i class="fa-solid fa-link"></i> Attach</a>   
-          <a onclick="serverAction('files-unmnt_cam_region')"><i class="fa-solid fa-eject"></i> Detach</a>
+        <div class="dd-content dd-button" id="ramdisk-menu">
+          <a onclick="serverAction('files-mnt_ram_region')"><i class="fa-solid fa-link"></i> Attach</a>   
+          <a onclick="serverAction('files-unmnt_ram_region')"><i class="fa-solid fa-eject"></i> Detach</a>
         </div>
       </div>
       <button type="button" class="button svropt_button" onclick="serverAction('files-unmnt_all')">
@@ -973,16 +973,7 @@
           <a onclick="serverAction('files-unmnt_docs_region')"><i class="fa-solid fa-eject"></i> Detach</a>
         </div>
       </div>
-      <div class="dropdown">
-        <button type="button" class="button svropt_button" onclick="showMenu('ramdisk-menu')">
-          <span class="button__text"></i> RAM Disk</span>
-        </button>  
-        <div class="dd-content dd-button" id="ramdisk-menu">
-          <a onclick="serverAction('files-mnt_ram_region')"><i class="fa-solid fa-link"></i> Attach</a>   
-          <a onclick="serverAction('files-unmnt_ram_region')"><i class="fa-solid fa-eject"></i> Detach</a>
-        </div>
-      </div>
-      <button type="button" class="button svropt_button" onclick="closeServerOptions()">
+      <button type="button" class="button svropt_button button__lgr" onclick="closeServerOptions()">
         <span class="button__text"><i class="fa-solid fa-xmark"></i> Close</span>
       </button>
       <button type="button" class="button svropt_button" onclick="openServerOptions()">

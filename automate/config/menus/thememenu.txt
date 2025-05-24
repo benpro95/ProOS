@@ -1,9 +1,9 @@
-#4b0606|8|Red
-#0d3d23|8|Green
-#455197|8|Blue
-#1f2051|8|Dark Blue
-#233237|8|Blue Grey
-#133d61|8|Turquoise
-#ff6633|8|Orange
-#9933ff|8|Purple
-#cd1076|8|Pink
+#4b0606|thm|Red
+#0d3d23|thm|Green
+#455197|thm|Blue
+#1f2051|thm|Dark Blue
+#233237|thm|Blue Grey
+#133d61|thm|Turquoise
+#ff6633|thm|Orange
+#9933ff|thm|Purple
+#cd1076|thm|Pink

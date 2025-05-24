@@ -53,7 +53,18 @@ function handleClicks(event) {
         event.target.classList.contains('am-spinner') || // spinner clicks
         event.target.classList.contains('dropbtn') || // dropdown button click
         event.target.classList.contains('chkbox'))) { // checkbox click
-    hideDropdowns(); // hide all dropdown menus
+    hideDropdowns(true); // hide all dropdown menus
+  }
+}
+
+function hideDropdowns(eraseDynMenus) {
+  // hide all dropdown menus
+  classDisplay("dd-content","none");
+  // hide bookmark menus
+  hideBookmarks();
+  // erase dynamic menu elements
+  if (eraseDynMenus === true) {
+    removeDynMenus();
   }
 }
 
@@ -136,15 +147,6 @@ function hidePages() {
   classDisplay('server-grid','none');
   classDisplay('ledpi-grid','none');
   classDisplay('led-grid','none');
-}
-
-function hideDropdowns() {
-  // hide all dropdown menus
-  classDisplay("dd-content","none");
-  // hide bookmark menus
-  hideBookmarks();
-  // remove any current dynamic menus
-  removeDynMenus();
 }
 
 // show / hide multiple classes
@@ -311,7 +313,7 @@ function openBackupOptions(){
 }
 
 function closeServerOptions(){
-  hideDropdowns();
+  hideDropdowns(true);
   clearPendingCmd();
   classDisplay("svropt__prompt","none");
   classDisplay("svropt__main","none");
@@ -472,7 +474,7 @@ function mountFUSEvolume() {
 async function showPiWiFiPrompt(){
   let result;
   try {
-    hideDropdowns();
+    hideDropdowns(true);
     result = await piWiFiPrompt();
     if (result !== null) {  
       if (result !== '') {  
@@ -573,7 +575,7 @@ function passwordPrompt(){
 async function getPassword(_type){
   let result;
   try{
-    hideDropdowns();
+    hideDropdowns(true);
     result = await passwordPrompt();
     if (result !== null) {  
       if (result !== '') {
@@ -706,7 +708,7 @@ function showMenu(_menu) {
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
   } else {
-    hideDropdowns();
+    hideDropdowns(true);
     _elem.style.display = 'block';
   }
 }
@@ -730,7 +732,7 @@ function hideBookmarks() {
 function showBookmarks() {
   // hide menu if clicked while open
   if (bookmarkState != 0) {
-    hideDropdowns();
+    hideDropdowns(true);
     return;
   }
   // draw menu
@@ -744,7 +746,7 @@ function showBookmarks() {
 function editBookmark() {
   // hide menu if clicked while open
   if (bookmarkState == 2) {
-    hideDropdowns();
+    hideDropdowns(true);
     return;
   }
   enableEditAddMode();
@@ -922,7 +924,7 @@ async function drawBookmarkPrompt(add,url,name,elem){
       // cancel button action
       if (e.target === editFavCancelBtn) {
         editFavPrompt.removeEventListener('click', handleButtonClicks);
-        hideDropdowns();
+        hideDropdowns(true);
       }
       // lookup URL action
       if (e.target === editFavLookupBtn) {
@@ -1050,7 +1052,7 @@ function saveBookmarks() {
       const url = Object.values(elem.url).join("");
       const name = elem.innerText;
       // build output file
-      _file += url + "|9|" + name + "\n";
+      _file += url + "|bkmrk|" + name + "\n";
     }
   })
   // transmit file
@@ -1094,8 +1096,8 @@ function showAmpInput() {
   let _elem = document.getElementById(_menu);
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
-    hideDropdowns();
   } else {
+    hideDropdowns(false);
     // start spinner animation
     let btnText = document.getElementById('ampinp-text');
     let btnSpinner = document.getElementById('ampinp-spinner');
@@ -1115,9 +1117,9 @@ function showAmpInput() {
       _title = "Apple TV"  
       _cmd = "opt-a";
       if (resp == '2'){
-        _indtype = '4';
+        _indtype = 'grnind';
       } else {
-        _indtype = '3';
+        _indtype = 'blkind';
       }
       _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
       // aux optical input
@@ -1125,9 +1127,9 @@ function showAmpInput() {
       _title = "Optical"  
       _cmd = "opt-b";  
       if (resp == '1'){
-        _indtype = '4';
+        _indtype = 'grnind';
       } else {
-        _indtype = '3';
+        _indtype = 'blkind';
       }    
       _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
       // coaxial input
@@ -1135,9 +1137,9 @@ function showAmpInput() {
       _title = "Bluetooth"  
       _cmd = "coaxial";  
       if (resp == '3'){ 
-        _indtype = '4';
+        _indtype = 'grnind';
       } else {
-        _indtype = '3';
+        _indtype = 'blkind';
       }     
       _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
       // aux analog input
@@ -1145,13 +1147,11 @@ function showAmpInput() {
       _title = "Analog In"  
       _cmd = "aux";
       if (resp == '4'){
-        _indtype = '4';
+        _indtype = 'grnind';
       } else {
-        _indtype = '3';
+        _indtype = 'blkind';
       }     
       _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
-      // remove any current dynamic menus
-      removeDynMenus();
       // draw menu items
       drawMenu(_menudata.split("\n"),_menu);
       // stop spinner animation
@@ -1167,8 +1167,8 @@ function showAmpStatus() {
   let _elem = document.getElementById(_menu);
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
-    hideDropdowns();
   } else {
+    hideDropdowns(false);
     // start spinner animation
     let btnText = document.getElementById('amppwr-text');
     let btnSpinner = document.getElementById('amppwr-spinner');
@@ -1186,17 +1186,17 @@ function showAmpStatus() {
       let _menudata = "";
       // status display (I)
       if (resp == '0') {
-        _indtype = '3'; // black indicator      
+        _indtype = 'blkind'; // black indicator      
         _title = "Offline";
         _error = false;
       }
       if (resp == '1') {
-        _indtype = '4'; // green indicator     
+        _indtype = 'grnind'; // green indicator     
         _title = "Online";
         _error = false;
       }
       if (_error === true) {
-        _indtype = '5'; // red indicator    
+        _indtype = 'redind'; // red indicator    
         _title = "Unknown";
       }
       _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
@@ -1204,19 +1204,17 @@ function showAmpStatus() {
       if (resp === '0' || _error === true) {
         _menubtn = "oncmd";
         _cmd = "poweron";
-        _indtype = '6'; 
+        _indtype = 'noind'; 
         _title = "On"  
         _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
       }
       if (resp === '1' || _error === true) {
         _menubtn = "offcmd"; 
         _cmd = "poweroff";  
-        _indtype = '6';     
+        _indtype = 'noind';     
         _title = "Off"  
         _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
       }
-      // remove any current dynamic menus
-      removeDynMenus();
       drawMenu(_menudata.split("\n"),_menu); // draw menu
       // stop spinner animation
       btnText.style.visibility = 'visible';
@@ -1232,8 +1230,8 @@ function showStatusMenu() {
   let _elem = document.getElementById(_menu);
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
-    hideDropdowns();
   } else {
+    hideDropdowns(false);
     // start spinner animation
     let btnText = document.getElementById('stat-text');
     let btnSpinner = document.getElementById('stat-spinner');
@@ -1241,8 +1239,6 @@ function showStatusMenu() {
     btnSpinner.classList.add('btn-spinner');
     _elem.style.display = 'block';
     sendCmd('main','status','').then((data) => { // GET request
-      // remove any current dynamic menus
-      removeDynMenus();
       // draw menu items
       drawMenu(data.split("\n"),_menu);
       // stop spinner animation
@@ -1257,7 +1253,7 @@ function showDynMenu(_menu) {
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
   } else {
-    hideDropdowns();
+    hideDropdowns(false);
      _elem.style.display = 'block';   
     // read menu data from file
     readMenuData(_menu);
@@ -1282,6 +1278,8 @@ function readMenuData(menu) {
 
 // draws each menu item
 function drawMenu(data,menu) {
+  // remove any current dynamic menus
+  removeDynMenus();
   if (!(data === null || data === "")) {
     // erase global data
     while (fileData.length) { fileData.pop(); } 
@@ -1314,16 +1312,16 @@ function createListItem(_col0,_col1,_col2,_id) {
   // set menu text
   _elm.innerText = _col2;
   // checkbox menu
-  if (_col1 == '0' || _col1 == '1') {
+  if (_col1 == 'chkon' || _col1 == 'chkoff') {
     const _cbox = document.createElement('input');
     _cbox.type = "checkbox";
     _cbox.className = "chkbox";
     _cbox.id = "chkbox-" + _col2;
     // read checkbox state from file
-    if (_col1 == '0') {
+    if (_col1 == 'chkoff') {
       _cbox.checked = false;
     }
-    if (_col1 == '1') {
+    if (_col1 == 'chkon') {
       _cbox.checked = true;
     }
     _elm.appendChild(_cbox);
@@ -1337,14 +1335,14 @@ function createListItem(_col0,_col1,_col2,_id) {
     });
   }
   // link only menu
-  if (_col1 == '2') {
+  if (_col1 == 'link') {
     _elm.href = _col0;
   }
   // indicator / status menu  
-  if (_col1 == '3' || // black indicator
-      _col1 == '4' || // green indicator
-      _col1 == '5' || // red indicator
-      _col1 == '6') { // no indicator
+  if (_col1 == 'blkind' || // black indicator
+      _col1 == 'grnind' || // green indicator
+      _col1 == 'redind' || // red indicator
+      _col1 == 'noind') { // no indicator
     // power toggle type
     const _icon = document.createElement('span');
     const field = _col0.split("~");
@@ -1375,14 +1373,14 @@ function createListItem(_col0,_col1,_col2,_id) {
       });
     }
     const _dot = document.createElement('span');
-    if (_col1 == '3'){
+    if (_col1 == 'blkind'){
       _dot.classList.add('ind_dot');
     }
-    if (_col1 == '4'){
+    if (_col1 == 'grnind'){
       _dot.classList.add('ind_dot');
       _dot.classList.add('ind_dot_green');
     }
-    if (_col1 == '5'){
+    if (_col1 == 'redind'){
       _dot.classList.add('ind_dot');
       _dot.classList.add('ind_dot_red');
     }
@@ -1390,7 +1388,7 @@ function createListItem(_col0,_col1,_col2,_id) {
     _elm.appendChild(_dot);
   }
   // theme menu  
-  if (_col1 == '8') {
+  if (_col1 == 'thm') {
     const _color = _col0;
     _elm.classList.add('theme-colorbox');
     _elm.style.setProperty('background-color', _color);
@@ -1399,7 +1397,7 @@ function createListItem(_col0,_col1,_col2,_id) {
     });
   }
   // bookmarks menu  
-  if (_col1 == '9') {
+  if (_col1 == 'bkmrk') {
     _elm.classList.add('bookmarked__item');
     // store URL
     Object.defineProperty(_elm, "url", {
@@ -1452,14 +1450,14 @@ function boxChanged() {
     // split up into array (host,state,name)
     const linearr = line.split("|");
     // only write box state on 0/1 state items
-    if (linearr[1] == '0' || linearr[1] == '1') {
+    if (linearr[1] == 'chkon' || linearr[1] == 'chkoff') {
       // read elements checkbox then write state
       const box = "chkbox-" + linearr[2].toString();
       var boxelm = document.getElementById(box);
       if (boxelm.checked === true) {
-        linearr[1] = '1';
+        linearr[1] = 'chkon';
       } else {
-        linearr[1] = '0';
+        linearr[1] = 'chkoff';
       }
       // build new data
       let _outstr = linearr.join('|');
@@ -1675,7 +1673,7 @@ async function colorPrompt(){
   if (sysModel === serverSite) {
     sendCmd('leds','randcolor','');
   } else {
-    hideDropdowns();
+    hideDropdowns(true);
     if (colorPromptActive === 0) {
       await show_colorPrompt("Pick a color:");
     } 

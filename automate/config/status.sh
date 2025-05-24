@@ -14,14 +14,11 @@ UPDATE_STATES () {
   if [ "$ACTION" == "ping" ]; then
     if ping -4 -i 0.2 -c 1 -W 0.2 "$HOST"; then
       echo "{$HOST} online"
-      STATE="4"
+      STATE="grnind"
     else
-      STATE="3"
+      STATE="blkind"
     fi
   fi
-  if [ "$ACTION" == "atv" ]; then
-    STATE="5"
-  fi  
 }
 
 ## only allow one instance

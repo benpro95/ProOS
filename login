@@ -304,22 +304,19 @@ PRGM_INIT(){
   else
     ## Pi Configuration ##
     ssh-add $KEYS/rpi.rsa 2>/dev/null
-    if [ "$CMD" != "" ]; then
-      if [ "$CMD" == "init" ] || \
-          [ "$CMD" == "reset" ] || \
+    if [ "$CMD" == "init" ]; then
+      ## Setup new Pi
+      HOST="$HOST$DOMAIN"
+      echo "Initializing $HOST with the $MODULE module..."
+      DEPLOY_PI
+    else
+      HOST="$MODULE$DOMAIN"
+      if [ "$CMD" == "reset" ] || \
           [ "$CMD" == "restore" ] || \
           [ "$CMD" == "sync" ]; then
-        if [ "$CMD" == "init" ]; then
-          ## Setup new Pi
-          HOST="$HOST$DOMAIN"
-          echo "Initializing $HOST with the $MODULE module..."
-        else
-          HOST="$MODULE$DOMAIN"
-          echo "Starting $HOST deployment..."
-        fi
+        echo "Starting $HOST deployment..."
         DEPLOY_PI
       else
-        HOST="$MODULE$DOMAIN"
         ## Send command to Pi
         ssh -t -o $SSH_ARGS root@$HOST "/opt/rpi/init $CMD"
         EXIT_PRGM

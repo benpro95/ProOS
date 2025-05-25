@@ -126,12 +126,11 @@ fi
 }
 
 POST_DEPLOY_MENU(){
-  echo "'d' to deploy $HOST"    
-  echo "'u' to update $HOST"
-  if [ "$INTMODE" == "server" ]; then
-    echo "'r' to reboot $HOST"
-  else
-    echo "'r' to reboot $HOST in read/only mode"
+  echo "'d' to re-deploy"    
+  echo "'u' to update packages"
+  echo "'x' to reboot system"
+  if [ "$INTMODE" != "server" ]; then
+    echo "'r' to reboot in read/only mode"
   fi
   echo "'s' for a shell on $HOST"    
   echo "press (any) other key to exit"
@@ -142,15 +141,18 @@ POST_DEPLOY_MENU(){
     SSH_LOGIN
     EXIT_PRGM
   fi
-  if [[ $REPLY =~ ^[Rr]$ ]]
+  if [[ $REPLY =~ ^[Xx]$ ]]
   then
-    if [ "$INTMODE" == "server" ]; then
-      echo "Rebooting $HOST..."
-      ssh -t -o $SSH_ARGS root@$HOST "reboot"
-    else
-      ssh -t -o $SSH_ARGS root@$HOST "/opt/rpi/init ro"
-    fi
+    echo "Rebooting $HOST..."
+    ssh -t -o $SSH_ARGS root@$HOST "reboot"
     EXIT_PRGM
+  fi
+  if [ "$INTMODE" != "server" ]; then
+    if [[ $REPLY =~ ^[Rr]$ ]]
+    then
+      ssh -t -o $SSH_ARGS root@$HOST "/opt/rpi/init ro"
+      EXIT_PRGM
+    fi
   fi
   if [[ $REPLY =~ ^[Dd]$ ]]
   then
@@ -160,7 +162,7 @@ POST_DEPLOY_MENU(){
     else
       DEPLOY_PI
     fi
-  fi    
+  fi
   if [[ $REPLY =~ ^[Uu]$ ]]
   then
     echo "Updating $HOST..."
@@ -171,10 +173,7 @@ POST_DEPLOY_MENU(){
     fi
     EXIT_PRGM
   fi       
-  if [[ ! $REPLY =~ ^[RrSs]$ ]]  
-  then
-    EXIT_PRGM
-  fi 
+  EXIT_PRGM
 }
 
 ## Raspberry Pi Configurator ##
@@ -287,7 +286,7 @@ PRGM_INIT(){
   eval `ssh-agent -s`
   if [ "$INTMODE" == "server" ]; then
     ## Server Configuration ##
-    ssh-add $KEYS/$MODULE.rsa
+    ssh-add $KEYS/$MODULE.rsa 2>/dev/null
     ## Set hostname
     HOST="$MODULE$DOMAIN"
     ## Translate hostname to IP
@@ -304,7 +303,7 @@ PRGM_INIT(){
     fi
   else
     ## Pi Configuration ##
-    ssh-add $KEYS/rpi.rsa
+    ssh-add $KEYS/rpi.rsa 2>/dev/null
     if [ "$CMD" != "" ]; then
       if [ "$CMD" == "init" ] || \
           [ "$CMD" == "reset" ] || \

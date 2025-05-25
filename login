@@ -15,7 +15,7 @@ KEYS="/home/ben/.keys"
 DOWNLOADS="/home/ben/.work"
 ## Read variables
 MODULE=$1
-ARG2=$2
+CMD=$2
 HOST=$3
 ## Global variables
 INTMODE=""
@@ -218,11 +218,11 @@ DEPLOY_PI(){
   done
   echo ""
   ## Check for reset
-  if [ "$ARG2" == "reset" ] || \
-      [ "$ARG2" == "restore" ] || \
-      [ "$ARG2" == "init" ] ; then
+  if [ "$CMD" == "reset" ] || \
+      [ "$CMD" == "restore" ] || \
+      [ "$CMD" == "init" ] ; then
     ssh -t -o $SSH_ARGS root@$HOST "rm -fv /etc/rpi-conf.done"
-    if [ "$ARG2" = "restore" ] ; then
+    if [ "$CMD" = "restore" ] ; then
       echo "Un-Installing software..."
       ssh -t -o $SSH_ARGS root@$HOST "rm -rfv /opt/rpi; touch /etc/rpi-reinitsource.done"
     fi   
@@ -299,28 +299,30 @@ PRGM_INIT(){
       HOST="10.177.1.4"
       NOHOSTCHK="yes"
     fi
-    if [ "$ARG2" == "sync" ]; then
+    if [ "$CMD" == "sync" ]; then
       DEPLOY_SERVER
     fi
   else
     ## Pi Configuration ##
     ssh-add $KEYS/rpi.rsa
-    HOST="$MODULE$DOMAIN"
-    if [ "$ARG2" != "" ]; then
-      if [ "$ARG2" == "init" ] || \
-          [ "$ARG2" == "reset" ] || \
-          [ "$ARG2" == "restore" ] || \
-          [ "$ARG2" == "sync" ]; then
-        if [ "$ARG2" == "init" ]; then
+    if [ "$CMD" != "" ]; then
+      if [ "$CMD" == "init" ] || \
+          [ "$CMD" == "reset" ] || \
+          [ "$CMD" == "restore" ] || \
+          [ "$CMD" == "sync" ]; then
+        if [ "$CMD" == "init" ]; then
           ## Setup new Pi
           HOST="$HOST$DOMAIN"
-          echo "Initializing $HOST..."
+          echo "Initializing $HOST with the $MODULE module..."
+        else
+          HOST="$MODULE$DOMAIN"
+          echo "Starting $HOST deployment..."
         fi
-        echo "Starting $HOST deployment..."
         DEPLOY_PI
       else
+        HOST="$MODULE$DOMAIN"
         ## Send command to Pi
-        ssh -t -o $SSH_ARGS root@$HOST "/opt/rpi/init $ARG2"
+        ssh -t -o $SSH_ARGS root@$HOST "/opt/rpi/init $CMD"
         EXIT_PRGM
       fi
     fi

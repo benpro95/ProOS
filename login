@@ -12,7 +12,7 @@ ROOTDIR="/mnt/ProOS"
 ## SSH keys folder
 KEYS="/home/ben/.keys"
 ## Work folder
-DOWNLOADS="/home/ben/.work"
+WORKDIR="/home/ben/.work"
 ## Read variables
 MODULE=$1
 CMD=$2
@@ -116,8 +116,8 @@ fi
 if [ "$MODULE" == "rmtmp" ]; then
 echo "deleting temporary files..."
 pkill ssh-agent
-if [ -e $DOWNLOADS ]; then
-  rm -rfv $DOWNLOADS/.ptmp
+if [ -e $WORKDIR ]; then
+  rm -rfv $WORKDIR/.ptmp
 else
   rm -rfv /tmp/protmp.*
 fi
@@ -250,9 +250,9 @@ DEPLOY_PI(){
 ## Deploy server configuration
 DEPLOY_SERVER(){
   ## Create work folder
-  if [ -e $DOWNLOADS ]; then
-    mkdir -p $DOWNLOADS/.ptmp
-    TMPFLDR=$(mktemp -d $DOWNLOADS/.ptmp/XXXXXXXXX)
+  if [ -e $WORKDIR ]; then
+    mkdir -p $WORKDIR/.ptmp
+    TMPFLDR=$(mktemp -d $WORKDIR/.ptmp/XXXXXXXXX)
   else
     echo "Scratch path not found, exiting!"
     EXIT_PRGM

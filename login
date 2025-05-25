@@ -3,37 +3,56 @@
 ### by Ben Provenzano III
 ###
 
-## Local domain name
+## DNS domain name
 #DOMAIN=".local"
 #DOMAIN=".home"
 DOMAIN=""
-
 ## Modules folder
 ROOTDIR="/mnt/ProOS"
-
 ## SSH keys folder
 KEYS="/home/ben/.keys"
-
 ## Work folder
 DOWNLOADS="/home/ben/.work"
-
 ## Read variables
 MODULE=$1
 ARG2=$2
 HOST=$3
+## Global variables
+INTMODE=""
+NOHOSTCHK=""
+SSH_ARGS="ServerAliveInterval=1 -o ServerAliveCountMax=5"
 
-## Check if host is up
-HOSTCHK(){
-echo "Attempting connection..."
-if ping -c 2 $HOST &> /dev/null
-then
-  echo "Connection established."
-else
-  echo "Host $HOST is down, exiting..."
+EXIT_PRGM(){
+  ## Discard Keys
+  ssh-add -D
+  eval $(ssh-agent -k)
+  ## Exit Script
   exit
-fi
 }
 
+## Ping check
+HOSTCHK(){
+  echo "Attempting connection..."
+  if ping -c 2 $HOST &> /dev/null
+  then
+    echo "Connection established."
+  else
+    echo "Host $HOST is down, exiting..."
+    EXIT_PRGM
+  fi
+}
+
+## Shell Login
+SSH_LOGIN(){
+  if [ "$NOHOSTCHK" == "" ]; then
+    ## Exit if host down
+    HOSTCHK
+  fi
+  ## Login to SSH Pi/Server
+  ssh -t -o $SSH_ARGS root@$HOST
+}
+
+EXTRA_ARGS(){
 ### ProServer Help Menu
 if [ "$MODULE" == "" ]; then
 printf \
@@ -50,10 +69,7 @@ Reset ProOS (full config script) Pi Only
 login "Hostname" reset
 
 Reset ProOS & Reinstall Packages (full config script) Pi Only
-login "Hostname" reinstall
-
-Clean/Restore ProOS (delete /opt/rpi and run full config script) Pi Only
-login "Hostname" clean
+login "Hostname" restore
 
 Initialize ProOS (configure a base Pi or reconfigure one) Pi Only
 login "Module" init "Hostname"
@@ -66,7 +82,6 @@ login rmtmp
 \n'
 exit
 fi
-
 ### Exit if matches this hosts
 if [ "$MODULE" == "router" ] || \
    [ "$MODULE" == "logon" ] || \
@@ -78,8 +93,7 @@ if [ "$MODULE" == "router" ] || \
 echo "Hostname not allowed."
 exit
 fi
-
-if [ "$MODULE" = "cmds" ]; then
+if [ "$MODULE" == "cmds" ]; then
 printf \
 '* Linux Command Reference
 by Ben Provenzano III
@@ -98,149 +112,85 @@ qemu-img convert -f raw -O qcow2 /dev/rpool/proxmox/vm-100-disk-0 file.qcow2
 \n'
 exit
 fi
-
 ### Remove temp files argument
 if [ "$MODULE" == "rmtmp" ]; then
-echo "Removing temporary files..."
+echo "deleting temporary files..."
 pkill ssh-agent
- if [ -e $DOWNLOADS ]; then
+if [ -e $DOWNLOADS ]; then
   rm -rfv $DOWNLOADS/.ptmp
- else
+else
   rm -rfv /tmp/protmp.*
- fi
+fi
 exit
 fi
-
-## Deploy server configuration
-DEPLOY_SERVER(){
-## Create work folder
-if [ -e $DOWNLOADS ]; then
-  mkdir -p $DOWNLOADS/.ptmp
-  TMPFLDR=$(mktemp -d $DOWNLOADS/.ptmp/XXXXXXXXX)
-else
-  echo "Scratch path not found, exiting!"
-  exit
-fi
-echo "Copying files to work folder $TMPFLDR..."
-cp -r $ROOTDIR/$MODULE/config $TMPFLDR/
-echo "Compressing files..."
-cd $TMPFLDR
-export COPYFILE_DISABLE=true
-tar -cf config.tar config
-cd -
-echo "Uploading files..."
-scp -p $TMPFLDR/config.tar root@$HOST:/tmp/
-echo "Running $MODULE deployment script..."
-ssh -t root@$HOST \
- "cd /tmp/; tar -xmf config.tar; rm -f config.tar; chmod +x /tmp/config/installer.sh; /tmp/config/installer.sh"
-## Clean-up installer files
-rm -r $TMPFLDR
 }
 
-### ProServer Configurator (only these hosts)
-if [ -e $ROOTDIR/$MODULE/qemu.conf ] || [ -e $ROOTDIR/$MODULE/lxc.conf ] ; then
-######################################
-  ## Set hostname
-  HOST="$MODULE$DOMAIN"
-  ## Translate hostname to IP
-  if [ "$MODULE" == "pve" ]; then
-    HOST="10.177.1.8" 
-  fi 
-  if [ "$MODULE" == "files" ]; then
-    HOST="10.177.1.4" 
+POST_DEPLOY_MENU(){
+  echo "'d' to deploy $HOST"    
+  echo "'u' to update $HOST"
+  if [ "$INTMODE" == "server" ]; then
+    echo "'r' to reboot $HOST"
+  else
+    echo "'r' to reboot $HOST in read/only mode"
   fi
-  ## SSH key prompt
-  eval `ssh-agent -s`
-  #ssh-add $KEYS/$MODULE.rsa 2>/dev/null
-  ssh-add $KEYS/$MODULE.rsa
-  ### AutoSync
-  if [ "$ARG2" == "sync" ]; then
-    DEPLOY_SERVER
-    echo "'d' to re-deploy server $HOST"    
-    echo "'u' to update server $HOST"   
-    echo "'r' to reboot server $HOST"
-    echo "'s' for a shell on server $HOST"    
-    echo "any other key to exit"
-    read -p "enter option: " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Rr]$ ]]
-    then
-      echo "Rebooting server..."
-      ssh -t -i $KEYS/$MODULE.rsa root@$HOST "reboot"
+  echo "'s' for a shell on $HOST"    
+  echo "press (any) other key to exit"
+  read -p "enter option: " -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Ss]$ ]]
+  then
+    SSH_LOGIN
+    EXIT_PRGM
+  fi
+  if [[ $REPLY =~ ^[Rr]$ ]]
+  then
+    if [ "$INTMODE" == "server" ]; then
+      echo "Rebooting $HOST..."
+      ssh -t -o $SSH_ARGS root@$HOST "reboot"
+    else
+      ssh -t -o $SSH_ARGS root@$HOST "/opt/rpi/init ro"
     fi
-    if [[ $REPLY =~ ^[Ss]$ ]]
-    then
-      ssh -t -i $KEYS/$MODULE.rsa root@$HOST
-    fi
-    if [[ $REPLY =~ ^[Dd]$ ]]
-    then
+    EXIT_PRGM
+  fi
+  if [[ $REPLY =~ ^[Dd]$ ]]
+  then
+    echo "Deploying $HOST..."
+    if [ "$INTMODE" == "server" ]; then
       DEPLOY_SERVER
-    fi    
-    if [[ $REPLY =~ ^[Uu]$ ]]
-    then
-      echo "Running update program..."
-      ssh -t -i $KEYS/$MODULE.rsa root@$HOST "apt-get update; apt-get upgrade"
-    fi       
-    if [[ ! $REPLY =~ ^[RrSs]$ ]]  
-    then
-      ## Exit
-      ssh-add -D
-      eval $(ssh-agent -k)   
-      exit
-    fi 
-  else
-    ## Login to SSH
-    ssh -t -i $KEYS/$MODULE.rsa root@$HOST
-  fi
-  ## Clean-up on logout
-  ssh-add -D
-  eval $(ssh-agent -k)   
-  exit
-######################################
-fi
-
-########## Raspberry Pi Configurator ##########
-
-SYNCSTATE="no"
-
-## Determine script operation
-if [ "$ARG2" == "init" ]; then
-  ## Init function
-  HOST="$HOST$DOMAIN"
-  SYNCSTATE="start"
-else
-  ## Sync and reset functions	
-  HOST="$MODULE$DOMAIN"
-  if [ "$ARG2" == "sync" ] || \
-     [ "$ARG2" == "clean" ] || \
-     [ "$ARG2" == "reinstall" ] || \
-     [ "$ARG2" == "reset" ] ; then
-    SYNCSTATE="start"
-  else
-  ## Other argument specified	
-    if ! [ "$ARG2" = "" ] ; then
-    ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-     $KEYS/rpi.rsa root@$HOST "/opt/rpi/init $ARG2"
-    exit
+    else
+      DEPLOY_PI
     fi
-  fi
-fi
+  fi    
+  if [[ $REPLY =~ ^[Uu]$ ]]
+  then
+    echo "Updating $HOST..."
+    if [ "$INTMODE" == "server" ]; then
+      ssh -t -o $SSH_ARGS root@$HOST "apt-get update; apt-get upgrade"
+    else
+      ssh -t -o $SSH_ARGS root@$HOST "/opt/rpi/init update"
+    fi
+    EXIT_PRGM
+  fi       
+  if [[ ! $REPLY =~ ^[RrSs]$ ]]  
+  then
+    EXIT_PRGM
+  fi 
+}
 
-######### START AUTOSYNC ##########
-if [ "$SYNCSTATE" == "start" ]; then
+## Raspberry Pi Configurator ##
+DEPLOY_PI(){
+  ######### START AUTOSYNC ##########
   HOSTCHK
   echo ""
-  STRIN=$(ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i $KEYS/rpi.rsa root@$HOST "df -h")
-  SUBSTR="overlay"
-  if [[ "$STRIN" == *"$SUBSTR"* ]]; then
-  	 echo "Read/only root filesystem detected."
-     ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-      $KEYS/rpi.rsa root@$HOST "/opt/rpi/init rw"
-     echo "Waiting 30 seconds..."
-     sleep 30
-     if ping -c 1 $HOST &> /dev/null ; then
-       echo "Connection established."
-     else
+  STRIN=$(ssh -t -o $SSH_ARGS root@$HOST "df -h")
+  if [[ "$STRIN" == *"overlay"* ]]; then
+    echo "Read/only root filesystem detected."
+    ssh -t -o $SSH_ARGS root@$HOST "/opt/rpi/init rw"
+    echo "Waiting 30 seconds..."
+    sleep 30
+    if ping -c 1 $HOST &> /dev/null ; then
+      echo "Connection established."
+    else
         for run in {1..4}; do
           if ! ping -c 1 $HOST &> /dev/null ; then
           echo "Host is down, waiting 10 more seconds..."
@@ -251,86 +201,134 @@ if [ "$SYNCSTATE" == "start" ]; then
           echo "Connection established."
         else
           echo "Host is down, exiting..."
-          exit
+          EXIT_PRGM
         fi
-     fi
+    fi
   else
     echo "Read/write root filesystem detected."   
   fi
-
-  wait_time=03 # seconds
-  temp_cnt=${wait_time}
-  while [[ ${temp_cnt} -gt 0 ]];
+  ## Sync timeout
+  WAIT_TIME=03 ## seconds
+  WAIT_COUNT=${WAIT_TIME}
+  while [[ ${WAIT_COUNT} -gt 0 ]];
   do
-      printf "\rYou have %2d second(s), to hit Ctrl+C to cancel." ${temp_cnt}
+      printf "\rYou have %2d second(s), to hit Ctrl+C to cancel." ${WAIT_COUNT}
       sleep 1
-      ((temp_cnt--))
+      ((WAIT_COUNT--))
   done
   echo ""
-
   ## Check for reset
   if [ "$ARG2" == "reset" ] || \
-  	 [ "$ARG2" == "restore" ] || \
-     [ "$ARG2" == "reinstall" ] || \
-     [ "$ARG2" == "clean" ] || \
-     [ "$ARG2" == "init" ] ; then
-    ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-    $KEYS/rpi.rsa root@$HOST "rm -fv /etc/rpi-conf.done"
-    if [ "$ARG2" = "reinstall" ] ; then
-      ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-      $KEYS/rpi.rsa root@$HOST "touch /etc/rpi-reinitsource.done"
+      [ "$ARG2" == "restore" ] || \
+      [ "$ARG2" == "init" ] ; then
+    ssh -t -o $SSH_ARGS root@$HOST "rm -fv /etc/rpi-conf.done"
+    if [ "$ARG2" = "restore" ] ; then
+      echo "Un-Installing software..."
+      ssh -t -o $SSH_ARGS root@$HOST "rm -rfv /opt/rpi; touch /etc/rpi-reinitsource.done"
     fi   
   fi
+  #################################
+  EXCLUDED="--exclude=photos --exclude=sources"
+  RSYNC_ARGS="--stats --human-readable --recursive --times"
+  #################################
+  echo "Installing base software..."
+  rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $EXCLUDED $ROOTDIR/rpi root@$HOST:/opt/
+  #################################
+  echo "Installing shared software..."
+  rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $ROOTDIR/automate/config/menus/thememenu.txt root@$HOST:/opt/rpi/config/
+  rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS --mkpath $ROOTDIR/automate/config/html/ root@$HOST:/opt/rpi/config/html-base/
+  #################################
+  echo "Installing module-specific software..."
+  rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $EXCLUDED $ROOTDIR/$MODULE/ root@$HOST:/opt/rpi/
+  #################################
+  echo "Starting installer..."
+  ssh -t -o $SSH_ARGS root@$HOST "echo $MODULE > /opt/rpi/config/hostname; cd /opt/rpi/config; chmod +x installer.sh; ./installer.sh"
+  ######### END AUTOSYNC ##########
+  POST_DEPLOY_MENU
+}
 
-  ## Check for restore
-  if [ "$ARG2" == "restore" ] || [ "$ARG2" == "clean" ] ; then
-    echo "Un-Installing software..."
-    ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-     $KEYS/rpi.rsa root@$HOST "rm -rfv /opt/rpi"
-    echo "Installing software..."
-  else 
-    echo "Updating software..."
+## Deploy server configuration
+DEPLOY_SERVER(){
+  ## Create work folder
+  if [ -e $DOWNLOADS ]; then
+    mkdir -p $DOWNLOADS/.ptmp
+    TMPFLDR=$(mktemp -d $DOWNLOADS/.ptmp/XXXXXXXXX)
+  else
+    echo "Scratch path not found, exiting!"
+    EXIT_PRGM
   fi
+  echo "Copying files to work folder $TMPFLDR..."
+  cp -r $ROOTDIR/$MODULE/config $TMPFLDR/
+  echo "Compressing files..."
+  cd $TMPFLDR
+  export COPYFILE_DISABLE=true
+  tar -cf config.tar config
+  cd -
+  echo "Uploading files..."
+  scp -p $TMPFLDR/config.tar root@$HOST:/tmp/
+  echo "Running $MODULE deployment script..."
+  ssh -t root@$HOST \
+  "cd /tmp/; tar -xmf config.tar; rm -f config.tar; chmod +x /tmp/config/installer.sh; /tmp/config/installer.sh"
+  ## Clean-up installer files
+  rm -r $TMPFLDR
+  POST_DEPLOY_MENU
+}
 
-  ## Install base software
-  rsync -e "ssh -i $KEYS/rpi.rsa" --progress -rtv \
-   --exclude=photos --exclude=sources $ROOTDIR/rpi root@$HOST:/opt/
-
-  ## Install shared software   
-  rsync -e "ssh -i $KEYS/rpi.rsa" --progress -rtv \
-   $ROOTDIR/automate/config/menus/thememenu.txt root@$HOST:/opt/rpi/config/
-  rsync -e "ssh -i $KEYS/rpi.rsa" --progress -rtv \
-   --mkpath $ROOTDIR/automate/config/html/* root@$HOST:/opt/rpi/config/html-base/
-
-  ## Install module-specific software
-  rsync -e "ssh -i $KEYS/rpi.rsa" --progress -rtv \
-   --exclude=photos --exclude=sources $ROOTDIR/$MODULE/* root@$HOST:/opt/rpi/
-
-  ## Write hostname
-  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-   $KEYS/rpi.rsa root@$HOST "echo $MODULE > /opt/rpi/config/hostname"
-
-  ## Run installer
-  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-   $KEYS/rpi.rsa root@$HOST "cd /opt/rpi/config; chmod +x installer.sh; ./installer.sh"
-
-  ## Reboot in read-only mode
-  read -p "Do you want to reboot in read-only mode? " -n 1 -r
-  echo
-  if [[ ! $REPLY =~ ^[Yy]$ ]]
-  then
-    exit 1
+PRGM_INIT(){
+  ## Process Initial Arguments
+  EXTRA_ARGS
+  ## Check For Proxmox Configuration
+  INTMODE=""
+  if [ -e $ROOTDIR/$MODULE/qemu.conf ] || \
+     [ -e $ROOTDIR/$MODULE/lxc.conf ] ; then
+    INTMODE="server"
   fi
-  ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
-   $KEYS/rpi.rsa root@$HOST "/opt/rpi/init ro"
-  exit
+  ## Start SSH Agent
+  eval `ssh-agent -s`
+  if [ "$INTMODE" == "server" ]; then
+    ## Server Configuration ##
+    ssh-add $KEYS/$MODULE.rsa
+    ## Set hostname
+    HOST="$MODULE$DOMAIN"
+    ## Translate hostname to IP
+    if [ "$MODULE" == "pve" ]; then
+      HOST="10.177.1.8" 
+      NOHOSTCHK="yes"
+    fi 
+    if [ "$MODULE" == "files" ]; then
+      HOST="10.177.1.4"
+      NOHOSTCHK="yes"
+    fi
+    if [ "$ARG2" == "sync" ]; then
+      DEPLOY_SERVER
+    fi
+  else
+    ## Pi Configuration ##
+    ssh-add $KEYS/rpi.rsa
+    HOST="$MODULE$DOMAIN"
+    if [ "$ARG2" != "" ]; then
+      if [ "$ARG2" == "init" ] || \
+          [ "$ARG2" == "reset" ] || \
+          [ "$ARG2" == "restore" ] || \
+          [ "$ARG2" == "sync" ]; then
+        if [ "$ARG2" == "init" ]; then
+          ## Setup new Pi
+          HOST="$HOST$DOMAIN"
+          echo "Initializing $HOST..."
+        fi
+        echo "Starting $HOST deployment..."
+        DEPLOY_PI
+      else
+        ## Send command to Pi
+        ssh -t -o $SSH_ARGS root@$HOST "/opt/rpi/init $ARG2"
+        EXIT_PRGM
+      fi
+    fi
+  fi
+  ## Console Login
+  SSH_LOGIN
+  EXIT_PRGM
+}
 
-######### END AUTOSYNC ##########
-fi
-
-## Exit if host down
-HOSTCHK
-## Login to SSH
-ssh -t -o ServerAliveInterval=1 -o ServerAliveCountMax=5 -i \
- $KEYS/rpi.rsa root@$HOST
-exit
+## MAIN ENTRY POINT ##
+PRGM_INIT

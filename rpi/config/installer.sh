@@ -11,6 +11,8 @@ MODNAME=`cat /opt/rpi/modconf/brand.txt`
 ## Detect Pi Model
 CPUTYPE=$(tr -d '\0' < /sys/firmware/devicetree/base/model)
 
+echo "Installing on $NEWHOST..." 
+
 ## Pre-installation checks
 if [ ! -e /opt/rpi/init ]; then
   echo "Core components missing."

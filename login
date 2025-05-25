@@ -20,7 +20,7 @@ HOST=$3
 ## Global variables
 INTMODE=""
 NOHOSTCHK=""
-SSH_ARGS="ServerAliveInterval=1 -o ServerAliveCountMax=5"
+SSH_ARGS="ServerAliveInterval=5 -o ServerAliveCountMax=5"
 
 EXIT_PRGM(){
   ## Discard Keys
@@ -221,7 +221,7 @@ DEPLOY_PI(){
       [ "$CMD" == "restore" ] || \
       [ "$CMD" == "init" ] ; then
     ssh -t -o $SSH_ARGS root@$HOST "rm -fv /etc/rpi-conf.done"
-    if [ "$CMD" = "restore" ] ; then
+    if [ "$CMD" == "restore" ] ; then
       echo "Un-Installing software..."
       ssh -t -o $SSH_ARGS root@$HOST "rm -rfv /opt/rpi; touch /etc/rpi-reinitsource.done"
     fi   
@@ -241,7 +241,7 @@ DEPLOY_PI(){
   rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $EXCLUDED $ROOTDIR/$MODULE/ root@$HOST:/opt/rpi/
   #################################
   echo "Starting installer..."
-  ssh -t -o $SSH_ARGS root@$HOST "echo $MODULE > /opt/rpi/config/hostname; cd /opt/rpi/config; chmod +x installer.sh; ./installer.sh"
+  ssh -t -o $SSH_ARGS root@$HOST "cd /opt/rpi/config; echo $MODULE > ./hostname; chmod +x ./installer.sh; ./installer.sh"
   ######### END AUTOSYNC ##########
   POST_DEPLOY_MENU
 }
@@ -317,9 +317,11 @@ PRGM_INIT(){
         echo "Starting $HOST deployment..."
         DEPLOY_PI
       else
-        ## Send command to Pi
-        ssh -t -o $SSH_ARGS root@$HOST "/opt/rpi/init $CMD"
-        EXIT_PRGM
+        if [ "$CMD" != "" ]; then
+          ## Send command to Pi
+          ssh -t -o $SSH_ARGS root@$HOST "/opt/rpi/init $CMD"
+          EXIT_PRGM
+        fi
       fi
     fi
   fi

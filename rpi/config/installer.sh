@@ -176,12 +176,13 @@ rm -f /var/log/syslog
 ## Remove Packages 
 apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp udhcpd usbmuxd pmount usbmount \
   cups cups-client cups-common cups-core-drivers cups-daemon cups-filters cups-filters-core-drivers \
-  cups-ipp-utils cups-ppdc cups-server-common upower chromium-browser exim4 exim4-base exim4-config \
-  exim4-daemon-light udisks2 tracker-extract tracker-miner-fs tigervnc-common tigervnc-standalone-server \
+  cups-ipp-utils cups-ppdc cups-server-common upower chromium chromium-browser chromium-common chromium-l10n \
+  exim4 exim4-base exim4-config exim4-daemon-light udisks2 tigervnc-common tigervnc-standalone-server \
   iptables-persistent bridge-utils ntfs-3g lxlock xscreensaver xscreensaver-data gvfs gvfs-backends \
   vnc4server libudisks2-0 dnsmasq wolfram-engine libssl-doc libatasmart4 libavahi-glib1 mpd mpc \
   rng-tools rng-tools-debian openjdk-17-jre-headless firefox pocketsphinx-en-us piwiz plymouth \
-  plymouth-label plymouth-themes pulseaudio pulseaudio-utils pavucontrol pipewire pipewire-bin
+  plymouth-label plymouth-themes pulseaudio pulseaudio-utils pavucontrol pipewire pipewire-bin \
+  tracker-extract tracker-miner-fs
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
 rm -rf /etc/cron.*
@@ -543,10 +544,9 @@ if [ ! -e /etc/rpi-conf.done ]; then
   ## Disabled on startup
   systemctl disable hostapd keyboard-setup sysstat lighttpd wifiswitch motion \
     apt-daily.service apt-daily.timer apt-daily-upgrade.service apt-daily-upgrade.timer \
-    sysstat-collect.timertriggerhappy.service triggerhappy.socket e2scrub_all.service e2scrub_all.timer \
-    serial-getty@ttyS0.service serial-getty@ttyAMA0.service sysstat-summary.timer man-db.service \
-    man-db.timer hciuart bluetooth bthelper@hci0 bluealsa usbplug nmbd smbd samba-ad-dc autofs \
-    netatalk glamor-test rp1-test rpi-netdetect
+    e2scrub_all.service e2scrub_all.timer serial-getty@ttyS0.service serial-getty@ttyAMA0.service \
+    sysstat-summary.timer man-db.service man-db.timer hciuart bluetooth bthelper@hci0 bluealsa \
+    usbplug nmbd smbd samba-ad-dc autofs netatalk glamor-test rp1-test rpi-netdetect
   echo "Initial setup (phase II) complete."
   touch /etc/rpi-conf.done
 else
@@ -569,7 +569,7 @@ systemctl start man-db.service
 echo "Compiling Z-Term COM Service..."
 rm -f /usr/bin/ztermcom
 /usr/bin/gcc /opt/rpi/ztermcom.c -o /usr/bin/ztermcom
-chmod +x /usr/bin/ztermcom 
+chmod 755 /usr/bin/ztermcom 
 chown root:root /usr/bin/ztermcom
 
 ## Reset Null Device

@@ -13,7 +13,7 @@ ROOTDIR="/mnt/ProOS"
 KEYS="/home/ben/.keys"
 ## Work folder
 WORKDIR="/home/ben/.work"
-## Read variables
+## Read arguments
 MODULE=$1
 CMD=$2
 HOST=$3
@@ -67,9 +67,6 @@ login "Hostname" sync
 
 Reset ProOS (full config script) Pi Only
 login "Hostname" reset
-
-Reset ProOS & Reinstall Packages (full config script) Pi Only
-login "Hostname" restore
 
 Initialize ProOS (configure a base Pi or reconfigure one) Pi Only
 login "Module" init "Hostname"
@@ -178,7 +175,6 @@ POST_DEPLOY_MENU(){
 
 ## Raspberry Pi Configurator ##
 DEPLOY_PI(){
-  ######### START AUTOSYNC ##########
   HOSTCHK
   echo ""
   STRIN=$(ssh -t -o $SSH_ARGS root@$HOST "df -h")
@@ -206,7 +202,6 @@ DEPLOY_PI(){
   else
     echo "Read/write root filesystem detected."   
   fi
-  ## Sync timeout
   WAIT_TIME=03 ## seconds
   WAIT_COUNT=${WAIT_TIME}
   while [[ ${WAIT_COUNT} -gt 0 ]];
@@ -216,33 +211,20 @@ DEPLOY_PI(){
       ((WAIT_COUNT--))
   done
   echo ""
-  ## Check for reset
-  if [ "$CMD" == "reset" ] || \
-      [ "$CMD" == "restore" ] || \
-      [ "$CMD" == "init" ] ; then
+  if [ "$CMD" == "reset" ] || [ "$CMD" == "init" ] ; then
     ssh -t -o $SSH_ARGS root@$HOST "rm -fv /etc/rpi-conf.done"
-    if [ "$CMD" == "restore" ] ; then
-      echo "Un-Installing software..."
-      ssh -t -o $SSH_ARGS root@$HOST "rm -rfv /opt/rpi; touch /etc/rpi-reinitsource.done"
-    fi   
   fi
-  #################################
   EXCLUDED="--exclude=photos --exclude=sources"
   RSYNC_ARGS="--stats --human-readable --recursive --times"
-  #################################
   echo "Installing base software..."
   rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $EXCLUDED $ROOTDIR/rpi root@$HOST:/opt/
-  #################################
   echo "Installing shared software..."
   rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $ROOTDIR/automate/config/menus/thememenu.txt root@$HOST:/opt/rpi/config/
   rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS --mkpath $ROOTDIR/automate/config/html/ root@$HOST:/opt/rpi/config/html-base/
-  #################################
   echo "Installing module-specific software..."
   rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $EXCLUDED $ROOTDIR/$MODULE/ root@$HOST:/opt/rpi/
-  #################################
   echo "Starting installer..."
   ssh -t -o $SSH_ARGS root@$HOST "cd /opt/rpi/config; echo $MODULE > ./hostname; chmod +x ./installer.sh; ./installer.sh"
-  ######### END AUTOSYNC ##########
   POST_DEPLOY_MENU
 }
 
@@ -305,15 +287,14 @@ PRGM_INIT(){
     ## Pi Configuration ##
     ssh-add $KEYS/rpi.rsa 2>/dev/null
     if [ "$CMD" == "init" ]; then
-      ## Setup new Pi
+      ## Initialize / Rename Pi
       HOST="$HOST$DOMAIN"
       echo "Initializing $HOST with the $MODULE module..."
       DEPLOY_PI
     else
       HOST="$MODULE$DOMAIN"
-      if [ "$CMD" == "reset" ] || \
-          [ "$CMD" == "restore" ] || \
-          [ "$CMD" == "sync" ]; then
+      ## Deploy to Pi
+      if [ "$CMD" == "reset" ] || [ "$CMD" == "sync" ]; then
         echo "Starting $HOST deployment..."
         DEPLOY_PI
       else

@@ -52,14 +52,6 @@ echo "*"
 ## Set boot partition to read/write
 mount -o remount,rw /boot/firmware
 
-## Re-install Manual Sources
-REINSTALL="no"
-if [ -e /etc/rpi-reinitsource.done ]; then
-  echo "Reinstalling manually installed packages..."  
-  rm -f /etc/rpi-reinitsource.done
-  REINSTALL="yes"
-fi
-
 ## Set locale
 raspi-config nonint do_change_locale LANG=en_US.UTF-8
 
@@ -84,9 +76,9 @@ apt-get install -y --no-upgrade --ignore-missing locales console-setup \
  uuid-runtime mpg321 mpv mplayer espeak tightvncserver iptables libnss3-tools jq \
  rsync screen parallel sudo sed nano curl insserv wireless-regdb wireless-tools \
  iw wpasupplicant dirmngr autofs triggerhappy apt-utils build-essential netatalk \
- git autoconf make libtool binutils i2c-tools cmake yasm libmariadb3 \
- texi2html socat nmap autoconf automake pkg-config cifs-utils neofetch\
- keyboard-configuration ncftp inxi gnucobol4 cryptsetup cryptsetup-bin
+ autoconf make libtool binutils i2c-tools cmake yasm cryptsetup cryptsetup-bin \
+ texi2html socat nmap autoconf automake pkg-config cifs-utils neofetch \
+ libmariadb3 keyboard-configuration ncftp inxi gnucobol4 minicom
 
 ## Developer Packages 
 apt-get install -y --no-upgrade --ignore-missing libgtk2.0-dev libbluetooth3 libbluetooth-dev \
@@ -95,7 +87,7 @@ apt-get install -y --no-upgrade --ignore-missing libgtk2.0-dev libbluetooth3 lib
  libass-dev libfreetype6-dev libgpac-dev libsdl1.2-dev libtheora-dev libssl-dev \
  libxml2-dev libxslt1-dev portaudio19-dev libffi-dev zlib1g-dev libdbus-1-dev \
  libva-dev libvdpau-dev libvorbis-dev libx11-dev libxext-dev libxfixes-dev \
- libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdbus-glib-1-dev minicom
+ libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdbus-glib-1-dev
 
  ## AV Codecs Support
 apt-get install -y --no-upgrade --ignore-missing libgstreamer1.0-dev gstreamer1.0-plugins-base \
@@ -108,8 +100,6 @@ apt-get install -y --no-upgrade --ignore-missing xserver-xorg xorg \
  x11-common x11-common xserver-xorg-input-evdev xserver-xorg-legacy xvfb \
  libxext6 libxtst6 libatlas-base-dev xprintidle xdotool wmctrl openbox lxde-common \
  lxsession pcmanfm lxterminal gpicview xfce4-panel xfce4-whiskermenu-plugin
-apt-mark unhold chromium-browser chromium-codecs-ffmpeg chromium-codecs-ffmpeg-extra
-apt-get install -y --no-upgrade --ignore-missing chromium-browser
 
 ## Disable Swap
 dphys-swapfile swapoff
@@ -126,8 +116,7 @@ if [ "$CPUTYPE" = "Raspberry Pi Zero W Rev 1.1" ]; then
 else
   echo "ARMv7 CPU detected, installing Java, Arduino, Node, Rclone..."
   ## Note: Tested Node.js version 14.17.1
-  apt-get install -y --no-upgrade --ignore-missing nodejs arduino avrdude \
-   openjdk-11-jre
+  apt-get install -y --no-upgrade --ignore-missing nodejs arduino avrdude openjdk-11-jre
   ## Cloud Drive Support
   apt-get install -y --no-upgrade --ignore-missing rclone fuse
 fi
@@ -153,12 +142,12 @@ apt-get install -y --no-upgrade --ignore-missing samba samba-common-bin samba-li
 
 ## Audio Support
 apt-get install -y --no-upgrade --ignore-missing alsa-base alsa-utils mpg321 lame sox \
- libasound2 libupnp6 libexpat1 libconfig-dev djmount libexpat1 libsox-dev libsoup2.4-dev \
- libimage-exiftool-perl libcurl4 libsoup2.4-1 libao-dev libglib2.0-dev libreadline-dev \
- xmltoman libsoxr-dev libsndfile1-dev libpulse-dev libavahi-client-dev libssl-dev \
- libdaemon-dev libpopt-dev libconfig-dev libdaemon-dev libpopt-dev \
- libjson-glib-1.0-0 libjson-glib-dev libao-common libasound2-dev \
- xxd libplist-dev libsodium-dev libavutil-dev uuid-dev libgcrypt-dev
+  libasound2 libupnp6 libexpat1 libconfig-dev djmount libexpat1 libsox-dev libsoup2.4-dev \
+  libimage-exiftool-perl libcurl4 libsoup2.4-1 libao-dev libglib2.0-dev libreadline-dev \
+  xmltoman libsoxr-dev libsndfile1-dev libpulse-dev libavahi-client-dev libssl-dev \
+  libdaemon-dev libpopt-dev libconfig-dev libdaemon-dev libpopt-dev libjson-glib-1.0-0 \
+  libjson-glib-dev libao-common libasound2-dev xxd libplist-dev libsodium-dev \
+  libavutil-dev uuid-dev libgcrypt-dev
 
 ## Bluetooth Support
 apt-get install -y --no-upgrade --ignore-missing bluetooth pi-bluetooth \
@@ -185,18 +174,22 @@ rm -f /var/log/messages
 rm -f /var/log/syslog
 
 ## Remove Packages 
-apt-get remove --purge -y cron anacron logrotate fake-hwclock \
-  ntp udhcpd usbmuxd usbmount pmount cups cups-client cups-common cups-core-drivers cups-daemon \
-  cups-filters cups-filters-core-drivers cups-ipp-utils cups-ppdc cups-server-common upower \
-  exim4 exim4-base exim4-config exim4-daemon-light udisks2 tracker-extract tracker-miner-fs \
-  tigervnc-common tigervnc-standalone-server iptables-persistent bridge-utils ntfs-3g \
-  lxlock xscreensaver xscreensaver-data gvfs gvfs-backends vnc4server libudisks2-0 dnsmasq \
-  wolfram-engine libssl-doc libatasmart4 libavahi-glib1 mpd mpc rng-tools rng-tools-debian \
-  openjdk-17-jre-headless firefox pocketsphinx-en-us piwiz plymouth plymouth-label plymouth-themes \
-  pulseaudio pulseaudio-utils pavucontrol pipewire pipewire-bin 
+apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp udhcpd usbmuxd pmount usbmount \
+  cups cups-client cups-common cups-core-drivers cups-daemon cups-filters cups-filters-core-drivers \
+  cups-ipp-utils cups-ppdc cups-server-common upower chromium-browser exim4 exim4-base exim4-config \
+  exim4-daemon-light udisks2 tracker-extract tracker-miner-fs tigervnc-common tigervnc-standalone-server \
+  iptables-persistent bridge-utils ntfs-3g lxlock xscreensaver xscreensaver-data gvfs gvfs-backends \
+  vnc4server libudisks2-0 dnsmasq wolfram-engine libssl-doc libatasmart4 libavahi-glib1 mpd mpc \
+  rng-tools rng-tools-debian openjdk-17-jre-headless firefox pocketsphinx-en-us piwiz plymouth \
+  plymouth-label plymouth-themes pulseaudio pulseaudio-utils pavucontrol pipewire pipewire-bin
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
 rm -rf /etc/cron.*
+
+## Clean-up Packages
+apt-get autoremove -y
+apt-get autoclean -y
+apt-get clean -y
 
 ## Delete custom services
 rm -fr /etc/systemd/system/rpi-*
@@ -545,20 +538,15 @@ if [ ! -e /etc/rpi-conf.done ]; then
   systemctl unmask NetworkManager-wait-online NetworkManager-dispatcher \
    NetworkManager ModemManager systemd-journald hostapd motion
   systemctl enable ssh avahi-daemon proinit rpi-cleanup.timer \
-   systemd-timesyncd systemd-time-wait-sync
-  systemctl enable NetworkManager ModemManager \
+   systemd-timesyncd systemd-time-wait-sync NetworkManager ModemManager \
    NetworkManager-wait-online NetworkManager-dispatcher   
   ## Disabled on startup
-  systemctl disable hostapd keyboard-setup sysstat lighttpd wifiswitch motion
-  systemctl disable apt-daily.service apt-daily.timer apt-daily-upgrade.service \
-   apt-daily-upgrade.timer sysstat-collect.timer 
-  systemctl disable triggerhappy.service triggerhappy.socket \
-   e2scrub_all.service e2scrub_all.timer 
-  systemctl disable serial-getty@ttyS0.service serial-getty@ttyAMA0.service  
-  systemctl disable sysstat-summary.timer man-db.service man-db.timer
-  systemctl disable hciuart bluetooth bthelper@hci0 bluealsa
-  systemctl disable usbplug nmbd smbd samba-ad-dc autofs netatalk
-  systemctl disable glamor-test rp1-test rpi-netdetect
+  systemctl disable hostapd keyboard-setup sysstat lighttpd wifiswitch motion \
+    apt-daily.service apt-daily.timer apt-daily-upgrade.service apt-daily-upgrade.timer \
+    sysstat-collect.timertriggerhappy.service triggerhappy.socket e2scrub_all.service e2scrub_all.timer \
+    serial-getty@ttyS0.service serial-getty@ttyAMA0.service sysstat-summary.timer man-db.service \
+    man-db.timer hciuart bluetooth bthelper@hci0 bluealsa usbplug nmbd smbd samba-ad-dc autofs \
+    netatalk glamor-test rp1-test rpi-netdetect
   echo "Initial setup (phase II) complete."
   touch /etc/rpi-conf.done
 else
@@ -584,46 +572,32 @@ rm -f /usr/bin/ztermcom
 chmod +x /usr/bin/ztermcom 
 chown root:root /usr/bin/ztermcom
 
-## Re-create Null Device
+## Reset Null Device
 rm -f /dev/null
 mknod /dev/null c 1 3
 chmod 666 /dev/null
 
-## Re-create Log Files (root)
-rm -f /var/log/lastlog
-rm -f /var/log/faillog
-rm -f /var/log/btmp
-rm -f /var/log/wtmp
-rm -f /root/.xsession-errors
-rm -f /root/.bash_history
-echo -n>/var/log/lastlog
-echo -n>/var/log/faillog
-echo -n>/var/log/btmp
-echo -n>/var/log/wtmp
-echo -n>/root/.xsession-errors
-echo -n>/root/.bash_history
-chmod -R 644 /var/log/wtmp /var/log/btmp /var/log/lastlog /var/log/faillog /root/.xsession-errors /root/.bash_history
+## Reset Log Files
+rm -f /var/log/lastlog; touch /var/log/lastlog
+rm -f /var/log/faillog; touch /var/log/faillog
+rm -f /var/log/btmp; touch /var/log/btmp
+rm -f /var/log/wtmp; touch /var/log/wtmp
+rm -f /root/.xsession-errors; touch /root/.xsession-errors
+chmod -R 644 /var/log/wtmp /var/log/btmp /var/log/lastlog /var/log/faillog /root/.xsession-errors
 chown -R root:utmp /var/log/wtmp /var/log/btmp /var/log/lastlog /var/log/faillog
-chown -R root:root /root/.xsession-errors /root/.bash_history
-
-## Re-create Log Files (pi)
-rm -f /home/pi/.xsession-errors
-rm -f /home/pi/.bash_history
-rm -f /var/log/Xorg.0.log.old
-rm -f /var/log/Xorg.0.log
-echo -n>/home/pi/.xsession-errors
-echo -n>/home/pi/.bash_history
-echo -n>/var/log/Xorg.0.log.old
-echo -n>/var/log/Xorg.0.log
+chown -R root:root /root/.xsession-errors
+rm -f /home/pi/.xsession-errors; touch /home/pi/.xsession-errors
+rm -f /var/log/Xorg.0.log.old; touch /var/log/Xorg.0.log.old
+rm -f /var/log/Xorg.0.log; touch /var/log/Xorg.0.log
 chmod -R 777 /var/log/Xorg.0.log /var/log/Xorg.0.log.old
-chmod -R 644 /home/pi/.xsession-errors /home/pi/.bash_history
-chown -R pi:pi /var/log/Xorg.0.log /var/log/Xorg.0.log.old /home/pi/.xsession-errors /home/pi/.bash_history
+chmod -R 644 /home/pi/.xsession-errors
+chown -R pi:pi /var/log/Xorg.0.log /var/log/Xorg.0.log.old /home/pi/.xsession-errors
 
-## File Permissions
+## Execute Permissions
 chmod -R 755 /opt/rpi
 chown -R root:root /opt/rpi
 
-## Autologin as pi
+## Autologin as Pi
 cp -f $BIN/autologin.conf /etc/systemd/system/getty@tty1.service.d/
 chmod 644 /etc/systemd/system/getty@tty1.service.d/autologin.conf
 chown root:root /etc/systemd/system/getty@tty1.service.d/autologin.conf

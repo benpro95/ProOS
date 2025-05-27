@@ -27,7 +27,7 @@ apt-get --yes update
 ## Support Packages
 apt-get install -y --no-upgrade --ignore-missing rsync cron zip screen \
  libsasl2-modules postfix ethtool htop apt-transport-https lm-sensors \
- zfs-auto-snapshot smartmontools hddtemp apcupsd chrony mailutils
+ zfs-auto-snapshot smartmontools hddtemp apcupsd chrony mailutils ipmitool
 
 ## Bonded Trunk 802.3ad Network Config
 cp -f /tmp/config/interfaces /etc/network/interfaces

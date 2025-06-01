@@ -72,7 +72,6 @@ ZTERM_COM "10007"
 exit
 ;;
 
-
 update-fw)
 ## Stop Serial Communication
 rm -rfv /dev/zterm-tty

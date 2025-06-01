@@ -211,29 +211,35 @@ case "$XMITCMD" in
   ##
   ## Vintage Macs
   "rfa1on")
-    XMITCMD="1|0|734733"
-    CALLAPI   
+    TARGET="brctl"
+    XMITCMD="out2on"
+    CALLAPI
     ;;
   "rfa1off")
-    XMITCMD="1|0|734734"
+    TARGET="brctl"
+    XMITCMD="out2off"
     CALLAPI   
     ;;
   ## Dresser Lamp
   "rfa2on")
-    XMITCMD="1|0|734731"
+    TARGET="brctl"
+    XMITCMD="out1on"
     CALLAPI
     ;;
   "rfa2off")
-    XMITCMD="1|0|734732"
+    TARGET="brctl"
+    XMITCMD="out1off"
     CALLAPI
     ;;
   ## RetroPi
   "rfa3on")
-    XMITCMD="1|0|734735"
+    TARGET="brctl"
+    XMITCMD="out3on"
     CALLAPI   
     ;;
   "rfa3off")
-    XMITCMD="1|0|734736"
+    TARGET="brctl"
+    XMITCMD="out3off"
     CALLAPI   
     ;;
   ##
@@ -267,7 +273,7 @@ case "$XMITCMD" in
   ##
   "rfb3")
     XMITCMD="2|2|32"
-    CALLAPI   
+    CALLAPI
     ;;
   ##
   ## Main Lamp Controller
@@ -342,6 +348,14 @@ br-resp)
 READ_RESP=true
 TARGET="$BRPI_IP"
 XMITCMD="$SEC_ARG"
+CALLAPI
+exit
+;;
+
+brctl-state)
+READ_RESP=true
+TARGET="brctl"
+XMITCMD="outstate"
 CALLAPI
 exit
 ;;
@@ -472,7 +486,7 @@ exit
 
 alloff)
 ## Window Lamp Off
-XMITCMD="rfc1off" ; XMIT 
+XMITCMD="rfc1off" ; XMIT
 ## Dresser Lamp
 XMITCMD="rfa2off" ; XMIT 
 ## PC Power Off

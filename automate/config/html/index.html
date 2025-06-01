@@ -117,10 +117,10 @@
     <div class="column-left">  
       <!---->
       <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('mainlight-menu')">
-          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Main</span>
+        <button type="button" class="button" onclick="showMenu('winlight-menu')">
+          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Window</span>
         </button>  
-        <div class="dd-content dd-button" id="mainlight-menu">
+        <div class="dd-content dd-button" id="winlight-menu">
           <a onclick="sendCmd('main','rfc1on','')"><i class="fa-solid fa-toggle-on"></i> On</a>
           <a onclick="sendCmd('main','rfc1off','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
         </div>
@@ -146,15 +146,9 @@
       <!---->
       <p class="parstd"></p>  
       <!---->
-      <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('winlight-menu')">
-          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Window</span>
-        </button>  
-        <div class="dd-content dd-button" id="winlight-menu">
-          <a onclick="sendCmd('main','rfc1on','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-          <a onclick="sendCmd('main','rfc1off','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-        </div>
-      </div>
+      <button type="button" class="button" onclick="">
+        <span class="button__text"><i class="fa-solid fa-question"></i></span>
+      </button>
       <button type="button" class="button" onclick="showLEDsPage()">
         <span class="button__text"><i class="fa-regular fa-sun"></i> Effects</span>
       </button>  
@@ -200,19 +194,9 @@
         <!---->
         <p class="parstd"></p> 
         <!---->
-        <div class="dropdown"> 
-          <button type="button" class="button" onclick="showMenu('heart-menu')">
-            <span class="button__text"><i class="fa-regular fa-heart"></i> Heart</span>
-          </button> 
-          <div class="dd-content dd-button" id="heart-menu">
-            <a onclick="sendCmd('main','htleds_off','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-            <a onclick="sendCmd('main','htleds_cyc','')"><i class="fa-solid fa-shuffle"></i> Cycle</a>
-            <a onclick="sendCmd('main','htleds_a','')"><i></i> Effect A:</a>
-            <a onclick="sendCmd('main','htleds_b','')"><i></i> Effect B:</a>
-            <a onclick="sendCmd('main','htleds_c','')"><i></i> Effect C:</a>
-            <a onclick="sendCmd('main','htleds_on','')"><i class="fa-solid fa-toggle-on"></i> Solid</a>
-          </div>
-        </div>
+        <button type="button" class="button" onclick="">
+          <span class="button__text"><i class="fa-solid fa-question"></i></span>
+        </button>
         <div class="dropdown">
           <button type="button" class="button button_ctrl" onclick="showMenu('lr-menu')">
             <span class="button__text"></i> Living Room</span>

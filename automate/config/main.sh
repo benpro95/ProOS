@@ -243,32 +243,6 @@ case "$XMITCMD" in
     CALLAPI   
     ;;
   ##
-  ## HeartLED 433Mhz Control
-  "htleds_off") # LEDs off
-    XMITCMD="1|0|732101"
-    CALLAPI   
-    ;;
-  "htleds_cyc") # Cycle-through LEDs
-    XMITCMD="1|0|732102"
-    CALLAPI   
-    ;;
-  "htleds_a") # LEDs mode A:
-    XMITCMD="1|0|732103"
-    CALLAPI   
-    ;;
-  "htleds_b") # LEDs mode B:
-    XMITCMD="1|0|732104"
-    CALLAPI   
-    ;;
-  "htleds_c") # LEDs mode C:
-    XMITCMD="1|0|732105"
-    CALLAPI   
-    ;;
-  "htleds_on") # all LEDs on
-    XMITCMD="1|0|732106"
-    CALLAPI   
-    ;;
-  ##
   ## ESP32 Toggle PC Power
   ##
   "rfb3")
@@ -479,8 +453,6 @@ else
 fi
 ## LEDwalls
 /opt/system/leds abstract
-## HeartLED mode C:
-XMITCMD="htleds_c" ; XMIT
 exit
 ;;
 
@@ -500,8 +472,6 @@ fi
 XMITCMD="hifioff" ; XMIT 
 ## Blank LEDwalls
 /opt/system/leds stop
-## HeartLED off
-XMITCMD="htleds_off" ; XMIT
 ## Pause Apple TV
 ATV_CMD="pause"; ATV_CTL
 exit

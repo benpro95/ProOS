@@ -270,32 +270,6 @@ case "$XMITCMD" in
     CALLAPI   
     ;;
   ##
-  ## RF Relay Controller Board 
-  ##
-  "rfb1on")
-    XMITCMD="1|0|864341"
-    CALLAPI
-    ;;
-  "rfb1off")
-    XMITCMD="1|0|864342"
-    CALLAPI
-    ;;
-  "rfb2on")
-    XMITCMD="1|0|864343"
-    CALLAPI
-    ;;
-  "rfb2off")
-    XMITCMD="1|0|864344"
-    CALLAPI
-    ;;
-  "rfb3on")
-    XMITCMD="1|0|864345"
-    CALLAPI
-    ;;
-  "rfb3off")
-    XMITCMD="1|0|864346"
-    CALLAPI
-    ;;
   ## Main Lamp Controller
   "rfc1on")
     XMITCMD="1|0|834511"

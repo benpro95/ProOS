@@ -109,6 +109,13 @@ else
   swapon /mnt/pve/scratch/swapfile
 fi
 
+## LXC TTY Passthrough
+CGROUP="188" ## 'ls -la /dev/ttyUSB0'
+LXC_DEV="USB-Xmit0" ## LXC device name
+mkdir -p /opt/lxc-dev
+mknod -m 660 /opt/lxc-dev/$LXC_DEV c $CGROUP 0
+chown 100000:100020 /opt/lxc-dev/$LXC_DEV
+
 ## Backup Mountpoints
 if [ ! -e /mnt/extbkps ]; then
   mkdir -p /mnt/extbkps
@@ -196,10 +203,10 @@ chmod 755 /etc/cron.weekly/zfs-auto-snapshot
 chown root:root /etc/cron.weekly/zfs-auto-snapshot
 
 ## Disable Snapshots
-#rm -fv /etc/cron.daily/zfs-auto-snapshot
-#rm -fv /etc/cron.hourly/zfs-auto-snapshot
-#rm -fv /etc/cron.monthly/zfs-auto-snapshot
-#rm -fv /etc/cron.weekly/zfs-auto-snapshot
+#rm -f /etc/cron.daily/zfs-auto-snapshot
+#rm -f /etc/cron.hourly/zfs-auto-snapshot
+#rm -f /etc/cron.monthly/zfs-auto-snapshot
+#rm -f /etc/cron.weekly/zfs-auto-snapshot
 
 ## ZFS Scrub, Trim, and System Report Timers
 cp -f /tmp/config/zfsutils-linux /etc/cron.d/

@@ -14,6 +14,19 @@ ATV_CMD=""
 XMITCMD=""
 TARGET=""
 
+ZTERM_COM() {
+LOCK_FILE="$RAMDISK/zterm.lock"
+local CMD_DATA="$1"
+  # Only allow one instance
+  if { set -C; 2>/dev/null > $LOCK_FILE; }; then
+    trap "rm -f $LOCK_FILE" EXIT
+  else
+    echo "lock file exists exiting..."
+    exit
+  fi
+  /usr/bin/ztermcom $CMD_DATA
+}
+
 FILES_IP="10.177.1.4" ## Files IP
 XMIT_IP="10.177.1.12" ## Xmit IP
 BRPI_IP="10.177.1.15" ## Bedroom Pi IP
@@ -211,36 +224,24 @@ case "$XMITCMD" in
   ##
   ## Vintage Macs
   "rfa1on")
-    TARGET="brctl"
-    XMITCMD="out2on"
-    CALLAPI
+    ZTERM_COM "10004"
     ;;
   "rfa1off")
-    TARGET="brctl"
-    XMITCMD="out2off"
-    CALLAPI   
+    ZTERM_COM "10003" 
     ;;
   ## Dresser Lamp
   "rfa2on")
-    TARGET="brctl"
-    XMITCMD="out1on"
-    CALLAPI
+    ZTERM_COM "10002"
     ;;
   "rfa2off")
-    TARGET="brctl"
-    XMITCMD="out1off"
-    CALLAPI
+    ZTERM_COM "10001"
     ;;
   ## RetroPi
   "rfa3on")
-    TARGET="brctl"
-    XMITCMD="out3on"
-    CALLAPI   
+    ZTERM_COM "10006" 
     ;;
   "rfa3off")
-    TARGET="brctl"
-    XMITCMD="out3off"
-    CALLAPI   
+    ZTERM_COM "10005"
     ;;
   ##
   ## ESP32 Toggle PC Power
@@ -318,7 +319,6 @@ exit
 ;;
 
 br-resp)
-## Bedroom Pi API (read response)
 READ_RESP=true
 TARGET="$BRPI_IP"
 XMITCMD="$SEC_ARG"
@@ -326,11 +326,8 @@ CALLAPI
 exit
 ;;
 
-brctl-state)
-READ_RESP=true
-TARGET="brctl"
-XMITCMD="outstate"
-CALLAPI
+pwrctl-state)
+ZTERM_COM "10007"
 exit
 ;;
 

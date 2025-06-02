@@ -33,6 +33,10 @@ cp -v /opt/system/*menu.txt /var/www/html/ram/
 chmod -R 777 /var/www/html/ram/*menu.txt
 chown -R www-data:www-data /var/www/html/ram/*menu.txt
 
+## Xmit COMS
+ln -sf /dev/USB-Xmit0 /dev/zterm-tty
+/usr/bin/ztermcom i
+
 ## Light Web Server
 systemctl restart lighttpd
 

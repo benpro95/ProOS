@@ -100,6 +100,12 @@ ln -sf /opt/system/main /opt/system/xmit
 ln -sf /opt/system /opt/rpi
 rm -fv /opt/system/system
 
+## Xmit Serial COM
+rm -f /usr/bin/ztermcom
+/usr/bin/gcc -v /tmp/config/ztermcom.c -o /usr/bin/ztermcom
+chmod 755 /usr/bin/ztermcom 
+chown root:root /usr/bin/ztermcom
+
 ## Light Web Server
 apt-get install -y --no-upgrade lighttpd php-cgi php php-common
 cp -f /tmp/config/lighttpd.conf /etc/lighttpd

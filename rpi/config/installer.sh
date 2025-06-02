@@ -566,9 +566,8 @@ fi
 ## Regenerate Update Database
 systemctl start man-db.service
 
-echo "Compiling Z-Term COM Service..."
 rm -f /usr/bin/ztermcom
-/usr/bin/gcc /opt/rpi/ztermcom.c -o /usr/bin/ztermcom
+/usr/bin/gcc -v /opt/rpi/ztermcom.c -o /usr/bin/ztermcom
 chmod 755 /usr/bin/ztermcom 
 chown root:root /usr/bin/ztermcom
 

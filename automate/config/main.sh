@@ -14,25 +14,82 @@ ATV_CMD=""
 XMITCMD=""
 TARGET=""
 
-ZTERM_COM() {
-LOCK_FILE="$RAMDISK/zterm.lock"
-local CMD_DATA="$1"
-  # Only allow one instance
-  if { set -C; 2>/dev/null > $LOCK_FILE; }; then
-    trap "rm -f $LOCK_FILE" EXIT
-  else
-    echo "lock file exists exiting..."
-    exit
-  fi
-  /usr/bin/ztermcom $CMD_DATA
-}
-
 FILES_IP="10.177.1.4" ## Files IP
 XMIT_IP="10.177.1.12" ## Xmit IP
 BRPI_IP="10.177.1.15" ## Bedroom Pi IP
 ATV_MAC="3E:08:87:30:B9:A8" ## Bedroom Apple TV MAC
 
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 10 --retry 1 --retry-delay 1 --no-keepalive"
+
+DECODE_TTY_RESP(){
+  DELIM="|"
+  local RESP_POS="$1"
+  TTY_RAW="$(ztermcom "10007")"
+  ## extract response data
+  TMPSTR="${TTY_RAW#*$DELIM}"
+  TTY_OUT="${TMPSTR%$DELIM*}"
+  TTY_CHR_CNT=${#TTY_OUT}
+  ## verify response is 3-bytes
+  if [[ "$TTY_CHR_CNT" == "3" ]]; then
+    ## extract single-byte by position
+    TTY_CHR="${TTY_OUT:$RESP_POS:1}"
+    case "$TTY_CHR" in
+    "1")
+      echo "0"
+    ;;
+    "9")
+      echo "1"
+    ;;
+    *)
+      echo "TTY response data error!"
+    ;;
+    esac
+  else
+    echo "TTY response size error!"
+  fi
+}
+
+USB_TTY(){
+  local TTY_CMD="$1"
+  case "$TTY_CMD" in
+  ## RF Power Controller (under dresser)
+  ##
+  ## Dresser Lamp
+  "brlamp1")
+    DECODE_TTY_RESP "0"
+    ;;
+  "brlamp1on")
+    ztermcom "10002"
+    ;;
+  "brlamp1off")
+    ztermcom "10001"
+    ;;
+  ## Vintage Macs
+  "brmacs")
+    DECODE_TTY_RESP "1"
+    ;;
+  "brmacson")
+    ztermcom "10004"
+    ;;
+  "brmacsoff")
+    ztermcom "10003" 
+    ;;
+  ## RetroPi
+  "retropi")
+    DECODE_TTY_RESP "2"
+    ;;
+  "retropion")
+    ztermcom "10006" 
+    ;;
+  "retropioff")
+    ztermcom "10005"
+    ;;
+  ##
+*)
+  echo "invalid USB-TTY command!"
+  ;;
+esac
+}
 
 RESETVARS(){
   READ_RESP=false
@@ -220,30 +277,6 @@ case "$XMITCMD" in
     CALLAPI
     ;;
   ##
-  ## RF Power Controller (under dresser)
-  ##
-  ## Vintage Macs
-  "rfa1on")
-    ZTERM_COM "10004"
-    ;;
-  "rfa1off")
-    ZTERM_COM "10003" 
-    ;;
-  ## Dresser Lamp
-  "rfa2on")
-    ZTERM_COM "10002"
-    ;;
-  "rfa2off")
-    ZTERM_COM "10001"
-    ;;
-  ## RetroPi
-  "rfa3on")
-    ZTERM_COM "10006" 
-    ;;
-  "rfa3off")
-    ZTERM_COM "10005"
-    ;;
-  ##
   ## ESP32 Toggle PC Power
   ##
   "rfb3")
@@ -291,11 +324,11 @@ ATV_CMD="play"; ATV_CTL
 exit
 ;;
 
-stop)
-## Pause Apple TV / Stop Sounds
-ATV_CMD="pause"; ATV_CTL
+brpi)
+## API call to Bedroom Pi
+READ_RESP=true
 TARGET="$BRPI_IP"
-XMITCMD="stoprelax"
+XMITCMD="$SEC_ARG"
 CALLAPI
 exit
 ;;
@@ -310,28 +343,22 @@ ATV_CMD="pause"; ATV_CTL
 exit
 ;;
 
-br)
-## Bedroom Pi API (discard response)
+stop)
+## Pause Apple TV / Stop Sounds
+ATV_CMD="pause"; ATV_CTL
 TARGET="$BRPI_IP"
-XMITCMD="$SEC_ARG"
+XMITCMD="stoprelax"
 CALLAPI
 exit
 ;;
 
-br-resp)
-READ_RESP=true
-TARGET="$BRPI_IP"
-XMITCMD="$SEC_ARG"
-CALLAPI
-exit
-;;
-
-pwrctl-state)
-ZTERM_COM "10007"
+usbtty)
+USB_TTY "$SEC_ARG"
 exit
 ;;
 
 status)
+## Show System Status
 /opt/system/status
 exit
 ;;
@@ -342,7 +369,7 @@ XMITCMD="rfc1on"; XMIT
 exit
 ;;
 
-mainoff)
+mainoff) 
 ## Window Lamp
 XMITCMD="rfc1off"; XMIT 
 ## Dresser Lamp
@@ -524,13 +551,13 @@ exit
 ;;
 
 ### Examples of URL strings ###
-# http://automate:9300/exec.php?var=&arg=lightson&action=main
-# http://automate:9300/exec.php?var=&arg=lightsoff&action=main
-# http://automate:9300/exec.php?var=prism&arg=video&action=leds
+# http://automate.home/exec.php?var=&arg=lightson&action=main
+# http://automate.home/exec.php?var=&arg=lightsoff&action=main
+# http://automate.home/exec.php?var=prism&arg=video&action=leds
 ###############################
 
 *)
-  ## command not matched above, pass argument to Xmit function
+  ## command not matched above, pass argument to ESP32-Xmit
   XMITCMD="$FIRST_ARG" 
   XMIT
   exit

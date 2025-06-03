@@ -607,7 +607,7 @@ function sendVol(_cmd) {
 }
 
 async function setAmpVolume(_state) {
-  sendCmd('main','br-resp','vol'+_state).then((data) => { // GET request
+  sendCmd('main','brpi','vol'+_state).then((data) => { // GET request
     const maxAmpData = 192;
     let ampVol = Number(data.replace(/(\r\n|\n|\r)/gm, "")); // remove newlines, convert to number
     if (!(isNaN(ampVol))) {
@@ -1091,9 +1091,8 @@ function buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title) {
 }
 
 function showAmpInput() {
-  const _host = "br"; // Bedroom Pi
-  const _menu = _host + "inpmenu";
-  let _elem = document.getElementById(_menu);
+  const target = 'brpi';
+  let _elem = document.getElementById("brinpmenu");
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
   } else {
@@ -1104,7 +1103,7 @@ function showAmpInput() {
     btnText.style.visibility = 'hidden';
     btnSpinner.classList.add('btn-spinner');
     _elem.style.display = 'block';
-    sendCmd('main',_host + '-resp','inputstate').then((data) => { // GET request
+    sendCmd('main',target,'inputstate').then((data) => { // GET request
       const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // remove newlines
       // draw menu items
       let _menubtn; // menu type
@@ -1121,7 +1120,7 @@ function showAmpInput() {
       } else {
         _indtype = 'blkind';
       }
-      _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
+      _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // aux optical input
       _menubtn = "gencmd";
       _title = "Optical"  
@@ -1131,7 +1130,7 @@ function showAmpInput() {
       } else {
         _indtype = 'blkind';
       }    
-      _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
+      _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // coaxial input
       _menubtn = "gencmd";
       _title = "Bluetooth"  
@@ -1141,7 +1140,7 @@ function showAmpInput() {
       } else {
         _indtype = 'blkind';
       }     
-      _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
+      _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // aux analog input
       _menubtn = "gencmd";
       _title = "Analog In"  
@@ -1151,9 +1150,9 @@ function showAmpInput() {
       } else {
         _indtype = 'blkind';
       }     
-      _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
+      _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // draw menu items
-      drawMenu(_menudata.split("\n"),_menu);
+      drawMenu(_menudata.split("\n"),"brinpmenu");
       // stop spinner animation
       btnText.style.visibility = 'visible';
       btnSpinner.classList.remove('btn-spinner');
@@ -1161,21 +1160,19 @@ function showAmpInput() {
   }
 }
 
-function showAmpStatus() {
-  const _host = "br"; // Bedroom Pi
-  const _menu = _host + "pwrmenu";
-  let _elem = document.getElementById(_menu);
+function showPowerMenu(target,menu) {
+  let _elem = document.getElementById(menu + '-menu');
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
   } else {
     hideDropdowns(false);
     // start spinner animation
-    let btnText = document.getElementById('amppwr-text');
-    let btnSpinner = document.getElementById('amppwr-spinner');
+    let btnText = document.getElementById(menu + '-text');
+    let btnSpinner = document.getElementById(menu + '-spinner');
     btnText.style.visibility = 'hidden';
     btnSpinner.classList.add('btn-spinner');
     _elem.style.display = 'block';
-    sendCmd('main',_host + '-resp','ampstate').then((data) => { // GET request
+    sendCmd('main',target,menu).then((data) => { // GET request
       const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // remove newlines
       // draw menu items
       let _menubtn; // menu type
@@ -1186,36 +1183,48 @@ function showAmpStatus() {
       let _menudata = "";
       // status display (I)
       if (resp == '0') {
-        _indtype = 'blkind'; // black indicator      
-        _title = "Offline";
+        _indtype = 'blkind'; // black indicator  
+        _title = "Off";
+        if (menu == 'ampstate') {
+          _title = "Offline";
+        }
         _error = false;
       }
       if (resp == '1') {
         _indtype = 'grnind'; // green indicator     
-        _title = "Online";
+        _title = "On";
+        if (menu == 'ampstate') {
+          _title = "Online";
+        }
         _error = false;
       }
       if (_error === true) {
         _indtype = 'redind'; // red indicator    
         _title = "Unknown";
       }
-      _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
+      _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // power on/off buttons (II)
       if (resp === '0' || _error === true) {
         _menubtn = "oncmd";
-        _cmd = "poweron";
-        _indtype = 'noind'; 
+        _cmd = menu + 'on';
+        if (menu == 'ampstate') {
+          _cmd = "poweron";
+        }
+        _indtype = 'noind';
         _title = "On"  
-        _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
+        _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       }
       if (resp === '1' || _error === true) {
-        _menubtn = "offcmd"; 
-        _cmd = "poweroff";  
+        _menubtn = "offcmd";
+        _cmd = menu + 'off';
+        if (menu == 'ampstate') {
+          _cmd = "poweroff";
+        }
         _indtype = 'noind';     
         _title = "Off"  
-        _menudata += buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title);
+        _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       }
-      drawMenu(_menudata.split("\n"),_menu); // draw menu
+      drawMenu(_menudata.split("\n"),menu + '-menu'); // draw menu
       // stop spinner animation
       btnText.style.visibility = 'visible';
       btnSpinner.classList.remove('btn-spinner');

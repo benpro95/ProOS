@@ -135,13 +135,11 @@
         </div>
       </div> 
       <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('dresser-menu')">
-          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Dresser</span>
-        </button>  
-        <div class="dd-content dd-button" id="dresser-menu">
-          <a onclick="sendCmd('main','rfa2on','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-          <a onclick="sendCmd('main','rfa2off','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-        </div>
+        <button type="button" class="button" onclick="showPowerMenu('usbtty','brlamp1')">
+          <span class="button__text" id="brlamp1-text"><i class="fa-regular fa-lightbulb"></i> Dresser</span>
+          <span class="button__text" id="brlamp1-spinner"></span>
+        </button>
+        <div class="dd-content ind-button" id="brlamp1-menu"></div>
       </div>
       <!---->
       <p class="parstd"></p>  
@@ -221,7 +219,7 @@
         <!---->
         <p class="parstd"></p>
         <!---->
-        <button type="button" class="button" onclick="sendCmd('main','br','toggletv')">
+        <button type="button" class="button" onclick="sendCmd('main','brpi','toggletv')">
           <span class="button__text"><i class="fa-solid fa-tv"></i> TV</span>
         </button>
         <div class="dropdown">
@@ -233,13 +231,11 @@
           </div>
         </div>
         <div class="dropdown">
-          <button type="button" class="button" onclick="showMenu('macs-menu')">
-            <span class="button__text"><i class="fa-solid fa-floppy-disk"></i> Macs</span>
-          </button>  
-          <div class="dd-content dd-button" id="macs-menu">
-            <a onclick="sendCmd('main','rfa1on','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-            <a onclick="sendCmd('main','rfa1off','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-          </div>
+          <button type="button" class="button" onclick="showPowerMenu('usbtty','brmacs')">
+            <span class="button__text" id="brmacs-text"><i class="fa-solid fa-floppy-disk"></i> Macs</span>
+            <span class="button__text" id="brmacs-spinner"></span>
+          </button>
+          <div class="dd-content ind-button" id="brmacs-menu"></div>
         </div>
         <!---->
         <p class="parstd"></p> 
@@ -257,25 +253,23 @@
         <p class="parstd"></p> 
         <!---->
         <div class="dropdown">
-          <button type="button" class="button" onclick="showMenu('acc-menu')">
-            <span class="button__text"><i class="fa-solid fa-gamepad"></i> RetroPi</span>
+          <button type="button" class="button" onclick="showPowerMenu('usbtty','retropi')">
+            <span class="button__text" id="retropi-text"><i class="fa-solid fa-gamepad"></i> RetroPi</span>
+            <span class="button__text" id="retropi-spinner"></span>
           </button>
-          <div class="dd-content dd-button" id="acc-menu">
-            <a onclick="sendCmd('main','rfa3on','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-            <a onclick="sendCmd('main','rfa3off','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-          </div>
+          <div class="dd-content ind-button" id="retropi-menu"></div>
         </div>
         <div class="dropdown">
-          <button type="button" class="button" onclick="showAmpStatus()">
-              <span class="button__text" id="amppwr-text"><i class="fa-solid fa-music"></i> Audio</span>
-              <span class="button__text" id="amppwr-spinner"></span>
+          <button type="button" class="button" onclick="showPowerMenu('brpi','ampstate')">
+            <span class="button__text" id="ampstate-text"><i class="fa-solid fa-music"></i> Audio</span>
+            <span class="button__text" id="ampstate-spinner"></span>
           </button>
-          <div class="dd-content ind-button" id="brpwrmenu"></div>
+          <div class="dd-content ind-button" id="ampstate-menu"></div>
         </div>
         <div class="dropdown">
           <button type="button" class="button" onclick="showAmpInput()">
-              <span class="button__text" id="ampinp-text"><i class="fa-solid fa-sitemap"></i> Input</span>
-              <span class="button__text" id="ampinp-spinner"></span>
+            <span class="button__text" id="ampinp-text"><i class="fa-solid fa-sitemap"></i> Input</span>
+            <span class="button__text" id="ampinp-spinner"></span>
           </button>
           <div class="dd-content ind-button" id="brinpmenu"></div>
         </div>

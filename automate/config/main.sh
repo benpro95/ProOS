@@ -9,30 +9,31 @@
 RAMDISK="/var/www/html/ram"
 LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
-READ_RESP=false
 ATV_CMD=""
 XMITCMD=""
 TARGET=""
 
-FILES_IP="10.177.1.4" ## Files IP
 XMIT_IP="10.177.1.12" ## Xmit IP
 BRPI_IP="10.177.1.15" ## Bedroom Pi IP
 ATV_MAC="3E:08:87:30:B9:A8" ## Bedroom Apple TV MAC
 
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 10 --retry 1 --retry-delay 1 --no-keepalive"
 
-DECODE_TTY_RESP(){
-  DELIM="|"
-  local RESP_POS="$1"
-  TTY_RAW="$(ztermcom "10007")"
+TTY_RESP(){
+  ## read response character position
+  local RESP_CMD="$1"
+  local RESP_POS="$2"
+  TTY_RAW="$(ztermcom $RESP_CMD)"
   ## extract response data
-  TMPSTR="${TTY_RAW#*$DELIM}"
-  TTY_OUT="${TMPSTR%$DELIM*}"
-  TTY_CHR_CNT=${#TTY_OUT}
+  DELIM="|"
+  TMP_STR="${TTY_RAW#*$DELIM}"
+  TTY_OUT="${TMP_STR%$DELIM*}"
+  TTY_CHR_CNT="${#TTY_OUT}"
   ## verify response is 3-bytes
   if [[ "$TTY_CHR_CNT" == "3" ]]; then
     ## extract single-byte by position
     TTY_CHR="${TTY_OUT:$RESP_POS:1}"
+    ## re-map serial response
     case "$TTY_CHR" in
     "1")
       echo "0"
@@ -41,11 +42,11 @@ DECODE_TTY_RESP(){
       echo "1"
     ;;
     *)
-      echo "TTY response data error!"
+      echo "TTY data error!"
     ;;
     esac
   else
-    echo "TTY response size error!"
+    echo "TTY size error!"
   fi
 }
 
@@ -56,7 +57,7 @@ USB_TTY(){
   ##
   ## Dresser Lamp
   "brlamp1")
-    DECODE_TTY_RESP "0"
+    TTY_RESP "10007" "0"
     ;;
   "brlamp1on")
     ztermcom "10002"
@@ -66,7 +67,7 @@ USB_TTY(){
     ;;
   ## Vintage Macs
   "brmacs")
-    DECODE_TTY_RESP "1"
+    TTY_RESP "10007" "1"
     ;;
   "brmacson")
     ztermcom "10004"
@@ -76,7 +77,7 @@ USB_TTY(){
     ;;
   ## RetroPi
   "retropi")
-    DECODE_TTY_RESP "2"
+    TTY_RESP "10007" "2"
     ;;
   "retropion")
     ztermcom "10006" 
@@ -85,16 +86,31 @@ USB_TTY(){
     ztermcom "10005"
     ;;
   ##
-*)
-  echo "invalid USB-TTY command!"
-  ;;
-esac
+  *)
+    echo "invalid USB-TTY command!"
+    ;;
+  esac
 }
 
-RESETVARS(){
-  READ_RESP=false
-  XMITCMD=""
-  TARGET=""
+POWER_PC(){
+  local PWR_STATE="$1"
+  local PC_PING="wkst.home"
+  if [[ "$PWR_STATE" == "off" ]]; then
+    if ping -W 2 -c 1 $PC_PING > /dev/null 2> /dev/null
+    then
+      XMITCMD="rfb3" ; XMIT 
+    else
+      echo "$PC_PING is offline"
+    fi
+  fi
+  if [[ "$PWR_STATE" == "on" ]]; then
+    if ping -W 2 -c 1 $PC_PING > /dev/null 2> /dev/null
+    then
+      echo "$PC_PING is online"
+    else
+      XMITCMD="rfb3" ; XMIT 
+    fi
+  fi
 }
 
 ## API Gateway
@@ -102,7 +118,7 @@ CALLAPI(){
   if [[ "$XMITCMD" == "" ]]; then
     return
   fi
-  ## Xmit Default Target 
+  ## Default Target 
   if [[ "$TARGET" == "" ]]; then
     ## ESP32 Xmit (discard API response, runs in background)
     SERVER="http://$XMIT_IP:80"
@@ -111,28 +127,22 @@ CALLAPI(){
     ## ProOS home automation Pi
     DATA="var=$SEC_ARG&arg=$XMITCMD&action=main"
     SERVER="http://$TARGET:80/exec.php"
-    if [[ "$READ_RESP" == true ]]; then
-      ## wait then parse API response
-      DELIM="|"
-      APIRESP="$(/usr/bin/curl $CURLARGS --data $DATA $SERVER)"
-      TMPSTR="${APIRESP#*$DELIM}"
-      RESPOUT="${TMPSTR%$DELIM*}"
-      echo "$RESPOUT"
-    else
-      ## discard API response (runs in background)
-      /usr/bin/curl $CURLARGS --data $DATA $SERVER > /dev/null 2>&1 &
-    fi
+    ## API GET request wait then read response
+    DELIM="|"
+    APIRESP="$(/usr/bin/curl $CURLARGS --data $DATA $SERVER)"
+    TMPSTR="${APIRESP#*$DELIM}"
+    RESPOUT="${TMPSTR%$DELIM*}"
+    echo "$RESPOUT"
   fi
   ## Clear data
-  READ_RESP=false
   XMITCMD=""
   TARGET=""
 }
 
 ## Control Apple TV
 ATV_CTL(){
+  local ATV_CMD="$1"
   /opt/system/atv $ATV_MAC $ATV_CMD > /dev/null 2>&1 &
-  ATV_CMD=""
 }
 
 XMIT(){
@@ -299,6 +309,20 @@ case "$XMITCMD" in
 esac
 }
 
+LIGHTS_OFF(){
+  ## Window Lamp
+  XMITCMD="rfc1off" ; XMIT
+  ## Dresser Lamp
+  USB_TTY "brlamp1off"
+}
+
+LIGHTS_ON(){
+  ## Window Lamp
+  XMITCMD="rfc1on" ; XMIT
+  ## Dresser Lamp
+  USB_TTY "brlamp1on"
+}
+
 ########################
 
 ## Read command line arguments
@@ -318,15 +342,8 @@ fi
 exit
 ;;
 
-play)
-## Play Current on Apple TV
-ATV_CMD="play"; ATV_CTL
-exit
-;;
-
 brpi)
 ## API call to Bedroom Pi
-READ_RESP=true
 TARGET="$BRPI_IP"
 XMITCMD="$SEC_ARG"
 CALLAPI
@@ -334,19 +351,24 @@ exit
 ;;
 
 relax)
+## Pause Apple TV
+ATV_CTL "pause"
+## Bedroom Audio
+TARGET="$BRPI_IP"
+XMITCMD="poweron"
+CALLAPI
 ## Relax Sounds on Bedroom Pi
 TARGET="$BRPI_IP"
 XMITCMD="relax"
 CALLAPI
-## Pause Apple TV
-ATV_CMD="pause"; ATV_CTL
 exit
 ;;
 
 stop)
-## Pause Apple TV / Stop Sounds
-ATV_CMD="pause"; ATV_CTL
+## Pause Apple TV 
+ATV_CTL "pause"
 TARGET="$BRPI_IP"
+## Stop Sounds
 XMITCMD="stoprelax"
 CALLAPI
 exit
@@ -363,67 +385,108 @@ status)
 exit
 ;;
 
+## Desktop Keyboard F1,F2 ##
+
 mainon)
 ## Window Lamp
 XMITCMD="rfc1on"; XMIT 
 exit
 ;;
 
-mainoff) 
-## Window Lamp
-XMITCMD="rfc1off"; XMIT 
-## Dresser Lamp
-XMITCMD="rfa2off"; XMIT
+mainoff)
+LIGHTS_OFF
 exit
 ;;
 
+## All Lights ##
+
 lightson)
-## Window Lamp
-XMITCMD="rfc1on"; XMIT 
-## Dresser Lamp
-XMITCMD="rfa2on"; XMIT
+LIGHTS_ON
 exit
 ;;
 
 lightsoff)
-## Window Lamp
-XMITCMD="rfc1off"; XMIT 
-## Dresser Lamp
-XMITCMD="rfa2off"; XMIT
+LIGHTS_OFF
 ## Blank LEDwalls
 /opt/system/leds stop
 exit
 ;;
 
-ambient)
+## All Power Off ##
+
+allon)
+LIGHTS_ON
 ## LEDwalls
-/opt/system/leds fc 40 > /dev/null 2> /dev/null
-/opt/system/leds candle > /dev/null 2> /dev/null
+/opt/system/leds abstract
+## RetroPi 
+USB_TTY "retropion"
+## Retro Macs
+USB_TTY "brmacson"
+## PC Power On
+POWER_PC "on"
+## Main Room Audio
+XMITCMD="hifion" ; XMIT
+## Bedroom Audio
+TARGET="$BRPI_IP" 
+XMITCMD="poweron"
+CALLAPI
+exit
+;;
+
+alloff)
+LIGHTS_OFF
+## Blank LEDwalls
+/opt/system/leds stop
+## RetroPi 
+USB_TTY "retropioff"
+## Retro Macs
+USB_TTY "brmacsoff"
+## Pause Apple TV
+ATV_CTL "pause"
+## PC Power Off
+POWER_PC "off"
+## Main Room Audio
+XMITCMD="hifioff" ; XMIT 
+## Bedroom Audio
+TARGET="$BRPI_IP" 
+XMITCMD="poweroff"
+CALLAPI
+exit
+;;
+
+## Preset Effects ##
+
+ambient)
+LIGHTS_OFF
+## LEDs
+/opt/system/leds fc 40
+/opt/system/leds candle
+exit
+;;
+
+prism)
+LIGHTS_OFF
+## LEDs
+/opt/system/leds fc 80
+/opt/system/leds prism
+sleep 7
+/opt/system/leds pause
 exit
 ;;
 
 ## PC Power
+
 pcon)
-if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
-then
-  echo "wkst.home is online"
-else
-  XMITCMD="rfb3" ; XMIT 
-  CALLAPI  
-fi
+POWER_PC "on"
 exit
 ;;
-##
+
 pcoff)
-if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
-then
-  XMITCMD="rfb3" ; XMIT
-  CALLAPI  
-else
-  echo "wkst.home is offline"
-fi
+POWER_PC "off"
 exit
 ;;
+
+## Living Room DAC ##
 
 autodac)
 ## Auto Decoder Input
@@ -463,43 +526,7 @@ XMITCMD="optical-preamp" ; XMIT
 exit
 ;;
 
-allon)
-## Window Lamp On
-XMITCMD="rfc1on" ; XMIT 
-## Dresser Lamp
-XMITCMD="rfa2on" ; XMIT 
-## PC Power On
-if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
-then
-  echo "wkst.home is online"
-else
-  XMITCMD="rfb3" ; XMIT 
-fi
-## LEDwalls
-/opt/system/leds abstract
-exit
-;;
-
-alloff)
-## Window Lamp Off
-XMITCMD="rfc1off" ; XMIT
-## Dresser Lamp
-XMITCMD="rfa2off" ; XMIT 
-## PC Power Off
-if ping -W 2 -c 1 wkst.home > /dev/null 2> /dev/null
-then
-  XMITCMD="rfb3" ; XMIT 
-else
-  echo "wkst.home is offline"
-fi
-## Audio System Power Off
-XMITCMD="hifioff" ; XMIT 
-## Blank LEDwalls
-/opt/system/leds stop
-## Pause Apple TV
-ATV_CMD="pause"; ATV_CTL
-exit
-;;
+## Server Control ##
 
 server)
 ## Read argument

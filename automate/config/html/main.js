@@ -1184,18 +1184,12 @@ function showPowerMenu(target,menu) {
       // status display (I)
       if (resp == '0') {
         _indtype = 'blkind'; // black indicator  
-        _title = "Off";
-        if (menu == 'ampstate') {
-          _title = "Offline";
-        }
+        _title = "Offline";
         _error = false;
       }
       if (resp == '1') {
         _indtype = 'grnind'; // green indicator     
-        _title = "On";
-        if (menu == 'ampstate') {
-          _title = "Online";
-        }
+        _title = "Online";
         _error = false;
       }
       if (_error === true) {

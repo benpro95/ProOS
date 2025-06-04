@@ -144,25 +144,25 @@
       <!---->
       <p class="parstd"></p>  
       <!---->
-      <button type="button" class="button" onclick="">
-        <span class="button__text"><i class="fa-solid fa-question"></i></span>
+      <button type="button" class="button" onclick="sendCmd('main','prism','')">
+        <span class="button__text"><i class="fa-solid fa-bolt-lightning"></i> Prism</span> 
       </button>
       <button type="button" class="button" onclick="showLEDsPage()">
         <span class="button__text"><i class="fa-regular fa-sun"></i> Effects</span>
       </button>  
       <button type="button" class="button" onclick="sendCmd('main','ambient','')">
-        <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Ambient</span>
+        <span class="button__text"><i class="fa-solid fa-bolt-lightning"></i> Ambient</span>
       </button>
       <!---->
       <p class="parstd"></p>
       <!---->
       <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('pcmenu')">
-          <span class="button__text"><i class="fa-solid fa-computer"></i> Desktop</span>
+        <button type="button" class="button" onclick="showMenu('allmenu')">
+          <span class="button__text"><i class="fa-solid fa-power-off"></i> Power</span>
         </button>  
-        <div class="dd-content dd-button" id="pcmenu">
-          <a onclick="sendCmd('main','pcon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-          <a onclick="sendCmd('main','pcoff','')"><i class="fa-solid fa-moon"></i> Sleep</a>
+        <div class="dd-content dd-button" id="allmenu">
+          <a onclick="sendCmd('main','allon','')"><i class="fa-solid fa-toggle-on"></i> All On</a>
+          <a onclick="sendCmd('main','alloff','')"><i class="fa-solid fa-toggle-off"></i> All Off</a>
         </div>
       </div>
       <div class="dropdown">
@@ -178,8 +178,8 @@
       <!---->
       <p class="parstd"></p>
       <!---->
-      <button type="button" class="button" onclick="sendCmd('main','play','')">
-        <span class="button__text"><i class="fa-solid fa-play"></i> Play</span>
+      <button type="button" class="button" onclick="">
+        <span class="button__text"><i class="fa-solid fa-question"></i></span>
       </button>
       <button type="button" class="button" onclick="sendCmd('main','stop','')">
         <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
@@ -192,9 +192,15 @@
         <!---->
         <p class="parstd"></p> 
         <!---->
-        <button type="button" class="button" onclick="">
-          <span class="button__text"><i class="fa-solid fa-question"></i></span>
-        </button>
+        <div class="dropdown">
+          <button type="button" class="button" onclick="showMenu('pcmenu')">
+            <span class="button__text"><i class="fa-solid fa-computer"></i> Desktop</span>
+          </button>  
+          <div class="dd-content dd-button" id="pcmenu">
+            <a onclick="sendCmd('main','pcon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
+            <a onclick="sendCmd('main','pcoff','')"><i class="fa-solid fa-moon"></i> Sleep</a>
+          </div>
+        </div>
         <div class="dropdown">
           <button type="button" class="button button_ctrl" onclick="showMenu('lr-menu')">
             <span class="button__text"></i> Living Room</span>
@@ -203,15 +209,9 @@
             <a onclick="ctlsMenu('br')"><i class="fa-solid fa-bed"></i> Bedroom</a>
           </div>
         </div>
-        <div class="dropdown">
-          <button type="button" class="button" onclick="showMenu('allmenu')">
-            <span class="button__text"><i class="fa-solid fa-power-off"></i> Power</span>
-          </button>  
-          <div class="dd-content dd-button" id="allmenu">
-            <a onclick="sendCmd('main','allon','')"><i class="fa-solid fa-toggle-on"></i> All On</a>
-            <a onclick="sendCmd('main','alloff','')"><i class="fa-solid fa-toggle-off"></i> All Off</a>
-          </div>
-        </div> 
+        <button type="button" class="button" onclick="">
+          <span class="button__text"><i class="fa-solid fa-question"></i></span>
+        </button>
         <!---->
       </div>
 
@@ -253,11 +253,11 @@
         <p class="parstd"></p> 
         <!---->
         <div class="dropdown">
-          <button type="button" class="button" onclick="showPowerMenu('usbtty','retropi')">
-            <span class="button__text" id="retropi-text"><i class="fa-solid fa-gamepad"></i> RetroPi</span>
-            <span class="button__text" id="retropi-spinner"></span>
+          <button type="button" class="button" onclick="showAmpInput()">
+            <span class="button__text" id="ampinp-text"><i class="fa-solid fa-sitemap"></i> Input</span>
+            <span class="button__text" id="ampinp-spinner"></span>
           </button>
-          <div class="dd-content ind-button" id="retropi-menu"></div>
+          <div class="dd-content ind-button" id="brinpmenu"></div>
         </div>
         <div class="dropdown">
           <button type="button" class="button" onclick="showPowerMenu('brpi','ampstate')">
@@ -267,11 +267,11 @@
           <div class="dd-content ind-button" id="ampstate-menu"></div>
         </div>
         <div class="dropdown">
-          <button type="button" class="button" onclick="showAmpInput()">
-            <span class="button__text" id="ampinp-text"><i class="fa-solid fa-sitemap"></i> Input</span>
-            <span class="button__text" id="ampinp-spinner"></span>
+          <button type="button" class="button" onclick="showPowerMenu('usbtty','retropi')">
+            <span class="button__text" id="retropi-text"><i class="fa-solid fa-gamepad"></i> RetroPi</span>
+            <span class="button__text" id="retropi-spinner"></span>
           </button>
-          <div class="dd-content ind-button" id="brinpmenu"></div>
+          <div class="dd-content ind-button" id="retropi-menu"></div>
         </div>
         <!---->
       </div>

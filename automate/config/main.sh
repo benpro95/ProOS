@@ -4,14 +4,13 @@
 ## Main Home Automation Script by Ben Provenzano III v20 ##
 ###########################################################
 ###########################################################
-## Do not use the screen command in this script ##
 
+XMITCMD=""
+TARGET=""
 RAMDISK="/var/www/html/ram"
 LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
-XMITCMD=""
-TARGET=""
-
+INPUT_REGEX="!A-Za-z0-9_-"
 XMIT_IP="10.177.1.12"       ## Xmit IP
 DESK_IP="10.177.1.14"       ## Desktop IP
 BRPI_IP="10.177.1.15"       ## Bedroom Pi IP
@@ -363,6 +362,19 @@ LIGHTS_ON(){
 ## Read command line arguments
 FIRST_ARG=$1
 SEC_ARG=$2
+
+if [[ "${FIRST_ARG}" = *[$INPUT_REGEX]* ]]
+then
+  echo "invalid characters in first argument!"
+  exit
+fi
+if [ "$SEC_ARG" != "" ]; then
+  if [[ "${SEC_ARG}" = *[$INPUT_REGEX]* ]]
+  then
+    echo "invalid characters in second argument!"
+    exit
+  fi
+fi
 
 case "$FIRST_ARG" in
 

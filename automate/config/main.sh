@@ -97,27 +97,29 @@ LED_PRESET(){
   local LED_PRESET_CMD="$1"
   case "$LED_PRESET_CMD" in
   "ambient")
+    /opt/system/leds pause
     /opt/system/leds fc 40
-    sleep 2.5
     /opt/system/leds candle
     ;;
   "abstract")
-    /opt/system/leds fc 70
-    sleep 2.5
-    /opt/system/leds abstract  
+    /opt/system/leds pause
+    /opt/system/leds fc 50
+    /opt/system/leds abstract
+    sleep 10
+    /opt/system/leds pause
     ;;
   "prism")
-    /opt/system/leds fc 80
-    sleep 2.5
+    /opt/system/leds pause
+    /opt/system/leds fc 70
     /opt/system/leds prism
     sleep 7
     /opt/system/leds pause
     ;;
   "flames")
-    /opt/system/leds fc 90
-    sleep 2.5
+    /opt/system/leds pause
+    /opt/system/leds fc 70
     /opt/system/leds flames
-    sleep 7
+    sleep 5
     /opt/system/leds pause
     ;;
   ##

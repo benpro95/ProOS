@@ -9,14 +9,15 @@
 RAMDISK="/var/www/html/ram"
 LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
-ATV_CMD=""
 XMITCMD=""
 TARGET=""
 
-XMIT_IP="10.177.1.12" ## Xmit IP
-BRPI_IP="10.177.1.15" ## Bedroom Pi IP
+XMIT_IP="10.177.1.12"       ## Xmit IP
+DESK_IP="10.177.1.14"       ## Desktop IP
+BRPI_IP="10.177.1.15"       ## Bedroom Pi IP
 ATV_MAC="3E:08:87:30:B9:A8" ## Bedroom Apple TV MAC
 
+## Curl Command Line Arguments
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 10 --retry 1 --retry-delay 1 --no-keepalive"
 
 TTY_RESP(){
@@ -92,21 +93,55 @@ USB_TTY(){
   esac
 }
 
+LED_PRESET(){
+  LIGHTS_OFF
+  local LED_PRESET_CMD="$1"
+  case "$LED_PRESET_CMD" in
+  "ambient")
+    /opt/system/leds fc 40
+    sleep 2.5
+    /opt/system/leds candle
+    ;;
+  "abstract")
+    /opt/system/leds fc 70
+    sleep 2.5
+    /opt/system/leds abstract  
+    ;;
+  "prism")
+    /opt/system/leds fc 80
+    sleep 2.5
+    /opt/system/leds prism
+    sleep 7
+    /opt/system/leds pause
+    ;;
+  "flames")
+    /opt/system/leds fc 90
+    sleep 2.5
+    /opt/system/leds flames
+    sleep 7
+    /opt/system/leds pause
+    ;;
+  ##
+  *)
+    echo "invalid preset!"
+    ;;
+  esac
+}
+
 POWER_PC(){
   local PWR_STATE="$1"
-  local PC_PING="wkst.home"
   if [[ "$PWR_STATE" == "off" ]]; then
-    if ping -W 2 -c 1 $PC_PING > /dev/null 2> /dev/null
+    if ping -W 2 -c 1 $DESK_IP > /dev/null 2> /dev/null
     then
       XMITCMD="rfb3" ; XMIT 
     else
-      echo "$PC_PING is offline"
+      echo "$DESK_IP is offline"
     fi
   fi
   if [[ "$PWR_STATE" == "on" ]]; then
-    if ping -W 2 -c 1 $PC_PING > /dev/null 2> /dev/null
+    if ping -W 2 -c 1 $DESK_IP > /dev/null 2> /dev/null
     then
-      echo "$PC_PING is online"
+      echo "$DESK_IP is online"
     else
       XMITCMD="rfb3" ; XMIT 
     fi
@@ -412,12 +447,19 @@ LIGHTS_OFF
 exit
 ;;
 
+## LED Presets ##
+
+led-preset)
+LED_PRESET "$SEC_ARG"
+exit
+;;
+
 ## All Power Off ##
 
 allon)
 LIGHTS_ON
 ## LEDwalls
-/opt/system/leds abstract
+LED_PRESET "abstract"
 ## RetroPi 
 USB_TTY "retropion"
 ## Retro Macs
@@ -451,26 +493,6 @@ XMITCMD="hifioff" ; XMIT
 TARGET="$BRPI_IP" 
 XMITCMD="poweroff"
 CALLAPI
-exit
-;;
-
-## Preset Effects ##
-
-ambient)
-LIGHTS_OFF
-## LEDs
-/opt/system/leds fc 40
-/opt/system/leds candle
-exit
-;;
-
-prism)
-LIGHTS_OFF
-## LEDs
-/opt/system/leds fc 80
-/opt/system/leds prism
-sleep 7
-/opt/system/leds pause
 exit
 ;;
 

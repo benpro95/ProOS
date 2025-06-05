@@ -144,14 +144,30 @@
       <!---->
       <p class="parstd"></p>  
       <!---->
-      <button type="button" class="button" onclick="sendCmd('main','prism','')">
-        <span class="button__text"><i class="fa-solid fa-bolt-lightning"></i> Prism</span> 
+      <button type="button" class="button" onclick="sendCmd('main','led-preset','ambient')">
+        <span class="button__text"><i class="fa-solid fa-bolt-lightning"></i> Ambient</span>
       </button>
       <button type="button" class="button" onclick="showLEDsPage()">
         <span class="button__text"><i class="fa-regular fa-sun"></i> Effects</span>
-      </button>  
-      <button type="button" class="button" onclick="sendCmd('main','ambient','')">
-        <span class="button__text"><i class="fa-solid fa-bolt-lightning"></i> Ambient</span>
+      </button> 
+      <button type="button" class="button" onclick="sendCmd('main','led-preset','prism')">
+        <span class="button__text"><i class="fa-solid fa-bolt-lightning"></i> Prism</span> 
+      </button>
+      <!---->
+      <p class="parstd"></p>
+      <!---->
+      <button type="button" class="button" onclick="sendCmd('main','led-preset','flames')">
+        <span class="button__text"><i class="fa-solid fa-bolt-lightning"></i> Flames</span> 
+      </button>
+      <div class="dropdown">
+        <button type="button" class="button" onclick="showStatusMenu()">
+            <span class="button__text" id="stat-text"><i class="fa-solid fa-info"></i> Status</span>
+            <span class="button__text" id="stat-spinner"></span>
+        </button>
+        <div class="dd-content ind-button" id="statsmenu"></div>
+      </div>
+      <button type="button" class="button" onclick="sendCmd('main','led-preset','abstract')">
+        <span class="button__text"><i class="fa-solid fa-bolt-lightning"></i> Abstract</span> 
       </button>
       <!---->
       <p class="parstd"></p>
@@ -165,29 +181,12 @@
           <a onclick="sendCmd('main','alloff','')"><i class="fa-solid fa-toggle-off"></i> All Off</a>
         </div>
       </div>
-      <div class="dropdown">
-        <button type="button" class="button" onclick="showStatusMenu()">
-            <span class="button__text" id="stat-text"><i class="fa-solid fa-info"></i> Status</span>
-            <span class="button__text" id="stat-spinner"></span>
-        </button>
-        <div class="dd-content ind-button" id="statsmenu"></div>
-      </div>
-      <button type="button" class="button" onclick="openCamWindow()">   
-        <span class="button__text"><i class="fa-solid fa-door-open"></i> Doorway</span>
-      </button>
-      <!---->
-      <p class="parstd"></p>
-      <!---->
-      <button type="button" class="button" onclick="">
-        <span class="button__text"><i class="fa-solid fa-question"></i></span>
-      </button>
       <button type="button" class="button" onclick="sendCmd('main','stop','')">
         <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
       </button>
-      <button type="button" class="button" onclick="">
-        <span class="button__text"><i class="fa-solid fa-question"></i></span>
+      <button type="button" class="button" onclick="openCamWindow()">   
+        <span class="button__text"><i class="fa-solid fa-door-open"></i> Doorway</span>
       </button>
-
       <div class="hifi-grid">
         <!---->
         <p class="parstd"></p> 

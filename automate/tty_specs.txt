@@ -1,0 +1,9 @@
+Automate 5v TTL Serial TTY over 3.5mm TRS Connector
+
+|-Signal------|-Wire---|-Pin----|-FTDI Wire-|
+| RX Receive  | Red    | Tip    | Yellow    |
+| TX Transmit | White  | Ring   | Orange    |
+| GND Common  | Shield | Sleeve | Black     |
+|-------------|--------|--------|-----------|
+
+

@@ -368,7 +368,11 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
     }
     // input status (01006)
     if (_ctldata == 6) {
-      writeSerialMessage(selectedInput);
+      if (powerState == 0) {
+        writeSerialMessage(0); // when off
+      } else {
+        writeSerialMessage(selectedInput);
+      }
     }
     // volume status (01007)
     if (_ctldata == 7) {
@@ -690,10 +694,10 @@ void powerOnLogic() {
   // un-mute PGA
   digitalWrite(volumeMutePin,LOW);
   isMuted = 0;
-  delay(250);
+  delay(200);
   // turn power amps on 
   digitalWrite(ampPowerPin, HIGH);   
-  delay(150);
+  delay(100);
   // scale into last set volume
   scaleVolume(0,lastChannelVolume,50);
   // set power LED on
@@ -712,10 +716,10 @@ void powerOffLogic() {
   digitalWrite(volumeMutePin,HIGH);  
   // disconnect inputs
   audioInput(0);
-  delay(250);
+  delay(200);
   // turn power amps off 
   digitalWrite(ampPowerPin, LOW); 
-  delay(150);
+  delay(100);
   // set power LED off
   frntLEDState = 0;
   writeMCP(powerLEDPin, frntLEDState);  

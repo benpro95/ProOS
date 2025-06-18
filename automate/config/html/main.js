@@ -113,7 +113,7 @@ function loadPage() {
 function enableAnimatedStars() {
   const avalRAM = navigator.deviceMemory;
   const iOS = /^(iPhone|iPad|iPod)/.test(navigator.platform);
-  if (iOS == false) {
+  if (iOS === false) {
     if (avalRAM >= 2) { // GT 2GB of RAM 
       setTimeout(function() {
         // start stars animation 
@@ -769,11 +769,10 @@ function addBookmark() {
   // add temporary entry to menu array
   fileData.push("placeholder");
   // create placeholder menu item
-  const _name = "New Bookmark";
   const navElement = document.getElementById('bookmarks');
   const _elm = document.createElement('a');
   _elm.id = "menu-" + _newid;
-  _elm.innerText = _name;
+  _elm.innerText = "New Bookmark";
   _elm.classList.add('bookmarked__item');
   // store URL
   Object.defineProperty(_elm, "url", {

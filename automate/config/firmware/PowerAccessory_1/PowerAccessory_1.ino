@@ -1,14 +1,14 @@
 /*
  * Ben Provenzano III
  * -----------------
- * v1 06/17/2025
+ * v1 06/19/2025
  * Serial Automation Accessory Controller
  *
  */
 
 #include <SoftwareSerial.h>
 
-const char nullTerm = '\0' ;
+const char nullTrm = '\0';
 
 // GPIO
 #define PWR_TRIG_1 8 // power trigger #1
@@ -36,8 +36,8 @@ void setup() {
   // serial initialization
   Serial.begin(serialBaudRate);
   ExtSerial.begin(serialBaudRate);
-  serialMessageIn[0] = nullTerm;
-  serialMessageOut[0] = nullTerm;
+  serialMessageIn[0] = nullTrm;
+  serialMessageOut[0] = nullTrm;
   // GPIO initialization
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
@@ -60,7 +60,7 @@ void processSerialData(char rc, char startInd ,char endInd) {
       }
     } else {
       // terminate the string
-      serialMessageIn[serialCurPos] = nullTerm; 
+      serialMessageIn[serialCurPos] = nullTrm; 
       serialReading = 0;
       serialCurPos = 0;
       serialMsgEnd = 1;
@@ -98,7 +98,7 @@ void serialProcess() {
     digitalWrite(LED_BUILTIN, HIGH);
     for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
       char _fwrdChr = serialMessageIn[_idx];
-      if (_fwrdChr != nullTerm) {
+      if (_fwrdChr != nullTrm) {
         serialMessageOut[_idx] = _fwrdChr;
       } else {
         break;
@@ -114,7 +114,7 @@ void writeSerial() {
   Serial.print(respDelimiter);
   for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
     char _msgChr = serialMessageOut[_idx];
-    if (_msgChr != nullTerm) {
+    if (_msgChr != nullTrm) {
       Serial.print(_msgChr); 
     } else {
       break;
@@ -126,8 +126,8 @@ void writeSerial() {
 
 void resetSerial() {
   serialMsgEnd = 0;
-  serialMessageIn[0] = nullTerm;
-  serialMessageOut[0] = nullTerm;
+  serialMessageIn[0] = nullTrm;
+  serialMessageOut[0] = nullTrm;
   digitalWrite(LED_BUILTIN, LOW);
 }
 
@@ -139,7 +139,7 @@ void decodeMessage() {
   char _delimiter = ',';
   for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
     char _vchr = serialMessageIn[_idx];
-    if (_vchr == nullTerm) {
+    if (_vchr == nullTrm) {
       break;
     }
     if (_vchr == _delimiter) {
@@ -154,7 +154,7 @@ void decodeMessage() {
   uint8_t _linepos = 0;
   for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {  
     char _vchr = serialMessageIn[_idx];  
-    if (_vchr == nullTerm) {
+    if (_vchr == nullTrm) {
       break;
     }
     if (_vchr == _delimiter) {
@@ -174,7 +174,7 @@ void decodeMessage() {
     _linebuffer[_linecount] = serialMessageIn[_idx];
     _linecount++;
   } // terminate string
-  _linebuffer[_linecount] = nullTerm;
+  _linebuffer[_linecount] = nullTrm;
   // convert to integer, store line value
   uint8_t controlData = atoi(_linebuffer); 
   // find second delimiter position
@@ -182,7 +182,7 @@ void decodeMessage() {
   uint8_t _cmd2pos = 0; 
   for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
     char _vchr = serialMessageIn[_idx];
-    if (_vchr == nullTerm) {
+    if (_vchr == nullTrm) {
       break;
     }
     if (_vchr == _delimiter) {
@@ -210,7 +210,7 @@ void extractSerialData(uint8_t messageStart) {
   // extract control code from message
   for(uint8_t _idx = messageStart; _idx < maxMessage; _idx++) {
     char _curchar = serialMessageIn[_idx];
-    if (_curchar == nullTerm) {
+    if (_curchar == nullTrm) {
       break;
     }
     if (isDigit(_curchar) && _numcnt < maxMessage) {
@@ -218,7 +218,7 @@ void extractSerialData(uint8_t messageStart) {
       _numcnt++;
     }
   }
-  _cmdarr[_numcnt] = nullTerm;
+  _cmdarr[_numcnt] = nullTrm;
   // valiate control code length
   if (_numcnt != _cmdlen) {
     Serial.print("*INVALID LENGTH!*");
@@ -231,7 +231,7 @@ void extractSerialData(uint8_t messageStart) {
     _regarr[_regidx] = _cmdarr[_idx];
     _regidx++;
   }
-  _regarr[_regidx] = nullTerm;
+  _regarr[_regidx] = nullTrm;
   uint8_t _register = atoi(_regarr); 
   // extract control data
   char _datarr[cmdDatLen + 1];
@@ -240,7 +240,7 @@ void extractSerialData(uint8_t messageStart) {
     _datarr[_dataidx] = _cmdarr[_idx];
     _dataidx++;
   }
-  _datarr[_dataidx] = nullTerm;
+  _datarr[_dataidx] = nullTrm;
   /// route data by register ///
   if (_register == 1) {
     uint16_t _ctldata = atoi(_datarr); 
@@ -250,7 +250,7 @@ void extractSerialData(uint8_t messageStart) {
     ExtSerial.print(serialDataStart);
     for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {  
       char _vchr = serialMessageIn[_idx];
-      if (_vchr == nullTerm) {
+      if (_vchr == nullTrm) {
         break;
       }
       ExtSerial.print(_vchr);
@@ -262,16 +262,47 @@ void extractSerialData(uint8_t messageStart) {
   }
 }
 
-// main control functions
-void mainFunctions(uint16_t _ctldata) {
-  if (_ctldata == 1) {
-    digitalWrite(PWR_TRIG_1, HIGH);
-    delay(200);
-    digitalWrite(PWR_TRIG_1, LOW);
+bool powerSense(int _powerSensePin, bool _writeSerial, bool _invertOut) {
+  bool _pwrState = digitalRead(_powerSensePin);
+  if (_invertOut == 1) {
+    _pwrState = !_pwrState;
+  }
+  if (_writeSerial == 1) {
     serialMessageOut[0] = '0';
-    if (digitalRead(PWR_SENS_1) == true) {
+    if (_pwrState == 1) {
       serialMessageOut[0] = '1';
     }
-    serialMessageOut[1] = nullTerm;
+    serialMessageOut[1] = nullTrm;
+  }
+  return _pwrState;
+}
+
+void powerPulse(int _powerPin) {
+  digitalWrite(_powerPin, HIGH);
+  delay(200);
+  digitalWrite(_powerPin, LOW);
+}
+
+// main control functions
+void mainFunctions(uint16_t _ctldata) {
+  // power trigger #1 
+  if (_ctldata == 1 || _ctldata == 2) {
+    bool _pwrState = powerSense(PWR_SENS_1,0,1);
+    // device on
+    if (_pwrState == 1) {
+      // power off mode
+      if (_ctldata == 2) {
+        powerPulse(PWR_TRIG_1);
+      }
+    } else { // device off
+      // power on mode
+      if (_ctldata == 1) {
+        powerPulse(PWR_TRIG_1);
+      }
+    }
+  }
+  // power sense #1 status
+  if (_ctldata == 3) {
+    (void)powerSense(PWR_SENS_1,1,1);
   }
 }

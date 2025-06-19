@@ -8,6 +8,10 @@
 
 #include <SoftwareSerial.h>
 
+// GPIO
+#define PWR_TRIG_1 8 // power trigger #1
+#define PWR_SENS_1 9 // power sense #1
+
 // serial resources
 #define serialBaudRate 9600
 #define RX_PIN 6 // RS-232 RX [Pin #12] TRS=Ring
@@ -31,6 +35,9 @@ void setup() {
   // GPIO initialization
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
+  pinMode(PWR_TRIG_1, OUTPUT);
+  digitalWrite(PWR_TRIG_1, LOW);
+  pinMode(PWR_SENS_1, INPUT_PULLUP);
 }
 
 void loop() {
@@ -228,7 +235,7 @@ void extractSerialData(uint8_t messageStart) {
   /// route data by register ///
   if (_register == 1) {
     uint16_t _ctldata = atoi(_datarr); 
-    AccFunctions(_ctldata);
+    mainFunctions(_ctldata);
   } else {
     // forward data to external serial port
     ExtSerial.print(serialMsgStartChr);
@@ -243,9 +250,16 @@ void extractSerialData(uint8_t messageStart) {
   }
 }
 
-// RS-232 control functions
-void AccFunctions(uint16_t _ctldata) {
-  serialMessageOut[0] = '9';
-  serialMessageOut[1] = '9';
-  serialMessageOut[2] = '\0';
+// main control functions
+void mainFunctions(uint16_t _ctldata) {
+  if (_ctldata == 1) {
+    digitalWrite(PWR_TRIG_1, HIGH);
+    delay(200);
+    digitalWrite(PWR_TRIG_1, LOW);
+    serialMessageOut[0] = '0';
+    if (digitalRead(PWR_SENS_1) == true) {
+      serialMessageOut[0] = '1';
+    }
+    serialMessageOut[1] = '\0';
+  }
 }

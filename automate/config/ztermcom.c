@@ -18,7 +18,8 @@
 char *line = NULL;
 int serial_port;
 const char targetChar = '|';
-const size_t sleepInverval = 100; // µs
+const size_t sleepInverval = 100; // time to pause reading in µs (limit CPU usage)
+const size_t maxWaitTime = 2000000; // max time to wait for serial response in µs
 const char device[] = "/dev/zterm-tty"; // serial port alias
 const size_t maxCmdLength = 32;
 size_t writeLineSize = 0;
@@ -77,7 +78,7 @@ int serialRead() {
         return 1;
       }
     }
-    if (readTime >= 1000000) { // max time to wait for serial response in µs
+    if (readTime >= maxWaitTime) {
       printf("Max response wait time exceeded\n");
       return 1;
     }
@@ -103,7 +104,7 @@ int serialWrite() {
     _chunkBuf[0] = '\0';
     _rawData[0] = '\0';
     // output control characters
-    strcat(_rawData, "<9,9,");
+    strcat(_rawData, "<9,,");
     // calculate the size of the current chunk
     int chunkLength = (i + maxCmdLength <= writeLineSize) ? maxCmdLength : writeLineSize - i;
     // copy the chunk from the input string to the buffer
@@ -185,7 +186,7 @@ int main(int argc, char *argv[]) {
     // detect control mode (1st)
     char charin = argData[i];
     if (charin != '\r' && 
-        charin != '\n' && 
+        charin != '\n' &&
         charin != '\0') {
       // allocate memory
       line = realloc(line, (lineSize + 1));

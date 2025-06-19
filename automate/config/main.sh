@@ -613,6 +613,18 @@ systemd-analyze blame &>> $LOGFILE
 exit
 ;;
 
+update-fw)
+## Update Arduino over USB
+rm -rf /opt/fw-build
+mkdir -p /opt/fw-build
+arduino-cli -v compile --fqbn arduino:avr:uno \
+  /opt/pwr_fw/pwr_fw.ino --build-path /opt/fw-build
+arduino-cli -v upload -p /dev/USB-Xmit0 \
+  --fqbn arduino:avr:uno --input-dir /opt/fw-build
+ztermcom "i"
+exit
+;;
+
 ### Examples of URL strings ###
 # http://automate.home/exec.php?var=&arg=lightson&action=main
 # http://automate.home/exec.php?var=&arg=lightsoff&action=main

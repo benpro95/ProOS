@@ -18,12 +18,15 @@
 #define TX_PIN 5 // RS-232 TX [Pin #11] TRS=Tip
 SoftwareSerial ExtSerial(RX_PIN, TX_PIN);
 const uint8_t maxMessage = 32;
+const uint8_t cmdRegLen = 2; // register select length (99***)
+const uint8_t cmdDatLen = 3; // data length (**999)
+const char serialDataStart = '<';
+const char serialDataEnd = '>';
 const char respDelimiter = '|';
-const char serialMsgStartChr = '<';
-const char serialMsgEndChr = '>';
 char serialMessageOut[maxMessage];
 char serialMessageIn[maxMessage];
-uint8_t serialMsgLength = 0;
+uint8_t serialCurPos = 0;
+bool serialReading = 0;
 bool serialFwrdMode = 0;
 bool serialMsgEnd = 0;
 
@@ -31,7 +34,8 @@ void setup() {
   // serial initialization
   Serial.begin(serialBaudRate);
   ExtSerial.begin(serialBaudRate);
-  resetSerial();
+  serialMessageIn[0] = '\0';
+  serialMessageOut[0] = '\0';
   // GPIO initialization
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
@@ -45,44 +49,23 @@ void loop() {
 }
 
 void processSerialData(char rc, char startInd ,char endInd) {
-  static bool recvInProgress = 0;
-  static uint8_t ndx = 0;
-  if (recvInProgress == 1) {
+  if (serialReading == 1) {
     if (rc != endInd) {
-      serialMessageIn[ndx] = rc;
-      ndx++;
-      if (ndx >= maxMessage) {
-        ndx = maxMessage - 1;
+      serialMessageIn[serialCurPos] = rc;
+      serialCurPos++;
+      if (serialCurPos >= maxMessage) {
+        serialCurPos = maxMessage - 1;
       }
     } else {
       // terminate the string
-      serialMessageIn[ndx] = '\0'; 
-      serialMsgLength = ndx;
-      recvInProgress = 0;
+      serialMessageIn[serialCurPos] = '\0'; 
+      serialReading = 0;
+      serialCurPos = 0;
       serialMsgEnd = 1;
-      ndx = 0;
     }
   }
   else if (rc == startInd) {
-    recvInProgress = 1;
-  }
-}
-
-void resetSerial() {
-  // RX buffer
-  serialMsgEnd = 0;
-  serialMsgLength = 0;
-  // TX buffer
-  serialMessageOut[0] = '\0';
-}
-
-void writeSerial() { // write response back to computer
-  for(uint8_t _idx = 0; _idx <= maxMessage; _idx++) {  
-    char _chrout = serialMessageOut[_idx];  
-    if (_chrout == '\0') { // stop reading at end-of-message
-      break;
-    }
-    Serial.print(_chrout); // write character-by-character
+    serialReading = 1;
   }
 }
 
@@ -90,50 +73,73 @@ void serialProcess() {
   // read main serial port
   if (Serial.available() > 0 && serialFwrdMode == 0 && serialMsgEnd == 0) {
     char rxChar = Serial.read();
-    processSerialData(rxChar,serialMsgStartChr,serialMsgEndChr);
-  }
-  // main serial end-of-data actions
-  if (serialMsgEnd == 1 && serialFwrdMode == 0) {
-    digitalWrite(LED_BUILTIN, HIGH);
-    decodeMessage();
-    resetSerial();
-    digitalWrite(LED_BUILTIN, LOW);
+    processSerialData(rxChar,serialDataStart,serialDataEnd);
   }
   // listen to external serial port when in forwarding mode
   if (ExtSerial.available() > 0 && serialFwrdMode == 1 && serialMsgEnd == 0) {
     char extRxChar = ExtSerial.read();
     processSerialData(extRxChar,respDelimiter,respDelimiter);
   }
-  // external serial end-of-data actions
+  // end-of-data actions
+  if (serialMsgEnd == 1 && serialFwrdMode == 0) {
+    digitalWrite(LED_BUILTIN, HIGH);
+    // process serial data
+    decodeMessage();
+    // send response to main serial
+    if (serialFwrdMode == 0) {
+      writeSerial();
+    }
+    resetSerial();
+  }
+  // forward external serial reponse to main port
   if (serialMsgEnd == 1 && serialFwrdMode == 1) {
     digitalWrite(LED_BUILTIN, HIGH);
-    // forward response to main serial
-    Serial.print(respDelimiter);
-    for(uint8_t _idx = 0; _idx < serialMsgLength; _idx++) {
-      char _msgChr = serialMessageIn[_idx];
-      if (_msgChr != '\0') {
-        Serial.print(_msgChr); 
+    for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
+      char _fwrdChr = serialMessageIn[_idx];
+      if (_fwrdChr != '\0') {
+        serialMessageOut[_idx] = _fwrdChr;
       } else {
         break;
       }
     }
-    Serial.print(respDelimiter);
-    Serial.print('\n');
-    serialFwrdMode = 0;
+    writeSerial();
     resetSerial();
-    digitalWrite(LED_BUILTIN, LOW);
-  }  
+    serialFwrdMode = 0;
+  }
+}
+
+void writeSerial() {
+  Serial.print(respDelimiter);
+  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
+    char _msgChr = serialMessageOut[_idx];
+    if (_msgChr != '\0') {
+      Serial.print(_msgChr); 
+    } else {
+      break;
+    }
+  }
+  Serial.print(respDelimiter);
+  Serial.print('\n');
+}
+
+void resetSerial() {
+  serialMsgEnd = 0;
+  serialMessageIn[0] = '\0';
+  serialMessageOut[0] = '\0';
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
 // decode serial message
 void decodeMessage() {
-  uint8_t _end = serialMsgLength;
   // count delimiters
   uint8_t _delims = 0;
   uint8_t _maxchars = 10;
   char _delimiter = ',';
-  for(uint8_t _idx = 0; _idx < _end; _idx++) {
-    char _vchr = serialMessageIn[_idx];  
+  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
+    char _vchr = serialMessageIn[_idx];
+    if (_vchr == '\0') {
+      break;
+    }
     if (_vchr == _delimiter) {
       _delims++;
     }
@@ -144,8 +150,11 @@ void decodeMessage() {
   }
   // find first delimiter position
   uint8_t _linepos = 0;
-  for(uint8_t _idx = 0; _idx < _end; _idx++) {  
+  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {  
     char _vchr = serialMessageIn[_idx];  
+    if (_vchr == '\0') {
+      break;
+    }
     if (_vchr == _delimiter) {
       // store index position
       _linepos = _idx;
@@ -169,8 +178,11 @@ void decodeMessage() {
   // find second delimiter position
   uint8_t _count = 0;
   uint8_t _cmd2pos = 0; 
-  for(uint8_t _idx = 0; _idx < _end; _idx++) {
-    char _vchr = serialMessageIn[_idx];   
+  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
+    char _vchr = serialMessageIn[_idx];
+    if (_vchr == '\0') {
+      break;
+    }
     if (_vchr == _delimiter) {
       if (_count == 1) {
         // store pointer position
@@ -184,35 +196,30 @@ void decodeMessage() {
   if (controlData == 9){
     extractSerialData(_cmd2pos + 1);
   } else {
-    Serial.println("ERROR!");
-  }
-  // send response to PC (not in forwarding mode)
-  if (serialFwrdMode == 0){
-    Serial.print(respDelimiter); // first acknowledgement 
-    writeSerial(); // write message to serial
-    Serial.print(respDelimiter); // second acknowledgement
-    Serial.print('\n'); // newline
+    Serial.print("*INVALID PREFIX!*");
   }
 }
 
 // extract command data
 void extractSerialData(uint8_t messageStart) {
   uint8_t _numcnt = 0;
-  const uint8_t cmdLength = 5; // fixed command length
-  const uint8_t cmdRegLen = 2; // register select length (99***)
-  const uint8_t cmdDataLen = 3; // data length (**999)
-  char _cmdarr[cmdLength + 1];
+  uint8_t _cmdlen = cmdRegLen + cmdDatLen;
+  char _cmdarr[_cmdlen + 1];
   // extract control code from message
-  for(uint8_t _idx = messageStart; _idx < serialMsgLength; _idx++) {
+  for(uint8_t _idx = messageStart; _idx < maxMessage; _idx++) {
     char _curchar = serialMessageIn[_idx];
-    if (isDigit(_curchar) && _numcnt < cmdLength) {
+    if (_curchar == '\0') {
+      break;
+    }
+    if (isDigit(_curchar) && _numcnt < maxMessage) {
       _cmdarr[_numcnt] = _curchar;
       _numcnt++;
     }
   }
   _cmdarr[_numcnt] = '\0';
   // valiate control code length
-  if (_numcnt =! (cmdLength - 1)) {
+  if (_numcnt != _cmdlen) {
+    Serial.print("*INVALID LENGTH!*");
     return;
   }
   // extract register select
@@ -225,9 +232,9 @@ void extractSerialData(uint8_t messageStart) {
   _regarr[_regidx] = '\0';
   uint8_t _register = atoi(_regarr); 
   // extract control data
-  char _datarr[cmdDataLen + 1];
+  char _datarr[cmdDatLen + 1];
   uint8_t _dataidx = 0;
-  for(uint8_t _idx = (cmdDataLen - 1); _idx < cmdLength; _idx++) {
+  for(uint8_t _idx = (cmdDatLen - 1); _idx < _cmdlen; _idx++) {
     _datarr[_dataidx] = _cmdarr[_idx];
     _dataidx++;
   }
@@ -238,12 +245,15 @@ void extractSerialData(uint8_t messageStart) {
     mainFunctions(_ctldata);
   } else {
     // forward data to external serial port
-    ExtSerial.print(serialMsgStartChr);
-    for(uint8_t _idx = 0; _idx < serialMsgLength; _idx++) {  
+    ExtSerial.print(serialDataStart);
+    for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {  
       char _vchr = serialMessageIn[_idx];
+      if (_vchr == '\0') {
+        break;
+      }
       ExtSerial.print(_vchr);
     }
-    ExtSerial.print(serialMsgEndChr);
+    ExtSerial.print(serialDataEnd);
     ExtSerial.print('\n');
     // forward response to main serial port
     serialFwrdMode = 1;

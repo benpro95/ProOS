@@ -70,18 +70,6 @@ if [ ! -e /opt/pyatv/bin/atvremote ]; then
   deactivate
 fi
 
-## Install Arduino Support
-if [ ! -e /usr/bin/arduino-cli ]; then
-  curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/bin sh
-  arduino-cli core install arduino:avr
-fi
-
-## Arduino Firmware
-mkdir -p /opt/pwr_fw
-cp -f /tmp/config/firmware/PowerAccessory_1/PowerAccessory_1.ino /opt/pwr_fw/pwr_fw.ino
-chmod 644 /opt/pwr_fw/pwr_fw.ino
-chown root:root /opt/pwr_fw/pwr_fw.ino
-
 ## System Configuration
 cp /tmp/config/sysctl.conf /etc
 chmod 644 /etc/sysctl.conf
@@ -111,6 +99,19 @@ chown -R root:root /opt/system
 ln -sf /opt/system/main /opt/system/xmit
 ln -sf /opt/system /opt/rpi
 rm -fv /opt/system/system
+
+## Install Arduino Support
+if [ ! -e /usr/bin/arduino-cli ]; then
+  curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/bin sh
+  arduino-cli core install arduino:avr
+fi
+
+## Arduino Firmware
+mkdir -p /opt/pwr_fw
+cp -f /tmp/config/firmware/PowerAccessory_1/PowerAccessory_1.ino /opt/pwr_fw/pwr_fw.ino
+chmod 644 /opt/pwr_fw/pwr_fw.ino
+chown root:root /opt/pwr_fw/pwr_fw.ino
+/opt/system/main update-fw
 
 ## Xmit Serial COM
 rm -f /usr/bin/ztermcom

@@ -8,6 +8,8 @@
 
 #include <SoftwareSerial.h>
 
+const char nullTerm = '\0' ;
+
 // GPIO
 #define PWR_TRIG_1 8 // power trigger #1
 #define PWR_SENS_1 9 // power sense #1
@@ -34,8 +36,8 @@ void setup() {
   // serial initialization
   Serial.begin(serialBaudRate);
   ExtSerial.begin(serialBaudRate);
-  serialMessageIn[0] = '\0';
-  serialMessageOut[0] = '\0';
+  serialMessageIn[0] = nullTerm;
+  serialMessageOut[0] = nullTerm;
   // GPIO initialization
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
@@ -58,7 +60,7 @@ void processSerialData(char rc, char startInd ,char endInd) {
       }
     } else {
       // terminate the string
-      serialMessageIn[serialCurPos] = '\0'; 
+      serialMessageIn[serialCurPos] = nullTerm; 
       serialReading = 0;
       serialCurPos = 0;
       serialMsgEnd = 1;
@@ -96,7 +98,7 @@ void serialProcess() {
     digitalWrite(LED_BUILTIN, HIGH);
     for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
       char _fwrdChr = serialMessageIn[_idx];
-      if (_fwrdChr != '\0') {
+      if (_fwrdChr != nullTerm) {
         serialMessageOut[_idx] = _fwrdChr;
       } else {
         break;
@@ -112,7 +114,7 @@ void writeSerial() {
   Serial.print(respDelimiter);
   for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
     char _msgChr = serialMessageOut[_idx];
-    if (_msgChr != '\0') {
+    if (_msgChr != nullTerm) {
       Serial.print(_msgChr); 
     } else {
       break;
@@ -124,8 +126,8 @@ void writeSerial() {
 
 void resetSerial() {
   serialMsgEnd = 0;
-  serialMessageIn[0] = '\0';
-  serialMessageOut[0] = '\0';
+  serialMessageIn[0] = nullTerm;
+  serialMessageOut[0] = nullTerm;
   digitalWrite(LED_BUILTIN, LOW);
 }
 
@@ -137,7 +139,7 @@ void decodeMessage() {
   char _delimiter = ',';
   for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
     char _vchr = serialMessageIn[_idx];
-    if (_vchr == '\0') {
+    if (_vchr == nullTerm) {
       break;
     }
     if (_vchr == _delimiter) {
@@ -152,7 +154,7 @@ void decodeMessage() {
   uint8_t _linepos = 0;
   for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {  
     char _vchr = serialMessageIn[_idx];  
-    if (_vchr == '\0') {
+    if (_vchr == nullTerm) {
       break;
     }
     if (_vchr == _delimiter) {
@@ -172,7 +174,7 @@ void decodeMessage() {
     _linebuffer[_linecount] = serialMessageIn[_idx];
     _linecount++;
   } // terminate string
-  _linebuffer[_linecount] = '\0';
+  _linebuffer[_linecount] = nullTerm;
   // convert to integer, store line value
   uint8_t controlData = atoi(_linebuffer); 
   // find second delimiter position
@@ -180,7 +182,7 @@ void decodeMessage() {
   uint8_t _cmd2pos = 0; 
   for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
     char _vchr = serialMessageIn[_idx];
-    if (_vchr == '\0') {
+    if (_vchr == nullTerm) {
       break;
     }
     if (_vchr == _delimiter) {
@@ -208,7 +210,7 @@ void extractSerialData(uint8_t messageStart) {
   // extract control code from message
   for(uint8_t _idx = messageStart; _idx < maxMessage; _idx++) {
     char _curchar = serialMessageIn[_idx];
-    if (_curchar == '\0') {
+    if (_curchar == nullTerm) {
       break;
     }
     if (isDigit(_curchar) && _numcnt < maxMessage) {
@@ -216,7 +218,7 @@ void extractSerialData(uint8_t messageStart) {
       _numcnt++;
     }
   }
-  _cmdarr[_numcnt] = '\0';
+  _cmdarr[_numcnt] = nullTerm;
   // valiate control code length
   if (_numcnt != _cmdlen) {
     Serial.print("*INVALID LENGTH!*");
@@ -229,7 +231,7 @@ void extractSerialData(uint8_t messageStart) {
     _regarr[_regidx] = _cmdarr[_idx];
     _regidx++;
   }
-  _regarr[_regidx] = '\0';
+  _regarr[_regidx] = nullTerm;
   uint8_t _register = atoi(_regarr); 
   // extract control data
   char _datarr[cmdDatLen + 1];
@@ -238,7 +240,7 @@ void extractSerialData(uint8_t messageStart) {
     _datarr[_dataidx] = _cmdarr[_idx];
     _dataidx++;
   }
-  _datarr[_dataidx] = '\0';
+  _datarr[_dataidx] = nullTerm;
   /// route data by register ///
   if (_register == 1) {
     uint16_t _ctldata = atoi(_datarr); 
@@ -248,7 +250,7 @@ void extractSerialData(uint8_t messageStart) {
     ExtSerial.print(serialDataStart);
     for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {  
       char _vchr = serialMessageIn[_idx];
-      if (_vchr == '\0') {
+      if (_vchr == nullTerm) {
         break;
       }
       ExtSerial.print(_vchr);
@@ -270,6 +272,6 @@ void mainFunctions(uint16_t _ctldata) {
     if (digitalRead(PWR_SENS_1) == true) {
       serialMessageOut[0] = '1';
     }
-    serialMessageOut[1] = '\0';
+    serialMessageOut[1] = nullTerm;
   }
 }

@@ -218,9 +218,13 @@
         <!---->
         <p class="parstd"></p>
         <!---->
-        <button type="button" class="button" onclick="sendCmd('main','brpi','toggletv')">
-          <span class="button__text"><i class="fa-solid fa-tv"></i> TV</span>
-        </button>
+        <div class="dropdown">
+          <button type="button" class="button" onclick="showPowerMenu('usbtty','brtv')">
+            <span class="button__text" id="brtv-text"><i class="fa-solid fa-tv"></i> TV</span>
+            <span class="button__text" id="brtv-spinner"></span>
+          </button>
+          <div class="dd-content ind-button" id="brtv-menu"></div>
+        </div>
         <div class="dropdown">
           <button type="button" class="button button_ctrl" onclick="showMenu('br-menu')">
             <span class="button__text"><i class="fa-solid fa-bed"></i> Bedroom</span>

@@ -1,12 +1,13 @@
 #!/bin/bash
 ##
 ###########################################################
-## Main Home Automation Script by Ben Provenzano III v20 ##
+## Main Home Automation Script by Ben Provenzano III v22 ##
 ###########################################################
 ###########################################################
 
-XMITCMD=""
 TARGET=""
+XMITCMD=""
+RESPOUT=""
 RAMDISK="/var/www/html/ram"
 LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
@@ -29,25 +30,27 @@ TTY_RESP(){
   TMP_STR="${TTY_RAW#*$DELIM}"
   TTY_OUT="${TMP_STR%$DELIM*}"
   TTY_CHR_CNT="${#TTY_OUT}"
-  ## verify response is 3-bytes
-  if [[ "$TTY_CHR_CNT" == "3" ]]; then
+  ## process response type
+  case "$TTY_CHR_CNT" in
+  ## 3-byte response 
+  "3")
     ## extract single-byte by position
     TTY_CHR="${TTY_OUT:$RESP_POS:1}"
     ## re-map serial response
-    case "$TTY_CHR" in
-    "1")
-      echo "0"
-    ;;
-    "9")
+    if [[ "$TTY_CHR" == "9" ]]; then
       echo "1"
+    else 
+      echo "0"
+    fi  
     ;;
-    *)
-      echo "TTY data error!"
+  ## single-byte response
+  "1")
+    echo "${TTY_OUT:0:1}"
     ;;
-    esac
-  else
-    echo "TTY size error!"
-  fi
+  *)
+    echo "Invalid TTY Reponse Size!"
+    ;;
+  esac
 }
 
 USB_TTY(){
@@ -84,6 +87,16 @@ USB_TTY(){
     ;;
   "retropioff")
     ztermcom "10005"
+    ;;
+  ## Bedroom TV
+  "brtv")
+    TTY_RESP "01003" "0"
+    ;;
+  "brtvon")
+    ztermcom "01001" 
+    ;;
+  "brtvoff")
+    ztermcom "01002"
     ;;
   ##
   *)
@@ -159,6 +172,7 @@ CALLAPI(){
     ## ESP32 Xmit (discard API response, runs in background)
     SERVER="http://$XMIT_IP:80"
     /usr/bin/curl $CURLARGS --header "Accept: ####?|$XMITCMD" $SERVER > /dev/null 2>&1 &
+    RESPOUT=""
   else
     ## ProOS home automation Pi
     DATA="var=$SEC_ARG&arg=$XMITCMD&action=main"
@@ -392,7 +406,7 @@ exit
 ;;
 
 brpi)
-## API call to Bedroom Pi
+## API to Bedroom Pi
 TARGET="$BRPI_IP"
 XMITCMD="$SEC_ARG"
 CALLAPI
@@ -402,6 +416,8 @@ exit
 relax)
 ## Pause Apple TV
 ATV_CTL "pause"
+## Turn Off TV
+USB_TTY "brtvoff"
 ## Bedroom Audio
 TARGET="$BRPI_IP"
 XMITCMD="poweron"
@@ -486,6 +502,8 @@ XMITCMD="hifion" ; XMIT
 TARGET="$BRPI_IP" 
 XMITCMD="poweron"
 CALLAPI
+## Bedroom TV
+USB_TTY "brtvon"
 exit
 ;;
 
@@ -507,6 +525,8 @@ XMITCMD="hifioff" ; XMIT
 TARGET="$BRPI_IP" 
 XMITCMD="poweroff"
 CALLAPI
+## Bedroom TV
+USB_TTY "brtvoff"
 exit
 ;;
 

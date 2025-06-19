@@ -215,12 +215,12 @@ DEPLOY_PI(){
     ssh -t -o $SSH_ARGS root@$HOST "rm -fv /etc/rpi-conf.done"
   fi
   EXCLUDED="--exclude=photos --exclude=sources"
-  RSYNC_ARGS="--stats --human-readable --recursive --times"
+  RSYNC_ARGS="--stats --human-readable --recursive --times --checksum"
   echo "Installing base software..."
   rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $EXCLUDED $ROOTDIR/rpi root@$HOST:/opt/
   echo "Installing shared software..."
-  rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $ROOTDIR/automate/config/ztermcom.c root@$HOST:/opt/rpi/
-  rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $ROOTDIR/automate/config/menus/thememenu.txt root@$HOST:/opt/rpi/config/
+  rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $ROOTDIR/automate/config/ztermcom.c root@$HOST:/opt/rpi/ztermcom.c
+  rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $ROOTDIR/automate/config/menus/thememenu.txt root@$HOST:/opt/rpi/config/thememenu.txt 
   rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS --mkpath $ROOTDIR/automate/config/html/ root@$HOST:/opt/rpi/config/html-base/
   echo "Installing module-specific software..."
   rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $EXCLUDED $ROOTDIR/$MODULE/ root@$HOST:/opt/rpi/

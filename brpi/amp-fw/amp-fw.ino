@@ -13,10 +13,17 @@
 // serial resources
 #define serialBaudRate 9600
 const uint8_t maxMessage = 32;
-uint8_t serialMessageInEnd = 0;
-char serialMessageIn[maxMessage];
+const uint8_t cmdRegLen = 2; // register select length (99***)
+const uint8_t cmdDatLen = 3; // data length (**999)
+const char serialDataStart = '<';
+const char serialDataEnd = '>';
+const char respDelimiter = '|';
+const char nullTrm = '\0'; // null terminator
 char serialMessageOut[maxMessage];
-bool newData = 0;
+char serialMessageIn[maxMessage];
+uint8_t serialCurPos = 0;
+bool serialReading = 0;
+bool serialMsgEnd = 0;
 
 // GPIO pins
 #define ampPowerPin            12
@@ -95,6 +102,15 @@ uint16_t oldVolEncPos = 1;
 
 /// initialization ///
 void setup() {
+  // MCP23008 initialization
+  Wire.begin();
+  Wire.beginTransmission(MCP23_ADDR);
+  Wire.write(MCP23_DDR_A);
+  Wire.write(MCP23_IOCR_OUT);
+  Wire.endTransmission();
+  // set trigger pin states
+  writeMCP(trigger1Pin, HIGH);
+  writeMCP(trigger2Pin, HIGH);
   // GPO initialization
   pinMode(LED_BUILTIN, OUTPUT);  
   digitalWrite(LED_BUILTIN, HIGH);
@@ -113,15 +129,6 @@ void setup() {
   digitalWrite(volumeSelectPin, HIGH);
   digitalWrite(volumeClockPin, HIGH);
   digitalWrite(volumeDataPin, HIGH);  
-  // MCP23008 initialization
-  Wire.begin();
-  Wire.beginTransmission(MCP23_ADDR);
-  Wire.write(MCP23_DDR_A);
-  Wire.write(MCP23_IOCR_OUT);
-  Wire.endTransmission();
-  // set trigger pin states
-  writeMCP(trigger1Pin, HIGH);
-  writeMCP(trigger2Pin, HIGH);
   // PGA initialization
   delay(250);
   setVolume(0);
@@ -133,8 +140,9 @@ void setup() {
   selectedInput = 2; // optical #2
   lastInput = selectedInput;
   // start serial ports
-  serialMessageOut[0] = '\0';
   Serial.begin(serialBaudRate);
+  serialMessageIn[0] = nullTrm;
+  serialMessageOut[0] = nullTrm;
   delay(800);
   digitalWrite(LED_BUILTIN, LOW);
 }
@@ -350,18 +358,6 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
     if (_ctldata == 2) { 
       powerOff();
     }
-    // trigger R (01003)
-    if (_ctldata == 3) { 
-      writeMCP(trigger1Pin, LOW);
-      delay(250);
-      writeMCP(trigger1Pin, HIGH);
-    }
-    // trigger L (01004)    
-    if (_ctldata == 4) {
-      writeMCP(trigger2Pin, LOW);
-      delay(250);
-      writeMCP(trigger2Pin, HIGH);
-    }
     // power status (01005)
     if (_ctldata == 5) {
       writeSerialMessage(powerState);
@@ -377,6 +373,22 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
     // volume status (01007)
     if (_ctldata == 7) {
       writeVolumeStatus();
+    }
+    // trigger R on (01008)
+    if (_ctldata == 3) { 
+      writeMCP(trigger1Pin, LOW);
+    }
+    // trigger R off (01009)    
+    if (_ctldata == 4) {
+      writeMCP(trigger1Pin, HIGH);
+    }
+    // trigger L on (01010)
+    if (_ctldata == 3) { 
+      writeMCP(trigger2Pin, LOW);
+    }
+    // trigger L off (01011)    
+    if (_ctldata == 4) {
+      writeMCP(trigger2Pin, HIGH);
     }
     break;
   // input select
@@ -425,58 +437,74 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
   }
 }
 
-// process serial message
-void processMessage(uint8_t messageStart) {
-  uint8_t _numcnt = 0;
-  const uint8_t cmdLength = 5; // fixed command length
-  const uint8_t cmdRegLen = 2; // register select length (99***)
-  const uint8_t cmdDataLen = 3; // data length (**999)
-  char _cmdarr[cmdLength + 1];
-  // extract control code from message
-  for(uint8_t _idx = messageStart; _idx < serialMessageInEnd; _idx++) {
-    char _curchar = serialMessageIn[_idx];
-    if (isDigit(_curchar) && _numcnt < cmdLength) {
-      _cmdarr[_numcnt] = _curchar;
-      _numcnt++;
+void processSerialData(char rc, char startInd ,char endInd) {
+  if (serialReading == 1) {
+    if (rc != endInd) {
+      serialMessageIn[serialCurPos] = rc;
+      serialCurPos++;
+      if (serialCurPos >= maxMessage) {
+        serialCurPos = maxMessage - 1;
+      }
+    } else {
+      // terminate the string
+      serialMessageIn[serialCurPos] = nullTrm; 
+      serialReading = 0;
+      serialCurPos = 0;
+      serialMsgEnd = 1;
     }
   }
-  _cmdarr[_numcnt] = '\0';
-  // valiate control code length
-  if (_numcnt =! (cmdLength - 1)) {
-    return;
+  else if (rc == startInd) {
+    serialReading = 1;
   }
-  // extract register select
-  char _regarr[cmdRegLen + 1];
-  uint8_t _regidx = 0;
-  for(uint8_t _idx = 0; _idx < cmdRegLen; _idx++) {
-    _regarr[_regidx] = _cmdarr[_idx];
-    _regidx++;
+}
+
+void serialProcess() {
+  // read main serial port
+  if (Serial.available() > 0 && serialMsgEnd == 0) {
+    char rxChar = Serial.read();
+    processSerialData(rxChar,serialDataStart,serialDataEnd);
   }
-  _regarr[_regidx] = '\0';
-  uint8_t _register = atoi(_regarr); 
-  // extract control data
-  char _datarr[cmdDataLen + 1];
-  uint8_t _dataidx = 0;
-  for(uint8_t _idx = (cmdDataLen - 1); _idx < cmdLength; _idx++) {
-    _datarr[_dataidx] = _cmdarr[_idx];
-    _dataidx++;
+  // end-of-data actions
+  if (serialMsgEnd == 1) {
+    // process serial data
+    decodeMessage();
+    // send response to main serial
+    writeSerial();
+    resetSerial();
   }
-  _datarr[_dataidx] = '\0';
-  uint16_t _ctldata = atoi(_datarr); 
-  // process control code
-  remoteFunctions(_register, _ctldata);
+}
+
+void writeSerial() {
+  Serial.print(respDelimiter);
+  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
+    char _msgChr = serialMessageOut[_idx];
+    if (_msgChr != nullTrm) {
+      Serial.print(_msgChr); 
+    } else {
+      break;
+    }
+  }
+  Serial.print(respDelimiter);
+  Serial.print('\n');
+}
+
+void resetSerial() {
+  serialMsgEnd = 0;
+  serialMessageIn[0] = nullTrm;
+  serialMessageOut[0] = nullTrm;
 }
 
 // decode serial message
 void decodeMessage() {
-  digitalWrite(LED_BUILTIN, HIGH);
-  uint8_t _end = serialMessageInEnd;
   // count delimiters
   uint8_t _delims = 0;
   uint8_t _maxchars = 10;
   char _delimiter = ',';
-  for(uint8_t _idx = 0; _idx < _end; _idx++) {
-    char _vchr = serialMessageIn[_idx];  
+  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
+    char _vchr = serialMessageIn[_idx];
+    if (_vchr == nullTrm) {
+      break;
+    }
     if (_vchr == _delimiter) {
       _delims++;
     }
@@ -487,8 +515,11 @@ void decodeMessage() {
   }
   // find first delimiter position
   uint8_t _linepos = 0;
-  for(uint8_t _idx = 0; _idx < _end; _idx++) {  
+  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {  
     char _vchr = serialMessageIn[_idx];  
+    if (_vchr == nullTrm) {
+      break;
+    }
     if (_vchr == _delimiter) {
       // store index position
       _linepos = _idx;
@@ -499,21 +530,24 @@ void decodeMessage() {
   char _linebuffer[_maxchars + 1];
   uint8_t _linecount = 0;   
   for(uint8_t _idx = 0; _idx < _linepos; _idx++) {
-  	if (_linecount >= _maxchars) {
+    if (_linecount >= _maxchars) {
       break;
     } 
     // store in new array
     _linebuffer[_linecount] = serialMessageIn[_idx];
     _linecount++;
   } // terminate string
-  _linebuffer[_linecount] = '\0';
+  _linebuffer[_linecount] = nullTrm;
   // convert to integer, store line value
   uint8_t controlData = atoi(_linebuffer); 
   // find second delimiter position
   uint8_t _count = 0;
   uint8_t _cmd2pos = 0; 
-  for(uint8_t _idx = 0; _idx < _end; _idx++) {
-    char _vchr = serialMessageIn[_idx];   
+  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
+    char _vchr = serialMessageIn[_idx];
+    if (_vchr == nullTrm) {
+      break;
+    }
     if (_vchr == _delimiter) {
       if (_count == 1) {
         // store pointer position
@@ -525,64 +559,54 @@ void decodeMessage() {
   }
   // process command data
   if (controlData == 9){
-    processMessage(_cmd2pos + 1);
+    extractSerialData(_cmd2pos + 1);
   } else {
-    Serial.print('!');
+    Serial.print("*INVALID PREFIX!*");
   }
-  Serial.print('|'); // first acknowledgement 
-  writeSerial(); // write message to serial
-  Serial.print('|'); // second acknowledgement
-  Serial.print('\n'); // newline
-  digitalWrite(LED_BUILTIN, LOW);
 }
 
-
-void writeSerial() { // write response back to computer
-  for(uint8_t _idx = 0; _idx <= maxMessage; _idx++) {  
-    char _chrout = serialMessageOut[_idx];  
-    if (_chrout == '\0') { // stop reading at end-of-message
+// extract command data
+void extractSerialData(uint8_t messageStart) {
+  uint8_t _numcnt = 0;
+  uint8_t _cmdlen = cmdRegLen + cmdDatLen;
+  char _cmdarr[_cmdlen + 1];
+  // extract control code from message
+  for(uint8_t _idx = messageStart; _idx < maxMessage; _idx++) {
+    char _curchar = serialMessageIn[_idx];
+    if (_curchar == nullTrm) {
       break;
     }
-    Serial.print(_chrout); // write character
-  }
-}
-
-void readSerial() {
-  static bool recvInProgress = 0;
-  static uint8_t ndx = 0;
-  char startMarker = '<';
-  char endMarker = '>';
-  char rc;
-  if (Serial.available() > 0 && newData == 0) {
-    rc = Serial.read();
-    if (recvInProgress == 1) {
-      if (rc != endMarker) {
-        serialMessageIn[ndx] = rc;
-        ndx++;
-        if (ndx >= maxMessage) {
-          ndx = maxMessage - 1;
-        }
-      } else {
-        // terminate the string
-        serialMessageIn[ndx] = '\0'; 
-        serialMessageInEnd = ndx;
-        recvInProgress = 0;
-        newData = 1;
-        ndx = 0;
-      }
-    }
-    else if (rc == startMarker) {
-      recvInProgress = 1;
+    if (isDigit(_curchar) && _numcnt < maxMessage) {
+      _cmdarr[_numcnt] = _curchar;
+      _numcnt++;
     }
   }
-  if (newData == 1) {
-    // End-of-data action
-    decodeMessage();
-    // Reset registers
-    newData = 0;
-    serialMessageInEnd = 0;
-    serialMessageOut[0] = '\0';
+  _cmdarr[_numcnt] = nullTrm;
+  // valiate control code length
+  if (_numcnt != _cmdlen) {
+    Serial.print("*INVALID LENGTH!*");
+    return;
   }
+  // extract register select
+  char _regarr[cmdRegLen + 1];
+  uint8_t _regidx = 0;
+  for(uint8_t _idx = 0; _idx < cmdRegLen; _idx++) {
+    _regarr[_regidx] = _cmdarr[_idx];
+    _regidx++;
+  }
+  _regarr[_regidx] = nullTrm;
+  uint8_t _register = atoi(_regarr); 
+  // extract control data
+  char _datarr[cmdDatLen + 1];
+  uint8_t _dataidx = 0;
+  for(uint8_t _idx = (cmdDatLen - 1); _idx < _cmdlen; _idx++) {
+    _datarr[_dataidx] = _cmdarr[_idx];
+    _dataidx++;
+  }
+  _datarr[_dataidx] = nullTrm;
+  uint16_t _ctldata = atoi(_datarr); 
+  /// execute remote functions ///
+  remoteFunctions(_register, _ctldata);
 }
 
 // read power button state
@@ -822,7 +846,7 @@ void setPowerState() {
 
 void loop() {
   // read serial port data
-  readSerial();  
+  serialProcess();  
   // read front-panel buttons
   readButtonStates();
   // read power button

@@ -11,13 +11,13 @@
 const char nullTrm = '\0';
 
 // GPIO
-#define PWR_TRIG_1 8 // power trigger #1
-#define PWR_SENS_1 9 // power sense #1
+#define PWR_TRIG_1 9 // power trigger #1
+#define PWR_SENS_1 2 // power sense #1
 
 // serial resources
 #define serialBaudRate 9600
-#define RX_PIN 6 // RS-232 RX [Pin #12] TRS=Ring
-#define TX_PIN 5 // RS-232 TX [Pin #11] TRS=Tip
+#define RX_PIN 10 // RS-232 RX [Pin #12] TRS=Ring
+#define TX_PIN 11 // RS-232 TX [Pin #11] TRS=Tip
 SoftwareSerial ExtSerial(RX_PIN, TX_PIN);
 const uint8_t maxMessage = 32;
 const uint8_t cmdRegLen = 2; // register select length (99***)

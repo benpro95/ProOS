@@ -6,4 +6,33 @@ Automate 5v TTL Serial TTY over 3.5mm TRS Connector
 | GND Common  | Shield | Sleeve | Black     |
 |-------------|--------|--------|-----------|
 
+22AWG Orange Pair = 9v AC In 
+22AWG Orange Pair = 9v AC In 
 
+Yellow = RX Main
+Orange = TX Main
+Black = Ground
+
+Black Shielded = Analog 0 In
+Red Shielded = Analog 1 In
+Shield = Ground
+
+Grey = Digital 2 (8.2k Pullup)
+Red = Digital 9
+Black = Ground
+
+Green = Digital 10 RX Ext
+Brown = Digital 11 TX Ext
+Black = Ground
+
+8-Pair 1 Red = 5v Power
+8-Pair x = Ground
+8-Pair x = I2C SDA
+8-Pair x = I2C SCL
+8-Pair x = Digital 3
+8-Pair x = Digital 4
+8-Pair x = Digital 7
+8-Pair x = Digital 8
+
+Aux Input 0 = Digital 5 (IN)
+Aux Input 1 = Digital 6 (IN)

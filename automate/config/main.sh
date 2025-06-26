@@ -389,13 +389,6 @@ then
   echo "invalid characters in first argument!"
   exit
 fi
-if [ "$SEC_ARG" != "" ]; then
-  if [[ "${SEC_ARG}" = *[$INPUT_REGEX]* ]]
-  then
-    echo "invalid characters in second argument!"
-    exit
-  fi
-fi
 
 case "$FIRST_ARG" in
 

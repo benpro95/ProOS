@@ -100,6 +100,11 @@ ln -sf /opt/system/main /opt/system/xmit
 ln -sf /opt/system /opt/rpi
 rm -fv /opt/system/system
 
+## Single Instance with Automic File Lock
+cp -v /tmp/config/singleton.sh /usr/bin/singleton
+chmod 755 /usr/bin/singleton
+chown root:root /usr/bin/singleton
+
 ## Install Arduino Support
 if [ ! -e /usr/bin/arduino-cli ]; then
   curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/bin sh
@@ -111,7 +116,6 @@ mkdir -p /opt/pwr_fw
 cp -f /tmp/config/firmware/PowerAccessory_1/PowerAccessory_1.ino /opt/pwr_fw/pwr_fw.ino
 chmod 644 /opt/pwr_fw/pwr_fw.ino
 chown root:root /opt/pwr_fw/pwr_fw.ino
-/opt/system/main update-fw
 
 ## Xmit Serial COM
 rm -f /usr/bin/ztermcom

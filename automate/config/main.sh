@@ -20,11 +20,16 @@ ATV_MAC="3E:08:87:30:B9:A8" ## Bedroom Apple TV MAC
 ## Curl Command Line Arguments
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 10 --retry 1 --retry-delay 1 --no-keepalive"
 
+LOCALCOM(){
+  local ZTERM_CMD="$1"
+  /usr/bin/singleton ZTERM_PROC /usr/bin/ztermcom $ZTERM_CMD
+}
+
 TTY_RESP(){
   ## read response character position
   local RESP_CMD="$1"
   local RESP_POS="$2"
-  TTY_RAW="$(ztermcom $RESP_CMD)"
+  TTY_RAW="$(LOCALCOM $RESP_CMD)"
   ## extract response data
   DELIM="|"
   TMP_STR="${TTY_RAW#*$DELIM}"
@@ -63,40 +68,40 @@ USB_TTY(){
     TTY_RESP "10007" "0"
     ;;
   "brlamp1on")
-    ztermcom "10002"
+    LOCALCOM "10002"
     ;;
   "brlamp1off")
-    ztermcom "10001"
+    LOCALCOM "10001"
     ;;
   ## Vintage Macs
   "brmacs")
     TTY_RESP "10007" "1"
     ;;
   "brmacson")
-    ztermcom "10004"
+    LOCALCOM "10004"
     ;;
   "brmacsoff")
-    ztermcom "10003" 
+    LOCALCOM "10003" 
     ;;
   ## RetroPi
   "retropi")
     TTY_RESP "10007" "2"
     ;;
   "retropion")
-    ztermcom "10006" 
+    LOCALCOM "10006" 
     ;;
   "retropioff")
-    ztermcom "10005"
+    LOCALCOM "10005"
     ;;
   ## Bedroom TV
   "brtv")
     TTY_RESP "01003" "0"
     ;;
   "brtvon")
-    ztermcom "01001" 
+    LOCALCOM "01001" 
     ;;
   "brtvoff")
-    ztermcom "01002"
+    LOCALCOM "01002"
     ;;
   ##
   *)
@@ -643,7 +648,7 @@ arduino-cli -v compile --fqbn arduino:avr:uno \
   /opt/pwr_fw/pwr_fw.ino --build-path /opt/fw-build
 arduino-cli -v upload -p /dev/USB-Xmit0 \
   --fqbn arduino:avr:uno --input-dir /opt/fw-build
-ztermcom "i"
+LOCALCOM "i"
 exit
 ;;
 

@@ -17,9 +17,9 @@
 #define buffLen 32
 char *line = NULL;
 int serial_port;
-const char targetChar = '|';
+const char targetChar = '\n';
 const size_t sleepInverval = 100; // time to pause reading in µs (limit CPU usage)
-const size_t maxWaitTime = 2000000; // max time to wait for serial response in µs
+const size_t maxWaitTime = 1500000; // max time to wait for serial response in µs
 const char device[] = "/dev/zterm-tty"; // serial port alias
 const size_t maxCmdLength = 32;
 size_t writeLineSize = 0;
@@ -48,27 +48,21 @@ int serialRead() {
       printf("Serial port not available\n");
       return 1;
     }
-    // exit when sending disabled
-    if (enableSend == 0) {
-      return 0;
-    }
     // response size check
     if (num_bytes > 0) {
-      size_t i;
+      size_t _idx;
       size_t ack_resp = 0;
-      for (i = 0; i < num_bytes; i++) {
+      for (_idx = 0; _idx < num_bytes; _idx++) {
         // read response
-        char _curchar = serCharBuf[i];
-        // write to console
-        printf("%c", _curchar);
+        char _curchar = serCharBuf[_idx];
         // check target characters have been received
         if (_curchar == targetChar) {
-          ack_resp++;
+          printf("\n(OK)\n");
+          return 0; // success
+        } else {
+          // write to console
+          printf("%c", _curchar);
         }
-      }
-      if (ack_resp == 2) { // two pipes received
-        printf("OK\n");
-        return 0; // success
       }
     } else {
       // no data available, continue reading input
@@ -104,7 +98,7 @@ int serialWrite() {
     _chunkBuf[0] = '\0';
     _rawData[0] = '\0';
     // output control characters
-    strcat(_rawData, "<9,,");
+    strcat(_rawData, "<9,9,");
     // calculate the size of the current chunk
     int chunkLength = (i + maxCmdLength <= writeLineSize) ? maxCmdLength : writeLineSize - i;
     // copy the chunk from the input string to the buffer
@@ -159,14 +153,14 @@ int main(int argc, char *argv[]) {
     return 1;
   }
   // set the baud rate 
-  cfsetospeed(&tty, B9600);
-  cfsetispeed(&tty, B9600);
+  cfsetospeed(&tty, B9600); // 9600-bps baud out
+  cfsetispeed(&tty, B9600); // 9600-bps baud in
   tty.c_cflag &= ~PARENB;  // disable parity bit
   tty.c_cflag &= ~CSTOPB;  // set one stop bit
   tty.c_cflag &= ~CSIZE;   // clear data size bits
   tty.c_cflag |= CS8;      // set 8 data bits
   tty.c_cflag &= ~CRTSCTS; // disable hardware flow control
-  tty.c_cflag &= ~HUPCL;   // disable DST & RST (prevent system reset)
+  tty.c_cflag &= ~HUPCL;   // disable DST & RST (prevent system reset on UNO)
   // apply the serial settings
   if (tcsetattr(serial_port, TCSANOW, &tty) != 0) {
     perror("Error applying serial port settings");

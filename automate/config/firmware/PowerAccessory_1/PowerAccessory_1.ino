@@ -33,17 +33,19 @@ bool serialFwrdMode = 0;
 bool serialMsgEnd = 0;
 
 void setup() {
+  // GPIO initialization
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);
+  pinMode(PWR_TRIG_1, OUTPUT);
+  digitalWrite(PWR_TRIG_1, LOW);
+  pinMode(PWR_SENS_1, INPUT_PULLUP);
+  delay(350);
+  digitalWrite(LED_BUILTIN, LOW);
   // serial initialization
   Serial.begin(serialBaudRate);
   ExtSerial.begin(serialBaudRate);
   serialMessageIn[0] = nullTrm;
   serialMessageOut[0] = nullTrm;
-  // GPIO initialization
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, LOW);
-  pinMode(PWR_TRIG_1, OUTPUT);
-  digitalWrite(PWR_TRIG_1, LOW);
-  pinMode(PWR_SENS_1, INPUT_PULLUP);
 }
 
 void loop() {
@@ -122,9 +124,12 @@ void writeSerial() {
   }
   Serial.print(respDelimiter);
   Serial.print('\n');
+  Serial.print('\n');
 }
 
 void resetSerial() {
+  serialCurPos = 0;
+  serialReading = 0;
   serialMsgEnd = 0;
   serialMessageIn[0] = nullTrm;
   serialMessageOut[0] = nullTrm;

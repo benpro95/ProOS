@@ -1,15 +1,16 @@
 #!/bin/bash
 ###########################################################
-####### LED parser script by Ben Provenzano III v12 #######
+####### LED parser script by Ben Provenzano III v14 #######
 ###########################################################
 
 ## Read Input Arguments
 VARA=$1
 VARB=$2
+MENUFILE="/var/www/html/ram/mainmenu.txt"
 
-if [ -e /var/www/html/ram/mainmenu.txt ]; then
+if [ -e "$MENUFILE" ]; then
   ## Read file into array
-  readarray LED_ARRAY < /var/www/html/ram/mainmenu.txt
+  readarray LED_ARRAY < "$MENUFILE"
   NEWLINE=$'\n'
   for ELM in ${LED_ARRAY[@]}; do
     ## Split data by delimiter

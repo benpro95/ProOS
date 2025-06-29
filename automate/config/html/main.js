@@ -83,17 +83,14 @@ function loadPage() {
       ctlMode = 'lr'; // living room 
     } else {
       ctlMode = _mode;
-    }  
+    }
     ctlsMenu(ctlMode);
     // server home page
     classDisplay('server-grid','block');
   } else { // pi's
     if (sysModel === 'Pi') {
       classDisplay('pi-grid','block');
-    }  
-    if (sysModel === 'LEDpi') {
-      classDisplay('ledpi-grid','block');
-    }
+    }    
   }
   // set title
   let currentTheme;
@@ -137,15 +134,9 @@ function setTheme(newTheme) {
   localStorage.setItem("main-color", newTheme);
 }
 
-function showLEDsPage() {
-  hidePages();
-  classDisplay('led-grid','block');
-}
-
 function hidePages() {
   classDisplay('pi-grid','none'); 
   classDisplay('server-grid','none');
-  classDisplay('ledpi-grid','none');
   classDisplay('led-grid','none');
 }
 
@@ -1336,6 +1327,12 @@ function createListItem(_col0,_col1,_col2,_id) {
       }
     });
   }
+  // API call menu
+  if (_col1 == 'ledmenu') {
+    _elm.addEventListener("click", function(event) {
+      sendCmd('leds',_col0,'');
+    });
+  }  
   // link only menu
   if (_col1 == 'link') {
     _elm.href = _col0;

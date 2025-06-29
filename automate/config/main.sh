@@ -111,40 +111,8 @@ USB_TTY(){
 }
 
 LED_PRESET(){
-  LIGHTS_OFF
   local LED_PRESET_CMD="$1"
-  case "$LED_PRESET_CMD" in
-  "ambient")
-    /opt/system/leds pause
-    /opt/system/leds fc 40
-    /opt/system/leds candle
-    ;;
-  "abstract")
-    /opt/system/leds pause
-    /opt/system/leds fc 50
-    /opt/system/leds abstract
-    sleep 10
-    /opt/system/leds pause
-    ;;
-  "prism")
-    /opt/system/leds pause
-    /opt/system/leds fc 70
-    /opt/system/leds prism
-    sleep 7
-    /opt/system/leds pause
-    ;;
-  "flames")
-    /opt/system/leds pause
-    /opt/system/leds fc 70
-    /opt/system/leds flames
-    sleep 5
-    /opt/system/leds pause
-    ;;
-  ##
-  *)
-    echo "invalid preset!"
-    ;;
-  esac
+  /opt/system/leds "$LED_PRESET_CMD"
 }
 
 POWER_PC(){
@@ -474,13 +442,6 @@ lightsoff)
 LIGHTS_OFF
 ## Blank LEDwalls
 /opt/system/leds stop
-exit
-;;
-
-## LED Presets ##
-
-led-preset)
-LED_PRESET "$SEC_ARG"
 exit
 ;;
 

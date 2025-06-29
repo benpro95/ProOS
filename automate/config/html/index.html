@@ -19,12 +19,12 @@
 <div class="topnav">
   
   <!-- hamburger button -->
-  <div class="server-grid sounds-grid led-grid">
+  <div class="server-grid led-grid">
     <a onclick="showDynMenu('mainmenu')" class="mainmenu__anchor">
       <i class="fa-solid fa-list"></i>
     </a>
   </div>
-  <div class="ledpi-grid pi-grid">
+  <div class="pi-grid">
     <a onclick="showMenu('pi-mainmenu')" class="mainmenu__anchor">
       <i class="fa-solid fa-list"></i>
     </a>
@@ -50,13 +50,6 @@
     </div>
   </div>
 
-  <!-- back button -->
-  <div class="led-grid">
-    <a onclick="GoToHomePage()">
-      <i class="fa fa-arrow-left"></i>
-    </a>
-  </div>
-
   <!-- progress bar -->
   <a onclick="GoToHomePage()" id="load__progress">
      <div id="load__bar"></div>
@@ -67,9 +60,9 @@
 <!-- volume popup -->
 <div id="vol-popup"></div>
 
-<!-- hompage dropdown menus -->
+<!-- homepage dropdown menus -->
 
-<div class="server-grid sounds-grid led-grid">
+<div class="server-grid led-grid">
   <div class="main_dropdown">
   <div class="dd-content dd-menu" id="mainmenu">
     <a onclick="aboutPrompt()"><i class="fa-solid fa-info"></i> About</a>
@@ -77,7 +70,7 @@
   </div>
 </div>
 
-<div class="ledpi-grid pi-grid">
+<div class="pi-grid">
   <div class="main_dropdown">
     <div class="dd-content dd-menu" id="pi-mainmenu">
       <a onclick="aboutPrompt()"><i class="fa-solid fa-info"></i> About</a>
@@ -110,54 +103,67 @@
 </div>
 
 <div class="server-grid">
-
+<!---->
   <div class="grid">
-
+    <!------------------>
     <!-- left column -->
     <div class="column-left">  
       <!---->
       <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('winlight-menu')">
-          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Window</span>
-        </button>  
-        <div class="dd-content dd-button" id="winlight-menu">
-          <a onclick="sendCmd('main','rfc1on','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-          <a onclick="sendCmd('main','rfc1off','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-        </div>
-      </div>
-      <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('lightmenu')">
-          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> All Lights</span>
-        </button>  
-        <div class="dd-content dd-button" id="lightmenu">
-          <a onclick="sendCmd('main','lightson','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-          <a onclick="sendCmd('main','lightsoff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-        </div>
-      </div> 
-      <div class="dropdown">
-        <button type="button" class="button" onclick="showPowerMenu('usbtty','brlamp1')">
-          <span class="button__text" id="brlamp1-text"><i class="fa-regular fa-lightbulb"></i> Dresser</span>
-          <span class="button__text" id="brlamp1-spinner"></span>
+        <button type="button" class="button" onclick="showDynMenu('ledcolormenu')">
+          <span class="button__text"><i class="fa-solid fa-brush"></i> Solid</span>
         </button>
-        <div class="dd-content ind-button" id="brlamp1-menu"></div>
+        <div class="dd-content dd-button" id="ledcolormenu"></div>
+      </div>
+      <!---->
+      <div class="dropdown">
+        <button type="button" class="button" onclick="showDynMenu('ledeffectmenu')">
+          <span class="button__text"><i class="fa-solid fa-film"></i> Animated</span>
+        </button>
+        <div class="dd-content dd-button" id="ledeffectmenu"></div>
+      </div>
+      <!---->
+      <div class="dropdown">
+        <button type="button" class="button" onclick="showMenu('ledbright-menu')">
+          <span class="button__text"><i class="fa-solid fa-sun"></i> Brightness</span>
+        </button>
+        <div class="dd-content dd-button" id="ledbright-menu">
+          <a onclick="sendCmd('leds','fc','100')"></i> 100%</a>
+          <a onclick="sendCmd('leds','fc','90')"></i> 90%</a>
+          <a onclick="sendCmd('leds','fc','80')"></i> 80%</a>
+          <a onclick="sendCmd('leds','fc','70')"></i> 70%</a>
+          <a onclick="sendCmd('leds','fc','60')"></i> 60%</a>
+          <a onclick="sendCmd('leds','fc','50')"></i> 50%</a>
+          <a onclick="sendCmd('leds','fc','40')"></i> 40%</a>
+          <a onclick="sendCmd('leds','fc','30')"></i> 30%</a>
+          <a onclick="sendCmd('leds','fc','20')"></i> 20%</a>
+          <a onclick="sendCmd('leds','fc','10')"></i> 10%</a>
+        </div>
+        <!---->
       </div>
       <!---->
       <p class="parstd"></p>  
       <!---->
-      <button type="button" class="button" onclick="sendCmd('main','led-preset','ambient')">
-        <span class="button__text"><i class="fa-solid fa-bolt-lightning"></i> Ambient</span>
+      <button type="button" class="button" onclick="sendCmd('leds','stop','')">
+        <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
       </button>
-      <button type="button" class="button" onclick="showLEDsPage()">
-        <span class="button__text"><i class="fa-regular fa-sun"></i> Effects</span>
-      </button> 
-      <button type="button" class="button" onclick="sendCmd('main','led-preset','prism')">
-        <span class="button__text"><i class="fa-solid fa-bolt-lightning"></i> Prism</span> 
+      <div class="dropdown">
+        <button type="button" class="button" onclick="showMenu('lightmenu')">
+          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Lights</span>
+        </button>  
+        <div class="dd-content dd-button" id="lightmenu">
+          <a onclick="sendCmd('main','lightson','')"><i class="fa-solid fa-toggle-on"></i> All On</a>
+          <a onclick="sendCmd('main','lightsoff','')"><i class="fa-solid fa-toggle-off"></i> All Off</a>
+        </div>
+      </div>
+      <button type="button" class="button" onclick="sendCmd('leds','pause','')">
+        <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
       </button>
       <!---->
       <p class="parstd"></p>
       <!---->
-      <button type="button" class="button" onclick="sendCmd('main','led-preset','flames')">
-        <span class="button__text"><i class="fa-solid fa-bolt-lightning"></i> Flames</span> 
+      <button type="button" class="button" onclick="colorPrompt()">
+        <span class="button__text"><i class="fa-solid fa-rotate"></i> Colors</span>
       </button>
       <div class="dropdown">
         <button type="button" class="button" onclick="showStatusMenu()">
@@ -166,8 +172,8 @@
         </button>
         <div class="dd-content ind-button" id="statsmenu"></div>
       </div>
-      <button type="button" class="button" onclick="sendCmd('main','led-preset','abstract')">
-        <span class="button__text"><i class="fa-solid fa-bolt-lightning"></i> Abstract</span> 
+      <button type="button" class="button" onclick="sendCmd('leds','shuffle','')">
+        <span class="button__text"><i class="fa-solid fa-shuffle"></i> Shuffle</span>
       </button>
       <!---->
       <p class="parstd"></p>
@@ -177,15 +183,15 @@
           <span class="button__text"><i class="fa-solid fa-power-off"></i> Power</span>
         </button>  
         <div class="dd-content dd-button" id="allmenu">
-          <a onclick="sendCmd('main','allon','')"><i class="fa-solid fa-toggle-on"></i> All On</a>
-          <a onclick="sendCmd('main','alloff','')"><i class="fa-solid fa-toggle-off"></i> All Off</a>
+          <a onclick="sendCmd('main','allon','')"><i class="fa-solid fa-toggle-on"></i> Apt On</a>
+          <a onclick="sendCmd('main','alloff','')"><i class="fa-solid fa-toggle-off"></i> Apt Off</a>
         </div>
       </div>
-      <button type="button" class="button" onclick="sendCmd('main','pause','')">
-        <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
-      </button>
       <button type="button" class="button" onclick="openCamWindow()">   
         <span class="button__text"><i class="fa-solid fa-door-open"></i> Doorway</span>
+      </button>
+      <button type="button" class="button" onclick="openLogWindow()">
+        <span class="button__text"><i class="fa-solid fa-terminal"></i> Server</span>
       </button>
       <div class="hifi-grid">
         <!---->
@@ -208,12 +214,91 @@
             <a onclick="ctlsMenu('br')"><i class="fa-solid fa-bed"></i> Bedroom</a>
           </div>
         </div>
-        <button type="button" class="button" onclick="openLogWindow()">
-          <span class="button__text"><i class="fa-solid fa-terminal"></i> Server</span>
-      </button>
+        <div class="dropdown">
+          <button type="button" class="button" onclick="showMenu('winlight-menu')">
+            <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Window</span>
+          </button>  
+          <div class="dd-content dd-button" id="winlight-menu">
+            <a onclick="sendCmd('main','rfc1on','')"><i class="fa-solid fa-toggle-on"></i> On</a>
+            <a onclick="sendCmd('main','rfc1off','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+          </div>
+        </div>      
         <!---->
       </div>
-
+      <!---->
+    </div>
+    <!------------------>
+    <!-- right column -->
+    <div class="column-right">
+        <!---->      
+      <div class="hifi-grid">
+        <!---->
+        <button type="button" class="button" id="voldwnbtn" onclick="sendVol('dwn')">
+            <span class="button__text"><i class="fa-solid fa-volume-low"></i></span>
+        </button>
+        <button type="button" class="button" id="volmutebtn" onclick="sendVol('mute')">
+            <span class="button__text"><i class="fa-solid fa-volume-xmark"></i></span>
+        </button>
+        <button type="button" class="button" id="volupbtn" onclick="sendVol('up')">
+            <span class="button__text"><i class="fa-solid fa-volume-high"></i></span>
+        </button>
+        <!---->
+        <p class="parstd"></p>
+        <!---->
+        <button type="button" class="button" onclick="sendCmd('main','dwnc','')">
+            <span class="button__text"><i class="fa-solid fa-volume-low"></i> -5dB</span>
+        </button>
+        <div class="dropdown">
+          <button type="button" class="button" onclick="showMenu('hifi-menu')">
+            <span class="button__text"><i class="fa-solid fa-music"></i> Hi-Fi</span>
+          </button>  
+          <div class="dd-content dd-button" id="hifi-menu">
+            <a onclick="sendCmd('main','hifion','')"><i class="fa-solid fa-toggle-on"></i> On</a>
+            <a onclick="sendCmd('main','hifioff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+          </div>
+        </div>
+        <button type="button" class="button" onclick="sendCmd('main','upc','')">   
+            <span class="button__text"><i class="fa-solid fa-volume-high"></i> +5dB</span>
+        </button>
+        <!---->
+        <p class="parstd"></p>
+        <!---->
+        <button type="button" class="button" onclick="sendCmd('main','coax','')">   
+          <span class="button__text"><i class="fa-brands fa-apple"></i> AirPlay</span>
+        </button>      
+        <button type="button" class="button" onclick="sendCmd('main','opt','')">
+          <span class="button__text"><i class="fa-solid fa-wave-square"></i> Optical</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('main','autodac','')">
+          <span class="button__text"><i class="fa-solid fa-arrows-rotate"></i> Auto In</span>
+        </button>
+        <!---->
+        <p class="parstd"></p> 
+        <!---->
+        <button type="button" class="button" onclick="sendCmd('main','usb','')">
+          <span class="button__text"><i class="fa-brands fa-usb"></i> USB</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('main','phono','')">
+          <span class="button__text"><i class="fa-solid fa-compact-disc"></i> Phono</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('main','aux','')">
+          <span class="button__text"><i class="fa-solid fa-microphone"></i> Analog</span> 
+        </button>
+        <!---->
+        <p class="parstd"></p>
+        <!---->
+        <button type="button" class="button" onclick="sendCmd('main','togglehpf','')">
+          <span class="button__text"> Bass Filter</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('main','vlimit','')">
+          <span class="button__text"><i class="fa-solid fa-volume-off"></i> vLimiter</span>
+        </button>
+        <button type="button" class="button" id="subwooferbtn" onclick="subModeToggle()">
+          <span class="button__text"> Subwoofers</span>
+        </button>
+        <!---->
+      </div>
+      <!---->
       <div class="bedroom-grid">
         <!---->
         <p class="parstd"></p>
@@ -234,11 +319,11 @@
           </div>
         </div>
         <div class="dropdown">
-          <button type="button" class="button" onclick="showPowerMenu('usbtty','brmacs')">
-            <span class="button__text" id="brmacs-text"><i class="fa-solid fa-floppy-disk"></i> Macs</span>
-            <span class="button__text" id="brmacs-spinner"></span>
+          <button type="button" class="button" onclick="showPowerMenu('usbtty','brlamp1')">
+            <span class="button__text" id="brlamp1-text"><i class="fa-regular fa-lightbulb"></i> Dresser</span>
+            <span class="button__text" id="brlamp1-spinner"></span>
           </button>
-          <div class="dd-content ind-button" id="brmacs-menu"></div>
+          <div class="dd-content ind-button" id="brlamp1-menu"></div>
         </div>
         <!---->
         <p class="parstd"></p> 
@@ -270,184 +355,35 @@
           <div class="dd-content ind-button" id="ampstate-menu"></div>
         </div>
         <div class="dropdown">
+          <button type="button" class="button" onclick="showDynMenu('relaxmenu')">
+            <span class="button__text"><i class="fa-solid fa-moon"></i> Relax</span>
+          </button>
+          <div class="dd-content dd-button" id="relaxmenu">
+          </div>
+        </div>
+        <!---->
+        <p class="parstd"></p> 
+        <!---->
+        <div class="dropdown">
+          <button type="button" class="button" onclick="showPowerMenu('usbtty','brmacs')">
+            <span class="button__text" id="brmacs-text"><i class="fa-solid fa-floppy-disk"></i> Macs</span>
+            <span class="button__text" id="brmacs-spinner"></span>
+          </button>
+          <div class="dd-content ind-button" id="brmacs-menu"></div>
+        </div>
+        <button type="button" class="button" onclick="relaxSend('stop')">
+          <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span> 
+        </button>
+        <div class="dropdown">
           <button type="button" class="button" onclick="showPowerMenu('usbtty','retropi')">
             <span class="button__text" id="retropi-text"><i class="fa-solid fa-gamepad"></i> RetroPi</span>
             <span class="button__text" id="retropi-spinner"></span>
           </button>
           <div class="dd-content ind-button" id="retropi-menu"></div>
         </div>
-        <!---->
       </div>
-
-    </div>
-
-    <!-- right column -->
-
-    <div class="hifi-grid">
-     
-      <div class="column-right">
-
-        <button type="button" class="button" id="voldwnbtn" onclick="sendVol('dwn')">
-            <span class="button__text"><i class="fa-solid fa-volume-low"></i></span>
-        </button>
-        <button type="button" class="button" id="volmutebtn" onclick="sendVol('mute')">
-            <span class="button__text"><i class="fa-solid fa-volume-xmark"></i></span>
-        </button>
-        <button type="button" class="button" id="volupbtn" onclick="sendVol('up')">
-            <span class="button__text"><i class="fa-solid fa-volume-high"></i></span>
-        </button>
-
-        <p class="parstd"></p>
-
-        <button type="button" class="button" onclick="sendCmd('main','dwnc','')">
-            <span class="button__text"><i class="fa-solid fa-volume-low"></i> -5dB</span>
-        </button>
-        <div class="dropdown">
-          <button type="button" class="button" onclick="showMenu('hifi-menu')">
-            <span class="button__text"><i class="fa-solid fa-music"></i> Hi-Fi</span>
-          </button>  
-          <div class="dd-content dd-button" id="hifi-menu">
-            <a onclick="sendCmd('main','hifion','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-            <a onclick="sendCmd('main','hifioff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-          </div>
-        </div>
-        <button type="button" class="button" onclick="sendCmd('main','upc','')">   
-            <span class="button__text"><i class="fa-solid fa-volume-high"></i> +5dB</span>
-        </button>
-
-        <p class="parstd"></p>
-
-        <button type="button" class="button" onclick="sendCmd('main','coax','')">   
-          <span class="button__text"><i class="fa-brands fa-apple"></i> AirPlay</span>
-        </button>      
-        <button type="button" class="button" onclick="sendCmd('main','opt','')">
-          <span class="button__text"><i class="fa-solid fa-wave-square"></i> Optical</span>
-        </button>
-        <button type="button" class="button" onclick="sendCmd('main','autodac','')">
-          <span class="button__text"><i class="fa-solid fa-arrows-rotate"></i> Auto In</span>
-        </button>
-
-        <p class="parstd"></p> 
-
-        <button type="button" class="button" onclick="sendCmd('main','usb','')">
-          <span class="button__text"><i class="fa-brands fa-usb"></i> USB</span>
-        </button>
-        <button type="button" class="button" onclick="sendCmd('main','phono','')">
-          <span class="button__text"><i class="fa-solid fa-compact-disc"></i> Phono</span>
-        </button>
-        <button type="button" class="button" onclick="sendCmd('main','aux','')">
-          <span class="button__text"><i class="fa-solid fa-microphone"></i> Analog</span> 
-        </button>
-
-        <p class="parstd"></p>
-
-        <button type="button" class="button" onclick="sendCmd('main','togglehpf','')">
-          <span class="button__text"> Bass Filter</span>
-        </button>
-        <button type="button" class="button" onclick="sendCmd('main','vlimit','')">
-          <span class="button__text"><i class="fa-solid fa-volume-off"></i> vLimiter</span>
-        </button>
-        <button type="button" class="button" id="subwooferbtn" onclick="subModeToggle()">
-          <span class="button__text"> Subwoofers</span>
-        </button>
-
-        <p style="padding-bottom: 100px;"></p>  
-
-      </div>  
-
-    </div>
-    <div class="bedroom-grid">
-
-      <div class="column-right">
-
-        <p class="parstd"></p> 
-
-        <button type="button" class="button" onclick="relaxSend('fan')">
-          <span class="button__text"></i>Fan</span>
-        </button>
-        <button type="button" class="button" onclick="relaxSend('rain')">
-            <span class="button__text"></i>Rain</span>
-        </button> 
-        <button type="button" class="button" onclick="relaxSend('waterfall')">
-            <span class="button__text"></i>Waterfall</span>
-        </button>
-
-        <p class="parstd"></p> 
-
-        <button type="button" class="button" onclick="relaxSend('element')">
-          <span class="button__text"></i>Element</span>
-        </button>  
-        <button type="button" class="button" onclick="relaxSend('rain-2')">
-          <span class="button__text"></i>Rain II</span>
-        </button>  
-        <button type="button" class="button" onclick="relaxSend('coldwar')">
-            <span class="button__text"></i>Cold War</span>
-        </button>
-
-        <p class="parstd"></p>    
-
-        <button type="button" class="button" onclick="relaxSend('stream')">
-            <span class="button__text"></i>Stream</span>
-        </button>  
-        <button type="button" class="button" onclick="relaxSend('ocean')">
-            <span class="button__text"></i>Ocean</span>
-        </button>
-        <button type="button" class="button" onclick="relaxSend('river')">
-            <span class="button__text"></i>River</span>
-        </button>
-
-        <p class="parstd"></p>    
-
-        <button type="button" class="button" onclick="relaxSend('forest')">
-          <span class="button__text"></i>Forest</span>
-        </button> 
-        <button type="button" class="button" onclick="relaxSend('wind')">
-            <span class="button__text"></i>Wind</span>
-        </button>
-        <button type="button" class="button" onclick="relaxSend('storm')">
-            <span class="button__text"></i>Storm</span>
-        </button>  
-
-        <p class="parstd"></p>
-
-        <button type="button" class="button" onclick="relaxSend('thunder')">
-            <span class="button__text"></i>Thunder</span>
-        </button>
-        <button type="button" class="button" onclick="relaxSend('traffic')">
-            <span class="button__text"></i>Traffic</span>
-        </button>
-        <button type="button" class="button" onclick="relaxSend('beach')">
-            <span class="button__text"></i>Beach</span>
-        </button>
-
-        <p class="parstd"></p>       
-
-        <button type="button" class="button" onclick="relaxSend('ambient1')">
-            <span class="button__text"></i>Ambient I</span>
-        </button>  
-        <button type="button" class="button" onclick="relaxSend('ambient2')">
-            <span class="button__text"></i>Ambient II</span>
-        </button>
-        <button type="button" class="button" onclick="relaxSend('harbour')">
-            <span class="button__text"></i>Harbour</span>
-        </button>   
-
-        <p class="parstd"></p>   
-
-        <button type="button" class="button" onclick="relaxSend('campfire')">
-          <span class="button__text"></i>Campfire</span>
-        </button>
-        <button type="button" class="button" onclick="relaxSend('warp')">
-            <span class="button__text"></i>Warp</span>
-        </button>      
-        <button type="button" class="button" onclick="relaxSend('meadow')">
-          <span class="button__text"></i>Meadow</span>
-        </button>
-
-        <p style="padding-bottom: 75px;"></p>  
-
-      </div>
-
+      <p style="padding-bottom: 100px;"></p>  
+    <!---->      
     </div>
   <!-- end grid -->
   </div>
@@ -622,7 +558,7 @@
       </button>
     </div>   
   </div>  
-  <div class="ledpi-grid pi-grid">
+  <div class="pi-grid">
     <div class="dropdown">
       <button type="button" class="button svropt_button" onclick="showMenu('piwifi-menu')">
         <span class="button__text"><i class="fa-solid fa-wifi"></i> WiFi</span>

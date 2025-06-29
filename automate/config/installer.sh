@@ -84,21 +84,18 @@ cp -v /tmp/config/main.sh /opt/system/main
 cp -v /tmp/config/status.sh /opt/system/status
 ln -sf /opt/system/status /usr/bin/update-status
 cp -vr /tmp/config/menus/*.txt /opt/system/
-if [ ! -e /var/www/html/ram/mainmenu.txt ]; then
-  cp -v /opt/system/mainmenu.txt /var/www/html/ram/
-  chmod 777 /var/www/html/ram/mainmenu.txt
-  chown www-data:www-data /var/www/html/ram/mainmenu.txt
-fi
-if [ -e /var/www/html/ram/mainmenu.txt ]; then
-  cp -v /opt/system/thememenu.txt /var/www/html/ram/
-  chmod 777 /var/www/html/ram/thememenu.txt
-  chown www-data:www-data /var/www/html/ram/thememenu.txt
-fi
 chmod -R 755 /opt/system
 chown -R root:root /opt/system
 ln -sf /opt/system/main /opt/system/xmit
 ln -sf /opt/system /opt/rpi
 rm -fv /opt/system/system
+
+## Copy Menu Layouts to RAM Disk
+if [ ! -e /var/www/html/ram/mainmenu.txt ]; then
+  cp -v /opt/system/*menu.txt /var/www/html/ram/
+  chmod -R 777 /var/www/html/ram/*menu.txt
+  chown -R www-data:www-data /var/www/html/ram/*menu.txt
+fi
 
 ## Single Instance with Automic File Lock
 cp -v /tmp/config/singleton.sh /usr/bin/singleton

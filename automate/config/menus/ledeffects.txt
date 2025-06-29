@@ -1,3 +1,0 @@
-blue|ledmenu|Blue
-red|ledmenu|Red
-green|ledmenu|Gree

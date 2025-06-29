@@ -1103,7 +1103,7 @@ function showAmpInput() {
       let _menudata = "";
       // apple TV input 
       _menubtn = "gencmd";
-      _title = "Apple TV"  
+      _title = "Computer"  
       _cmd = "opt-a";
       if (resp == '2'){
         _indtype = 'grnind';
@@ -1123,7 +1123,7 @@ function showAmpInput() {
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // coaxial input
       _menubtn = "gencmd";
-      _title = "Bluetooth"  
+      _title = "Coaxial"  
       _cmd = "coaxial";  
       if (resp == '3'){ 
         _indtype = 'grnind';
@@ -1133,7 +1133,7 @@ function showAmpInput() {
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // aux analog input
       _menubtn = "gencmd";
-      _title = "Analog In"  
+      _title = "Analog"  
       _cmd = "aux";
       if (resp == '4'){
         _indtype = 'grnind';
@@ -1330,9 +1330,16 @@ function createListItem(_col0,_col1,_col2,_id) {
   // API call menu
   if (_col1 == 'ledmenu') {
     _elm.addEventListener("click", function(event) {
-      sendCmd('leds',_col0,'');
+      const _sendcmd = _col0;
+      sendCmd('leds',_sendcmd,'');
     });
-  }  
+  }
+  if (_col1 == 'relaxmenu') {
+    _elm.addEventListener("click", function(event) {
+      const _relaxcmd = _col0;
+      relaxSend(_relaxcmd);
+    });
+  } 
   // link only menu
   if (_col1 == 'link') {
     _elm.href = _col0;

@@ -1,0 +1,43 @@
+abstract|ledmenu|Abstract
+flames|ledmenu|Flames
+tunnel|ledmenu|Tunnel
+ink|ledmenu|Ink
+rays|ledmenu|Rays
+plasma|ledmenu|Plasma
+prism|ledmenu|Prism
+paint|ledmenu|Paint
+beachball|ledmenu|Beachball
+blur|ledmenu|Blur
+gas|ledmenu|Gas
+vibrant|ledmenu|Vibrant
+voltage|ledmenu|Voltage
+8bit|ledmenu|8-Bit
+rings|ledmenu|Rings
+bubbles|ledmenu|Bubbles
+ripple|ledmenu|Ripple
+blocks|ledmenu|Blocks
+fuse|ledmenu|Fuse
+lumin|ledmenu|Lumin
+pixel|ledmenu|Pixel
+spectrum|ledmenu|Spectrum
+warp|ledmenu|Warp
+gold|ledmenu|Gold
+noise1|ledmenu|Noise #1
+noise2|ledmenu|Noise #2
+noise3|ledmenu|Noise #3
+spotlight|ledmenu|Spotlight
+lava|ledmenu|Lava
+rave|ledmenu|Rave
+stripes|ledmenu|Stripes
+miami|ledmenu|Miami
+spark|ledmenu|Spark
+particle|ledmenu|Particle
+chase|ledmenu|Chase
+rainbow|ledmenu|Rainbow
+orbits|ledmenu|Orbits
+clouds|ledmenu|Clouds
+water|ledmenu|Water
+flash|ledmenu|Flash
+strobe|ledmenu|Strobe
+mandelbrot|ledmenu|Mandelbrot
+spectro|ledmenu|Spectro

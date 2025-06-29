@@ -1,0 +1,21 @@
+fan|relaxmenu|Fan
+rain|relaxmenu|Rain #1
+rain-2|relaxmenu|Rain #2
+waterfall|relaxmenu|Waterfall
+element|relaxmenu|Element
+coldwar|relaxmenu|Coldwar
+stream|relaxmenu|Stream
+ocean|relaxmenu|Ocean
+river|relaxmenu|River
+forest|relaxmenu|Forest
+wind|relaxmenu|Wind
+storm|relaxmenu|Storm
+thunder|relaxmenu|Thunder
+traffic|relaxmenu|Traffic
+beach|relaxmenu|Beach
+ambient1|relaxmenu|Ambient #1
+ambient2|relaxmenu|Ambient #2
+harbour|relaxmenu|Harbour
+campfire|relaxmenu|Campfire
+warp|relaxmenu|Warp
+meadow|relaxmenu|Meadow

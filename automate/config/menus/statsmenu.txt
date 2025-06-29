@@ -2,10 +2,9 @@ wkst.home|Desktop|ping
 hifipi.home|Hi-Fi|ping
 xmit.home|Xmit|ping
 xana.home|Xana|ping
-retropi.home|RetroPi|ping
-aptcam.home|Aptcam|ping
-brpi.home|Bedroom|ping
-bedroom.home|Apple TV|ping
 unifi.home|UniFi|ping
+aptcam.home|Aptcam|ping
+brpi.home|BrPi|ping
+retropi.home|RetroPi|ping
 ledstrip.home|LEDstrip|ping
 ledwall.home|LEDwall|ping

@@ -91,7 +91,7 @@ function loadPage() {
     if (sysModel === 'Pi') {
       classDisplay('pi-grid','block');
     }
-    if (sysModel === 'Pi') {
+    if (sysModel === 'LEDpi') {
       classDisplay('ledpi-grid','block');
     }    
   }

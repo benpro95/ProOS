@@ -58,33 +58,26 @@ body {
 }
 
 .led-grid {
-  margin: 0px;
   display: none; 
 }
 
 .bedroom-grid {
-  margin: 0px;
   display: none;
 }
 
 .hifi-grid {
-  margin: 0px;
   display: none;
 }
 
 .ledpi-grid {
-  margin: 0px;
   display: none; 
 }
 
 .pi-grid {
-  margin: 0px;
   display: none;
 }
 
 .server-grid {
-  caret-color: transparent;
-  margin: 0px;
   display: none;
 }
 

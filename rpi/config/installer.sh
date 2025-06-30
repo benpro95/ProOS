@@ -567,7 +567,7 @@ systemctl start man-db.service
 
 ## Z-Term Communication
 rm -f /usr/bin/ztermcom
-/usr/bin/gcc -v /opt/rpi/ztermcom.c -o /usr/bin/ztermcom
+gcc /opt/rpi/ztermcom.c -o /usr/bin/ztermcom
 chmod 755 /usr/bin/ztermcom 
 chown root:root /usr/bin/ztermcom
 

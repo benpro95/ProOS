@@ -139,8 +139,8 @@ function setTheme(newTheme) {
 
 function hidePages() {
   classDisplay('pi-grid','none'); 
+  classDisplay('ledpi-grid','none'); 
   classDisplay('server-grid','none');
-  classDisplay('led-grid','none');
 }
 
 // show / hide multiple classes
@@ -1106,7 +1106,7 @@ function showAmpInput() {
       let _menudata = "";
       // apple TV input 
       _menubtn = "gencmd";
-      _title = "Optical #1"  
+      _title = "Optical I"  
       _cmd = "opt-a";
       if (resp == '2'){
         _indtype = 'grnind';
@@ -1116,7 +1116,7 @@ function showAmpInput() {
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // aux optical input
       _menubtn = "gencmd";
-      _title = "Optical #2"  
+      _title = "Optical II"  
       _cmd = "opt-b";  
       if (resp == '1'){
         _indtype = 'grnind';
@@ -1175,12 +1175,12 @@ function showPowerMenu(target,menu) {
       let _error = true; // error flag
       let _menudata = "";
       // status display (I)
-      if (resp == '0') {
+      if (resp == "0") {
         _indtype = 'blkind'; // black indicator  
         _title = "Offline";
         _error = false;
       }
-      if (resp == '1') {
+      if (resp == "1") {
         _indtype = 'grnind'; // green indicator     
         _title = "Online";
         _error = false;

@@ -62,7 +62,7 @@
 
 <!-- homepage dropdown menus -->
 
-<div class="server-grid led-grid">
+<div class="server-grid">
   <div class="main_dropdown">
   <div class="dd-content dd-menu" id="mainmenu">
     <a onclick="aboutPrompt()"><i class="fa-solid fa-info"></i> About</a>
@@ -95,12 +95,10 @@
 <p></p>
 
 <div class="server-grid ledpi-grid">
-<!---->
   <div class="grid">
-    <!------------------>
-    <!-- left column -->
+  <!-- GRID CLASS -->
     <div class="column-left">  
-      <!---->
+    <!-- LEFT COLUMN -->
       <div class="dropdown">
         <button type="button" class="button" onclick="showDynMenu('ledcolormenu')">
           <span class="button__text"><i class="fa-solid fa-brush"></i> Solid</span>
@@ -140,11 +138,11 @@
       <!---->
       <p class="parstd"></p>
       <!---->
-      <button type="button" class="button" onclick="sendCmd('leds','stop','')">
-        <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
-      </button>
       <button type="button" class="button" onclick="sendCmd('leds','shuffle','')">
         <span class="button__text"><i class="fa-solid fa-shuffle"></i> Shuffle</span>
+      </button>
+      <button type="button" class="button" onclick="sendCmd('leds','stop','')">
+        <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
       </button>
       <button type="button" class="button" onclick="sendCmd('leds','pause','')">
         <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
@@ -220,17 +218,16 @@
               <a onclick="sendCmd('main','rfc1off','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
             </div>
           </div>      
-          <!---->
+        <!--END HIFI GRID-->
         </div>
+      <!--END SERVER GRID-->
       </div>
-      <!---->
+    <!--END LEFT COLUMN-->
     </div>
-    <!------------------>
-    <!-- right column -->
     <div class="column-right">
-        <!---->      
+    <!-- RIGHT COLUMN -->  
       <div class="hifi-grid">
-        <!---->
+        <!--HIFI GRID-->
         <button type="button" class="button" id="voldwnbtn" onclick="sendVol('dwn')">
             <span class="button__text"><i class="fa-solid fa-volume-low"></i></span>
         </button>
@@ -294,11 +291,10 @@
         <button type="button" class="button" id="subwooferbtn" onclick="subModeToggle()">
           <span class="button__text"> Subwoofers</span>
         </button>
-        <!---->
+      <!--END HIFI GRID-->
       </div>
-      <!---->
       <div class="bedroom-grid">
-        <!---->
+      <!--BEDROOM GRID-->
         <p class="parstd"></p>
         <!---->
         <div class="dropdown">
@@ -379,13 +375,12 @@
           </button>
           <div class="dd-content ind-button" id="retropi-menu"></div>
         </div>
+      <!--END BEDROOM GRID-->  
       </div>
-      <p style="padding-bottom: 100px;"></p>  
-    <!---->      
+    <!--END RIGHT COLUMN-->      
     </div>
-  <!-- end grid -->
+  <!--END GRID CLASS-->
   </div>
-<!-- end server grid -->
 </div>
 
 <div>

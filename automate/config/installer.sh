@@ -116,7 +116,7 @@ chown root:root /opt/pwr_fw/pwr_fw.ino
 
 ## Xmit Serial COM
 rm -f /usr/bin/ztermcom
-/usr/bin/gcc -v /tmp/config/ztermcom.c -o /usr/bin/ztermcom
+gcc /tmp/config/ztermcom.c -o /usr/bin/ztermcom
 chmod 755 /usr/bin/ztermcom 
 chown root:root /usr/bin/ztermcom
 

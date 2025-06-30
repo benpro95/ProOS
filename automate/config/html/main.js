@@ -1103,7 +1103,7 @@ function showAmpInput() {
       let _menudata = "";
       // apple TV input 
       _menubtn = "gencmd";
-      _title = "Computer"  
+      _title = "Optical #1"  
       _cmd = "opt-a";
       if (resp == '2'){
         _indtype = 'grnind';
@@ -1113,7 +1113,7 @@ function showAmpInput() {
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // aux optical input
       _menubtn = "gencmd";
-      _title = "Optical"  
+      _title = "Optical #2"  
       _cmd = "opt-b";  
       if (resp == '1'){
         _indtype = 'grnind';

@@ -395,15 +395,13 @@ CALLAPI
 exit
 ;;
 
-pause)
+stop-br)
 ## Pause Apple TV 
 ATV_CTL "pause"
 TARGET="$BRPI_IP"
 ## Stop Sounds
 XMITCMD="stoprelax"
 CALLAPI
-## Pause LEDs
-/opt/system/leds pause
 exit
 ;;
 

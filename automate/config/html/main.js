@@ -21,7 +21,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "7.2";
+let siteVersion = "8.0";
 
 //////////////////////
 
@@ -90,6 +90,9 @@ function loadPage() {
   } else { // pi's
     if (sysModel === 'Pi') {
       classDisplay('pi-grid','block');
+    }
+    if (sysModel === 'Pi') {
+      classDisplay('ledpi-grid','block');
     }    
   }
   // set title
@@ -1676,14 +1679,10 @@ function writeFrame(red, green, blue) {
 }
 
 async function colorPrompt(){
-  if (sysModel === serverSite) {
-    sendCmd('leds','randcolor','');
-  } else {
-    hideDropdowns(true);
-    if (colorPromptActive === 0) {
-      await show_colorPrompt("Pick a color:");
-    } 
-  }
+  hideDropdowns(true);
+  if (colorPromptActive === 0) {
+    await show_colorPrompt("Pick a color:");
+  } 
 }
 
 function show_colorPrompt(text){

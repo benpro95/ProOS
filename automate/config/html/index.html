@@ -19,12 +19,12 @@
 <div class="topnav">
   
   <!-- hamburger button -->
-  <div class="server-grid led-grid">
+  <div class="server-grid">
     <a onclick="showDynMenu('mainmenu')" class="mainmenu__anchor">
       <i class="fa-solid fa-list"></i>
     </a>
   </div>
-  <div class="pi-grid">
+  <div class="pi-grid ledpi-grid">
     <a onclick="showMenu('pi-mainmenu')" class="mainmenu__anchor">
       <i class="fa-solid fa-list"></i>
     </a>
@@ -94,15 +94,7 @@
 
 <p></p>
 
-<div class="pi-grid">
-  <div class="grid">
-    <button type="button" class="button" onclick="openLogWindow()">
-      <span class="button__text"><i class="fa-solid fa-gear"></i> System</span>
-    </button>
-  </div>
-</div>
-
-<div class="server-grid">
+<div class="server-grid ledpi-grid">
 <!---->
   <div class="grid">
     <!------------------>
@@ -113,7 +105,11 @@
         <button type="button" class="button" onclick="showDynMenu('ledcolormenu')">
           <span class="button__text"><i class="fa-solid fa-brush"></i> Solid</span>
         </button>
-        <div class="dd-content dd-button" id="ledcolormenu"></div>
+        <div class="dd-content dd-button" id="ledcolormenu">
+          <div class="ledpi-grid">
+            <a onclick="colorPrompt()"><i class="fa-solid fa-rotate"></i> Picker</a>
+          </div>
+        </div>
       </div>
       <!---->
       <div class="dropdown">
@@ -142,88 +138,90 @@
         <!---->
       </div>
       <!---->
-      <p class="parstd"></p>  
+      <p class="parstd"></p>
       <!---->
       <button type="button" class="button" onclick="sendCmd('leds','stop','')">
         <span class="button__text"><i class="fa-solid fa-stop"></i> Stop</span>
       </button>
-      <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('lightmenu')">
-          <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Lights</span>
-        </button>  
-        <div class="dd-content dd-button" id="lightmenu">
-          <a onclick="sendCmd('main','lightson','')"><i class="fa-solid fa-toggle-on"></i> All On</a>
-          <a onclick="sendCmd('main','lightsoff','')"><i class="fa-solid fa-toggle-off"></i> All Off</a>
-        </div>
-      </div>
+      <button type="button" class="button" onclick="sendCmd('leds','shuffle','')">
+        <span class="button__text"><i class="fa-solid fa-shuffle"></i> Shuffle</span>
+      </button>
       <button type="button" class="button" onclick="sendCmd('leds','pause','')">
         <span class="button__text"><i class="fa-solid fa-pause"></i> Pause</span>
       </button>
       <!---->
-      <p class="parstd"></p>
-      <!---->
-      <button type="button" class="button" onclick="colorPrompt()">
-        <span class="button__text"><i class="fa-solid fa-rotate"></i> Colors</span>
-      </button>
-      <div class="dropdown">
-        <button type="button" class="button" onclick="showStatusMenu()">
+      <div class="server-grid">
+        <p class="parstd"></p>
+        <!---->
+        <button type="button" class="button" onclick="sendCmd('leds','randcolor','');">
+          <span class="button__text"><i class="fa-solid fa-rotate"></i> Colors</span>
+        </button>
+        <div class="dropdown">
+          <button type="button" class="button" onclick="showStatusMenu()">
             <span class="button__text" id="stat-text"><i class="fa-solid fa-info"></i> Status</span>
             <span class="button__text" id="stat-spinner"></span>
+          </button>
+          <div class="dd-content ind-button" id="statsmenu"></div>
+        </div>
+        <div class="dropdown">
+          <button type="button" class="button" onclick="showMenu('lightmenu')">
+            <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Lights</span>
+          </button>  
+          <div class="dd-content dd-button" id="lightmenu">
+            <a onclick="sendCmd('main','lightson','')"><i class="fa-solid fa-toggle-on"></i> All On</a>
+            <a onclick="sendCmd('main','lightsoff','')"><i class="fa-solid fa-toggle-off"></i> All Off</a>
+          </div>
+        </div>
+        <!---->
+        <p class="parstd"></p>
+        <!---->
+        <div class="dropdown">
+          <button type="button" class="button" onclick="showMenu('allmenu')">
+            <span class="button__text"><i class="fa-solid fa-power-off"></i> Power</span>
+          </button>  
+          <div class="dd-content dd-button" id="allmenu">
+            <a onclick="sendCmd('main','allon','')"><i class="fa-solid fa-toggle-on"></i> Apt On</a>
+            <a onclick="sendCmd('main','alloff','')"><i class="fa-solid fa-toggle-off"></i> Apt Off</a>
+          </div>
+        </div>
+        <button type="button" class="button" onclick="openCamWindow()">   
+          <span class="button__text"><i class="fa-solid fa-door-open"></i> Doorway</span>
         </button>
-        <div class="dd-content ind-button" id="statsmenu"></div>
-      </div>
-      <button type="button" class="button" onclick="sendCmd('leds','shuffle','')">
-        <span class="button__text"><i class="fa-solid fa-shuffle"></i> Shuffle</span>
-      </button>
-      <!---->
-      <p class="parstd"></p>
-      <!---->
-      <div class="dropdown">
-        <button type="button" class="button" onclick="showMenu('allmenu')">
-          <span class="button__text"><i class="fa-solid fa-power-off"></i> Power</span>
-        </button>  
-        <div class="dd-content dd-button" id="allmenu">
-          <a onclick="sendCmd('main','allon','')"><i class="fa-solid fa-toggle-on"></i> Apt On</a>
-          <a onclick="sendCmd('main','alloff','')"><i class="fa-solid fa-toggle-off"></i> Apt Off</a>
-        </div>
-      </div>
-      <button type="button" class="button" onclick="openCamWindow()">   
-        <span class="button__text"><i class="fa-solid fa-door-open"></i> Doorway</span>
-      </button>
-      <button type="button" class="button" onclick="openLogWindow()">
-        <span class="button__text"><i class="fa-solid fa-terminal"></i> Server</span>
-      </button>
-      <div class="hifi-grid">
-        <!---->
-        <p class="parstd"></p> 
-        <!---->
-        <div class="dropdown">
-          <button type="button" class="button" onclick="showMenu('pcmenu')">
-            <span class="button__text"><i class="fa-solid fa-computer"></i> Desktop</span>
-          </button>  
-          <div class="dd-content dd-button" id="pcmenu">
-            <a onclick="sendCmd('main','pcon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-            <a onclick="sendCmd('main','pcoff','')"><i class="fa-solid fa-moon"></i> Sleep</a>
+        <button type="button" class="button" onclick="openLogWindow()">
+          <span class="button__text"><i class="fa-solid fa-terminal"></i> Server</span>
+        </button>
+        <div class="hifi-grid">
+          <!---->
+          <p class="parstd"></p> 
+          <!---->
+          <div class="dropdown">
+            <button type="button" class="button" onclick="showMenu('pcmenu')">
+              <span class="button__text"><i class="fa-solid fa-computer"></i> Desktop</span>
+            </button>  
+            <div class="dd-content dd-button" id="pcmenu">
+              <a onclick="sendCmd('main','pcon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
+              <a onclick="sendCmd('main','pcoff','')"><i class="fa-solid fa-moon"></i> Sleep</a>
+            </div>
           </div>
-        </div>
-        <div class="dropdown">
-          <button type="button" class="button button_ctrl" onclick="showMenu('lr-menu')">
-            <span class="button__text"></i> Living Room</span>
-          </button>  
-          <div class="dd-content dd-button" id="lr-menu">
-            <a onclick="ctlsMenu('br')"><i class="fa-solid fa-bed"></i> Bedroom</a>
+          <div class="dropdown">
+            <button type="button" class="button button_ctrl" onclick="showMenu('lr-menu')">
+              <span class="button__text"></i> Living Room</span>
+            </button>  
+            <div class="dd-content dd-button" id="lr-menu">
+              <a onclick="ctlsMenu('br')"><i class="fa-solid fa-bed"></i> Bedroom</a>
+            </div>
           </div>
+          <div class="dropdown">
+            <button type="button" class="button" onclick="showMenu('winlight-menu')">
+              <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Window</span>
+            </button>  
+            <div class="dd-content dd-button" id="winlight-menu">
+              <a onclick="sendCmd('main','rfc1on','')"><i class="fa-solid fa-toggle-on"></i> On</a>
+              <a onclick="sendCmd('main','rfc1off','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
+            </div>
+          </div>      
+          <!---->
         </div>
-        <div class="dropdown">
-          <button type="button" class="button" onclick="showMenu('winlight-menu')">
-            <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Window</span>
-          </button>  
-          <div class="dd-content dd-button" id="winlight-menu">
-            <a onclick="sendCmd('main','rfc1on','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-            <a onclick="sendCmd('main','rfc1off','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-          </div>
-        </div>      
-        <!---->
       </div>
       <!---->
     </div>

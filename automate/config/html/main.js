@@ -1108,47 +1108,43 @@ function showAmpInput() {
       _menubtn = "gencmd";
       _title = "Optical I"  
       _cmd = "opt-a";
+      _indtype = 'blkind';
       if (resp == '2'){
         _indtype = 'grnind';
-      } else {
-        _indtype = 'blkind';
       }
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // aux optical input
       _menubtn = "gencmd";
       _title = "Optical II"  
-      _cmd = "opt-b";  
+      _cmd = "opt-b";
+      _indtype = 'blkind';
       if (resp == '1'){
         _indtype = 'grnind';
-      } else {
-        _indtype = 'blkind';
-      }    
+      } 
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // coaxial input
       _menubtn = "gencmd";
       _title = "Coaxial"  
       _cmd = "coaxial";  
+      _indtype = 'blkind';
       if (resp == '3'){ 
         _indtype = 'grnind';
-      } else {
-        _indtype = 'blkind';
-      }     
+      }
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // aux analog input
       _menubtn = "gencmd";
       _title = "Analog"  
       _cmd = "aux";
+      _indtype = 'blkind';
       if (resp == '4'){
         _indtype = 'grnind';
-      } else {
-        _indtype = 'blkind';
-      }     
+      }
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
-      // draw menu items
-      drawMenu(_menudata.split("\n"),"brinpmenu");
       // stop spinner animation
       btnText.style.visibility = 'visible';
       btnSpinner.classList.remove('btn-spinner');
+      // draw menu items
+      drawMenu(_menudata.split("\n"),"brinpmenu");
     });
   }
 }
@@ -1164,6 +1160,7 @@ function showPowerMenu(target,menu) {
     let btnSpinner = document.getElementById(menu + '-spinner');
     btnText.style.visibility = 'hidden';
     btnSpinner.classList.add('btn-spinner');
+    // show menu
     _elem.style.display = 'block';
     sendCmd('main',target,menu).then((data) => { // GET request
       const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // remove newlines
@@ -1172,49 +1169,42 @@ function showPowerMenu(target,menu) {
       let _cmd;     // remote host command 
       let _indtype; // indicator type
       let _title;   // menu button title
-      let _error = true; // error flag
       let _menudata = "";
       // status display (I)
-      if (resp == "0") {
-        _indtype = 'blkind'; // black indicator  
-        _title = "Offline";
-        _error = false;
-      }
-      if (resp == "1") {
-        _indtype = 'grnind'; // green indicator     
-        _title = "Online";
-        _error = false;
-      }
-      if (_error === true) {
-        _indtype = 'redind'; // red indicator    
-        _title = "Unknown";
+      switch(resp) {
+        case '0':
+          _indtype = 'blkind'; // black indicator  
+          _title = "Offline";
+          break;
+        case '1':
+          _indtype = 'grnind'; // green indicator     
+          _title = "Online";
+          break;
+        default:
+          _indtype = 'redind'; // red indicator    
+          _title = "Error";
       }
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // power on/off buttons (II)
-      if (resp === '0' || _error === true) {
+      if (resp == '0') {
+        _title = "On"  
+        _indtype = 'noind';
         _menubtn = "oncmd";
         _cmd = menu + 'on';
-        if (menu == 'ampstate') {
-          _cmd = "poweron";
-        }
-        _indtype = 'noind';
-        _title = "On"  
         _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       }
-      if (resp === '1' || _error === true) {
+      if (resp == '1') {
+        _title = "Off"
+        _indtype = 'noind';    
         _menubtn = "offcmd";
         _cmd = menu + 'off';
-        if (menu == 'ampstate') {
-          _cmd = "poweroff";
-        }
-        _indtype = 'noind';     
-        _title = "Off"  
         _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       }
-      drawMenu(_menudata.split("\n"),menu + '-menu'); // draw menu
       // stop spinner animation
       btnText.style.visibility = 'visible';
       btnSpinner.classList.remove('btn-spinner');
+      // draw menu items
+      drawMenu(_menudata.split("\n"),menu + '-menu');
     });
   }
 }
@@ -1233,13 +1223,14 @@ function showStatusMenu() {
     let btnSpinner = document.getElementById('stat-spinner');
     btnText.style.visibility = 'hidden';
     btnSpinner.classList.add('btn-spinner');
+    // show menu
     _elem.style.display = 'block';
     sendCmd('main','status','').then((data) => { // GET request
-      // draw menu items
-      drawMenu(data.split("\n"),_menu);
       // stop spinner animation
       btnText.style.visibility = 'visible';
       btnSpinner.classList.remove('btn-spinner');
+      // draw menu items
+      drawMenu(data.split("\n"),_menu);
     });
   }   
 }

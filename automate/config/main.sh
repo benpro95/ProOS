@@ -20,12 +20,59 @@ ATV_MAC="3E:08:87:30:B9:A8" ## Bedroom Apple TV MAC
 ## Curl Command Line Arguments
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 10 --retry 1 --retry-delay 1 --no-keepalive"
 
-LOCALCOM(){
-  local ZTERM_CMD="$1"
-  /usr/bin/singleton ZTERM_PROC /usr/bin/ztermcom $ZTERM_CMD
+USB_TTY(){
+  local TTY_CMD="$1"
+  case "$TTY_CMD" in
+  ## RF Power Controller (under dresser)
+  ##
+  ## Dresser Lamp
+  "brlamp1")
+    LOCALCOM_RESP "10007" "0"
+    ;;
+  "brlamp1on")
+    LOCALCOM "10002"
+    ;;
+  "brlamp1off")
+    LOCALCOM "10001"
+    ;;
+  ## Vintage Macs
+  "brmacs")
+    LOCALCOM_RESP "10007" "1"
+    ;;
+  "brmacson")
+    LOCALCOM "10004"
+    ;;
+  "brmacsoff")
+    LOCALCOM "10003" 
+    ;;
+  ## RetroPi
+  "retropi")
+    LOCALCOM_RESP "10007" "2"
+    ;;
+  "retropion")
+    LOCALCOM "10006" 
+    ;;
+  "retropioff")
+    LOCALCOM "10005"
+    ;;
+  ## Bedroom TV
+  "brtv")
+    LOCALCOM_RESP "01003" "0"
+    ;;
+  "brtvon")
+    LOCALCOM "01001" 
+    ;;
+  "brtvoff")
+    LOCALCOM "01002"
+    ;;
+  ##
+  *)
+    echo "invalid USB-TTY command!"
+    ;;
+  esac
 }
 
-TTY_RESP(){
+LOCALCOM_RESP(){
   ## read response character position
   local RESP_CMD="$1"
   local RESP_POS="$2"
@@ -50,64 +97,23 @@ TTY_RESP(){
     ;;
   ## single-byte response
   "1")
-    echo "${TTY_OUT:0:1}"
+    TTY_CHR="${TTY_OUT:0:1}"
+    if [[ "$TTY_CHR" == "1" ]]; then
+      echo "1"
+    else
+      echo "0"
+    fi
     ;;
   *)
-    echo "Invalid TTY Reponse Size!"
+    ## default response
+    echo "X"
     ;;
   esac
 }
 
-USB_TTY(){
-  local TTY_CMD="$1"
-  case "$TTY_CMD" in
-  ## RF Power Controller (under dresser)
-  ##
-  ## Dresser Lamp
-  "brlamp1")
-    TTY_RESP "10007" "0"
-    ;;
-  "brlamp1on")
-    LOCALCOM "10002"
-    ;;
-  "brlamp1off")
-    LOCALCOM "10001"
-    ;;
-  ## Vintage Macs
-  "brmacs")
-    TTY_RESP "10007" "1"
-    ;;
-  "brmacson")
-    LOCALCOM "10004"
-    ;;
-  "brmacsoff")
-    LOCALCOM "10003" 
-    ;;
-  ## RetroPi
-  "retropi")
-    TTY_RESP "10007" "2"
-    ;;
-  "retropion")
-    LOCALCOM "10006" 
-    ;;
-  "retropioff")
-    LOCALCOM "10005"
-    ;;
-  ## Bedroom TV
-  "brtv")
-    TTY_RESP "01003" "0"
-    ;;
-  "brtvon")
-    LOCALCOM "01001" 
-    ;;
-  "brtvoff")
-    LOCALCOM "01002"
-    ;;
-  ##
-  *)
-    echo "invalid USB-TTY command!"
-    ;;
-  esac
+LOCALCOM(){
+  local ZTERM_CMD="$1"
+  /usr/bin/singleton ZTERM_PROC /usr/bin/ztermcom $ZTERM_CMD
 }
 
 LED_PRESET(){

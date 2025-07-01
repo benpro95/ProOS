@@ -19,7 +19,7 @@ char *line = NULL;
 int serial_port;
 const char targetChar = '\n';
 const size_t sleepInverval = 100; // time to pause reading in µs (limit CPU usage)
-const size_t maxWaitTime = 1500000; // max time to wait for serial response in µs
+const size_t maxWaitTime = 1750000; // max time to wait for serial response in µs
 const char device[] = "/dev/zterm-tty"; // serial port alias
 const size_t maxCmdLength = 32;
 size_t writeLineSize = 0;

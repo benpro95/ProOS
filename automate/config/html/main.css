@@ -53,8 +53,8 @@ body {
 	line-height: 0;
 }
 
-.parend-fb {
-  margin-bottom: 700px;
+.pg-bottom {
+  padding-bottom: 150px; 
 }
 
 .led-grid {

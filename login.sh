@@ -219,7 +219,7 @@ DEPLOY_PI(){
   echo "Installing base software..."
   rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $EXCLUDED $ROOTDIR/rpi root@$HOST:/opt/
   echo "Installing shared software..."
-  rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $ROOTDIR/automate/config/ztermcom.c root@$HOST:/opt/rpi/ztermcom.c
+  rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $ROOTDIR/automate/config/ztermcom.c root@$HOST:/opt/rpi/
   rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS --mkpath $ROOTDIR/automate/config/html/ root@$HOST:/opt/rpi/config/html-base/
   echo "Installing module-specific software..."
   rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $EXCLUDED $ROOTDIR/$MODULE/ root@$HOST:/opt/rpi/
@@ -263,12 +263,13 @@ PRGM_INIT(){
   ## Check For Proxmox Configuration
   INTMODE=""
   if [ -e $ROOTDIR/$MODULE/qemu.conf ] || \
-     [ -e $ROOTDIR/$MODULE/lxc.conf ] ; then
-    INTMODE="server"
+     [ -e $ROOTDIR/$MODULE/lxc.conf ] || \
+     [ -e $ROOTDIR/$MODULE/pc.conf ] ; then
+    INTMODE="nonpi"
   fi
   ## Start SSH Agent
   eval `ssh-agent -s`
-  if [ "$INTMODE" == "server" ]; then
+  if [ "$INTMODE" == "nonpi" ]; then
     ## Server Configuration ##
     ssh-add $KEYS/$MODULE.rsa 2>/dev/null
     ## Set hostname

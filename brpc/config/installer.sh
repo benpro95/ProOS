@@ -9,7 +9,7 @@ apt-get --yes update
 ## Install Packages
 apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates htop \
  apt-transport-https wget unzip gnupg rsync curl screen ethtool libdbus-1-dev \
- libdbus-glib-1-dev locales gnupg scrub binutils avahi-daemon
+ libdbus-glib-1-dev locales gnupg scrub binutils avahi-daemon kodi
 
 ## SSH Configuration
 cp /tmp/config/sshd_config /etc/ssh/

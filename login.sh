@@ -126,7 +126,7 @@ POST_DEPLOY_MENU(){
   echo "'d' to re-deploy"    
   echo "'u' to update packages"
   echo "'x' to reboot system"
-  if [ "$INTMODE" != "server" ]; then
+  if [ "$INTMODE" == "pi" ]; then
     echo "'r' to reboot in read/only mode"
   fi
   echo "'s' for a shell on $HOST"    
@@ -144,7 +144,7 @@ POST_DEPLOY_MENU(){
     ssh -t -o $SSH_ARGS root@$HOST "reboot"
     EXIT_PRGM
   fi
-  if [ "$INTMODE" != "server" ]; then
+  if [ "$INTMODE" == "pi" ]; then
     if [[ $REPLY =~ ^[Rr]$ ]]
     then
       ssh -t -o $SSH_ARGS root@$HOST "/opt/rpi/init ro"
@@ -154,7 +154,7 @@ POST_DEPLOY_MENU(){
   if [[ $REPLY =~ ^[Dd]$ ]]
   then
     echo "Deploying $HOST..."
-    if [ "$INTMODE" == "server" ]; then
+    if [ "$INTMODE" == "nonpi" ]; then
       DEPLOY_SERVER
     else
       DEPLOY_PI
@@ -163,7 +163,7 @@ POST_DEPLOY_MENU(){
   if [[ $REPLY =~ ^[Uu]$ ]]
   then
     echo "Updating $HOST..."
-    if [ "$INTMODE" == "server" ]; then
+    if [ "$INTMODE" == "nonpi" ]; then
       ssh -t -o $SSH_ARGS root@$HOST "apt-get update; apt-get upgrade"
     else
       ssh -t -o $SSH_ARGS root@$HOST "/opt/rpi/init update"
@@ -261,11 +261,12 @@ PRGM_INIT(){
   ## Process Initial Arguments
   EXTRA_ARGS
   ## Check For Proxmox Configuration
-  INTMODE=""
   if [ -e $ROOTDIR/$MODULE/qemu.conf ] || \
      [ -e $ROOTDIR/$MODULE/lxc.conf ] || \
      [ -e $ROOTDIR/$MODULE/pc.conf ] ; then
     INTMODE="nonpi"
+  else 
+    INTMODE="pi"
   fi
   ## Start SSH Agent
   eval `ssh-agent -s`

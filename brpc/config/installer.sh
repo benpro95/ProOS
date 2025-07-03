@@ -9,7 +9,7 @@ apt-get --yes update
 ## Install Packages
 apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates htop \
  apt-transport-https wget unzip gnupg rsync curl screen ethtool libdbus-1-dev \
- libdbus-glib-1-dev locales gnupg scrub binutils avahi-daemon kodi
+ libdbus-glib-1-dev locales gnupg scrub binutils avahi-daemon kodi autofs cifs-utils
 
 ## SSH Configuration
 cp /tmp/config/sshd_config /etc/ssh/
@@ -23,12 +23,21 @@ chown root:root /root/.ssh/authorized_keys
 ## Disable Root Password
 passwd -d root
 
-## Profile Configuration
-touch /root/.hushlogin
-chmod 644 /root/.hushlogin
-chown root:root /root/.hushlogin
+## AutoFS Configuration
+cp -f /tmp/config/auto.master /etc/
+chmod 644 /etc/auto.master
+chown root:root /etc/auto.master
+cp -f /tmp/config/auto.map /etc/
+chmod 644 /etc/auto.map
+chown root:root /etc/auto.map
+cp -f /tmp/config/auto.creds /etc/
+chmod 400 /etc/auto.creds
+chown root:root /etc/auto.creds
+mkdir -p /mnt/smb
+systemctl enable autofs
 
 ## Clean-up
+rm -f /root/.hushlogin
 systemctl daemon-reload
 rm -rf /tmp/config
 apt-get autoremove -y

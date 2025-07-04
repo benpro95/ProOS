@@ -3,7 +3,6 @@
 ### AutoConfig - ProOS for Automate VM
 ### by Ben Provenzano III
 
-
 ## Update Sources
 apt-get --yes update
 
@@ -20,9 +19,9 @@ apt-get --yes update
 
 ## Install Packages
 apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates bpytop \
- apt-transport-https wget unzip gnupg rsync curl screen parallel ethtool \
- libdbus-1-dev libdbus-glib-1-dev locales aptitude sudo gnupg scrub \
- binutils avahi-daemon ffmpeg pip npm python3-ament-xmllint
+ apt-transport-https wget unzip gnupg rsync curl screen parallel libdbus-1-dev \
+ ethtool libdbus-glib-1-dev locales aptitude sudo gnupg scrub binutils \
+ avahi-daemon ffmpeg pip npm python3-ament-xmllint etherwake wakeonlan
 
 ## Remove Packages
 apt-get remove -y --purge cron anacron postfix apache2 apache2-data htop
@@ -39,8 +38,8 @@ fi
 ## Process Monitor
 if [ ! -e /usr/local/bin/htop ]; then
   apt-get remove -y htop
-  apt-get install -y --no-upgrade --ignore-missing libncursesw5-dev autotools-dev \
-   autoconf automake build-essential
+  apt-get install -y --no-upgrade --ignore-missing libncursesw5-dev \
+   autotools-dev autoconf automake build-essential
   cd /tmp/config/
   wget https://github.com/htop-dev/htop/releases/download/3.2.1/htop-3.2.1.tar.xz
   tar -xf htop-3.2.1.tar.xz
@@ -61,14 +60,6 @@ echo "Run command 'logread' to check system logs"
 dpkg --purge rsyslog
 rm -f /var/log/messages
 rm -f /var/log/syslog
-
-## Install Apple TV Controller 
-if [ ! -e /opt/pyatv/bin/atvremote ]; then
-  python3 -m venv /opt/pyatv
-  source /opt/pyatv/bin/activate
-  pip3 install pyatv
-  deactivate
-fi
 
 ## System Configuration
 cp /tmp/config/sysctl.conf /etc

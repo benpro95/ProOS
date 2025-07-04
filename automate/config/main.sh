@@ -1,7 +1,6 @@
 #!/bin/bash
-##
 ###########################################################
-## Main Home Automation Script by Ben Provenzano III v22 ##
+## Main Home Automation Script by Ben Provenzano III v24 ##
 ###########################################################
 ###########################################################
 
@@ -15,7 +14,6 @@ INPUT_REGEX="!A-Za-z0-9_-"
 XMIT_IP="10.177.1.12"       ## Xmit IP
 DESK_IP="10.177.1.14"       ## Desktop IP
 BRPI_IP="10.177.1.15"       ## Bedroom Pi IP
-ATV_MAC="3E:08:87:30:B9:A8" ## Bedroom Apple TV MAC
 
 ## Curl Command Line Arguments
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 10 --retry 1 --retry-delay 1 --no-keepalive"
@@ -166,12 +164,6 @@ CALLAPI(){
   ## Clear data
   XMITCMD=""
   TARGET=""
-}
-
-## Control Apple TV
-ATV_CTL(){
-  local ATV_CMD="$1"
-  /opt/system/atv $ATV_MAC $ATV_CMD > /dev/null 2>&1 &
 }
 
 XMIT(){
@@ -386,13 +378,11 @@ exit
 ;;
 
 relax)
-## Pause Apple TV
-ATV_CTL "pause"
 ## Turn Off TV
 USB_TTY "brtvoff"
 ## Bedroom Audio
 TARGET="$BRPI_IP"
-XMITCMD="poweron"
+XMITCMD="ampstateon"
 CALLAPI
 ## Relax Sounds on Bedroom Pi
 TARGET="$BRPI_IP"
@@ -402,8 +392,6 @@ exit
 ;;
 
 stop-br)
-## Pause Apple TV 
-ATV_CTL "pause"
 TARGET="$BRPI_IP"
 ## Stop Sounds
 XMITCMD="stoprelax"
@@ -465,7 +453,7 @@ POWER_PC "on"
 XMITCMD="hifion" ; XMIT
 ## Bedroom Audio
 TARGET="$BRPI_IP" 
-XMITCMD="poweron"
+XMITCMD="ampstateon"
 CALLAPI
 ## Bedroom TV
 USB_TTY "brtvon"
@@ -480,15 +468,13 @@ LIGHTS_OFF
 USB_TTY "retropioff"
 ## Retro Macs
 USB_TTY "brmacsoff"
-## Pause Apple TV
-ATV_CTL "pause"
 ## PC Power Off
 POWER_PC "off"
 ## Main Room Audio
 XMITCMD="hifioff" ; XMIT 
 ## Bedroom Audio
 TARGET="$BRPI_IP" 
-XMITCMD="poweroff"
+XMITCMD="ampstateoff"
 CALLAPI
 ## Bedroom TV
 USB_TTY "brtvoff"

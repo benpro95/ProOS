@@ -37,7 +37,6 @@ mkdir -p /mnt/smb
 systemctl enable autofs
 
 ## Clean-up
-rm -f /root/.hushlogin
 systemctl daemon-reload
 rm -rf /tmp/config
 apt-get autoremove -y

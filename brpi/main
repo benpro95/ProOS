@@ -145,20 +145,14 @@ BLINKLED
 exit
 ;;
 
-poweron)
+ampstateon)
 ZTERM_COM "01001" 
 BLINKLED
 exit
 ;;
 
-poweroff)
+ampstateoff)
 ZTERM_COM "01002" 
-BLINKLED
-exit
-;;
-
-toggletv)
-ZTERM_COM "01004" 
 BLINKLED
 exit
 ;;

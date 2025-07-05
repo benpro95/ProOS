@@ -143,7 +143,7 @@ void setup() {
   Serial.begin(serialBaudRate);
   serialMessageIn[0] = nullTrm;
   serialMessageOut[0] = nullTrm;
-  delay(800);
+  delay(500);
   digitalWrite(LED_BUILTIN, LOW);
 }
 

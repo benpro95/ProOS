@@ -127,6 +127,24 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
     if (_ctldata == 7) { 
       writeOutStates();
     }
+    // output #1 toggle (10008)
+    if (_ctldata == 8) { 
+      stateChanged = HIGH;
+      relaysState0 = !relaysState0;    
+      writeOutStates();
+    }
+    // output #2 toggle (10009)
+    if (_ctldata == 9) { 
+      stateChanged = HIGH;
+      relaysState1 = !relaysState1;    
+      writeOutStates();
+    }
+    // output #3 toggle (10010)
+    if (_ctldata == 10) { 
+      stateChanged = HIGH;
+      relaysState2 = !relaysState2;    
+      writeOutStates();
+    }
     break;
   default:
     // blink LED when command invalid

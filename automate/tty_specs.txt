@@ -13,10 +13,6 @@ Yellow = RX Main
 Orange = TX Main
 Black = Ground
 
-Black Shielded = Analog 0 In
-Red Shielded = Analog 1 In
-Shield = Ground
-
 Grey = Digital 2 (8.2k Pullup)
 Red = Digital 9
 Black = Ground
@@ -34,5 +30,20 @@ Black = Ground
 8-Pair x = Digital 7
 8-Pair x = Digital 8
 
-Aux Input 0 = Digital 5 (IN)
-Aux Input 1 = Digital 6 (IN)
+Aux Input 0 = Digital 5 In
+Aux Input 1 = Digital 6 In
+
+Black Shielded = Analog 0 In
+Red Shielded = Analog 1 In
+Shield = Ground
+
+
+PWR_SENS_1
+PWR_TRIG_2 
+PWR_SENS_2 
+PWR_TRIG_3 
+PWR_SENS_3
+ADC_IN_1 
+ADC_IN_2
+SWITCH_1
+SWITCH_2

@@ -1,7 +1,7 @@
 /*
  * Ben Provenzano III
  * -----------------
- * v1 06/19/2025
+ * v2.4 07/05/2025
  * Serial Automation Accessory Controller
  *
  */
@@ -12,16 +12,36 @@
 // local libraries
 #include "neotimer.h"
 
+// general constants
+const uint8_t debounceDelay = 75;
 const char nullTrm = '\0';
 
-// GPIO
-#define PWR_TRIG_1 9 // power trigger #1
-#define PWR_SENS_1 2 // power sense #1
+// power control I/O
+#define PWR_TRIG_1 9 // trigger #1 TIP
+#define PWR_SENS_1 2 // sense #1 RING
+#define PWR_TRIG_2 8 // trigger #2 TIP
+#define PWR_SENS_2 3 // sense #2 RING
+#define PWR_TRIG_3 7 // trigger #3 TIP
+#define PWR_SENS_3 4 // sense #3 RING
+
+// analog inputs
+#define ADC_IN_1 A0 // TIP
+#define ADC_IN_2 A1 // RING
+
+// toggle switch inputs
+#define PWR_SWITCH_2 6 // TIP
+#define PWR_SWITCH_1 5 // RING
+bool powerButton_1Last = 0;
+bool powerButton_1State = 0;
+uint32_t powerButton_1Millis;
+bool powerButton_2Last = 0;
+bool powerButton_2State = 0;
+uint32_t powerButton_2Millis;
 
 // serial resources
 #define serialBaudRate 9600
-#define RX_PIN 10 // RS-232 RX [Pin #12] TRS=Ring
-#define TX_PIN 11 // RS-232 TX [Pin #11] TRS=Tip
+#define TX_PIN 11 // 232-TX TIP
+#define RX_PIN 10 // 232-RX RING
 SoftwareSerial ExtSerial(RX_PIN, TX_PIN); 
 const uint8_t maxMessage = 32;
 const uint8_t cmdRegLen = 2; // register select length (99***)
@@ -35,18 +55,12 @@ uint8_t serialCurPos = 0;
 bool serialFwrdMode = 0;
 bool serialReading = 0;
 bool serialMsgEnd = 0;
-const uint8_t maxFwrdWait = 450; // max wait in (ms) for external response
+const uint8_t maxFwrdWait = 500; // max wait in (ms) for external response
 Neotimer maxFwrdRead = Neotimer();
 
 void setup() {
-  // GPIO initialization
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, HIGH);
-  pinMode(PWR_TRIG_1, OUTPUT);
-  digitalWrite(PWR_TRIG_1, LOW);
-  pinMode(PWR_SENS_1, INPUT_PULLUP);
-  delay(350);
-  digitalWrite(LED_BUILTIN, LOW);
+  // I/O initialization
+  initGPIO();
   // serial initialization
   Serial.begin(serialBaudRate);
   ExtSerial.begin(serialBaudRate);
@@ -54,8 +68,107 @@ void setup() {
   serialMessageOut[0] = nullTrm;
 }
 
+void initGPIO() {
+  // activity LED
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);
+  // I/O port #1
+  pinMode(PWR_TRIG_1, OUTPUT);
+  digitalWrite(PWR_TRIG_1, LOW);
+  pinMode(PWR_SENS_1, INPUT_PULLUP);
+  // I/O port #2
+  pinMode(PWR_TRIG_2, OUTPUT);
+  digitalWrite(PWR_TRIG_2, LOW);
+  pinMode(PWR_SENS_2, INPUT_PULLUP);
+  // I/O port #3
+  pinMode(PWR_TRIG_3, OUTPUT);
+  digitalWrite(PWR_TRIG_3, LOW);
+  pinMode(PWR_SENS_3, INPUT_PULLUP);
+  // analog in port
+  pinMode(ADC_IN_1, INPUT_PULLUP);
+  pinMode(ADC_IN_2, INPUT_PULLUP);
+  // switch(s) in port
+  pinMode(PWR_SWITCH_1, INPUT_PULLUP);
+  pinMode(PWR_SWITCH_2, INPUT_PULLUP);
+  // startup delay
+  delay(350);
+  digitalWrite(LED_BUILTIN, LOW);
+}
+
 void loop() {
-  serialProcess();  
+  serialProcess();
+  readDigitalInputs();
+}
+
+void readDigitalInputs() {
+ readPowerButton_1();
+ readPowerButton_2();
+}
+
+void readPowerButton_1() {
+  // read pin state
+  bool reading = digitalRead(PWR_SWITCH_1);
+  // switch changed
+  if (reading != powerButton_1Last) {
+    // reset the debouncing timer
+    powerButton_1Millis = millis();
+  }
+  if ((millis() - powerButton_1Millis) > debounceDelay) {
+    if (reading != powerButton_1State) {
+      powerButton_1State = reading;
+      // input button was pressed
+      if (powerButton_1State == 1) { 
+        sendExtSerial(10,8); // toggle lamp
+      }
+    }
+  }
+  powerButton_1Last = reading;
+}
+
+void readPowerButton_2() {
+  // read pin state
+  bool reading = digitalRead(PWR_SWITCH_2);
+  // switch changed
+  if (reading != powerButton_2Last) {
+    // reset the debouncing timer
+    powerButton_2Millis = millis();
+  }
+  if ((millis() - powerButton_2Millis) > debounceDelay) {
+    if (reading != powerButton_2State) {
+      powerButton_2State = reading;
+      // input button was pressed
+      if (powerButton_2State == 1) { 
+        sendExtSerial(10,9); // toggle macs
+      }
+    }
+  }
+  powerButton_2Last = reading;
+}
+
+// send command to external serial device
+void sendExtSerial(uint8_t regSelect, int16_t cmdSelect) {
+  digitalWrite(LED_BUILTIN, HIGH);
+  const uint8_t outLength = 6;
+  char extMsgOut[maxMessage];
+  extMsgOut[0] = nullTrm;
+  // combine fixed-length register and command data
+  snprintf(extMsgOut, outLength, "%02d%03d", regSelect, cmdSelect);
+  // write to command to external serial port
+  ExtSerial.print(serialDataStart);
+  ExtSerial.print("9,9,");
+  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {  
+    char _vchr = extMsgOut[_idx];
+    if (_vchr == nullTrm) {
+      break;
+    }
+    ExtSerial.print(_vchr);
+  }
+  ExtSerial.print(serialDataEnd);
+  ExtSerial.print('\n');
+  // forward response to main serial
+  serialMsgEnd == 1;
+  enableFwrdMode();
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
 void processSerialData(char rc, char startInd ,char endInd) {
@@ -277,11 +390,15 @@ void extractSerialData(uint8_t messageStart) {
     ExtSerial.print(serialDataEnd);
     ExtSerial.print('\n');
     // forward response to main serial port
-    serialFwrdMode = 1;
-    // start max-wait timer
-    maxFwrdRead.set(maxFwrdWait);
-    maxFwrdRead.start();
+    enableFwrdMode();
   }
+}
+
+void enableFwrdMode(){
+  serialFwrdMode = 1;
+  // start max-wait timer
+  maxFwrdRead.set(maxFwrdWait);
+  maxFwrdRead.start();
 }
 
 bool powerSense(int _powerSensePin, bool _writeSerial, bool _invertOut) {

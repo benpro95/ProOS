@@ -58,6 +58,9 @@ bool serialMsgEnd = 0;
 const uint8_t maxFwrdWait = 650; // max wait in (ms) for external serial response
 Neotimer maxFwrdRead = Neotimer();
 
+
+char serialInBuffer[maxMessage];
+
 void setup() {
   initGPIO();
   initSerial();
@@ -148,14 +151,13 @@ void readPowerButton_2() {
 }
 
 void processSerialData(char rc, char startInd ,char endInd) {
-  if (!(rc == nullTrm || rc == '\n')) {
     if (serialReading == 1) {
       // end-of-reading
       if (rc == endInd) {
         // terminate the string
-        serialMessageIn[serialCurPos] = nullTrm; 
-        serialCurPos = 0;
+        serialMessageIn[serialCurPos] = nullTrm;
         serialReading = 0;
+        serialCurPos = 0;
         serialMsgEnd = 1;
       } else {
         // store characters in buffer
@@ -171,61 +173,58 @@ void processSerialData(char rc, char startInd ,char endInd) {
     } else {
       // start reading
       if (rc == startInd) {
-        resetSerial();
         serialReading = 1;
+        serialCurPos = 0;
+        serialMsgEnd = 0;
       }
     }
-  }
 }
 
 void serialProcess() {
   // read main serial port
-  if (Serial.available() > 0 && serialFwrdMode == 0 && serialMsgEnd == 0) {
-    processSerialData(Serial.read(), serialDataStart, serialDataEnd);
-  }
-  // listen to external serial port when in forwarding mode
-  if (ExtSerial.available() > 0 && serialFwrdMode == 1 && serialMsgEnd == 0) {
-    processSerialData(ExtSerial.read(), respDelimiter, respDelimiter);
-  }
-  // end-of-data actions
-  if (serialMsgEnd == 1 && serialFwrdMode == 0) {
-    // process serial data
-    decodeMessage();
-    // send response to main serial
-    if (serialFwrdMode == 0) {
-      writeSerial();
-    }
-    resetSerial();
-  }
-  // forward external serial reponse to main serial
-  if (serialMsgEnd == 1 && serialFwrdMode == 1) {
-    uint8_t _end = 0;
-    for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
-      char _fwrdChr = serialMessageIn[_idx];
-      if (_fwrdChr != nullTrm) {
-        serialMessageOut[_idx] = _fwrdChr;
-      } else {
-        serialMessageOut[_idx] = nullTrm;
-        break;
+  if (serialFwrdMode == 0) {
+    if (serialMsgEnd == 0) {
+      if (Serial.available()) {
+        processSerialData(Serial.read(), serialDataStart, serialDataEnd);
       }
+    } else {
+      // process serial data
+      decodeMessage();
+      // send response to main serial
+      if (serialFwrdMode == 0) {
+        writeSerial();
+      }
+      serialMsgEnd = 0;
     }
-    writeSerial();
-    disableFwrdMode();
-  }
+  } else {
+    // listen to external serial port when in forwarding mode
+    if (serialMsgEnd == 0) {
+      if (ExtSerial.available()) {
+        processSerialData(ExtSerial.read(), respDelimiter, respDelimiter);
+      }
+    } else {
+      // forward external serial reponse to main serial
+      uint8_t _end = 0;
+      for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
+        char _fwrdChr = serialMessageIn[_idx];
+        if (_fwrdChr != nullTrm) {
+          serialMessageOut[_idx] = _fwrdChr;
+        } else {
+          serialMessageOut[_idx] = nullTrm;
+          break;
+        }
+      }
+      writeSerial();
+      disableFwrdMode();
+    }
+  }  
   // external serial reponse timeout
-  if (maxFwrdRead.done() && serialFwrdMode == 1) {
-    Serial.print("*EXT-232 MAX WAIT EXCEEDED!*");
+  if (maxFwrdRead.done()) {
+    Serial.print("*EXT-232 MAX WAIT EXCEEDED!*");     
     writeSerial();
     disableFwrdMode();
-  }   
-}
-
-void resetSerial() {
-  serialMsgEnd = 0;
-  serialCurPos = 0;
-  serialMessageIn[0] = nullTrm;
-  serialMessageOut[0] = nullTrm;
-}
+  }  
+}  
 
 void writeSerial() {
   digitalWrite(LED_BUILTIN, HIGH);
@@ -247,7 +246,7 @@ void disableFwrdMode() {
   maxFwrdRead.reset();
   maxFwrdRead.stop();
   serialFwrdMode = 0;
-  resetSerial();
+  serialMsgEnd = 0 ;
 }
 
 // decode serial message
@@ -264,7 +263,6 @@ void decodeMessage() {
     if (_vchr == _delimiter) {
       _delims++;
     }
-    Serial.print(_vchr);
   } 
   // exit when delimiters incorrect
   if (_delims < 2){

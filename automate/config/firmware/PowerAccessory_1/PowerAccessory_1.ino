@@ -59,9 +59,11 @@ const uint8_t maxFwrdWait = 500; // max wait in (ms) for external response
 Neotimer maxFwrdRead = Neotimer();
 
 void setup() {
-  // I/O initialization
   initGPIO();
-  // serial initialization
+  initSerial();
+}
+
+void initSerial() {
   Serial.begin(serialBaudRate);
   ExtSerial.begin(serialBaudRate);
   serialMessageIn[0] = nullTrm;
@@ -147,12 +149,10 @@ void readPowerButton_2() {
 
 // send command to external serial device
 void sendExtSerial(uint8_t regSelect, int16_t cmdSelect) {
-  digitalWrite(LED_BUILTIN, HIGH);
-  const uint8_t outLength = 6;
   char extMsgOut[maxMessage];
   extMsgOut[0] = nullTrm;
   // combine fixed-length register and command data
-  snprintf(extMsgOut, outLength, "%02d%03d", regSelect, cmdSelect);
+  snprintf(extMsgOut, 6, "%02d%03d", regSelect, cmdSelect);
   // write to command to external serial port
   ExtSerial.print(serialDataStart);
   ExtSerial.print("9,9,");
@@ -165,10 +165,8 @@ void sendExtSerial(uint8_t regSelect, int16_t cmdSelect) {
   }
   ExtSerial.print(serialDataEnd);
   ExtSerial.print('\n');
-  // forward response to main serial
-  serialMsgEnd == 1;
+  // forward reponse back to main serial
   enableFwrdMode();
-  digitalWrite(LED_BUILTIN, LOW);
 }
 
 void processSerialData(char rc, char startInd ,char endInd) {
@@ -213,11 +211,14 @@ void serialProcess() {
     }
     resetSerial();
   }
-  // forward external serial reponse to main port
-  if (serialFwrdMode == 1 && maxFwrdRead.done()) {
-    Serial.print("*EXT-232 MAX WAIT EXCEEDED!*");
-    stopFwrdMode();
+  // external serial reponse timeout
+  if (maxFwrdRead.done() && serialFwrdMode == 1) {
+    Serial.print("*EXT-232 MAX WAIT EXCEEDED!*\n");
+    maxFwrdRead.stop();
+    serialFwrdMode = 0;
+    resetSerial();
   } 
+  // forward external serial reponse to main port
   if (serialMsgEnd == 1 && serialFwrdMode == 1) {
     for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
       char _fwrdChr = serialMessageIn[_idx];
@@ -227,7 +228,10 @@ void serialProcess() {
         break;
       }
     }
-    stopFwrdMode();
+    writeSerial();
+    maxFwrdRead.stop();
+    serialFwrdMode = 0;
+    resetSerial();
   }
 }
 
@@ -245,14 +249,6 @@ void writeSerial() {
   Serial.print(respDelimiter);
   Serial.print('\n');
   digitalWrite(LED_BUILTIN, LOW);
-}
-
-void stopFwrdMode() {
-  writeSerial();
-  resetSerial();
-  maxFwrdRead.stop();
-  maxFwrdRead.reset();
-  serialFwrdMode = 0;
 }
 
 void resetSerial() {
@@ -389,7 +385,6 @@ void extractSerialData(uint8_t messageStart) {
     }
     ExtSerial.print(serialDataEnd);
     ExtSerial.print('\n');
-    // forward response to main serial port
     enableFwrdMode();
   }
 }

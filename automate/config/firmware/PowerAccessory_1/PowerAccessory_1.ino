@@ -44,7 +44,7 @@ uint32_t powerButton_2Millis;
 #define RX_PIN 10 // 232-RX RING
 SoftwareSerial ExtSerial(RX_PIN, TX_PIN); 
 const uint8_t maxMessage = 32;
-const uint8_t cmdRegLen = 2; // register select length (99***)
+const uint8_t cmdRegLen = 2; // register length (99***)
 const uint8_t cmdDatLen = 3; // data length (**999)
 const char serialDataStart = '<';
 const char serialDataEnd = '>';
@@ -147,28 +147,6 @@ void readPowerButton_2() {
   powerButton_2Last = reading;
 }
 
-// send command to external serial device
-void sendExtSerial(uint8_t regSelect, int16_t cmdSelect) {
-  char extMsgOut[maxMessage];
-  extMsgOut[0] = nullTrm;
-  // combine fixed-length register and command data
-  snprintf(extMsgOut, 6, "%02d%03d", regSelect, cmdSelect);
-  // write to command to external serial port
-  ExtSerial.print(serialDataStart);
-  ExtSerial.print("9,9,");
-  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {  
-    char _vchr = extMsgOut[_idx];
-    if (_vchr == nullTrm) {
-      break;
-    }
-    ExtSerial.print(_vchr);
-  }
-  ExtSerial.print(serialDataEnd);
-  ExtSerial.print('\n');
-  // forward reponse back to main serial
-  enableFwrdMode();
-}
-
 void processSerialData(char rc, char startInd ,char endInd) {
   if (serialReading == 1) {
     if (rc != endInd) {
@@ -213,12 +191,11 @@ void serialProcess() {
   }
   // external serial reponse timeout
   if (maxFwrdRead.done() && serialFwrdMode == 1) {
-    Serial.print("*EXT-232 MAX WAIT EXCEEDED!*\n");
-    maxFwrdRead.stop();
-    serialFwrdMode = 0;
-    resetSerial();
+    Serial.print("*EXT-232 MAX WAIT EXCEEDED!*");
+    writeSerial();
+    disableFwrdMode();
   } 
-  // forward external serial reponse to main port
+  // forward external serial reponse to main serial
   if (serialMsgEnd == 1 && serialFwrdMode == 1) {
     for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
       char _fwrdChr = serialMessageIn[_idx];
@@ -229,9 +206,7 @@ void serialProcess() {
       }
     }
     writeSerial();
-    maxFwrdRead.stop();
-    serialFwrdMode = 0;
-    resetSerial();
+    disableFwrdMode();
   }
 }
 
@@ -249,6 +224,12 @@ void writeSerial() {
   Serial.print(respDelimiter);
   Serial.print('\n');
   digitalWrite(LED_BUILTIN, LOW);
+}
+
+void disableFwrdMode() {
+  maxFwrdRead.stop();
+  serialFwrdMode = 0;
+  resetSerial();
 }
 
 void resetSerial() {
@@ -372,9 +353,9 @@ void extractSerialData(uint8_t messageStart) {
   /// route data by register ///
   if (_register == 1) {
     uint16_t _ctldata = atoi(_datarr); 
-    mainFunctions(_ctldata);
+    internalFunctions(_ctldata);
   } else {
-    // forward data to external serial port
+    // forward incoming main serial data to external serial
     ExtSerial.print(serialDataStart);
     for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {  
       char _vchr = serialMessageIn[_idx];
@@ -385,13 +366,12 @@ void extractSerialData(uint8_t messageStart) {
     }
     ExtSerial.print(serialDataEnd);
     ExtSerial.print('\n');
-    enableFwrdMode();
+    fwrdExtResponse();
   }
 }
 
-void enableFwrdMode(){
+void fwrdExtResponse(){
   serialFwrdMode = 1;
-  // start max-wait timer
   maxFwrdRead.set(maxFwrdWait);
   maxFwrdRead.start();
 }
@@ -418,7 +398,7 @@ void powerPulse(int _powerPin) {
 }
 
 // main control functions
-void mainFunctions(uint16_t _ctldata) {
+void internalFunctions(uint16_t _ctldata) {
   // power trigger #1 
   if (_ctldata == 1 || _ctldata == 2) {
     bool _pwrState = powerSense(PWR_SENS_1,0,1);

@@ -13,6 +13,7 @@
 #include "neotimer.h"
 
 // general constants
+const uint8_t totalDigReadings = 16;
 const uint8_t debounceDelay = 75;
 const char nullTrm = '\0';
 
@@ -120,7 +121,7 @@ void readPowerButton_1() {
       powerButton_1State = reading;
       // input button was pressed
       if (powerButton_1State == 1) { 
-        sendExtSerial(10,8); // toggle lamp
+        routeMessage(1,10,8); // toggle lamp
       }
     }
   }
@@ -140,7 +141,7 @@ void readPowerButton_2() {
       powerButton_2State = reading;
       // input button was pressed
       if (powerButton_2State == 1) { 
-        sendExtSerial(10,9); // toggle macs
+        routeMessage(1,10,9); // toggle macs
       }
     }
   }
@@ -227,6 +228,7 @@ void writeSerial() {
 }
 
 void disableFwrdMode() {
+  maxFwrdRead.reset();
   maxFwrdRead.stop();
   serialFwrdMode = 0;
   resetSerial();
@@ -305,14 +307,14 @@ void decodeMessage() {
   }
   // process command data
   if (controlData == 9){
-    extractSerialData(_cmd2pos + 1);
+    processCmdData(_cmd2pos + 1);
   } else {
     Serial.print("*INVALID PREFIX!*");
   }
 }
 
-// extract command data
-void extractSerialData(uint8_t messageStart) {
+// process register and command data
+void processCmdData(uint8_t messageStart) {
   uint8_t _numcnt = 0;
   uint8_t _cmdlen = cmdRegLen + cmdDatLen;
   char _cmdarr[_cmdlen + 1];
@@ -328,7 +330,7 @@ void extractSerialData(uint8_t messageStart) {
     }
   }
   _cmdarr[_numcnt] = nullTrm;
-  // valiate control code length
+  // validate control code length
   if (_numcnt != _cmdlen) {
     Serial.print("*INVALID LENGTH!*");
     return;
@@ -350,15 +352,36 @@ void extractSerialData(uint8_t messageStart) {
     _dataidx++;
   }
   _datarr[_dataidx] = nullTrm;
+  uint16_t _ctldata = atoi(_datarr);
+  // route message (from main serial)
+  routeMessage(0,_register,_ctldata);
+}
+
+void routeMessage(bool origin, uint8_t reg, uint16_t ctldata) {
   /// route data by register ///
-  if (_register == 1) {
-    uint16_t _ctldata = atoi(_datarr); 
-    internalFunctions(_ctldata);
+  if (reg == 1) {
+    internalFunctions(ctldata);
   } else {
-    // forward incoming main serial data to external serial
+    char extMsgOut[maxMessage];
+    extMsgOut[0] = nullTrm;
+    if (origin == 1) { // from local device origin
+      // combine fixed-length register and command data
+      uint8_t totalMsgLength = cmdRegLen + cmdDatLen + 1;
+      snprintf(extMsgOut, totalMsgLength, "%02d%03d", reg, ctldata);
+    }
+    /// send message to external serial port ///
     ExtSerial.print(serialDataStart);
+    if (origin == 1) { // from local device origin
+      ExtSerial.print("9,9,"); // static characters
+    }
     for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {  
-      char _vchr = serialMessageIn[_idx];
+      char _vchr;
+      if (origin == 1) { // from local device origin
+        _vchr = extMsgOut[_idx];
+      } else { 
+        // from serial port origin
+        _vchr = serialMessageIn[_idx];
+      }
       if (_vchr == nullTrm) {
         break;
       }
@@ -366,29 +389,33 @@ void extractSerialData(uint8_t messageStart) {
     }
     ExtSerial.print(serialDataEnd);
     ExtSerial.print('\n');
-    fwrdExtResponse();
+    // listen for external serial reponse
+    serialFwrdMode = 1;
+    maxFwrdRead.set(maxFwrdWait);
+    maxFwrdRead.start();
   }
 }
 
-void fwrdExtResponse(){
-  serialFwrdMode = 1;
-  maxFwrdRead.set(maxFwrdWait);
-  maxFwrdRead.start();
-}
-
-bool powerSense(int _powerSensePin, bool _writeSerial, bool _invertOut) {
-  bool _pwrState = digitalRead(_powerSensePin);
-  if (_invertOut == 1) {
-    _pwrState = !_pwrState;
+// return average digital input reading
+bool powerSense(int powerSensePin) {
+  int average;
+  int total = 0;
+  int readings[totalDigReadings];
+  for (int readIndex = 0; readIndex < totalDigReadings; readIndex++) {
+    // read then add the reading to the total
+    total = total + digitalRead(powerSensePin);
   }
-  if (_writeSerial == 1) {
-    serialMessageOut[0] = '0';
-    if (_pwrState == 1) {
-      serialMessageOut[0] = '1';
-    }
-    serialMessageOut[1] = nullTrm;
+  switch (total) {
+    case totalDigReadings:
+    // high reading
+      return 1;
+    case 0:
+    // low reading
+      return 0;
+    default:
+    // invalid reading
+      return -1;
   }
-  return _pwrState;
 }
 
 void powerPulse(int _powerPin) {
@@ -398,25 +425,34 @@ void powerPulse(int _powerPin) {
 }
 
 // main control functions
-void internalFunctions(uint16_t _ctldata) {
+void internalFunctions(uint16_t command) {
   // power trigger #1 
-  if (_ctldata == 1 || _ctldata == 2) {
-    bool _pwrState = powerSense(PWR_SENS_1,0,1);
-    // device on
-    if (_pwrState == 1) {
-      // power off mode
-      if (_ctldata == 2) {
-        powerPulse(PWR_TRIG_1);
+  if (command >= 1 && command <= 4) {
+    int state = powerSense(PWR_SENS_1);
+    if (command == 3) { // status
+      // write status back to serial
+      switch (state) {
+        case 1: // power off (inverted)
+          serialMessageOut[0] = '0';
+          break;
+        case 0: // power on (inverted)
+          serialMessageOut[0] = '1';
+          break;
+        default: // invalid response
+          serialMessageOut[0] = 'X';
+          break;
       }
-    } else { // device off
-      // power on mode
-      if (_ctldata == 1) {
-        powerPulse(PWR_TRIG_1);
+      serialMessageOut[1] = nullTrm;
+    } else {
+      if (state == 0) { // device on
+        if (command == 2) { // power off
+          powerPulse(PWR_TRIG_1);
+        }
+      } else { // device off
+        if (command == 1) { // power on
+          powerPulse(PWR_TRIG_1);
+        }
       }
     }
-  }
-  // power sense #1 status
-  if (_ctldata == 3) {
-    (void)powerSense(PWR_SENS_1,1,1);
   }
 }

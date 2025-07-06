@@ -13,7 +13,6 @@
 #include "neotimer.h"
 
 // general constants
-const uint8_t totalDigReadings = 16;
 const uint8_t debounceDelay = 75;
 const char nullTrm = '\0';
 
@@ -52,11 +51,11 @@ const char serialDataEnd = '>';
 const char respDelimiter = '|';
 char serialMessageOut[maxMessage];
 char serialMessageIn[maxMessage];
-uint8_t serialCurPos = 0;
 bool serialFwrdMode = 0;
 bool serialReading = 0;
+uint16_t serialCurPos = 0;
 bool serialMsgEnd = 0;
-const uint8_t maxFwrdWait = 500; // max wait in (ms) for external response
+const uint8_t maxFwrdWait = 650; // max wait in (ms) for external serial response
 Neotimer maxFwrdRead = Neotimer();
 
 void setup() {
@@ -149,36 +148,44 @@ void readPowerButton_2() {
 }
 
 void processSerialData(char rc, char startInd ,char endInd) {
-  if (serialReading == 1) {
-    if (rc != endInd) {
-      serialMessageIn[serialCurPos] = rc;
-      serialCurPos++;
-      if (serialCurPos >= maxMessage) {
-        serialCurPos = maxMessage - 1;
+  if (!(rc == nullTrm || rc == '\n')) {
+    if (serialReading == 1) {
+      // end-of-reading
+      if (rc == endInd) {
+        // terminate the string
+        serialMessageIn[serialCurPos] = nullTrm; 
+        serialCurPos = 0;
+        serialReading = 0;
+        serialMsgEnd = 1;
+      } else {
+        // store characters in buffer
+        if (rc != startInd) {
+          serialMessageIn[serialCurPos] = rc;
+          serialCurPos++;
+          // prevent overflow
+          if (serialCurPos >= maxMessage) {
+            serialCurPos = maxMessage - 1;
+          }
+        }
       }
     } else {
-      // terminate the string
-      serialMessageIn[serialCurPos] = nullTrm; 
-      serialReading = 0;
-      serialCurPos = 0;
-      serialMsgEnd = 1;
+      // start reading
+      if (rc == startInd) {
+        resetSerial();
+        serialReading = 1;
+      }
     }
-  }
-  else if (rc == startInd) {
-    serialReading = 1;
   }
 }
 
 void serialProcess() {
   // read main serial port
   if (Serial.available() > 0 && serialFwrdMode == 0 && serialMsgEnd == 0) {
-    char rxChar = Serial.read();
-    processSerialData(rxChar,serialDataStart,serialDataEnd);
+    processSerialData(Serial.read(), serialDataStart, serialDataEnd);
   }
   // listen to external serial port when in forwarding mode
   if (ExtSerial.available() > 0 && serialFwrdMode == 1 && serialMsgEnd == 0) {
-    char extRxChar = ExtSerial.read();
-    processSerialData(extRxChar,respDelimiter,respDelimiter);
+    processSerialData(ExtSerial.read(), respDelimiter, respDelimiter);
   }
   // end-of-data actions
   if (serialMsgEnd == 1 && serialFwrdMode == 0) {
@@ -190,25 +197,34 @@ void serialProcess() {
     }
     resetSerial();
   }
-  // external serial reponse timeout
-  if (maxFwrdRead.done() && serialFwrdMode == 1) {
-    Serial.print("*EXT-232 MAX WAIT EXCEEDED!*");
-    writeSerial();
-    disableFwrdMode();
-  } 
   // forward external serial reponse to main serial
   if (serialMsgEnd == 1 && serialFwrdMode == 1) {
+    uint8_t _end = 0;
     for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
       char _fwrdChr = serialMessageIn[_idx];
       if (_fwrdChr != nullTrm) {
         serialMessageOut[_idx] = _fwrdChr;
       } else {
+        serialMessageOut[_idx] = nullTrm;
         break;
       }
     }
     writeSerial();
     disableFwrdMode();
   }
+  // external serial reponse timeout
+  if (maxFwrdRead.done() && serialFwrdMode == 1) {
+    Serial.print("*EXT-232 MAX WAIT EXCEEDED!*");
+    writeSerial();
+    disableFwrdMode();
+  }   
+}
+
+void resetSerial() {
+  serialMsgEnd = 0;
+  serialCurPos = 0;
+  serialMessageIn[0] = nullTrm;
+  serialMessageOut[0] = nullTrm;
 }
 
 void writeSerial() {
@@ -234,36 +250,30 @@ void disableFwrdMode() {
   resetSerial();
 }
 
-void resetSerial() {
-  serialReading = 0;
-  serialMsgEnd = 0;
-  serialCurPos = 0;
-  serialMessageIn[0] = nullTrm;
-  serialMessageOut[0] = nullTrm;
-}
-
 // decode serial message
 void decodeMessage() {
   // count delimiters
   uint8_t _delims = 0;
   uint8_t _maxchars = 10;
   char _delimiter = ',';
-  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
-    char _vchr = serialMessageIn[_idx];
+  for(uint8_t _idx = 0; _idx <= maxMessage; _idx++) {
+    char _vchr = serialMessageIn[_idx];  
     if (_vchr == nullTrm) {
       break;
     }
     if (_vchr == _delimiter) {
       _delims++;
     }
+    Serial.print(_vchr);
   } 
   // exit when delimiters incorrect
-  if (_delims < 2){ 
+  if (_delims < 2){
+    Serial.print("*INVALID DELIMITERS!*");
     return;
   }
   // find first delimiter position
   uint8_t _linepos = 0;
-  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {  
+  for(uint8_t _idx = 0; _idx <= maxMessage; _idx++) {  
     char _vchr = serialMessageIn[_idx];  
     if (_vchr == nullTrm) {
       break;
@@ -397,16 +407,16 @@ void routeMessage(bool origin, uint8_t reg, uint16_t ctldata) {
 }
 
 // return average digital input reading
-bool powerSense(int powerSensePin) {
-  int average;
+int powerSense(int powerSensePin) {
+  const int inputReadings = 16;
+  int readings[inputReadings];
   int total = 0;
-  int readings[totalDigReadings];
-  for (int readIndex = 0; readIndex < totalDigReadings; readIndex++) {
+  for (int idx = 0; idx < inputReadings; idx++) {
     // read then add the reading to the total
     total = total + digitalRead(powerSensePin);
   }
   switch (total) {
-    case totalDigReadings:
+    case inputReadings:
     // high reading
       return 1;
     case 0:
@@ -420,7 +430,7 @@ bool powerSense(int powerSensePin) {
 
 void powerPulse(int _powerPin) {
   digitalWrite(_powerPin, HIGH);
-  delay(200);
+  delay(250);
   digitalWrite(_powerPin, LOW);
 }
 
@@ -452,6 +462,9 @@ void internalFunctions(uint16_t command) {
         if (command == 1) { // power on
           powerPulse(PWR_TRIG_1);
         }
+      }
+      if (command == 4) { // toggle power
+        powerPulse(PWR_TRIG_1);
       }
     }
   }

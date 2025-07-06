@@ -18,7 +18,7 @@
 char *line = NULL;
 int serial_port;
 const char targetChar = '\n';
-const size_t sleepInverval = 100; // time to pause reading in µs (limit CPU usage)
+const size_t sleepInverval = 50; // time to pause reading in µs (limit CPU usage)
 const size_t maxWaitTime = 1750000; // max time to wait for serial response in µs
 const char device[] = "/dev/zterm-tty"; // serial port alias
 const size_t maxCmdLength = 32;
@@ -98,7 +98,7 @@ int serialWrite() {
     _chunkBuf[0] = '\0';
     _rawData[0] = '\0';
     // output control characters
-    strcat(_rawData, "<9,9,");
+    strcat(_rawData, "\n<9,9,");
     // calculate the size of the current chunk
     int chunkLength = (i + maxCmdLength <= writeLineSize) ? maxCmdLength : writeLineSize - i;
     // copy the chunk from the input string to the buffer
@@ -106,8 +106,8 @@ int serialWrite() {
     // null-terminate the buffer
     _chunkBuf[chunkLength] = '\0';
     strcat(_rawData, _chunkBuf); 
-    strcat(_rawData, ">");
-    printf("Serial Data: %s\n", _rawData);
+    strcat(_rawData, ">\n");
+    printf("Serial Data: %s", _rawData);
     // write to the serial port
     write(serial_port, _rawData, buffLen); 
     // wait for response
@@ -153,8 +153,8 @@ int main(int argc, char *argv[]) {
     return 1;
   }
   // set the baud rate 
-  cfsetospeed(&tty, B9600); // 9600-bps baud out
-  cfsetispeed(&tty, B9600); // 9600-bps baud in
+  cfsetospeed(&tty, B9600); // baud rate out
+  cfsetispeed(&tty, B9600); // baud rate in
   tty.c_cflag &= ~PARENB;  // disable parity bit
   tty.c_cflag &= ~CSTOPB;  // set one stop bit
   tty.c_cflag &= ~CSIZE;   // clear data size bits

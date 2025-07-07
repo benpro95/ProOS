@@ -49,8 +49,8 @@ const uint8_t cmdDatLen = 3; // data length (**999)
 const char serialDataStart = '<';
 const char serialDataEnd = '>';
 const char respDelimiter = '|';
-char serialMessageOut[maxMessage];
-char serialMessageIn[maxMessage];
+char serialMessageOut[maxMessage + 1];
+char serialMessageIn[maxMessage + 1];
 bool serialFwrdMode = 0;
 bool serialReading = 0;
 uint16_t serialCurPos = 0;
@@ -103,10 +103,8 @@ void loop() {
 }
 
 void readDigitalInputs() {
-  if (serialReading == 0 && serialMsgEnd == 0 && serialFwrdMode == 0){
-    readPowerButton_1();
-    readPowerButton_2();
-  }
+  readPowerButton_1();
+  readPowerButton_2();
 }
 
 void readPowerButton_1() {
@@ -193,7 +191,7 @@ void serialProcess() {
       if (serialFwrdMode == 0) {
         digitalWrite(LED_BUILTIN, HIGH);
         Serial.print(respDelimiter);
-        for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
+        for(uint8_t _idx = 0; _idx <= maxMessage; _idx++) {
           char _msgChr = serialMessageOut[_idx];
           if (_msgChr != nullTrm) {
             Serial.print(_msgChr); 
@@ -218,7 +216,7 @@ void serialProcess() {
       // forward external serial reponse to main serial
       digitalWrite(LED_BUILTIN, HIGH);
       Serial.print(respDelimiter);
-      for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
+      for(uint8_t _idx = 0; _idx <= maxMessage; _idx++) {
         char _fwrdChr = serialMessageIn[_idx];
         if (_fwrdChr != nullTrm) {
           Serial.print(_fwrdChr); 
@@ -296,7 +294,7 @@ void decodeMessage() {
   // find second delimiter position
   uint8_t _count = 0;
   uint8_t _cmd2pos = 0; 
-  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
+  for(uint8_t _idx = 0; _idx <= maxMessage; _idx++) {
     char _vchr = serialMessageIn[_idx];
     if (_vchr == nullTrm) {
       break;
@@ -324,12 +322,12 @@ void processCmdData(uint8_t messageStart) {
   uint8_t _cmdlen = cmdRegLen + cmdDatLen;
   char _cmdarr[_cmdlen + 1];
   // extract control code from message
-  for(uint8_t _idx = messageStart; _idx < maxMessage; _idx++) {
+  for(uint8_t _idx = messageStart; _idx <= maxMessage; _idx++) {
     char _curchar = serialMessageIn[_idx];
     if (_curchar == nullTrm) {
       break;
     }
-    if (isDigit(_curchar) && _numcnt < maxMessage) {
+    if (isDigit(_curchar) && _numcnt <= maxMessage) {
       _cmdarr[_numcnt] = _curchar;
       _numcnt++;
     }
@@ -363,30 +361,38 @@ void processCmdData(uint8_t messageStart) {
 }
 
 void routeMessage(bool origin, uint8_t reg, uint16_t ctldata) {
+  // 0 = message from main serial
+  // 1 = message from local device
+  if (origin == 1) {
+    // block routing if processing serial message
+    if (serialMsgEnd == 1) {
+      return;
+    }
+    if (serialReading == 1) {
+      return;
+    }
+    if (serialFwrdMode == 1) {
+      return;
+    }
+  }
   /// route data by register ///
   if (reg == 1) {
     internalFunctions(ctldata);
   } else {
-    char extMsgOut[maxMessage];
-    extMsgOut[0] = nullTrm;
-    if (origin == 1) { // from local device origin
+    if (origin == 1) {
       // combine fixed-length register and command data
+      serialMessageIn[0] = nullTrm;
       uint8_t totalMsgLength = cmdRegLen + cmdDatLen + 1;
-      snprintf(extMsgOut, totalMsgLength, "%02d%03d", reg, ctldata);
+      snprintf(serialMessageIn, totalMsgLength, "%02d%03d", reg, ctldata);
     }
     /// send message to external serial port ///
     ExtSerial.print(serialDataStart);
-    if (origin == 1) { // from local device origin
+    if (origin == 1) {
       ExtSerial.print("9,9,"); // static characters
     }
-    for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {  
+    for(uint8_t _idx = 0; _idx <= maxMessage; _idx++) {  
       char _vchr;
-      if (origin == 1) { // from local device origin
-        _vchr = extMsgOut[_idx];
-      } else { 
-        // from serial port origin
-        _vchr = serialMessageIn[_idx];
-      }
+      _vchr = serialMessageIn[_idx];
       if (_vchr == nullTrm) {
         break;
       }

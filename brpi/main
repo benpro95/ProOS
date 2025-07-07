@@ -4,8 +4,6 @@
 ## Arduino's Serial Port
 ARDUINO_PORT="ttyUSB0"
 
-LOCK_FILE="/tmp/zterm.lock"
-
 ## Read Command-Line Arguments
 ARG1=$1
 ARG2=$2
@@ -16,15 +14,8 @@ nohup python3 /opt/rpi/blinkled.py >/dev/null 2>&1 &
 }
 
 ZTERM_COM() {
-local CMD_DATA="$1"
-  # Only allow one instance
-  if { set -C; 2>/dev/null > $LOCK_FILE; }; then
-    trap "rm -f $LOCK_FILE" EXIT
-  else
-    echo "lock file exists exiting..."
-    exit
-  fi
-  /usr/bin/ztermcom $CMD_DATA
+  local CMD_DATA="$1"
+  /opt/rpi/singleton.sh ZTERM_PROC /usr/bin/ztermcom $CMD_DATA
 }
 
 OPTA_MODE() {

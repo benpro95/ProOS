@@ -12,9 +12,11 @@ RAMDISK="/var/www/html/ram"
 LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
 INPUT_REGEX="!A-Za-z0-9_-"
-XMIT_IP="10.177.1.12"       ## Xmit IP
-DESK_IP="10.177.1.14"       ## Desktop IP
-BRPI_IP="10.177.1.15"       ## Bedroom Pi IP
+XMIT_IP="10.177.1.12"        ## Xmit IP
+DESK_IP="10.177.1.14"        ## Desktop PC IP
+BRPI_IP="10.177.1.15"        ## Bedroom Pi IP
+BRPC_IP="10.177.1.17"        ## Bedroom PC IP
+BRPC_MAC="90:2e:16:46:86:43" ## Bedroom PC MAC
 
 ## Curl Command Line Arguments
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 10 --retry 1 --retry-delay 1 --no-keepalive"
@@ -59,7 +61,9 @@ USB_TTY(){
     LOCALCOM_RESP "01003" "0"
     ;;
   "brtvon")
-    LOCALCOM "01001" 
+    LOCALCOM "01001"
+    ## Wake Bedroom PC
+    WAKE_BRPC
     ;;
   "brtvoff")
     LOCALCOM "01002"
@@ -136,6 +140,15 @@ POWER_PC(){
     else
       XMITCMD="rfb3" ; XMIT 
     fi
+  fi
+}
+
+WAKE_BRPC() {
+  if ping -W 2 -c 1 $BRPC_IP > /dev/null 2> /dev/null
+  then
+    echo "bedroom PC already online."
+  else
+    wakeonlan $BRPC_MAC
   fi
 }
 
@@ -369,8 +382,14 @@ fi
 exit
 ;;
 
+wake-brpc)
+## Wake-up Bedroom PC
+WAKE_BRPC
+exit
+;;
+
 brpi)
-## API to Bedroom Pi
+## API Call to Bedroom Pi
 TARGET="$BRPI_IP"
 XMITCMD="$SEC_ARG"
 CALLAPI
@@ -457,6 +476,8 @@ XMITCMD="ampstateon"
 CALLAPI
 ## Bedroom TV
 USB_TTY "brtvon"
+## Bedroom PC
+WAKE_BRPC
 exit
 ;;
 

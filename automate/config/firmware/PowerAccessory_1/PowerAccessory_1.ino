@@ -1,7 +1,7 @@
 /*
  * Ben Provenzano III
  * -----------------
- * v2.4 07/05/2025
+ * v2.8 07/06/2025
  * Serial Automation Accessory Controller
  *
  */
@@ -147,7 +147,43 @@ void readPowerButton_2() {
   powerButton_2Last = reading;
 }
 
-void processSerialData(char rc, char startInd ,char endInd) {
+void serialProcess() {
+  // read main serial port
+  if (serialFwrdMode == 0) {
+    if (serialMsgEnd == 0) {
+      if (Serial.available()) {
+        readSerialData(Serial.read(), serialDataStart, serialDataEnd);
+      }
+    } else {
+      // process serial data
+      decodeMessage();
+      // send response to main serial
+      if (serialFwrdMode == 0) {
+        writeSerialData(0); // write serial out buffer
+      }
+      serialMsgEnd = 0;
+    }
+  } 
+  if (serialFwrdMode == 1) {
+    // listen to external serial port when in forwarding mode
+    if (serialMsgEnd == 0) {
+      if (ExtSerial.available()) {
+        readSerialData(ExtSerial.read(), respDelimiter, respDelimiter);
+      }
+    } else {
+      // forward external serial reponse to main serial
+      writeSerialData(1); // write serial in buffer
+      disableFwrdMode();
+    }
+  }  
+  // external serial reponse timeout
+  if (maxFwrdRead.done()) {
+    Serial.print("*EXT-232 MAX WAIT EXCEEDED!*\n");     
+    disableFwrdMode();
+  }  
+}
+
+void readSerialData(char rc, char startInd ,char endInd) {
   if (serialReading == 1) {
     // end-of-reading
     if (rc == endInd) {
@@ -177,43 +213,7 @@ void processSerialData(char rc, char startInd ,char endInd) {
   }
 }
 
-void serialProcess() {
-  // read main serial port
-  if (serialFwrdMode == 0) {
-    if (serialMsgEnd == 0) {
-      if (Serial.available()) {
-        processSerialData(Serial.read(), serialDataStart, serialDataEnd);
-      }
-    } else {
-      // process serial data
-      decodeMessage();
-      // send response to main serial
-      if (serialFwrdMode == 0) {
-        writeSerial(0); // write serial out buffer
-      }
-      serialMsgEnd = 0;
-    }
-  } 
-  if (serialFwrdMode == 1) {
-    // listen to external serial port when in forwarding mode
-    if (serialMsgEnd == 0) {
-      if (ExtSerial.available()) {
-        processSerialData(ExtSerial.read(), respDelimiter, respDelimiter);
-      }
-    } else {
-      // forward external serial reponse to main serial
-      writeSerial(1); // write serial in buffer
-      disableFwrdMode();
-    }
-  }  
-  // external serial reponse timeout
-  if (maxFwrdRead.done()) {
-    Serial.print("*EXT-232 MAX WAIT EXCEEDED!*\n");     
-    disableFwrdMode();
-  }  
-}
-
-void writeSerial(bool InOut) {
+void writeSerialData(bool InOut) {
   digitalWrite(LED_BUILTIN, HIGH);
   Serial.print(respDelimiter);
   for(uint8_t _idx = 0; _idx <= maxMessage; _idx++) {

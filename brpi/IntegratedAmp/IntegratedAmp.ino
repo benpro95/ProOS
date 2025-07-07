@@ -1,5 +1,5 @@
  /////////////////////////////////////////////////////////////////////////
-// Integrated Amp Controller v1.3
+// Integrated Amp Controller v2.1
 // by Ben Provenzano III
 //////////////////////////////////////////////////////////////////////////
 
@@ -10,20 +10,26 @@
 // local libraries
 #include "neotimer.h"
 
+
+// common resources
+bool powerState = 0;
+bool powerCycle = 0;
+uint8_t debounceDelay = 75; // button debounce in (ms)
+const char nullTrm = '\0'; // null terminator
+
 // serial resources
 #define serialBaudRate 9600
 const uint8_t maxMessage = 32;
-const uint8_t cmdRegLen = 2; // register select length (99***)
+const uint8_t cmdRegLen = 2; // register length (99***)
 const uint8_t cmdDatLen = 3; // data length (**999)
 const char serialDataStart = '<';
 const char serialDataEnd = '>';
 const char respDelimiter = '|';
-const char nullTrm = '\0'; // null terminator
-char serialMessageOut[maxMessage];
-char serialMessageIn[maxMessage];
-uint8_t serialCurPos = 0;
+uint16_t serialCurPos = 0;
 bool serialReading = 0;
 bool serialMsgEnd = 0;
+char serialMessageIn[maxMessage];
+char serialMessageOut[maxMessage];
 
 // GPIO pins
 #define ampPowerPin            12
@@ -33,11 +39,6 @@ bool serialMsgEnd = 0;
 #define muteBtnPin             4
 #define inputEncPinA           3
 #define inputEncPinB           2
-
-// common resources
-bool powerState = 0;
-bool powerCycle = 0;
-uint8_t debounceDelay = 75;
 
 // power control resources
 bool runPowerAction = 0;
@@ -340,6 +341,7 @@ void writeVolumeStatus() {
 }
 
 void writeSerialMessage(int16_t value) {
+  serialMessageOut[0] = nullTrm;
   uint16_t length = snprintf(NULL, 0, "%d", value);
   snprintf(serialMessageOut, length + 1, "%d", value);
 }
@@ -437,44 +439,52 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
   }
 }
 
+void serialProcess() {
+  // read main serial port
+  if (serialMsgEnd == 0) {
+    if (Serial.available()) {
+      processSerialData(Serial.read(), serialDataStart, serialDataEnd);
+    }
+  } else {
+    // process serial data
+    decodeMessage();
+    writeSerial();
+    serialMsgEnd = 0;
+  }
+}
+ 
 void processSerialData(char rc, char startInd ,char endInd) {
   if (serialReading == 1) {
-    if (rc != endInd) {
-      serialMessageIn[serialCurPos] = rc;
-      serialCurPos++;
-      if (serialCurPos >= maxMessage) {
-        serialCurPos = maxMessage - 1;
-      }
-    } else {
+    // end-of-reading
+    if (rc == endInd) {
       // terminate the string
-      serialMessageIn[serialCurPos] = nullTrm; 
+      serialMessageIn[serialCurPos] = nullTrm;
       serialReading = 0;
       serialCurPos = 0;
       serialMsgEnd = 1;
+    } else {
+      // store characters in buffer
+      if (rc != startInd) {
+        serialMessageIn[serialCurPos] = rc;
+        serialCurPos++;
+        // prevent overflow
+        if (serialCurPos >= maxMessage) {
+          serialCurPos = maxMessage - 1;
+        }
+      }
+    }
+  } else {
+    // start reading
+    if (rc == startInd) {
+      serialReading = 1;
+      serialCurPos = 0;
+      serialMsgEnd = 0;
     }
   }
-  else if (rc == startInd) {
-    serialReading = 1;
-  }
 }
 
-void serialProcess() {
-  // read main serial port
-  if (Serial.available() > 0 && serialMsgEnd == 0) {
-    char rxChar = Serial.read();
-    processSerialData(rxChar,serialDataStart,serialDataEnd);
-  }
-  // end-of-data actions
-  if (serialMsgEnd == 1) {
-    // process serial data
-    decodeMessage();
-    // send response to main serial
-    writeSerial();
-    resetSerial();
-  }
-}
-
-void writeSerial() {
+void writeSerial() { // write response back to computer
+  digitalWrite(LED_BUILTIN, HIGH);
   Serial.print(respDelimiter);
   for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
     char _msgChr = serialMessageOut[_idx];
@@ -486,22 +496,17 @@ void writeSerial() {
   }
   Serial.print(respDelimiter);
   Serial.print('\n');
-}
-
-void resetSerial() {
-  serialMsgEnd = 0;
-  serialMessageIn[0] = nullTrm;
-  serialMessageOut[0] = nullTrm;
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
 // decode serial message
 void decodeMessage() {
-  // count delimiters
+ // count delimiters
   uint8_t _delims = 0;
   uint8_t _maxchars = 10;
   char _delimiter = ',';
-  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
-    char _vchr = serialMessageIn[_idx];
+  for(uint8_t _idx = 0; _idx <= maxMessage; _idx++) {
+    char _vchr = serialMessageIn[_idx];  
     if (_vchr == nullTrm) {
       break;
     }
@@ -510,12 +515,13 @@ void decodeMessage() {
     }
   } 
   // exit when delimiters incorrect
-  if (_delims < 2){ 
+  if (_delims < 2){
+    Serial.print("*INVALID DELIMITERS!*");
     return;
   }
   // find first delimiter position
   uint8_t _linepos = 0;
-  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {  
+  for(uint8_t _idx = 0; _idx <= maxMessage; _idx++) {  
     char _vchr = serialMessageIn[_idx];  
     if (_vchr == nullTrm) {
       break;
@@ -559,14 +565,15 @@ void decodeMessage() {
   }
   // process command data
   if (controlData == 9){
-    extractSerialData(_cmd2pos + 1);
+    processCmdData(_cmd2pos + 1);
   } else {
     Serial.print("*INVALID PREFIX!*");
   }
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
-// extract command data
-void extractSerialData(uint8_t messageStart) {
+// process register and command data
+void processCmdData(uint8_t messageStart) {
   uint8_t _numcnt = 0;
   uint8_t _cmdlen = cmdRegLen + cmdDatLen;
   char _cmdarr[_cmdlen + 1];
@@ -582,7 +589,7 @@ void extractSerialData(uint8_t messageStart) {
     }
   }
   _cmdarr[_numcnt] = nullTrm;
-  // valiate control code length
+  // validate control code length
   if (_numcnt != _cmdlen) {
     Serial.print("*INVALID LENGTH!*");
     return;
@@ -604,9 +611,8 @@ void extractSerialData(uint8_t messageStart) {
     _dataidx++;
   }
   _datarr[_dataidx] = nullTrm;
-  uint16_t _ctldata = atoi(_datarr); 
-  /// execute remote functions ///
-  remoteFunctions(_register, _ctldata);
+  uint16_t _ctldata = atoi(_datarr);
+  remoteFunctions(_register,_ctldata);
 }
 
 // read power button state

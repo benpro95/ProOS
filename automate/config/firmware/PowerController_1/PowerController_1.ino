@@ -30,14 +30,11 @@ const uint8_t cmdDatLen = 3; // data length (**999)
 const char serialDataStart = '<';
 const char serialDataEnd = '>';
 const char respDelimiter = '|';
-bool serialReading = 0;
 uint16_t serialCurPos = 0;
+bool serialReading = 0;
 bool serialMsgEnd = 0;
-
-uint8_t serialMessageInEnd = 0;
 char serialMessageIn[maxMessage];
 char serialMessageOut[maxMessage];
-bool newData = 0;
 
 void setup() {
   Serial.begin(serialBaudRate);

@@ -6,7 +6,6 @@ let ctlMode;
 let ctlCommand = 0;
 let selectedVM = "";
 let dynMenuActive = 0;
-let dynChkboxChanged = 0;
 let colorPromptActive = 0;
 let resizeState = false;
 let bookmarkState = 0;
@@ -21,7 +20,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "8.0";
+let siteVersion = "8.4";
 
 //////////////////////
 
@@ -445,7 +444,7 @@ function show_aboutPrompt(){
 }
 
 async function aboutPrompt(){
-  await show_aboutPrompt();
+  show_aboutPrompt();
 }
 
 function mountFUSEvolume() {
@@ -513,7 +512,7 @@ function show_wifiPwdPrompt(){
 }
 
 async function wifiPrompt(){
-  await show_wifiPwdPrompt();
+  show_wifiPwdPrompt();
 }
 
 function passwordPrompt(){
@@ -1317,7 +1316,7 @@ function createListItem(_col0,_col1,_col2,_id) {
     // a checkbox was clicked
     _elm.addEventListener('click', function(event) {
       if (event.target.classList.contains('chkbox')) {
-        dynChkboxChanged = 1;
+        boxChanged();
       }
     });
   }
@@ -1413,36 +1412,6 @@ function createListItem(_col0,_col1,_col2,_id) {
   return _elm;
 }
 
-function removeDynMenus() {
-  // only if menu is on-screen 
-  if (dynMenuActive == 1) {
-    // checkbox changed action (I)
-    if (dynChkboxChanged == 1) {
-      boxChanged();
-    }
-    // remove dynamic menu elements (II)
-    for (var idx = 0; idx <= fileData.length; idx++) {
-      const _menuid = "menu-" + idx.toString();
-      const menuRemove = document.getElementById(_menuid);
-      if (menuRemove != null) {
-        menuRemove.remove();
-      }
-    }
-    if (dynChkboxChanged == 1) {
-      // write checkbox changes to file (III)
-      let menuid = fileData[fileData.length - 1];
-      // remove menu item element
-      fileData.pop();
-      // save to API
-      savePOST(menuid,fileData);
-      // clear global data
-      while (fileData.length) { fileData.pop(); }  
-      dynChkboxChanged = 0;
-    }  
-    dynMenuActive = 0;
-  }
-}
-
 function boxChanged() {
   // loop through checkbox's state
   for (var i = 0; i < (fileData.length - 1); i++) {
@@ -1465,6 +1434,31 @@ function boxChanged() {
       // replace existing data
       fileData[i] = _outstr;
     }
+  }
+  // write checkbox changes to file (III)
+  let menuid = fileData[fileData.length - 1];
+  // remove menu ID from array 
+  fileData.pop();
+  // save to API
+  savePOST(menuid,fileData);
+  // clear global data
+  while (fileData.length) { fileData.pop(); }
+  // remove menus
+  removeDynMenus();
+}
+
+function removeDynMenus() {
+  // only if menu is on-screen 
+  if (dynMenuActive == 1) {
+    // remove dynamic menu elements (II)
+    for (var idx = 0; idx <= fileData.length; idx++) {
+      const _menuid = "menu-" + idx.toString();
+      const menuRemove = document.getElementById(_menuid);
+      if (menuRemove != null) {
+        menuRemove.remove();
+      }
+    }
+    dynMenuActive = 0;
   }
 }
 

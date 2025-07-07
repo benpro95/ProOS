@@ -4,6 +4,7 @@
 ###########################################################
 ###########################################################
 
+DELIM="|"
 TARGET=""
 XMITCMD=""
 RESPOUT=""
@@ -76,7 +77,6 @@ LOCALCOM_RESP(){
   local RESP_POS="$2"
   TTY_RAW="$(LOCALCOM $RESP_CMD)"
   ## extract response data
-  DELIM="|"
   TMP_STR="${TTY_RAW#*$DELIM}"
   TTY_OUT="${TMP_STR%$DELIM*}"
   TTY_CHR_CNT="${#TTY_OUT}"
@@ -175,7 +175,7 @@ case "$XMITCMD" in
     ## Mute Subwoofer Amp
     XMITCMD="0|0|551520375"
     CALLAPI
-    sleep 1
+    sleep 0.75
     ## Power Off Preamp  
     XMITCMD="0|0|1270227167"
     CALLAPI   
@@ -184,7 +184,7 @@ case "$XMITCMD" in
     ## Mute Subwoofer Amp
     XMITCMD="0|0|551520375"
     CALLAPI
-    sleep 1
+    sleep 0.75
     ## Power Off Preamp  
     XMITCMD="0|0|1261859214"
     CALLAPI

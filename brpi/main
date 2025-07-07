@@ -53,6 +53,8 @@ systemctl start hciuart
 systemctl start bluetooth
 systemctl start bt-agent@hci0
 systemctl start bluealsa-aplay
+## AirPlay Support
+systemctl start rpi-airplay
 BLINKLED
 ## SMB file share client
 sleep 10
@@ -67,38 +69,17 @@ exit
 ;;
 
 relax)
-## Play sound in loop
 COAX_MODE
 systemctl stop rpi-relaxloop
-systemctl set-environment rpi_relaxmode=$ARG2
+systemctl set-environment rpi_relaxmode="$ARG2"
 systemctl start rpi-relaxloop
 BLINKLED
 exit
 ;;
 
 stoprelax)
-## Apple TV input
 OPTA_MODE
 systemctl stop rpi-relaxloop
-BLINKLED
-exit
-;;
-
-sleepmode)
-## Toggle relax sounds
-if (systemctl is-active --quiet rpi-relaxloop.service); then
-  ## Apple TV input
-  OPTA_MODE
-  echo "Stopping playback..."
-  systemctl stop rpi-relaxloop
-else
-  ## Pi audio input
-  COAX_MODE
-  echo "Starting sleep mode..."
-  systemctl stop rpi-relaxloop
-  systemctl set-environment rpi_relaxmode="fan"
-  systemctl start rpi-relaxloop
-fi
 BLINKLED
 exit
 ;;
@@ -209,17 +190,18 @@ exit
 
 update-fw)
 BLINKLED
+UNO_FRM="IntegratedAmp"
 ## Stop Serial Communication
 rm -rfv /dev/zterm-tty
 ## Update Arduino over USB
-rm -rf /opt/rpi/amp-fw/build
-mkdir -p /opt/rpi/amp-fw/build
+rm -rf "/opt/rpi/$UNO_FRM/build"
+mkdir -p "/opt/rpi/$UNO_FRM/build"
 /opt/rpi/arduino-cli -v compile --fqbn arduino:avr:uno \
-  /opt/rpi/amp-fw/amp-fw.ino --build-path /opt/rpi/amp-fw/build
-/opt/rpi/arduino-cli -v upload -p /dev/$ARDUINO_PORT \
-  --fqbn arduino:avr:uno --input-dir /opt/rpi/amp-fw/build
+  "/opt/rpi/$UNO_FRM/$UNO_FRM.ino" --build-path "/opt/rpi/$UNO_FRM/build"
+/opt/rpi/arduino-cli -v upload -p "/dev/$ARDUINO_PORT" \
+  --fqbn arduino:avr:uno --input-dir "/opt/rpi/$UNO_FRM/build"
 ## Start amplifier communication
-ln -sf /dev/$ARDUINO_PORT /dev/zterm-tty
+ln -sf "/dev/$ARDUINO_PORT" /dev/zterm-tty
 ZTERM_COM "i"
 exit
 ;;

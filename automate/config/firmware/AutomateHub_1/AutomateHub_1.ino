@@ -1,9 +1,9 @@
 /*
  * Ben Provenzano III
  * -----------------
- * v2.8 07/06/2025
- * Serial Automation Accessory Controller
- *
+ * v2.8 - 07/06/2025
+ * Automate Hub #1
+ * -----------------
  */
 
 // shared libraries

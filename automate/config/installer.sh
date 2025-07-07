@@ -101,8 +101,8 @@ fi
 
 ## Arduino Firmware
 mkdir -p /opt/pwr_fw
-cp -f /tmp/config/firmware/PowerAccessory_1/PowerAccessory_1.ino /opt/pwr_fw/pwr_fw.ino
-cp -f /tmp/config/firmware/PowerAccessory_1/neotimer.h /opt/pwr_fw/
+cp -f /tmp/config/firmware/AutomateHub_1/AutomateHub_1.ino /opt/pwr_fw/pwr_fw.ino
+cp -f /tmp/config/firmware/AutomateHub_1/neotimer.h /opt/pwr_fw/
 chmod -Rv 644 /opt/pwr_fw/*
 chown -Rv root:root /opt/pwr_fw/*
 

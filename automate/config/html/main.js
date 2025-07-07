@@ -1436,11 +1436,13 @@ function boxChanged() {
     }
   }
   // write checkbox changes to file (III)
-  let menuid = fileData[fileData.length - 1];
-  // save to API
-  const dataOut = fileData.filter((_, index) => index >= 1);
-  console.log(dataOut);
-  savePOST(menuid,dataOut);
+  let menuid = fileData[fileData.length - 1]; // extract menu ID
+  // remove last element of array
+  fileData.pop();
+  // update file
+  savePOST(menuid,fileData);
+  // add menu ID back to array
+  fileData.push(menuid);
 }
 
 function removeDynMenus() {

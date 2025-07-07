@@ -189,19 +189,7 @@ void serialProcess() {
       decodeMessage();
       // send response to main serial
       if (serialFwrdMode == 0) {
-        digitalWrite(LED_BUILTIN, HIGH);
-        Serial.print(respDelimiter);
-        for(uint8_t _idx = 0; _idx <= maxMessage; _idx++) {
-          char _msgChr = serialMessageOut[_idx];
-          if (_msgChr != nullTrm) {
-            Serial.print(_msgChr); 
-          } else {
-            break;
-          }
-        }
-        Serial.print(respDelimiter);
-        Serial.print('\n');
-        digitalWrite(LED_BUILTIN, LOW);
+        writeSerial(0); // write serial out buffer
       }
       serialMsgEnd = 0;
     }
@@ -214,19 +202,7 @@ void serialProcess() {
       }
     } else {
       // forward external serial reponse to main serial
-      digitalWrite(LED_BUILTIN, HIGH);
-      Serial.print(respDelimiter);
-      for(uint8_t _idx = 0; _idx <= maxMessage; _idx++) {
-        char _fwrdChr = serialMessageIn[_idx];
-        if (_fwrdChr != nullTrm) {
-          Serial.print(_fwrdChr); 
-        } else {
-          break;
-        }
-      }
-      Serial.print(respDelimiter);
-      Serial.print('\n');
-      digitalWrite(LED_BUILTIN, LOW);
+      writeSerial(1); // write serial in buffer
       disableFwrdMode();
     }
   }  
@@ -235,6 +211,27 @@ void serialProcess() {
     Serial.print("*EXT-232 MAX WAIT EXCEEDED!*\n");     
     disableFwrdMode();
   }  
+}
+
+void writeSerial(bool InOut) {
+  digitalWrite(LED_BUILTIN, HIGH);
+  Serial.print(respDelimiter);
+  for(uint8_t _idx = 0; _idx <= maxMessage; _idx++) {
+    char _fwrdChr;
+    if (InOut == 1){
+      _fwrdChr = serialMessageIn[_idx];
+    } else {
+      _fwrdChr = serialMessageOut[_idx];
+    }
+    if (_fwrdChr != nullTrm) {
+      Serial.print(_fwrdChr); 
+    } else {
+      break;
+    }
+  }
+  Serial.print(respDelimiter);
+  Serial.print('\n');
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
 void disableFwrdMode() {

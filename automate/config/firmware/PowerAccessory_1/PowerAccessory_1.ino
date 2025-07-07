@@ -103,8 +103,10 @@ void loop() {
 }
 
 void readDigitalInputs() {
- readPowerButton_1();
- readPowerButton_2();
+  if (serialReading == 0 && serialMsgEnd == 0 && serialFwrdMode == 0){
+    readPowerButton_1();
+    readPowerButton_2();
+  }
 }
 
 void readPowerButton_1() {
@@ -189,11 +191,24 @@ void serialProcess() {
       decodeMessage();
       // send response to main serial
       if (serialFwrdMode == 0) {
-        writeSerial();
+        digitalWrite(LED_BUILTIN, HIGH);
+        Serial.print(respDelimiter);
+        for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
+          char _msgChr = serialMessageOut[_idx];
+          if (_msgChr != nullTrm) {
+            Serial.print(_msgChr); 
+          } else {
+            break;
+          }
+        }
+        Serial.print(respDelimiter);
+        Serial.print('\n');
+        digitalWrite(LED_BUILTIN, LOW);
       }
       serialMsgEnd = 0;
     }
-  } else {
+  } 
+  if (serialFwrdMode == 1) {
     // listen to external serial port when in forwarding mode
     if (serialMsgEnd == 0) {
       if (ExtSerial.available()) {
@@ -201,49 +216,34 @@ void serialProcess() {
       }
     } else {
       // forward external serial reponse to main serial
-      uint8_t _end = 0;
+      digitalWrite(LED_BUILTIN, HIGH);
+      Serial.print(respDelimiter);
       for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
         char _fwrdChr = serialMessageIn[_idx];
         if (_fwrdChr != nullTrm) {
-          serialMessageOut[_idx] = _fwrdChr;
+          Serial.print(_fwrdChr); 
         } else {
-          serialMessageOut[_idx] = nullTrm;
           break;
         }
       }
-      writeSerial();
+      Serial.print(respDelimiter);
+      Serial.print('\n');
+      digitalWrite(LED_BUILTIN, LOW);
       disableFwrdMode();
     }
   }  
   // external serial reponse timeout
   if (maxFwrdRead.done()) {
-    Serial.print("*EXT-232 MAX WAIT EXCEEDED!*");     
-    writeSerial();
+    Serial.print("*EXT-232 MAX WAIT EXCEEDED!*\n");     
     disableFwrdMode();
   }  
-}  
-
-void writeSerial() {
-  digitalWrite(LED_BUILTIN, HIGH);
-  Serial.print(respDelimiter);
-  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
-    char _msgChr = serialMessageOut[_idx];
-    if (_msgChr != nullTrm) {
-      Serial.print(_msgChr); 
-    } else {
-      break;
-    }
-  }
-  Serial.print(respDelimiter);
-  Serial.print('\n');
-  digitalWrite(LED_BUILTIN, LOW);
 }
 
 void disableFwrdMode() {
   maxFwrdRead.reset();
   maxFwrdRead.stop();
   serialFwrdMode = 0;
-  serialMsgEnd = 0 ;
+  serialMsgEnd = 0;
 }
 
 // decode serial message

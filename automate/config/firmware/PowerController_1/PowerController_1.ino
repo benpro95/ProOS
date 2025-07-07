@@ -60,112 +60,6 @@ void loop() {
   writeOutputs();
 }
 
-void writeSerialMessage(int16_t value) {
-  uint16_t length = snprintf(NULL, 0, "%d", value);
-  snprintf(serialMessageOut, length + 1, "%d", value);
-}
-
-void writeOutStates(){
-  char outTbl[4];
-  outTbl[0] = '1';
-  if (relaysState0 == true) {
-    outTbl[0] = '9';
-  }
-  outTbl[1] = '1';
-  if (relaysState1 == true) {
-    outTbl[1] = '9';
-  }
-  outTbl[2] = '1';
-  if (relaysState2 == true) {
-    outTbl[2] = '9';
-  }
-  outTbl[3] = '\0';
-  int16_t intOut = atoi(outTbl);
-  writeSerialMessage(intOut);
-}
-
-// RS-232 control functions
-void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
-  // process register
-  switch (_register) {
-  // power select register
-  case 10:
-    // all outputs off
-    if (_ctldata == 0) {
-      stateChanged = HIGH;
-      relaysState0 = LOW;
-      relaysState1 = LOW;
-      relaysState2 = LOW;
-      writeOutStates(); 
-    }  
-    // output #1 off (10001)
-    if (_ctldata == 1) {
-      stateChanged = HIGH;
-      relaysState0 = LOW;
-      writeOutStates(); 
-    }
-    // output #1 on (10002)
-    if (_ctldata == 2) { 
-      stateChanged = HIGH;
-      relaysState0 = HIGH;
-      writeOutStates(); 
-    }
-    // output #2 off (10003)
-    if (_ctldata == 3) {
-      stateChanged = HIGH;
-      relaysState1 = LOW;
-      writeOutStates(); 
-    }
-    // output #2 on (10004)
-    if (_ctldata == 4) { 
-      stateChanged = HIGH;
-      relaysState1 = HIGH;
-      writeOutStates(); 
-    }
-    // output #3 off (10005)
-    if (_ctldata == 5) {
-      stateChanged = HIGH;
-      relaysState2 = LOW;
-      writeOutStates();   
-    }
-    // output #3 on (10006)
-    if (_ctldata == 6) { 
-      stateChanged = HIGH;
-      relaysState2 = HIGH;    
-      writeOutStates();
-    }
-    // show output states (10007)
-    if (_ctldata == 7) { 
-      writeOutStates();
-    }
-    // output #1 toggle (10008)
-    if (_ctldata == 8) { 
-      stateChanged = HIGH;
-      relaysState0 = !relaysState0;    
-      writeOutStates();
-    }
-    // output #2 toggle (10009)
-    if (_ctldata == 9) { 
-      stateChanged = HIGH;
-      relaysState1 = !relaysState1;    
-      writeOutStates();
-    }
-    // output #3 toggle (10010)
-    if (_ctldata == 10) { 
-      stateChanged = HIGH;
-      relaysState2 = !relaysState2;    
-      writeOutStates();
-    }
-    break;
-  default:
-    // blink LED when command invalid
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(200);
-    digitalWrite(LED_BUILTIN, LOW);
-    break; 
-  }
-}
-
 void serialProcess() {
   // read main serial port
   if (serialMsgEnd == 0) {
@@ -178,22 +72,6 @@ void serialProcess() {
     writeSerial();
     serialMsgEnd = 0;
   }
-}
-
-void writeSerial() { // write response back to computer
-  digitalWrite(LED_BUILTIN, HIGH);
-  Ctrl232.print(respDelimiter);
-  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
-    char _msgChr = serialMessageOut[_idx];
-    if (_msgChr != nullTrm) {
-      Ctrl232.print(_msgChr); 
-    } else {
-      break;
-    }
-  }
-  Ctrl232.print(respDelimiter);
-  Ctrl232.print('\n');
-  digitalWrite(LED_BUILTIN, LOW);
 }
  
 void processSerialData(char rc, char startInd ,char endInd) {
@@ -224,6 +102,22 @@ void processSerialData(char rc, char startInd ,char endInd) {
       serialMsgEnd = 0;
     }
   }
+}
+
+void writeSerial() { // write response back to computer
+  digitalWrite(LED_BUILTIN, HIGH);
+  Ctrl232.print(respDelimiter);
+  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
+    char _msgChr = serialMessageOut[_idx];
+    if (_msgChr != nullTrm) {
+      Ctrl232.print(_msgChr); 
+    } else {
+      break;
+    }
+  }
+  Ctrl232.print(respDelimiter);
+  Ctrl232.print('\n');
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
 // decode serial message
@@ -340,6 +234,113 @@ void processCmdData(uint8_t messageStart) {
   _datarr[_dataidx] = nullTrm;
   uint16_t _ctldata = atoi(_datarr);
   remoteFunctions(_register,_ctldata);
+}
+
+// RS-232 control functions
+void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
+  // process register
+  switch (_register) {
+  // power select register
+  case 10:
+    // all outputs off
+    if (_ctldata == 0) {
+      stateChanged = HIGH;
+      relaysState0 = LOW;
+      relaysState1 = LOW;
+      relaysState2 = LOW;
+      writeOutStates(); 
+    }  
+    // output #1 off (10001)
+    if (_ctldata == 1) {
+      stateChanged = HIGH;
+      relaysState0 = LOW;
+      writeOutStates(); 
+    }
+    // output #1 on (10002)
+    if (_ctldata == 2) { 
+      stateChanged = HIGH;
+      relaysState0 = HIGH;
+      writeOutStates(); 
+    }
+    // output #2 off (10003)
+    if (_ctldata == 3) {
+      stateChanged = HIGH;
+      relaysState1 = LOW;
+      writeOutStates(); 
+    }
+    // output #2 on (10004)
+    if (_ctldata == 4) { 
+      stateChanged = HIGH;
+      relaysState1 = HIGH;
+      writeOutStates(); 
+    }
+    // output #3 off (10005)
+    if (_ctldata == 5) {
+      stateChanged = HIGH;
+      relaysState2 = LOW;
+      writeOutStates();   
+    }
+    // output #3 on (10006)
+    if (_ctldata == 6) { 
+      stateChanged = HIGH;
+      relaysState2 = HIGH;    
+      writeOutStates();
+    }
+    // show output states (10007)
+    if (_ctldata == 7) { 
+      writeOutStates();
+    }
+    // output #1 toggle (10008)
+    if (_ctldata == 8) { 
+      stateChanged = HIGH;
+      relaysState0 = !relaysState0;    
+      writeOutStates();
+    }
+    // output #2 toggle (10009)
+    if (_ctldata == 9) { 
+      stateChanged = HIGH;
+      relaysState1 = !relaysState1;    
+      writeOutStates();
+    }
+    // output #3 toggle (10010)
+    if (_ctldata == 10) { 
+      stateChanged = HIGH;
+      relaysState2 = !relaysState2;    
+      writeOutStates();
+    }
+    break;
+  default:
+    // blink LED when command invalid
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(200);
+    digitalWrite(LED_BUILTIN, LOW);
+    break; 
+  }
+}
+
+void writeOutStates(){
+  char outTbl[4];
+  outTbl[0] = '1';
+  if (relaysState0 == true) {
+    outTbl[0] = '9';
+  }
+  outTbl[1] = '1';
+  if (relaysState1 == true) {
+    outTbl[1] = '9';
+  }
+  outTbl[2] = '1';
+  if (relaysState2 == true) {
+    outTbl[2] = '9';
+  }
+  outTbl[3] = '\0';
+  int16_t intOut = atoi(outTbl);
+  writeSerialMessage(intOut);
+}
+
+void writeSerialMessage(int16_t value) {
+  serialMessageOut[0] = nullTrm;
+  uint16_t length = snprintf(NULL, 0, "%d", value);
+  snprintf(serialMessageOut, length + 1, "%d", value);
 }
 
 void writeOutputs() {

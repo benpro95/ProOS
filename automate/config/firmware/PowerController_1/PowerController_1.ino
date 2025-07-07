@@ -1,7 +1,7 @@
 /*
  * Ben Provenzano III
  * -----------------
- * v1 05/31/2025
+ * v3 07/06/2025
  * Serial Automation Controller 2x120VAC + 12VDC Switched
  *
  */
@@ -17,12 +17,23 @@ int relaysState1 = LOW;
 int relaysState2 = LOW;   
 int stateChanged = LOW;
 
+const char nullTrm = '\0';
+
 // serial resources
 #define serialBaudRate 9600
 #define RX_PIN 6 // RS-232 RX [Pin #12] TRS=Ring
 #define TX_PIN 5 // RS-232 TX [Pin #11] TRS=Tip
 SoftwareSerial Ctrl232(RX_PIN, TX_PIN);
 const uint8_t maxMessage = 32;
+const uint8_t cmdRegLen = 2; // register length (99***)
+const uint8_t cmdDatLen = 3; // data length (**999)
+const char serialDataStart = '<';
+const char serialDataEnd = '>';
+const char respDelimiter = '|';
+bool serialReading = 0;
+uint16_t serialCurPos = 0;
+bool serialMsgEnd = 0;
+
 uint8_t serialMessageInEnd = 0;
 char serialMessageIn[maxMessage];
 char serialMessageOut[maxMessage];
@@ -45,7 +56,7 @@ void setup() {
 }
 
 void loop() {
-  readSerial();  
+  serialProcess();  
   writeOutputs();
 }
 
@@ -155,70 +166,93 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
   }
 }
 
-// process serial message
-void processMessage(uint8_t messageStart) {
-  uint8_t _numcnt = 0;
-  const uint8_t cmdLength = 5; // fixed command length
-  const uint8_t cmdRegLen = 2; // register select length (99***)
-  const uint8_t cmdDataLen = 3; // data length (**999)
-  char _cmdarr[cmdLength + 1];
-  // extract control code from message
-  for(uint8_t _idx = messageStart; _idx < serialMessageInEnd; _idx++) {
-    char _curchar = serialMessageIn[_idx];
-    if (isDigit(_curchar) && _numcnt < cmdLength) {
-      _cmdarr[_numcnt] = _curchar;
-      _numcnt++;
+void serialProcess() {
+  // read main serial port
+  if (serialMsgEnd == 0) {
+    if (Ctrl232.available()) {
+      processSerialData(Ctrl232.read(), serialDataStart, serialDataEnd);
+    }
+  } else {
+    // process serial data
+    decodeMessage();
+    writeSerial();
+    serialMsgEnd = 0;
+  }
+}
+
+void writeSerial() { // write response back to computer
+  digitalWrite(LED_BUILTIN, HIGH);
+  Ctrl232.print(respDelimiter);
+  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
+    char _msgChr = serialMessageOut[_idx];
+    if (_msgChr != nullTrm) {
+      Ctrl232.print(_msgChr); 
+    } else {
+      break;
     }
   }
-  _cmdarr[_numcnt] = '\0';
-  // valiate control code length
-  if (_numcnt =! (cmdLength - 1)) {
-    return;
+  Ctrl232.print(respDelimiter);
+  Ctrl232.print('\n');
+  digitalWrite(LED_BUILTIN, LOW);
+}
+ 
+void processSerialData(char rc, char startInd ,char endInd) {
+  if (serialReading == 1) {
+    // end-of-reading
+    if (rc == endInd) {
+      // terminate the string
+      serialMessageIn[serialCurPos] = nullTrm;
+      serialReading = 0;
+      serialCurPos = 0;
+      serialMsgEnd = 1;
+    } else {
+      // store characters in buffer
+      if (rc != startInd) {
+        serialMessageIn[serialCurPos] = rc;
+        serialCurPos++;
+        // prevent overflow
+        if (serialCurPos >= maxMessage) {
+          serialCurPos = maxMessage - 1;
+        }
+      }
+    }
+  } else {
+    // start reading
+    if (rc == startInd) {
+      serialReading = 1;
+      serialCurPos = 0;
+      serialMsgEnd = 0;
+    }
   }
-  // extract register select
-  char _regarr[cmdRegLen + 1];
-  uint8_t _regidx = 0;
-  for(uint8_t _idx = 0; _idx < cmdRegLen; _idx++) {
-    _regarr[_regidx] = _cmdarr[_idx];
-    _regidx++;
-  }
-  _regarr[_regidx] = '\0';
-  uint8_t _register = atoi(_regarr); 
-  // extract control data
-  char _datarr[cmdDataLen + 1];
-  uint8_t _dataidx = 0;
-  for(uint8_t _idx = (cmdDataLen - 1); _idx < cmdLength; _idx++) {
-    _datarr[_dataidx] = _cmdarr[_idx];
-    _dataidx++;
-  }
-  _datarr[_dataidx] = '\0';
-  uint16_t _ctldata = atoi(_datarr); 
-  // process control code
-  remoteFunctions(_register, _ctldata);
 }
 
 // decode serial message
 void decodeMessage() {
-  digitalWrite(LED_BUILTIN, HIGH);
-  uint8_t _end = serialMessageInEnd;
-  // count delimiters
+ // count delimiters
   uint8_t _delims = 0;
   uint8_t _maxchars = 10;
   char _delimiter = ',';
-  for(uint8_t _idx = 0; _idx < _end; _idx++) {
+  for(uint8_t _idx = 0; _idx <= maxMessage; _idx++) {
     char _vchr = serialMessageIn[_idx];  
+    if (_vchr == nullTrm) {
+      break;
+    }
     if (_vchr == _delimiter) {
       _delims++;
     }
   } 
   // exit when delimiters incorrect
-  if (_delims < 2){ 
+  if (_delims < 2){
+    Ctrl232.print("*INVALID DELIMITERS!*");
     return;
   }
   // find first delimiter position
   uint8_t _linepos = 0;
-  for(uint8_t _idx = 0; _idx < _end; _idx++) {  
+  for(uint8_t _idx = 0; _idx <= maxMessage; _idx++) {  
     char _vchr = serialMessageIn[_idx];  
+    if (_vchr == nullTrm) {
+      break;
+    }
     if (_vchr == _delimiter) {
       // store index position
       _linepos = _idx;
@@ -236,14 +270,17 @@ void decodeMessage() {
     _linebuffer[_linecount] = serialMessageIn[_idx];
     _linecount++;
   } // terminate string
-  _linebuffer[_linecount] = '\0';
+  _linebuffer[_linecount] = nullTrm;
   // convert to integer, store line value
   uint8_t controlData = atoi(_linebuffer); 
   // find second delimiter position
   uint8_t _count = 0;
   uint8_t _cmd2pos = 0; 
-  for(uint8_t _idx = 0; _idx < _end; _idx++) {
-    char _vchr = serialMessageIn[_idx];   
+  for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
+    char _vchr = serialMessageIn[_idx];
+    if (_vchr == nullTrm) {
+      break;
+    }
     if (_vchr == _delimiter) {
       if (_count == 1) {
         // store pointer position
@@ -255,64 +292,54 @@ void decodeMessage() {
   }
   // process command data
   if (controlData == 9){
-    processMessage(_cmd2pos + 1);
+    processCmdData(_cmd2pos + 1);
   } else {
-    Ctrl232.print('!');
+    Ctrl232.print("*INVALID PREFIX!*");
   }
-  Ctrl232.print('|'); // first acknowledgement 
-  writeSerial(); // write message to serial
-  Ctrl232.print('|'); // second acknowledgement
-  Ctrl232.print('\n'); // newline
   digitalWrite(LED_BUILTIN, LOW);
 }
 
-
-void writeSerial() { // write response back to computer
-  for(uint8_t _idx = 0; _idx <= maxMessage; _idx++) {  
-    char _chrout = serialMessageOut[_idx];  
-    if (_chrout == '\0') { // stop reading at end-of-message
+// process register and command data
+void processCmdData(uint8_t messageStart) {
+  uint8_t _numcnt = 0;
+  uint8_t _cmdlen = cmdRegLen + cmdDatLen;
+  char _cmdarr[_cmdlen + 1];
+  // extract control code from message
+  for(uint8_t _idx = messageStart; _idx < maxMessage; _idx++) {
+    char _curchar = serialMessageIn[_idx];
+    if (_curchar == nullTrm) {
       break;
     }
-    Ctrl232.print(_chrout); // write character
-  }
-}
-
-void readSerial() {
-  static bool recvInProgress = 0;
-  static uint8_t ndx = 0;
-  char startMarker = '<';
-  char endMarker = '>';
-  char rc;
-  if (Ctrl232.available() > 0 && newData == 0) {
-    rc = Ctrl232.read();
-    if (recvInProgress == 1) {
-      if (rc != endMarker) {
-        serialMessageIn[ndx] = rc;
-        ndx++;
-        if (ndx >= maxMessage) {
-          ndx = maxMessage - 1;
-        }
-      } else {
-        // terminate the string
-        serialMessageIn[ndx] = '\0'; 
-        serialMessageInEnd = ndx;
-        recvInProgress = 0;
-        newData = 1;
-        ndx = 0;
-      }
-    }
-    else if (rc == startMarker) {
-      recvInProgress = 1;
+    if (isDigit(_curchar) && _numcnt < maxMessage) {
+      _cmdarr[_numcnt] = _curchar;
+      _numcnt++;
     }
   }
-  if (newData == 1) {
-    // End-of-data action
-    decodeMessage();
-    // Reset registers
-    newData = 0;
-    serialMessageInEnd = 0;
-    serialMessageOut[0] = '\0';
+  _cmdarr[_numcnt] = nullTrm;
+  // validate control code length
+  if (_numcnt != _cmdlen) {
+    Ctrl232.print("*INVALID LENGTH!*");
+    return;
   }
+  // extract register select
+  char _regarr[cmdRegLen + 1];
+  uint8_t _regidx = 0;
+  for(uint8_t _idx = 0; _idx < cmdRegLen; _idx++) {
+    _regarr[_regidx] = _cmdarr[_idx];
+    _regidx++;
+  }
+  _regarr[_regidx] = nullTrm;
+  uint8_t _register = atoi(_regarr); 
+  // extract control data
+  char _datarr[cmdDatLen + 1];
+  uint8_t _dataidx = 0;
+  for(uint8_t _idx = (cmdDatLen - 1); _idx < _cmdlen; _idx++) {
+    _datarr[_dataidx] = _cmdarr[_idx];
+    _dataidx++;
+  }
+  _datarr[_dataidx] = nullTrm;
+  uint16_t _ctldata = atoi(_datarr);
+  remoteFunctions(_register,_ctldata);
 }
 
 void writeOutputs() {

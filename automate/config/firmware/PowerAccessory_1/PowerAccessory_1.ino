@@ -58,9 +58,6 @@ bool serialMsgEnd = 0;
 const uint8_t maxFwrdWait = 650; // max wait in (ms) for external serial response
 Neotimer maxFwrdRead = Neotimer();
 
-
-char serialInBuffer[maxMessage];
-
 void setup() {
   initGPIO();
   initSerial();
@@ -151,33 +148,33 @@ void readPowerButton_2() {
 }
 
 void processSerialData(char rc, char startInd ,char endInd) {
-    if (serialReading == 1) {
-      // end-of-reading
-      if (rc == endInd) {
-        // terminate the string
-        serialMessageIn[serialCurPos] = nullTrm;
-        serialReading = 0;
-        serialCurPos = 0;
-        serialMsgEnd = 1;
-      } else {
-        // store characters in buffer
-        if (rc != startInd) {
-          serialMessageIn[serialCurPos] = rc;
-          serialCurPos++;
-          // prevent overflow
-          if (serialCurPos >= maxMessage) {
-            serialCurPos = maxMessage - 1;
-          }
+  if (serialReading == 1) {
+    // end-of-reading
+    if (rc == endInd) {
+      // terminate the string
+      serialMessageIn[serialCurPos] = nullTrm;
+      serialReading = 0;
+      serialCurPos = 0;
+      serialMsgEnd = 1;
+    } else {
+      // store characters in buffer
+      if (rc != startInd) {
+        serialMessageIn[serialCurPos] = rc;
+        serialCurPos++;
+        // prevent overflow
+        if (serialCurPos >= maxMessage) {
+          serialCurPos = maxMessage - 1;
         }
       }
-    } else {
-      // start reading
-      if (rc == startInd) {
-        serialReading = 1;
-        serialCurPos = 0;
-        serialMsgEnd = 0;
-      }
     }
+  } else {
+    // start reading
+    if (rc == startInd) {
+      serialReading = 1;
+      serialCurPos = 0;
+      serialMsgEnd = 0;
+    }
+  }
 }
 
 void serialProcess() {

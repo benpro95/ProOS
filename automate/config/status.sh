@@ -12,7 +12,7 @@ OUT=""
 
 UPDATE_STATES () {
   if [ "$ACTION" == "ping" ]; then
-    if ping -4 -i 0.2 -c 1 -W 0.2 "$HOST"; then
+    if ping -4 -A -c 1 -i 0.25 -W 0.25 "$HOST"; then
       echo "{$HOST} online"
       STATE="grnind"
     else

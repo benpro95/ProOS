@@ -1,22 +1,22 @@
 #!/bin/bash
 ###########################################################
-## Main Home Automation Script by Ben Provenzano III v24 ##
-###########################################################
+## Main Home Automation Script by Ben Provenzano III v28 ##
 ###########################################################
 
-DELIM="|"
 TARGET=""
 XMITCMD=""
 RESPOUT=""
+DELIM="|"
 RAMDISK="/var/www/html/ram"
 LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
 INPUT_REGEX="!A-Za-z0-9_-"
-XMIT_IP="10.177.1.12"        ## Xmit IP
-DESK_IP="10.177.1.14"        ## Desktop PC IP
-BRPI_IP="10.177.1.15"        ## Bedroom Pi IP
-BRPC_IP="10.177.1.17"        ## Bedroom PC IP
-BRPC_MAC="90:2e:16:46:86:43" ## Bedroom PC MAC
+LOCAL_DOMAIN="home"
+XMIT_IP="10.177.1.12"
+DESK_IP="10.177.1.14"
+BRPI_IP="10.177.1.15"
+BRPC_IP="10.177.1.17"
+BRPC_MAC="90:2e:16:46:86:43" 
 
 ## Curl Command Line Arguments
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 10 --retry 1 --retry-delay 1 --no-keepalive"
@@ -58,12 +58,23 @@ USB_TTY(){
     ;;
   ## Bedroom TV
   "brtv")
-    LOCALCOM_RESP "01003" "0"
+    ## TV Status
+    BRTV_OUT="$(LOCALCOM_RESP '01003' '0')"
+    if [[ "$BRTV_OUT" == "1" ]]; then
+      ## PC Status
+      BRPC_ADR="brpc.$LOCAL_DOMAIN"
+      if [[ "$(LOCAL_PING $BRPC_ADR)" == "1" ]]; then
+        echo "1" ## TV & PC On
+      else
+        echo "tv_on" ## Only TV On
+      fi
+    else
+      echo "0" ## Both Off
+    fi
     ;;
   "brtvon")
     LOCALCOM "01001"
-    ## Wake Bedroom PC
-    WAKE_BRPC
+    WAKE_BRPC > /dev/null 2>&1 ## Wake Bedroom PC (WOL)
     ;;
   "brtvoff")
     LOCALCOM "01002"
@@ -73,6 +84,16 @@ USB_TTY(){
     echo "invalid USB-TTY command!"
     ;;
   esac
+}
+
+LOCAL_PING(){
+  local LOCAL_PING_ADR="$1"
+  if ping -4 -A -c 1 -i 0.25 -W 0.25 "$LOCAL_PING_ADR" > /dev/null 2> /dev/null
+  then
+    echo "1" ## Online
+  else
+    echo "0" ## Offline
+  fi
 }
 
 LOCALCOM_RESP(){
@@ -92,7 +113,7 @@ LOCALCOM_RESP(){
     TTY_CHR="${TTY_OUT:$RESP_POS:1}"
     ## re-map serial response
     if [[ "$TTY_CHR" == "9" ]]; then
-      echo "1"
+      echo "1" ## Online
     else 
       echo "0"
     fi  
@@ -101,7 +122,7 @@ LOCALCOM_RESP(){
   "1")
     TTY_CHR="${TTY_OUT:0:1}"
     if [[ "$TTY_CHR" == "1" ]]; then
-      echo "1"
+      echo "1" ## Online
     else
       echo "0"
     fi
@@ -126,7 +147,7 @@ LED_PRESET(){
 POWER_PC(){
   local PWR_STATE="$1"
   if [[ "$PWR_STATE" == "off" ]]; then
-    if ping -W 2 -c 1 $DESK_IP > /dev/null 2> /dev/null
+    if [[ "$(LOCAL_PING $DESK_IP)" == "1" ]]
     then
       XMITCMD="rfb3" ; XMIT 
     else
@@ -134,7 +155,7 @@ POWER_PC(){
     fi
   fi
   if [[ "$PWR_STATE" == "on" ]]; then
-    if ping -W 2 -c 1 $DESK_IP > /dev/null 2> /dev/null
+    if [[ "$(LOCAL_PING $DESK_IP)" == "1" ]]
     then
       echo "$DESK_IP is online"
     else
@@ -144,11 +165,11 @@ POWER_PC(){
 }
 
 WAKE_BRPC() {
-  if ping -W 2 -c 1 $BRPC_IP > /dev/null 2> /dev/null
+  if [[ "$(LOCAL_PING $BRPC_IP)" == "1" ]]
   then
     echo "bedroom PC already online."
   else
-    wakeonlan $BRPC_MAC
+    wakeonlan "$BRPC_MAC"
   fi
 }
 
@@ -165,7 +186,7 @@ CALLAPI(){
     RESPOUT=""
   else
     ## ProOS home automation Pi
-    DATA="var=$SEC_ARG&arg=$XMITCMD&action=main"
+    DATA="var=$SECOND_ARG&arg=$XMITCMD&action=main"
     SERVER="http://$TARGET:80/exec.php"
     ## API GET request wait then read response
     DELIM="|"
@@ -360,8 +381,8 @@ LIGHTS_ON(){
 ########################
 
 ## Read command line arguments
-FIRST_ARG=$1
-SEC_ARG=$2
+FIRST_ARG="$1"
+SECOND_ARG="$2"
 
 if [[ "${FIRST_ARG}" = *[$INPUT_REGEX]* ]]
 then
@@ -373,8 +394,8 @@ case "$FIRST_ARG" in
 
 sitelookup)
 ## Lookup Website Title from URL
-if [ "$SEC_ARG" != "" ]; then
-  LINKTITLE=$(curl -s -X GET "$SEC_ARG" | xmllint -html -xpath "//head/title/text()" - 2>/dev/null)
+if [ "$SECOND_ARG" != "" ]; then
+  LINKTITLE=$(curl -s -X GET "$SECOND_ARG" | xmllint -html -xpath "//head/title/text()" - 2>/dev/null)
   if [[ "$LINKTITLE" != "" ]] && [[ "$LINKTITLE" != "\n" ]]; then
     echo "$LINKTITLE"
   fi
@@ -382,7 +403,12 @@ fi
 exit
 ;;
 
-wake-brpc)
+localping)
+LOCAL_PING "$SECOND_ARG"."$LOCAL_DOMAIN"
+exit
+;;
+
+wakebrpc)
 ## Wake-up Bedroom PC
 WAKE_BRPC
 exit
@@ -391,7 +417,7 @@ exit
 brpi)
 ## API Call to Bedroom Pi
 TARGET="$BRPI_IP"
-XMITCMD="$SEC_ARG"
+XMITCMD="$SECOND_ARG"
 CALLAPI
 exit
 ;;
@@ -419,7 +445,7 @@ exit
 ;;
 
 usbtty)
-USB_TTY "$SEC_ARG"
+USB_TTY "$SECOND_ARG"
 exit
 ;;
 
@@ -477,7 +503,7 @@ CALLAPI
 ## Bedroom TV
 USB_TTY "brtvon"
 ## Bedroom PC
-WAKE_BRPC
+WAKE_BRPC > /dev/null 2>&1
 exit
 ;;
 
@@ -558,7 +584,7 @@ exit
 
 server)
 ## Read argument
-SERVERARG=${SEC_ARG//$'\n'/} 
+SERVERARG=${SECOND_ARG//$'\n'/} 
 ## start / stop legacy services
 if [ "$SERVERARG" == "startlegacy" ]; then
   echo "Starting legacy services..." &>> $LOGFILE

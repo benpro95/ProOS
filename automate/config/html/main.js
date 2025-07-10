@@ -20,7 +20,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "8.4";
+let siteVersion = "8.62";
 
 //////////////////////
 
@@ -1172,31 +1172,35 @@ function showPowerMenu(target,menu) {
       // status display (I)
       switch(resp) {
         case '0':
-          _indtype = 'blkind'; // black indicator  
+          _indtype = 'blkind';
           _title = "Offline";
           break;
-        case '1':
-          _indtype = 'grnind'; // green indicator     
-          _title = "Online";
+        case 'tv_on':
+          _indtype = 'ylwind';
+          _title = "TV On";
           break;
+        case '1':
+          _indtype = 'grnind';
+          _title = "Online";
+          break;          
         default:
-          _indtype = 'redind'; // red indicator    
+          _indtype = 'redind';
           _title = "Error";
       }
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // power on/off buttons (II)
-      if (resp == '0') {
-        _title = "On"  
-        _indtype = 'noind';
-        _menubtn = "oncmd";
-        _cmd = menu + 'on';
-        _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
-      }
-      if (resp == '1') {
+      if (resp == '1' || resp == 'tv_on') {
         _title = "Off"
         _indtype = 'noind';    
         _menubtn = "offcmd";
         _cmd = menu + 'off';
+        _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
+      }
+      if (resp == '0' || resp == 'tv_on') {
+        _title = "On"  
+        _indtype = 'noind';
+        _menubtn = "oncmd";
+        _cmd = menu + 'on';
         _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       }
       // stop spinner animation
@@ -1341,6 +1345,7 @@ function createListItem(_col0,_col1,_col2,_id) {
   if (_col1 == 'blkind' || // black indicator
       _col1 == 'grnind' || // green indicator
       _col1 == 'redind' || // red indicator
+      _col1 == 'ylwind' || // yellow indicator
       _col1 == 'noind') { // no indicator
     // power toggle type
     const _icon = document.createElement('span');
@@ -1382,6 +1387,10 @@ function createListItem(_col0,_col1,_col2,_id) {
     if (_col1 == 'redind'){
       _dot.classList.add('ind_dot');
       _dot.classList.add('ind_dot_red');
+    }
+    if (_col1 == 'ylwind'){
+      _dot.classList.add('ind_dot');
+      _dot.classList.add('ind_dot_yellow');
     }
     _dot.id = "ind-" + _col2;
     _elm.appendChild(_dot);

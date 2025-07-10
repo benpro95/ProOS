@@ -448,6 +448,10 @@ input.chkbox {
   display: inline-block;
 }
 
+.ind_dot_yellow {
+  background-color: #ffd000;
+}
+
 .ind_dot_green {
   background-color: #00FF00;
 }

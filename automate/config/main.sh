@@ -1,6 +1,6 @@
 #!/bin/bash
 ###########################################################
-## Main Home Automation Script by Ben Provenzano III v28 ##
+## Main Home Automation Script by Ben Provenzano III v29 ##
 ###########################################################
 
 TARGET=""
@@ -56,20 +56,26 @@ USB_TTY(){
   "retropioff")
     LOCALCOM "10005"
     ;;
-  ## Bedroom TV
+  ## Bedroom TV / PC
   "brtv")
-    ## TV Status
     BRTV_OUT="$(LOCALCOM_RESP '01003' '0')"
+    BRPC_PING="$(LOCAL_PING $BRPC_IP)"
     if [[ "$BRTV_OUT" == "1" ]]; then
-      ## PC Status
-      BRPC_ADR="brpc.$LOCAL_DOMAIN"
-      if [[ "$(LOCAL_PING $BRPC_ADR)" == "1" ]]; then
-        echo "1" ## TV & PC On
+      if [[ "$BRPC_PING" == "1" ]]; then
+        ## TV on and PC on
+        echo "1"
       else
-        echo "tv_on" ## Only TV On
+        ## TV on and PC off
+        echo "brtv_on"
       fi
     else
-      echo "0" ## Both Off
+      if [[ "$BRPC_PING" == "1" ]]; then
+        ## TV off and PC on
+        echo "0"
+      else
+        ## TV off and PC off
+        echo "brpc_off"
+      fi
     fi
     ;;
   "brtvon")

@@ -1175,7 +1175,11 @@ function showPowerMenu(target,menu) {
           _indtype = 'blkind';
           _title = "Offline";
           break;
-        case 'tv_on':
+        case 'brpc_off':
+          _indtype = 'ylwind';
+          _title = "PC Off";
+          break;  
+        case 'brtv_on':
           _indtype = 'ylwind';
           _title = "TV On";
           break;
@@ -1189,14 +1193,14 @@ function showPowerMenu(target,menu) {
       }
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // power on/off buttons (II)
-      if (resp == '1' || resp == 'tv_on') {
+      if (resp == '1' || resp == 'brtv_on') {
         _title = "Off"
         _indtype = 'noind';    
         _menubtn = "offcmd";
         _cmd = menu + 'off';
         _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       }
-      if (resp == '0' || resp == 'tv_on') {
+      if (resp == '0' || resp == 'brpc_off') {
         _title = "On"  
         _indtype = 'noind';
         _menubtn = "oncmd";

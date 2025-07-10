@@ -202,7 +202,7 @@
             </div>
           </div>
           <div class="dropdown">
-            <button type="button" class="button button_ctrl" onclick="showMenu('lr-menu')">
+            <button type="button" class="button button_dark" onclick="showMenu('lr-menu')">
               <span class="button__text"></i> Living Room</span>
             </button>  
             <div class="dd-content dd-button" id="lr-menu">
@@ -462,19 +462,15 @@
       </button>
     </div>
     <div class="svropt__backup">
-      <div class="svropt__bkp_brd">
-        <div class="svropt__bkp_frame">
-          <button type="button" class="button svropt__bkp_btn" onclick="serverAction('pve_vmsbkp')">
-            <span class="button__text"></i> VMs/LXCs</span>
-          </button>
-          <button type="button" class="button svropt__bkp_btn" onclick="serverAction('files-backupstd')">
-            <span class="button__text"></i> Standard</span>
-          </button>                 
-          <button type="button" class="button svropt__bkp_btn" onclick="serverAction('files-backupchk')">
-            <span class="button__text"></i> Checksum</span>
-          </button>
-        </div>
-      </div>    
+      <button type="button" class="button svropt_button" onclick="serverAction('pve_vmsbkp')">
+        <span class="button__text"></i> VMs/LXCs</span>
+      </button>
+      <button type="button" class="button svropt_button" onclick="serverAction('files-backupstd')">
+        <span class="button__text"></i> Standard</span>
+      </button>                 
+      <button type="button" class="button svropt_button" onclick="serverAction('files-backupchk')">
+        <span class="button__text"></i> Checksum</span>
+      </button>
       <button type="button" class="button svropt_button" onclick="serverAction('files-last_backup_dates')">
         <span class="button__text"><i class="fa-solid fa-clock-rotate-left"></i> History</span>
       </button>    
@@ -531,7 +527,7 @@
           <a onclick="serverAction('files-unmnt_ram_region')"><i class="fa-solid fa-eject"></i> Detach</a>
         </div>
       </div>
-      <button type="button" class="button svropt_button" onclick="serverAction('files-unmnt_all')">
+      <button type="button" class="button svropt_button button_dark" onclick="serverAction('files-unmnt_all')">
         <span class="button__text"></i> Detach All</span>
       </button>
       <div class="dropdown">

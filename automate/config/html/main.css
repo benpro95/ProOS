@@ -228,7 +228,7 @@ input.chkbox {
   background-color: #8d2a2a;
 }
 
-.button_ctrl {
+.button_dark {
   background-color: color-mix(in srgb, var(--main-color),#0000 70%); /* % of transparency */  
 }
 

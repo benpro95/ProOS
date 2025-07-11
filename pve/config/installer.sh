@@ -109,18 +109,6 @@ else
   swapon /mnt/pve/scratch/swapfile
 fi
 
-## Unprivileged LXC TTY Passthrough
-LXC_DEV="USB-Xmit0" ## new device name
-if [ ! -e /dev/$LXC_DEV ]; then
-  ## Execute: (ls -la /dev/ttyUSB0)
-  ## Example Output: (root dialout 188, 0 Jun 10 14:22 /dev/ttyUSB0)
-  ## ------------------------------1st-2nd--------------------------
-  MAJOR_GRP="188" ## first
-  MINOR_GRP="0" ## second
-  mknod -m 660 /dev/$LXC_DEV c $MAJOR_GRP $MINOR_GRP
-  chown 100000:100020 /dev/$LXC_DEV
-fi
-
 ## Backup Mountpoints
 if [ ! -e /mnt/extbkps ]; then
   mkdir -p /mnt/extbkps

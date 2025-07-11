@@ -20,7 +20,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "8.62";
+let siteVersion = "8.7";
 
 //////////////////////
 
@@ -1175,9 +1175,9 @@ function showPowerMenu(target,menu) {
           _indtype = 'blkind';
           _title = "Offline";
           break;
-        case 'brpc_off':
-          _indtype = 'ylwind';
-          _title = "PC Off";
+        case 'brpctv_off':
+          _indtype = 'blkind';
+          _title = "TV Off";
           break;  
         case 'brtv_on':
           _indtype = 'ylwind';
@@ -1193,18 +1193,43 @@ function showPowerMenu(target,menu) {
       }
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // power on/off buttons (II)
-      if (resp == '1' || resp == 'brtv_on') {
+      if (resp == '1') { // online
         _title = "Off"
         _indtype = 'noind';    
         _menubtn = "offcmd";
         _cmd = menu + 'off';
         _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       }
-      if (resp == '0' || resp == 'brpc_off') {
-        _title = "On"  
+      if (resp == '0') { // offline
+        _title = "On"
         _indtype = 'noind';
         _menubtn = "oncmd";
         _cmd = menu + 'on';
+        _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
+      }
+      /// custom menus ///
+      if (resp == 'brpctv_off') {
+        _title = "PC Off"
+        _indtype = 'blkind';
+        _menubtn = '';
+        _cmd = '';
+        _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
+        _title = "On"
+        _indtype = 'noind';
+        _menubtn = "oncmd";
+        _cmd = menu + 'on';
+        _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
+      }      
+      if (resp == 'brtv_on') {
+        _title = "PC On"
+        _indtype = 'noind';
+        _menubtn = "oncmd";
+        _cmd = 'wakebrpc';
+        _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
+        _title = "TV Off"
+        _indtype = 'noind';    
+        _menubtn = "offcmd";
+        _cmd = menu + 'off';
         _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       }
       // stop spinner animation

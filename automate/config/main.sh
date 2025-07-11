@@ -74,7 +74,7 @@ USB_TTY(){
         echo "0"
       else
         ## TV off and PC off
-        echo "brpc_off"
+        echo "brpctv_off"
       fi
     fi
     ;;
@@ -410,7 +410,7 @@ exit
 ;;
 
 localping)
-LOCAL_PING "$SECOND_ARG"."$LOCAL_DOMAIN"
+LOCAL_PING "$SECOND_ARG.$LOCAL_DOMAIN"
 exit
 ;;
 

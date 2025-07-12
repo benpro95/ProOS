@@ -1209,17 +1209,15 @@ function showPowerMenu(target,menu) {
       }
       /// custom menus ///
       if (resp == 'brpctv_off') {
-        _title = "PC Off"
+        _title = "PC N/A"
         _indtype = 'blkind';
-        _menubtn = '';
-        _cmd = '';
-        _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
+        _menudata += buildRemoteAPIMenu('',target,'',_indtype,_title);
         _title = "On"
         _indtype = 'noind';
         _menubtn = "oncmd";
         _cmd = menu + 'on';
         _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
-      }      
+      }
       if (resp == 'brtv_on') {
         _title = "PC On"
         _indtype = 'noind';

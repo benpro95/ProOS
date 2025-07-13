@@ -186,8 +186,7 @@ WAKE_BRPC() {
   fi
 }
 
-XMIT(){
-#### ESP32 Transmit Function
+LRXMIT(){
 case "$XMITCMD" in
   ### HiFi Preamp ###
   ## Power
@@ -377,14 +376,14 @@ esac
 
 LIGHTS_OFF(){
   ## Window Lamp
-  XMITCMD="rfc1off"; XMIT
+  XMITCMD="rfc1off"; LRXMIT
   ## Dresser Lamp
   LOCAL_CMD "brlamp1off"
 }
 
 LIGHTS_ON(){
   ## Window Lamp
-  XMITCMD="rfc1on"; XMIT
+  XMITCMD="rfc1on"; LRXMIT
   ## Dresser Lamp
   LOCAL_CMD "brlamp1on"
 }
@@ -421,7 +420,7 @@ exit
 
 relax)
 ## Turn Off TV
-LOCAL_CMD "brtvoff"
+LOCALCMD "brtvoff"
 ## Bedroom Audio
 TARGET="$BRPI_IP"; XMITCMD="ampstateon"; CALLAPI
 ## Relax Sounds on Bedroom Pi
@@ -451,7 +450,7 @@ exit
 
 ## Forward Command to Living Room Xmit
 lrxmit)
-XMITCMD="$SECOND_ARG"; XMIT
+XMITCMD="$SECOND_ARG"; LRXMIT
 exit
 ;;
 
@@ -465,7 +464,7 @@ exit
 
 mainon)
 ## Window Lamp
-XMITCMD="rfc1on"; XMIT 
+XMITCMD="rfc1on"; LRXMIT 
 exit
 ;;
 
@@ -499,9 +498,9 @@ LOCAL_CMD "retropion"
 ## Retro Macs
 LOCAL_CMD "brmacson"
 ## PC Power On
-XMITCMD="wkststateon"; XMIT 
+XMITCMD="wkststateon"; LRXMIT 
 ## Main Room Audio
-XMITCMD="hifion"; XMIT
+XMITCMD="hifion"; LRXMIT
 ## Bedroom Audio
 TARGET="$BRPI_IP"; XMITCMD="ampstateon"; CALLAPI
 ## Bedroom TV
@@ -520,9 +519,9 @@ LOCAL_CMD "retropioff"
 ## Retro Macs
 LOCAL_CMD "brmacsoff"
 ## PC Power Off
-XMITCMD="wkststateoff"; XMIT 
+XMITCMD="wkststateoff"; LRXMIT 
 ## Main Room Audio
-XMITCMD="hifioff"; XMIT 
+XMITCMD="hifioff"; LRXMIT 
 ## Bedroom Audio
 TARGET="$BRPI_IP"; XMITCMD="ampstateoff"; CALLAPI
 ## Bedroom TV
@@ -534,35 +533,35 @@ exit
 
 autodac)
 ## Auto Decoder Input
-XMITCMD="inauto"; XMIT 
+XMITCMD="inauto"; LRXMIT 
 ## Preamp DAC Input
-XMITCMD="dac"; XMIT 
+XMITCMD="dac"; LRXMIT 
 exit
 ;;
 
 usb)
 ## USB Decoder Input
-XMITCMD="usb"; XMIT
+XMITCMD="usb"; LRXMIT
 ## Preamp DAC Input
-XMITCMD="dac"; XMIT
+XMITCMD="dac"; LRXMIT
 exit
 ;;
 
 ## Coax Input
 coax)
 ## Coaxial Decoder Input
-XMITCMD="coaxial"; XMIT 
+XMITCMD="coaxial"; LRXMIT 
 ## Preamp AirPlay Mode
-XMITCMD="airplay-preamp"; XMIT 
+XMITCMD="airplay-preamp"; LRXMIT 
 exit
 ;;
 
 ## Optical Input
 opt)
 ## Optical Decoder Input
-XMITCMD="optical"; XMIT
+XMITCMD="optical"; LRXMIT
 ## Preamp DAC Input
-XMITCMD="optical-preamp"; XMIT
+XMITCMD="optical-preamp"; LRXMIT
 exit
 ;;
 
@@ -638,7 +637,9 @@ exit
 *)
   ## command not matched above, pass argument to ESP32-Xmit
   XMITCMD="$FIRST_ARG" 
-  XMIT
+  LRXMIT
   exit
 ;;
 esac
+
+

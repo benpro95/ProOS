@@ -20,7 +20,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "8.7";
+let siteVersion = "8.8";
 
 //////////////////////
 

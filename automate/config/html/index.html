@@ -193,13 +193,11 @@
           <p class="parstd"></p> 
           <!---->
           <div class="dropdown">
-            <button type="button" class="button" onclick="showMenu('pcmenu')">
-              <span class="button__text"><i class="fa-solid fa-computer"></i> Desktop</span>
-            </button>  
-            <div class="dd-content dd-button" id="pcmenu">
-              <a onclick="sendCmd('main','pcon','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-              <a onclick="sendCmd('main','pcoff','')"><i class="fa-solid fa-moon"></i> Sleep</a>
-            </div>
+            <button type="button" class="button" onclick="showPowerMenu('lrxmit','wkststate')">
+              <span class="button__text" id="wkststate-text"><i class="fa-solid fa-computer"></i> Desktop</span>
+              <span class="button__text" id="wkststate-spinner"></span>
+            </button>
+            <div class="dd-content ind-button" id="wkststate-menu"></div>
           </div>
           <div class="dropdown">
             <button type="button" class="button button_dark" onclick="showMenu('lr-menu')">
@@ -244,13 +242,11 @@
             <span class="button__text"><i class="fa-solid fa-volume-low"></i> -5dB</span>
         </button>
         <div class="dropdown">
-          <button type="button" class="button" onclick="showMenu('hifi-menu')">
-            <span class="button__text"><i class="fa-solid fa-music"></i> Hi-Fi</span>
-          </button>  
-          <div class="dd-content dd-button" id="hifi-menu">
-            <a onclick="sendCmd('main','hifion','')"><i class="fa-solid fa-toggle-on"></i> On</a>
-            <a onclick="sendCmd('main','hifioff','')"><i class="fa-solid fa-toggle-off"></i> Off</a>
-          </div>
+          <button type="button" class="button" onclick="showPowerMenu('lrxmit','hifistate')">
+            <span class="button__text" id="hifistate-text"><i class="fa-solid fa-music"></i> Hi-Fi</span>
+            <span class="button__text" id="hifistate-spinner"></span>
+          </button>
+          <div class="dd-content ind-button" id="hifistate-menu"></div>
         </div>
         <button type="button" class="button" onclick="sendCmd('main','upc','')">   
             <span class="button__text"><i class="fa-solid fa-volume-high"></i> +5dB</span>
@@ -298,7 +294,7 @@
         <p class="parstd"></p>
         <!---->
         <div class="dropdown">
-          <button type="button" class="button" onclick="showPowerMenu('usbtty','brtv')">
+          <button type="button" class="button" onclick="showPowerMenu('localcmd','brtv')">
             <span class="button__text" id="brtv-text"><i class="fa-solid fa-tv"></i> TV</span>
             <span class="button__text" id="brtv-spinner"></span>
           </button>
@@ -313,7 +309,7 @@
           </div>
         </div>
         <div class="dropdown">
-          <button type="button" class="button" onclick="showPowerMenu('usbtty','brlamp1')">
+          <button type="button" class="button" onclick="showPowerMenu('localcmd','brlamp1')">
             <span class="button__text" id="brlamp1-text"><i class="fa-regular fa-lightbulb"></i> Dresser</span>
             <span class="button__text" id="brlamp1-spinner"></span>
           </button>
@@ -359,7 +355,7 @@
         <p class="parstd"></p> 
         <!---->
         <div class="dropdown">
-          <button type="button" class="button" onclick="showPowerMenu('usbtty','brmacs')">
+          <button type="button" class="button" onclick="showPowerMenu('localcmd','brmacs')">
             <span class="button__text" id="brmacs-text"><i class="fa-solid fa-floppy-disk"></i> Macs</span>
             <span class="button__text" id="brmacs-spinner"></span>
           </button>
@@ -369,7 +365,7 @@
           <span class="button__text"><i class="fa-solid fa-xmark"></i> Stop</span> 
         </button>
         <div class="dropdown">
-          <button type="button" class="button" onclick="showPowerMenu('usbtty','retropi')">
+          <button type="button" class="button" onclick="showPowerMenu('localcmd','retropi')">
             <span class="button__text" id="retropi-text"><i class="fa-solid fa-gamepad"></i> RetroPi</span>
             <span class="button__text" id="retropi-spinner"></span>
           </button>

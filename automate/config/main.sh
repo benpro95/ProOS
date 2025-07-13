@@ -11,17 +11,17 @@ RAMDISK="/var/www/html/ram"
 LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
 INPUT_REGEX="!A-Za-z0-9_-"
-LOCAL_DOMAIN="home"
-XMIT_IP="10.177.1.12"
-DESK_IP="10.177.1.14"
-BRPI_IP="10.177.1.15"
-BRPC_IP="10.177.1.17"
-BRPC_MAC="90:2e:16:46:86:43" 
-
+LOCAL_DOMAIN="home" ## Local DNS Domain
+XMIT_IP="10.177.1.12" ## Living Room Xmit
+DESK_IP="10.177.1.14" ## Desktop
+BRPI_IP="10.177.1.15" ## Bedroom Pi
+BRPC_IP="10.177.1.17" ## Bedroom PC IP
+BRPC_MAC="90:2e:16:46:86:43" ## Bedroom PC MAC
+ 
 ## Curl Command Line Arguments
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 10 --retry 1 --retry-delay 1 --no-keepalive"
 
-USB_TTY(){
+LOCAL_CMD(){
   local TTY_CMD="$1"
   case "$TTY_CMD" in
   ## RF Power Controller (under dresser)
@@ -87,14 +87,15 @@ USB_TTY(){
     ;;
   ##
   *)
-    echo "invalid USB-TTY command!"
+    echo "invalid local command!"
     ;;
   esac
 }
 
 LOCAL_PING(){
+  MAX_WAIT_TIME="0.3" ## Max Wait Time in Seconds
   local LOCAL_PING_ADR="$1"
-  if ping -4 -A -c 1 -i 0.25 -W 0.25 "$LOCAL_PING_ADR" > /dev/null 2> /dev/null
+  if ping -4 -A -c 1 -i "$MAX_WAIT_TIME" -W "$MAX_WAIT_TIME" "$LOCAL_PING_ADR" > /dev/null 2> /dev/null
   then
     echo "1" ## Online
   else
@@ -134,7 +135,7 @@ LOCALCOM_RESP(){
     fi
     ;;
   *)
-    ## default response
+    ## error response
     echo "X"
     ;;
   esac
@@ -148,26 +149,6 @@ LOCALCOM(){
 LED_PRESET(){
   local LED_PRESET_CMD="$1"
   /opt/system/leds "$LED_PRESET_CMD"
-}
-
-POWER_PC(){
-  local PWR_STATE="$1"
-  if [[ "$PWR_STATE" == "off" ]]; then
-    if [[ "$(LOCAL_PING $DESK_IP)" == "1" ]]
-    then
-      XMITCMD="rfb3" ; XMIT 
-    else
-      echo "$DESK_IP is offline"
-    fi
-  fi
-  if [[ "$PWR_STATE" == "on" ]]; then
-    if [[ "$(LOCAL_PING $DESK_IP)" == "1" ]]
-    then
-      echo "$DESK_IP is online"
-    else
-      XMITCMD="rfb3" ; XMIT 
-    fi
-  fi
 }
 
 WAKE_BRPC() {
@@ -209,29 +190,54 @@ CALLAPI(){
 XMIT(){
 #### ESP32 Transmit Function
 case "$XMITCMD" in
-  ### HiFi Preamp
+  ### HiFi Preamp ###
   ## Power
-  "pwrhifi")
-    ## Mute Subwoofer Amp
-    XMITCMD="0|0|551520375"
-    CALLAPI
-    sleep 0.75
-    ## Power Off Preamp  
-    XMITCMD="0|0|1270227167"
-    CALLAPI   
+  "hifistate")
+    if [[ "$(LOCAL_PING "hifipi.$LOCAL_DOMAIN")" == "1" ]]
+    then ## Host Online
+      echo "1"
+    else ## Host Offline
+      echo "0"
+    fi
     ;;
-  "hifioff")
+  "hifistateoff")
     ## Mute Subwoofer Amp
     XMITCMD="0|0|551520375"
     CALLAPI
-    sleep 0.75
+    sleep 1.25
     ## Power Off Preamp  
     XMITCMD="0|0|1261859214"
     CALLAPI
     ;;
-  "hifion")
+  "hifistateon")
     XMITCMD="0|0|1261869414"
     CALLAPI
+    ;;
+  "wkststate")
+    if [[ "$(LOCAL_PING "$DESK_IP")" == "1" ]]
+    then ## Host Online
+      echo "pc_awake"
+    else ## Host Offline
+      echo "0"
+    fi
+    ;;
+  "wkststateoff")
+    if [[ "$(LOCAL_PING "$DESK_IP")" == "1" ]]
+    then ## Host Online
+      XMITCMD="2|2|32"
+      CALLAPI
+    else ## Host Offline
+      echo "$DESK_IP is already offline"
+    fi
+    ;;
+  "wkststateon")
+    if [[ "$(LOCAL_PING "$DESK_IP")" == "1" ]]
+    then ## Host Online
+      echo "$DESK_IP is already online"
+    else ## Host Offline
+      XMITCMD="2|2|32"
+      CALLAPI
+    fi
     ;;
   ## DAC
   "dac")
@@ -374,14 +380,14 @@ LIGHTS_OFF(){
   ## Window Lamp
   XMITCMD="rfc1off" ; XMIT
   ## Dresser Lamp
-  USB_TTY "brlamp1off"
+  LOCAL_CMD "brlamp1off"
 }
 
 LIGHTS_ON(){
   ## Window Lamp
   XMITCMD="rfc1on" ; XMIT
   ## Dresser Lamp
-  USB_TTY "brlamp1on"
+  LOCAL_CMD "brlamp1on"
 }
 
 ########################
@@ -414,23 +420,9 @@ LOCAL_PING "$SECOND_ARG.$LOCAL_DOMAIN"
 exit
 ;;
 
-wakebrpc)
-## Wake-up Bedroom PC
-WAKE_BRPC
-exit
-;;
-
-brpi)
-## API Call to Bedroom Pi
-TARGET="$BRPI_IP"
-XMITCMD="$SECOND_ARG"
-CALLAPI
-exit
-;;
-
 relax)
 ## Turn Off TV
-USB_TTY "brtvoff"
+LOCAL_CMD "brtvoff"
 ## Bedroom Audio
 TARGET="$BRPI_IP"
 XMITCMD="ampstateon"
@@ -450,8 +442,24 @@ CALLAPI
 exit
 ;;
 
-usbtty)
-USB_TTY "$SECOND_ARG"
+## Forward Command to Bedroom Pi
+brpi)
+TARGET="$BRPI_IP"
+XMITCMD="$SECOND_ARG"
+CALLAPI
+exit
+;;
+
+## Forward Command to Local COM Port
+localcmd)
+LOCAL_CMD "$SECOND_ARG"
+exit
+;;
+
+## Forward Command to Living Room Xmit
+lrxmit)
+XMITCMD="$SECOND_ARG"
+XMIT
 exit
 ;;
 
@@ -495,11 +503,11 @@ LIGHTS_ON
 ## LEDwalls
 LED_PRESET "abstract"
 ## RetroPi 
-USB_TTY "retropion"
+LOCAL_CMD "retropion"
 ## Retro Macs
-USB_TTY "brmacson"
+LOCAL_CMD "brmacson"
 ## PC Power On
-POWER_PC "on"
+XMITCMD="wkststateon" ; XMIT 
 ## Main Room Audio
 XMITCMD="hifion" ; XMIT
 ## Bedroom Audio
@@ -507,7 +515,7 @@ TARGET="$BRPI_IP"
 XMITCMD="ampstateon"
 CALLAPI
 ## Bedroom TV
-USB_TTY "brtvon"
+LOCAL_CMD "brtvon"
 ## Bedroom PC
 WAKE_BRPC > /dev/null 2>&1
 exit
@@ -518,11 +526,11 @@ LIGHTS_OFF
 ## Blank LEDwalls
 /opt/system/leds stop
 ## RetroPi 
-USB_TTY "retropioff"
+LOCAL_CMD "retropioff"
 ## Retro Macs
-USB_TTY "brmacsoff"
+LOCAL_CMD "brmacsoff"
 ## PC Power Off
-POWER_PC "off"
+XMITCMD="wkststateoff" ; XMIT 
 ## Main Room Audio
 XMITCMD="hifioff" ; XMIT 
 ## Bedroom Audio
@@ -530,19 +538,7 @@ TARGET="$BRPI_IP"
 XMITCMD="ampstateoff"
 CALLAPI
 ## Bedroom TV
-USB_TTY "brtvoff"
-exit
-;;
-
-## PC Power
-
-pcon)
-POWER_PC "on"
-exit
-;;
-
-pcoff)
-POWER_PC "off"
+LOCAL_CMD "brtvoff"
 exit
 ;;
 

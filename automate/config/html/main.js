@@ -1183,6 +1183,10 @@ function showPowerMenu(target,menu) {
           _indtype = 'ylwind';
           _title = "TV On";
           break;
+        case 'pc_awake':
+          _indtype = 'grnind';
+          _title = "Online";
+          break;
         case '1':
           _indtype = 'grnind';
           _title = "Online";
@@ -1222,12 +1226,19 @@ function showPowerMenu(target,menu) {
         _title = "PC On"
         _indtype = 'noind';
         _menubtn = "oncmd";
-        _cmd = 'wakebrpc';
+        _cmd = menu + 'on';
         _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
         _title = "TV Off"
         _indtype = 'noind';    
         _menubtn = "offcmd";
         _cmd = menu + 'off';
+        _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
+      }
+      if (resp == 'pc_awake') {
+        _title = "Sleep"
+        _indtype = 'noind';    
+        _menubtn = "sleepmode";
+        _cmd = menu + 'sleep';
         _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       }
       // stop spinner animation
@@ -1392,6 +1403,15 @@ function createListItem(_col0,_col1,_col2,_id) {
     if (menutype == 'offcmd') { // power-off remote API call on click
       _icon.classList.add('fa-solid');
       _icon.classList.add('fa-toggle-off');
+      _icon.classList.add('leftjfy'); // left-justify icon
+      _elm.appendChild(_icon);
+      _elm.addEventListener("click", function(event) {
+        sendCmd('main',target,cmd);
+      });
+    }
+    if (menutype == 'sleepmode') { // sleep PC type menu
+      _icon.classList.add('fa-solid');
+      _icon.classList.add('fa-moon');
       _icon.classList.add('leftjfy'); // left-justify icon
       _elm.appendChild(_icon);
       _elm.addEventListener("click", function(event) {

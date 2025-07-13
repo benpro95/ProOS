@@ -256,24 +256,24 @@
         <!---->
         <button type="button" class="button" onclick="sendCmd('main','coax','')">   
           <span class="button__text"><i class="fa-brands fa-apple"></i> AirPlay</span>
-        </button>      
-        <button type="button" class="button" onclick="sendCmd('main','opt','')">
-          <span class="button__text"><i class="fa-solid fa-wave-square"></i> Optical</span>
-        </button>
+        </button>   
         <button type="button" class="button" onclick="sendCmd('main','autodac','')">
-          <span class="button__text"><i class="fa-solid fa-arrows-rotate"></i> Auto In</span>
+          <span class="button__text"><i class="fa-solid fa-arrows-rotate"></i> Auto</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('main','usb','')">
+          <span class="button__text"><i class="fa-brands fa-usb"></i> PC</span>
         </button>
         <!---->
         <p class="parstd"></p> 
         <!---->
-        <button type="button" class="button" onclick="sendCmd('main','usb','')">
-          <span class="button__text"><i class="fa-brands fa-usb"></i> USB</span>
+        <button type="button" class="button" onclick="sendCmd('main','opt','')">
+          <span class="button__text"><i class="fa-solid fa-wave-square"></i> Optical</span>
+        </button>
+        <button type="button" class="button" onclick="sendCmd('main','aux','')">
+          <span class="button__text"><i class="fa-solid fa-microphone"></i> Aux</span> 
         </button>
         <button type="button" class="button" onclick="sendCmd('main','phono','')">
           <span class="button__text"><i class="fa-solid fa-compact-disc"></i> Phono</span>
-        </button>
-        <button type="button" class="button" onclick="sendCmd('main','aux','')">
-          <span class="button__text"><i class="fa-solid fa-microphone"></i> Analog</span> 
         </button>
         <!---->
         <p class="parstd"></p>
@@ -349,6 +349,7 @@
             <span class="button__text"><i class="fa-solid fa-moon"></i> Relax</span>
           </button>
           <div class="dd-content dd-button" id="relaxmenu">
+            <a onclick="sendCmd('main','stop-br','')"><i class="fa-solid fa-stop"></i> Stop</a>
           </div>
         </div>
         <!---->
@@ -361,8 +362,8 @@
           </button>
           <div class="dd-content ind-button" id="brmacs-menu"></div>
         </div>
-        <button type="button" class="button" onclick="sendCmd('main','stop-br','')">
-          <span class="button__text"><i class="fa-solid fa-xmark"></i> Stop</span> 
+        <button type="button" class="button">
+          <span class="button__text"></i> TBD</span> 
         </button>
         <div class="dropdown">
           <button type="button" class="button" onclick="showPowerMenu('localcmd','retropi')">

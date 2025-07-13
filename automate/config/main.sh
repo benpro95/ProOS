@@ -11,6 +11,7 @@ RAMDISK="/var/www/html/ram"
 LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
 INPUT_REGEX="!A-Za-z0-9_-"
+MAX_PING_WAIT="0.5" ## Max Ping Timeout (s)
 LOCAL_DOMAIN="home" ## Local DNS Domain
 XMIT_IP="10.177.1.12" ## Living Room Xmit
 DESK_IP="10.177.1.14" ## Desktop
@@ -20,6 +21,32 @@ BRPC_MAC="90:2e:16:46:86:43" ## Bedroom PC MAC
  
 ## Curl Command Line Arguments
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 10 --retry 1 --retry-delay 1 --no-keepalive"
+
+CALLAPI(){
+  if [[ "$XMITCMD" == "" ]]; then
+    return
+  fi
+  ## Default Target 
+  if [[ "$TARGET" == "" ]]; then
+    ## ESP32 Xmit (discard API response, runs in background)
+    SERVER="http://$XMIT_IP:80"
+    /usr/bin/curl $CURLARGS --header "Accept: ####?|$XMITCMD" $SERVER > /dev/null 2>&1 &
+    RESPOUT=""
+  else
+    ## ProOS home automation Pi
+    DATA="var=$SECOND_ARG&arg=$XMITCMD&action=main"
+    SERVER="http://$TARGET:80/exec.php"
+    ## API GET request wait then read response
+    DELIM="|"
+    APIRESP="$(/usr/bin/curl $CURLARGS --data $DATA $SERVER)"
+    TMPSTR="${APIRESP#*$DELIM}"
+    RESPOUT="${TMPSTR%$DELIM*}"
+    echo "$RESPOUT"
+  fi
+  ## Clear data
+  XMITCMD=""
+  TARGET=""
+}
 
 LOCAL_CMD(){
   local TTY_CMD="$1"
@@ -93,9 +120,8 @@ LOCAL_CMD(){
 }
 
 LOCAL_PING(){
-  MAX_WAIT_TIME="0.3" ## Max Wait Time in Seconds
   local LOCAL_PING_ADR="$1"
-  if ping -4 -A -c 1 -i "$MAX_WAIT_TIME" -W "$MAX_WAIT_TIME" "$LOCAL_PING_ADR" > /dev/null 2> /dev/null
+  if ping -4 -A -c 1 -i "$MAX_PING_WAIT" -W "$MAX_PING_WAIT" "$LOCAL_PING_ADR" > /dev/null 2> /dev/null
   then
     echo "1" ## Online
   else
@@ -158,33 +184,6 @@ WAKE_BRPC() {
   else
     wakeonlan "$BRPC_MAC"
   fi
-}
-
-## API Gateway
-CALLAPI(){
-  if [[ "$XMITCMD" == "" ]]; then
-    return
-  fi
-  ## Default Target 
-  if [[ "$TARGET" == "" ]]; then
-    ## ESP32 Xmit (discard API response, runs in background)
-    SERVER="http://$XMIT_IP:80"
-    /usr/bin/curl $CURLARGS --header "Accept: ####?|$XMITCMD" $SERVER > /dev/null 2>&1 &
-    RESPOUT=""
-  else
-    ## ProOS home automation Pi
-    DATA="var=$SECOND_ARG&arg=$XMITCMD&action=main"
-    SERVER="http://$TARGET:80/exec.php"
-    ## API GET request wait then read response
-    DELIM="|"
-    APIRESP="$(/usr/bin/curl $CURLARGS --data $DATA $SERVER)"
-    TMPSTR="${APIRESP#*$DELIM}"
-    RESPOUT="${TMPSTR%$DELIM*}"
-    echo "$RESPOUT"
-  fi
-  ## Clear data
-  XMITCMD=""
-  TARGET=""
 }
 
 XMIT(){
@@ -378,14 +377,14 @@ esac
 
 LIGHTS_OFF(){
   ## Window Lamp
-  XMITCMD="rfc1off" ; XMIT
+  XMITCMD="rfc1off"; XMIT
   ## Dresser Lamp
   LOCAL_CMD "brlamp1off"
 }
 
 LIGHTS_ON(){
   ## Window Lamp
-  XMITCMD="rfc1on" ; XMIT
+  XMITCMD="rfc1on"; XMIT
   ## Dresser Lamp
   LOCAL_CMD "brlamp1on"
 }
@@ -424,9 +423,7 @@ relax)
 ## Turn Off TV
 LOCAL_CMD "brtvoff"
 ## Bedroom Audio
-TARGET="$BRPI_IP"
-XMITCMD="ampstateon"
-CALLAPI
+TARGET="$BRPI_IP"; XMITCMD="ampstateon"; CALLAPI
 ## Relax Sounds on Bedroom Pi
 TARGET="$BRPI_IP"
 XMITCMD="relax"
@@ -435,18 +432,14 @@ exit
 ;;
 
 stop-br)
-TARGET="$BRPI_IP"
-## Stop Sounds
-XMITCMD="stoprelax"
-CALLAPI
+## Stop Relax Sounds
+TARGET="$BRPI_IP"; XMITCMD="stoprelax"; CALLAPI
 exit
 ;;
 
 ## Forward Command to Bedroom Pi
 brpi)
-TARGET="$BRPI_IP"
-XMITCMD="$SECOND_ARG"
-CALLAPI
+TARGET="$BRPI_IP"; XMITCMD="$SECOND_ARG"; CALLAPI
 exit
 ;;
 
@@ -458,8 +451,7 @@ exit
 
 ## Forward Command to Living Room Xmit
 lrxmit)
-XMITCMD="$SECOND_ARG"
-XMIT
+XMITCMD="$SECOND_ARG"; XMIT
 exit
 ;;
 
@@ -507,13 +499,11 @@ LOCAL_CMD "retropion"
 ## Retro Macs
 LOCAL_CMD "brmacson"
 ## PC Power On
-XMITCMD="wkststateon" ; XMIT 
+XMITCMD="wkststateon"; XMIT 
 ## Main Room Audio
-XMITCMD="hifion" ; XMIT
+XMITCMD="hifion"; XMIT
 ## Bedroom Audio
-TARGET="$BRPI_IP" 
-XMITCMD="ampstateon"
-CALLAPI
+TARGET="$BRPI_IP"; XMITCMD="ampstateon"; CALLAPI
 ## Bedroom TV
 LOCAL_CMD "brtvon"
 ## Bedroom PC
@@ -530,13 +520,11 @@ LOCAL_CMD "retropioff"
 ## Retro Macs
 LOCAL_CMD "brmacsoff"
 ## PC Power Off
-XMITCMD="wkststateoff" ; XMIT 
+XMITCMD="wkststateoff"; XMIT 
 ## Main Room Audio
-XMITCMD="hifioff" ; XMIT 
+XMITCMD="hifioff"; XMIT 
 ## Bedroom Audio
-TARGET="$BRPI_IP" 
-XMITCMD="ampstateoff"
-CALLAPI
+TARGET="$BRPI_IP"; XMITCMD="ampstateoff"; CALLAPI
 ## Bedroom TV
 LOCAL_CMD "brtvoff"
 exit
@@ -546,39 +534,35 @@ exit
 
 autodac)
 ## Auto Decoder Input
-XMITCMD="inauto" ; XMIT 
-sleep 0.75
+XMITCMD="inauto"; XMIT 
 ## Preamp DAC Input
-XMITCMD="dac" ; XMIT 
+XMITCMD="dac"; XMIT 
 exit
 ;;
 
 usb)
 ## USB Decoder Input
-XMITCMD="usb" ; XMIT
-sleep 0.75
+XMITCMD="usb"; XMIT
 ## Preamp DAC Input
-XMITCMD="dac" ; XMIT
+XMITCMD="dac"; XMIT
 exit
 ;;
 
 ## Coax Input
 coax)
 ## Coaxial Decoder Input
-XMITCMD="coaxial" ; XMIT 
-sleep 0.75
+XMITCMD="coaxial"; XMIT 
 ## Preamp AirPlay Mode
-XMITCMD="airplay-preamp" ; XMIT 
+XMITCMD="airplay-preamp"; XMIT 
 exit
 ;;
 
 ## Optical Input
 opt)
 ## Optical Decoder Input
-XMITCMD="optical" ; XMIT
-sleep 0.75
+XMITCMD="optical"; XMIT
 ## Preamp DAC Input
-XMITCMD="optical-preamp" ; XMIT
+XMITCMD="optical-preamp"; XMIT
 exit
 ;;
 

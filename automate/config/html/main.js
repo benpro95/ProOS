@@ -1198,48 +1198,22 @@ function showPowerMenu(target,menu) {
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // power on/off buttons (II)
       if (resp == '1') { // online
-        _title = "Off"
-        _indtype = 'noind';    
-        _menubtn = "offcmd";
-        _cmd = menu + 'off';
-        _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
+        _menudata += buildRemoteAPIMenu('offcmd',target,menu + 'off','noind','Off');
       }
       if (resp == '0') { // offline
-        _title = "On"
-        _indtype = 'noind';
-        _menubtn = "oncmd";
-        _cmd = menu + 'on';
-        _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
+        _menudata += buildRemoteAPIMenu('oncmd',target,menu + 'on','noind','On');
       }
       /// custom menus ///
       if (resp == 'brpctv_off') {
-        _title = "PC N/A"
-        _indtype = 'blkind';
-        _menudata += buildRemoteAPIMenu('',target,'',_indtype,_title);
-        _title = "On"
-        _indtype = 'noind';
-        _menubtn = "oncmd";
-        _cmd = menu + 'on';
-        _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
+        _menudata += buildRemoteAPIMenu('',target,'','blkind','PC Off');
+        _menudata += buildRemoteAPIMenu('oncmd',target,menu + 'on','noind','On');
       }
       if (resp == 'brtv_on') {
-        _title = "PC On"
-        _indtype = 'noind';
-        _menubtn = "oncmd";
-        _cmd = menu + 'on';
-        _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
-        _title = "TV Off"
-        _indtype = 'noind';    
-        _menubtn = "offcmd";
-        _cmd = menu + 'off';
-        _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
+        _menudata += buildRemoteAPIMenu('oncmd',target,menu + 'on','noind','PC On');
+        _menudata += buildRemoteAPIMenu('offcmd',target,menu + 'off','noind','TV Off');
       }
       if (resp == 'pc_awake') {
-        _title = "Sleep"
-        _indtype = 'noind';    
-        _menubtn = "sleepmode";
-        _cmd = menu + 'off';
-        _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
+        _menudata += buildRemoteAPIMenu('sleepmode',target,menu + 'off','noind','Sleep');
       }
       // stop spinner animation
       btnText.style.visibility = 'visible';

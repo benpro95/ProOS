@@ -391,8 +391,8 @@ LIGHTS_ON(){
 ########################
 
 ## Read command line arguments
-FIRST_ARG="$1"
-SECOND_ARG="$2"
+FIRST_ARG="${1//$'\n'/}"
+SECOND_ARG="${2//$'\n'/}"
 
 if [[ "${FIRST_ARG}" = *[$INPUT_REGEX]* ]]
 then
@@ -569,20 +569,22 @@ exit
 
 server)
 ## Read argument
-SERVERARG=${SECOND_ARG//$'\n'/} 
+if [[ "${SECOND_ARG}" = *[$INPUT_REGEX]* ]]
+then
+  echo "invalid characters in serial argument!"
+  exit
+else
+  SERVERARG="$SECOND_ARG"
+fi
 ## start / stop legacy services
 if [ "$SERVERARG" == "startlegacy" ]; then
   echo "Starting legacy services..." &>> $LOGFILE
-  TARGET="$BRPI_IP"
-  XMITCMD="apd-on"
-  CALLAPI
+  TARGET="$BRPI_IP"; XMITCMD="apd-on"; CALLAPI
   exit
 fi
 if [ "$SERVERARG" == "stoplegacy" ]; then
   echo "Stopping legacy services..." &>> $LOGFILE
-  TARGET="$BRPI_IP"
-  XMITCMD="apd-off"
-  CALLAPI
+  TARGET="$BRPI_IP"; XMITCMD="apd-off"; CALLAPI
   exit
 fi
 ## Pass action file to the hypervisor

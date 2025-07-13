@@ -1238,7 +1238,7 @@ function showPowerMenu(target,menu) {
         _title = "Sleep"
         _indtype = 'noind';    
         _menubtn = "sleepmode";
-        _cmd = menu + 'sleep';
+        _cmd = menu + 'off';
         _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       }
       // stop spinner animation

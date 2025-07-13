@@ -1,10 +1,9 @@
-wkst.home|Desktop|ping
-hifipi.home|Hi-Fi|ping
+aptcam.home|Aptcam|ping
+files.home|Files|ping
 xmit.home|Xmit|ping
 xana.home|Xana|ping
-unifi.home|UniFi|ping
-aptcam.home|Aptcam|ping
+plex.home|Plex|ping
 brpi.home|BrPi|ping
-retropi.home|RetroPi|ping
+unifi.home|UniFi|ping
 ledstrip.home|LEDstrip|ping
 ledwall.home|LEDwall|ping

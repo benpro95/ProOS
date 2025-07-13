@@ -565,17 +565,19 @@ XMITCMD="optical-preamp"; LRXMIT
 exit
 ;;
 
-## Server Control ##
-
 server)
-## Read argument
+## server controls
 if [[ "${SECOND_ARG}" = *[$INPUT_REGEX]* ]]
 then
-  echo "invalid characters in serial argument!"
+  echo "invalid characters in server argument!"
   exit
-else
-  SERVERARG="$SECOND_ARG"
 fi
+if [[ "${SECOND_ARG}" == "" ]]
+then
+  echo "server argument cannot be empty!"
+  exit
+fi
+SERVERARG="$SECOND_ARG"
 ## start / stop legacy services
 if [ "$SERVERARG" == "startlegacy" ]; then
   echo "Starting legacy services..." &>> $LOGFILE
@@ -587,7 +589,7 @@ if [ "$SERVERARG" == "stoplegacy" ]; then
   TARGET="$BRPI_IP"; XMITCMD="apd-off"; CALLAPI
   exit
 fi
-## Pass action file to the hypervisor
+## write trigger file
 echo " " 
 echo "$SERVERARG sent." &>> $LOGFILE
 touch $RAMDISK/$SERVERARG.txt

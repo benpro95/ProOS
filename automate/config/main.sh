@@ -10,7 +10,6 @@ DELIM="|"
 RAMDISK="/var/www/html/ram"
 LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
-INPUT_REGEX="!A-Za-z0-9_-"
 MAX_PING_WAIT="0.5" ## Max Ping Timeout (s)
 LOCAL_DOMAIN="home" ## Local DNS Domain
 XMIT_IP="10.177.1.12" ## Living Room Xmit
@@ -394,12 +393,6 @@ LIGHTS_ON(){
 FIRST_ARG="${1//$'\n'/}"
 SECOND_ARG="${2//$'\n'/}"
 
-if [[ "${FIRST_ARG}" = *[$INPUT_REGEX]* ]]
-then
-  echo "invalid characters in first argument!"
-  exit
-fi
-
 case "$FIRST_ARG" in
 
 sitelookup)
@@ -567,11 +560,6 @@ exit
 
 server)
 ## server controls
-if [[ "${SECOND_ARG}" = *[$INPUT_REGEX]* ]]
-then
-  echo "invalid characters in server argument!"
-  exit
-fi
 if [[ "${SECOND_ARG}" == "" ]]
 then
   echo "server argument cannot be empty!"

@@ -1,14 +1,18 @@
 #!/bin/bash
-###########################################################
-###########################################################
-## Launcher for WWW actions script
-CMD="$1"
-VAR="$2"
-if [[ "$CMD" == "" ]]
+#####################################
+#####################################
+## Launcher for WWW actions script ##
+
+## Read command line arguments
+FIRST_ARG="${1//$'\n'/}"
+SECOND_ARG="${2//$'\n'/}"
+
+if [[ "${FIRST_ARG}" == "" ]]
 then
   echo "no argument."
   exit
 fi
 
-echo "BRPC" 
+echo "1ST: $FIRST_ARG" 
+echo "2ND: $SECOND_ARG" 
 exit

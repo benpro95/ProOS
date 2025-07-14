@@ -40,6 +40,9 @@ apt-get install -y --no-upgrade lighttpd php-cgi php php-common
 cp -f /tmp/config/lighttpd.conf /etc/lighttpd/
 chmod 644 /etc/lighttpd/lighttpd.conf
 chown root:root /etc/lighttpd/lighttpd.conf
+cp -f /tmp/config/lighttpd.service /lib/systemd/system/
+chmod 644 /lib/systemd/system/lighttpd.service
+chown root:root /lib/systemd/system/lighttpd.service
 lighttpd-enable-mod fastcgi fastcgi-php
 lighty-enable-mod fastcgi-php
 

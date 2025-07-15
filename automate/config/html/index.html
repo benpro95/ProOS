@@ -294,11 +294,12 @@
         <p class="parstd"></p>
         <!---->
         <div class="dropdown">
-          <button type="button" class="button" onclick="showPowerMenu('localcmd','brtv')">
-            <span class="button__text" id="brtv-text"><i class="fa-solid fa-tv"></i> TV</span>
-            <span class="button__text" id="brtv-spinner"></span>
+          <button type="button" class="button" onclick="showDynMenu('relaxmenu')">
+            <span class="button__text"><i class="fa-solid fa-moon"></i> Relax</span>
           </button>
-          <div class="dd-content ind-button" id="brtv-menu"></div>
+          <div class="dd-content dd-button" id="relaxmenu">
+            <a onclick="sendCmd('main','stop-br','')"><i class="fa-solid fa-stop"></i> Stop</a>
+          </div>
         </div>
         <div class="dropdown">
           <button type="button" class="button button_ctrl" onclick="showMenu('br-menu')">
@@ -331,11 +332,11 @@
         <p class="parstd"></p> 
         <!---->
         <div class="dropdown">
-          <button type="button" class="button" onclick="showAmpInput()">
-            <span class="button__text" id="ampinp-text"><i class="fa-solid fa-sitemap"></i> Input</span>
-            <span class="button__text" id="ampinp-spinner"></span>
+          <button type="button" class="button" onclick="showPowerMenu('localcmd','brtv')">
+            <span class="button__text" id="brtv-text"><i class="fa-solid fa-tv"></i> TV</span>
+            <span class="button__text" id="brtv-spinner"></span>
           </button>
-          <div class="dd-content ind-button" id="brinpmenu"></div>
+          <div class="dd-content ind-button" id="brtv-menu"></div>
         </div>
         <div class="dropdown">
           <button type="button" class="button" onclick="showPowerMenu('brpi','ampstate')">
@@ -345,12 +346,11 @@
           <div class="dd-content ind-button" id="ampstate-menu"></div>
         </div>
         <div class="dropdown">
-          <button type="button" class="button" onclick="showDynMenu('relaxmenu')">
-            <span class="button__text"><i class="fa-solid fa-moon"></i> Relax</span>
+          <button type="button" class="button" onclick="showPowerMenu('localcmd','brpc')">
+            <span class="button__text" id="brpc-text"><i class="fa-solid fa-computer-mouse"></i> PC</span>
+            <span class="button__text" id="brpc-spinner"></span>
           </button>
-          <div class="dd-content dd-button" id="relaxmenu">
-            <a onclick="sendCmd('main','stop-br','')"><i class="fa-solid fa-stop"></i> Stop</a>
-          </div>
+          <div class="dd-content ind-button" id="brpc-menu"></div>
         </div>
         <!---->
         <p class="parstd"></p> 
@@ -362,9 +362,13 @@
           </button>
           <div class="dd-content ind-button" id="brmacs-menu"></div>
         </div>
-        <button type="button" class="button">
-          <span class="button__text"></i> TBD</span> 
-        </button>
+        <div class="dropdown">
+          <button type="button" class="button" onclick="showAmpInput()">
+            <span class="button__text" id="ampinp-text"><i class="fa-solid fa-sitemap"></i> Inputs</span>
+            <span class="button__text" id="ampinp-spinner"></span>
+          </button>
+          <div class="dd-content ind-button" id="brinpmenu"></div>
+        </div>
         <div class="dropdown">
           <button type="button" class="button" onclick="showPowerMenu('localcmd','retropi')">
             <span class="button__text" id="retropi-text"><i class="fa-solid fa-gamepad"></i> RetroPi</span>

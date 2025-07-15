@@ -5,27 +5,8 @@ header("Content-Type: application/json");
 // read and update a common file (API)
 if (isset($_REQUEST['action'], $_REQUEST['arg'], $_REQUEST['var'])) {
 	$action = $_REQUEST['action'];
-    $arg = $_REQUEST['arg'];
-    $var = $_REQUEST['var'];
-
-	// invalid check
-	$invalid_regex = '/[#$%^&*()+=[\]\';,.\/{}|":<>?~\\\\]/';
-	if(preg_match($invalid_regex, $action) === 1){
-		echo "invalid characters in action!";
-		http_response_code(500);
-		return;
-	}
-	if(preg_match($invalid_regex, $arg) === 1){
-		echo "invalid characters in arg!";
-		http_response_code(500);
-		return;
-	}
-	if(preg_match($invalid_regex, $var) === 1){
-		echo "invalid characters in var!";
-		http_response_code(500);
-		return;
-	}
-
+	$arg = $_REQUEST['arg'];
+	$var = $_REQUEST['var'];
     
     $filepath = '/var/www/html/ram/' . $arg . '.txt';	
 

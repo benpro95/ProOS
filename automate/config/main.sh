@@ -21,7 +21,7 @@ BRPC_MAC="90:2e:16:46:86:43" ## Bedroom PC MAC
 ## Curl Command Line Arguments
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 10 --retry 1 --retry-delay 1 --no-keepalive"
 
-CALLAPI(){
+function CALLAPI(){
   if [[ "$XMITCMD" == "" ]]; then
     return
   fi
@@ -47,7 +47,7 @@ CALLAPI(){
   TARGET=""
 }
 
-LOCAL_CMD(){
+function LOCAL_CMD(){
   local TTY_CMD="$1"
   case "$TTY_CMD" in
   ## RF Power Controller (under dresser)
@@ -84,24 +84,10 @@ LOCAL_CMD(){
     ;;
   ## Bedroom TV / PC
   "brtv")
-    BRTV_OUT="$(LOCALCOM_RESP '01003' '0')"
-    BRPC_PING="$(LOCAL_PING $BRPC_IP)"
-    if [[ "$BRTV_OUT" == "1" ]]; then
-      if [[ "$BRPC_PING" == "1" ]]; then
-        ## TV on and PC on
-        echo "1"
-      else
-        ## TV on and PC off
-        echo "brtv_on"
-      fi
+    if [[ "$(LOCALCOM_RESP '01003' '0')" == "1" ]]; then
+      echo "1"
     else
-      if [[ "$BRPC_PING" == "1" ]]; then
-        ## TV off and PC on
-        echo "0"
-      else
-        ## TV off and PC off
-        echo "brpctv_off"
-      fi
+      echo "0"
     fi
     ;;
   "brtvon")
@@ -111,6 +97,34 @@ LOCAL_CMD(){
   "brtvoff")
     LOCALCOM "01002"
     ;;
+  "brpc")
+    if [[ "$(LOCAL_PING "$BRPC_IP")" == "1" ]]
+    then ## Host Online
+      echo "pc_awake"
+    else ## Host Offline
+      echo "0"
+    fi
+    ;;
+  "brpcoff")
+    if [[ "$(LOCAL_PING "$BRPC_IP")" == "1" ]]
+    then ## Host Online
+      ## Send Sleep Command
+      TARGET="$BRPC_IP"
+      XMITCMD="sleep"
+      CALLAPI
+    else ## Host Offline
+      echo "$DESK_IP is already offline"
+    fi
+    ;;
+  "brpcon")
+    if [[ "$(LOCAL_PING "$BRPC_IP")" == "1" ]]
+    then ## Host Online
+      echo "$DESK_IP is already online"
+    else ## Host Offline
+      ## Wake Bedroom PC (WOL)
+      WAKE_BRPC > /dev/null 2>&1
+    fi
+    ;;
   ##
   *)
     echo "invalid local command!"
@@ -118,7 +132,7 @@ LOCAL_CMD(){
   esac
 }
 
-LOCAL_PING(){
+function LOCAL_PING(){
   local LOCAL_PING_ADR="$1"
   if ping -4 -A -c 1 -i "$MAX_PING_WAIT" -W "$MAX_PING_WAIT" "$LOCAL_PING_ADR" > /dev/null 2> /dev/null
   then
@@ -128,7 +142,7 @@ LOCAL_PING(){
   fi
 }
 
-LOCALCOM_RESP(){
+function LOCALCOM_RESP(){
   ## read response character position
   local RESP_CMD="$1"
   local RESP_POS="$2"
@@ -166,17 +180,17 @@ LOCALCOM_RESP(){
   esac
 }
 
-LOCALCOM(){
+function LOCALCOM(){
   local ZTERM_CMD="$1"
   /usr/bin/singleton ZTERM_PROC /usr/bin/ztermcom $ZTERM_CMD
 }
 
-LED_PRESET(){
+function LED_PRESET(){
   local LED_PRESET_CMD="$1"
   /opt/system/leds "$LED_PRESET_CMD"
 }
 
-WAKE_BRPC() {
+function WAKE_BRPC() {
   if [[ "$(LOCAL_PING $BRPC_IP)" == "1" ]]
   then
     echo "bedroom PC already online."
@@ -185,7 +199,7 @@ WAKE_BRPC() {
   fi
 }
 
-LRXMIT(){
+function LRXMIT(){
 case "$XMITCMD" in
   ### HiFi Preamp ###
   ## Power
@@ -373,19 +387,21 @@ case "$XMITCMD" in
 esac
 }
 
-LIGHTS_OFF(){
+function LIGHTS_OFF(){
   ## Window Lamp
   XMITCMD="rfc1off"; LRXMIT
   ## Dresser Lamp
   LOCAL_CMD "brlamp1off"
 }
 
-LIGHTS_ON(){
+function LIGHTS_ON(){
   ## Window Lamp
   XMITCMD="rfc1on"; LRXMIT
   ## Dresser Lamp
   LOCAL_CMD "brlamp1on"
 }
+
+function DECODE_RFC3986() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
 
 ########################
 
@@ -398,7 +414,8 @@ case "$FIRST_ARG" in
 sitelookup)
 ## Lookup Website Title from URL
 if [ "$SECOND_ARG" != "" ]; then
-  LINKTITLE=$(curl -s -X GET "$SECOND_ARG" | xmllint -html -xpath "//head/title/text()" - 2>/dev/null)
+  DECODED_URL="$(DECODE_RFC3986 $SECOND_ARG)"
+  LINKTITLE=$(curl -s -X GET "$DECODED_URL" | xmllint -html -xpath "//head/title/text()" - 2>/dev/null)
   if [[ "$LINKTITLE" != "" ]] && [[ "$LINKTITLE" != "\n" ]]; then
     echo "$LINKTITLE"
   fi

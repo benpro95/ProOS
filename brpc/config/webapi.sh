@@ -13,6 +13,9 @@ then
   exit
 fi
 
-echo "1ST: $FIRST_ARG" 
-echo "2ND: $SECOND_ARG" 
-exit
+if [[ "${FIRST_ARG}" == "sleep" ]]
+then
+  echo "entering sleepmode."
+  systemctl suspend
+  exit
+fi

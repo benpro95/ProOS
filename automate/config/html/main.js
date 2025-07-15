@@ -989,6 +989,13 @@ function addHTTPtoURL(linkin) {
   return linkout;
 }
 
+function encodeRFC3986URIComponent(str) {
+  return encodeURIComponent(str).replace(
+    /[!'()*]/g,
+    (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,
+  );
+}
+
 async function lookupURL() {
   const urlBoxElem = document.getElementById("editFav__urlbox");
   const nameBoxElem = document.getElementById("editFav__namebox");
@@ -1003,8 +1010,10 @@ async function lookupURL() {
     // add HTTPs to URL
     let url = addHTTPtoURL(urlin);
     urlBoxElem.value = url;
+    let encoded_url = encodeRFC3986URIComponent(url);
+    console.log(encoded_url);
     // search for URLs title
-    sendCmd('main','sitelookup',url).then((data) => {
+    sendCmd('main','sitelookup',encoded_url).then((data) => {
       if (data === null || data === "") {
         // URL lookup failed actions
         nameBoxElem.value = "Not Found";
@@ -1175,22 +1184,14 @@ function showPowerMenu(target,menu) {
           _indtype = 'blkind';
           _title = "Offline";
           break;
-        case 'brpctv_off':
-          _indtype = 'blkind';
-          _title = "TV Off";
-          break;  
-        case 'brtv_on':
-          _indtype = 'ylwind';
-          _title = "TV On";
+        case '1':
+          _indtype = 'grnind';
+          _title = "Online";
           break;
         case 'pc_awake':
           _indtype = 'grnind';
           _title = "Online";
-          break;
-        case '1':
-          _indtype = 'grnind';
-          _title = "Online";
-          break;          
+          break;        
         default:
           _indtype = 'redind';
           _title = "Error";
@@ -1204,14 +1205,6 @@ function showPowerMenu(target,menu) {
         _menudata += buildRemoteAPIMenu('oncmd',target,menu + 'on','noind','On');
       }
       /// custom menus ///
-      if (resp == 'brpctv_off') {
-        _menudata += buildRemoteAPIMenu('',target,'','blkind','PC Off');
-        _menudata += buildRemoteAPIMenu('oncmd',target,menu + 'on','noind','On');
-      }
-      if (resp == 'brtv_on') {
-        _menudata += buildRemoteAPIMenu('oncmd',target,menu + 'on','noind','PC On');
-        _menudata += buildRemoteAPIMenu('offcmd',target,menu + 'off','noind','TV Off');
-      }
       if (resp == 'pc_awake') {
         _menudata += buildRemoteAPIMenu('sleepmode',target,menu + 'off','noind','Sleep');
       }

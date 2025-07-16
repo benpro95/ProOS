@@ -1,6 +1,6 @@
 #!/bin/bash
 ###########################################################
-## Main Home Automation Script by Ben Provenzano III v29 ##
+## Main Home Automation Script by Ben Provenzano III v31 ##
 ###########################################################
 
 TARGET=""
@@ -382,7 +382,7 @@ case "$XMITCMD" in
     CALLAPI
     ;;
 *)
-  echo "invalid command!"
+  echo "invalid Xmit command!"
   ;;
 esac
 }
@@ -401,7 +401,7 @@ function LIGHTS_ON(){
   LOCAL_CMD "brlamp1on"
 }
 
-function DECODE_RFC3986() { : "${*//+/ }"; echo -e "${_//%/\\x}"; }
+function DECODE_RFC3986() { : "${*//+/ }"; echo -e "${_//#/\\x}"; } ## using (#) instead of (%)
 
 ########################
 
@@ -434,9 +434,7 @@ LOCALCMD "brtvoff"
 ## Bedroom Audio
 TARGET="$BRPI_IP"; XMITCMD="ampstateon"; CALLAPI
 ## Relax Sounds on Bedroom Pi
-TARGET="$BRPI_IP"
-XMITCMD="relax"
-CALLAPI
+TARGET="$BRPI_IP"; XMITCMD="relax"; CALLAPI
 exit
 ;;
 
@@ -500,6 +498,7 @@ exit
 ## All Power Off ##
 
 allon)
+## All Lights
 LIGHTS_ON
 ## LEDwalls
 LED_PRESET "abstract"
@@ -513,14 +512,13 @@ XMITCMD="wkststateon"; LRXMIT
 XMITCMD="hifion"; LRXMIT
 ## Bedroom Audio
 TARGET="$BRPI_IP"; XMITCMD="ampstateon"; CALLAPI
-## Bedroom TV
+## Bedroom TV & PC
 LOCAL_CMD "brtvon"
-## Bedroom PC
-WAKE_BRPC > /dev/null 2>&1
 exit
 ;;
 
 alloff)
+## All Lights
 LIGHTS_OFF
 ## Blank LEDwalls
 /opt/system/leds stop

@@ -8,6 +8,16 @@ if (isset($_REQUEST['action'], $_REQUEST['arg'], $_REQUEST['var'])) {
   $arg = $_REQUEST['arg'];
   $var = $_REQUEST['var'];
 
+	// check for invalid characters
+	$regex = '/^[A-Za-z0-9_.#%&-]*$/';
+	$allinp = $action . $arg . $var;
+	$matchout = preg_match_all($regex, $allinp);
+	if ($matchout === 0) {
+		echo "invalid input detected!";
+		http_response_code(500);
+		return;
+	}
+    
   // pass arguments to shell script
   $cmd = "/usr/bin/sudo /opt/system/webapi.sh $arg $var 2>&1";
   $sysout = shell_exec("$cmd");

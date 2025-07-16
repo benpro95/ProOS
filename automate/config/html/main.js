@@ -989,11 +989,9 @@ function addHTTPtoURL(linkin) {
   return linkout;
 }
 
-function encodeRFC3986URIComponent(str) {
-  return encodeURIComponent(str).replace(
-    /[!'()*]/g,
-    (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,
-  );
+function base64URIEncode($data) 
+{ 
+  return rtrim(strtr(base64_encode($data), '+/', '-_'), '='); 
 }
 
 async function lookupURL() {
@@ -1010,8 +1008,9 @@ async function lookupURL() {
     // add HTTPs to URL
     let url = addHTTPtoURL(urlin);
     urlBoxElem.value = url;
-    let encoded_url = encodeRFC3986URIComponent(url);
+    let encoded_url = base64URIEncode(url);
     console.log(encoded_url);
+    return;
     // search for URLs title
     sendCmd('main','sitelookup',encoded_url).then((data) => {
       if (data === null || data === "") {

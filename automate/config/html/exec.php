@@ -7,6 +7,16 @@ if (isset($_REQUEST['action'], $_REQUEST['arg'], $_REQUEST['var'])) {
 	$action = $_REQUEST['action'];
 	$arg = $_REQUEST['arg'];
 	$var = $_REQUEST['var'];
+
+	// check for invalid characters
+	$regex = '/^[A-Za-z0-9_.#%&-]*$/';
+	$input = $action . $arg . $var;
+	$matchout = preg_match_all($regex, $input);
+	if ($matchout === 0) {
+		echo "invalid input detected!";
+		http_response_code(500);
+		return;
+	}
     
     $filepath = '/var/www/html/ram/' . $arg . '.txt';	
 
@@ -22,22 +32,22 @@ if (isset($_REQUEST['action'], $_REQUEST['arg'], $_REQUEST['var'])) {
 		// selecting the line limit
 		$line_limit = 2000;
 		if ($last_line > $line_limit) {
-		  // selecting the last lines using the limit
-		  $file = new LimitIterator($file, ($last_line - $line_limit), $last_line);
+			// selecting the last lines using the limit
+			$file = new LimitIterator($file, ($last_line - $line_limit), $last_line);
 		}
 		// new array
         $array = array();
         // write each line to array
 		foreach ($file as $line) {
-		    $array[] = rtrim($line, "\n\r\t\v\x00");
+			$array[] = rtrim($line, "\n\r\t\v\x00");
 		}
 		if (!empty($array)) {
 			// convert array to JSON object
 		    $json_out = json_encode($array);
 		    // valid object has data
 			if ($json_out === false) {
-			  $json_out = json_encode(["jsonError" => json_last_error_msg()]);
-			  http_response_code(500);
+				$json_out = json_encode(["jsonError" => json_last_error_msg()]);
+				http_response_code(500);
 			}
 			echo $json_out;
 			http_response_code(200);
@@ -67,9 +77,9 @@ if (isset($_REQUEST['action'], $_REQUEST['arg'], $_REQUEST['var'])) {
     $cmd = "/usr/bin/sudo /opt/rpi/$action $arg $var 2>&1";
     $sysout = shell_exec("$cmd");
     if (empty($sysout)) {
-      $json_out = json_encode((object) null); 
+        $json_out = json_encode((object) null); 
 	} else {
-      $json_out = json_encode($sysout);
+        $json_out = json_encode($sysout);
 	}
     // return sysout	
     echo $json_out;

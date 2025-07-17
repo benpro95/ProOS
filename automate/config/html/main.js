@@ -1012,8 +1012,6 @@ async function lookupURL() {
     let url = addHTTPtoURL(urlin);
     urlBoxElem.value = url;
     let encoded_url = base64URLSafeEncode(url);
-    console.log(encoded_url);
-    return;
     // search for URLs title
     sendCmd('main','sitelookup',encoded_url).then((data) => {
       if (data === null || data === "") {
@@ -1027,7 +1025,7 @@ async function lookupURL() {
         }, 2000);
       } else { 
         // remove invalid characters, write to name box
-        nameBoxElem.value = data.replace(/(\r\n|\n|\r)/gm, "");
+        nameBoxElem.value = data.replace(/(\r\n|\n|\r)/gm, '');
       }
     });
   }

@@ -401,7 +401,11 @@ function LIGHTS_ON(){
   LOCAL_CMD "brlamp1on"
 }
 
-function DECODE_RFC3986() { : "${*//+/ }"; echo -e "${_//#/\\x}"; } ## using (#) instead of (%)
+function DECODE_URLSAFEBASE64(){
+  local BASE64IN="$1="
+  local OUTPUT=$(printf $BASE64IN | base64 -d)
+  echo "$OUTPUT"
+}
 
 ########################
 
@@ -414,11 +418,12 @@ case "$FIRST_ARG" in
 sitelookup)
 ## Lookup Website Title from URL
 if [ "$SECOND_ARG" != "" ]; then
-  DECODED_URL="$(DECODE_RFC3986 $SECOND_ARG)"
-  LINKTITLE=$(curl -s -X GET "$DECODED_URL" | xmllint -html -xpath "//head/title/text()" - 2>/dev/null)
-  if [[ "$LINKTITLE" != "" ]] && [[ "$LINKTITLE" != "\n" ]]; then
-    echo "$LINKTITLE"
-  fi
+  DECODED_URL="$(DECODE_URLSAFEBASE64 $SECOND_ARG)"
+  echo "$DECODED_URL"
+  ##LINKTITLE=$(curl -s -X GET "$DECODED_URL" | xmllint -html -xpath "//head/title/text()" - 2>/dev/null)
+  ##if [[ "$LINKTITLE" != "" ]] && [[ "$LINKTITLE" != "\n" ]]; then
+  ##  echo "$LINKTITLE"
+  ##fi
 fi
 exit
 ;;

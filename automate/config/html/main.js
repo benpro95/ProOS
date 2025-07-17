@@ -991,7 +991,7 @@ function addHTTPtoURL(linkin) {
 
 function base64URLSafeEncode(buffer) 
 {
-  return buffer.toString('base64')
+  return btoa(buffer)
     .replace(/\+/g, '-') // Convert '+' to '-'
     .replace(/\//g, '_') // Convert '/' to '_'
     .replace(/=+$/, ''); // Remove ending '='

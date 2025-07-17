@@ -79,7 +79,6 @@ chmod -R 755 /opt/system
 chown -R root:root /opt/system
 ln -sf /opt/system/main /opt/system/xmit
 ln -sf /opt/system /opt/rpi
-rm -fv /opt/system/system
 
 ## Copy Menu Layouts to RAM Disk
 if [ ! -e /var/www/html/ram/mainmenu.txt ]; then
@@ -157,23 +156,15 @@ rm -f /var/www/html/main.min.js
 rm -f /etc/sudoers.d/www-perms
 rm -f /etc/sudoers.d/www-nopasswd
 rm -f /etc/sudoers.d/www-mod-nopasswd
+rm -f /etc/sudoers.d/nobody-perms
 sh -c "touch /etc/sudoers.d/www-perms"
+sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/rpi/main\" >> /etc/sudoers.d/www-perms"
 sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/system/main\" >> /etc/sudoers.d/www-perms"
 sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/system/leds\" >> /etc/sudoers.d/www-perms"
 sh -c "echo \"www-data ALL=(ALL) NOPASSWD:/opt/system/xmit\" >> /etc/sudoers.d/www-perms"
 chown root:root /etc/sudoers.d/www-perms
 chmod u=rwx,g=rx,o=rx /etc/sudoers.d/www-perms
 chmod u=r,g=r,o= /etc/sudoers.d/www-perms
-##
-## Nobody User Permissions (THD Hotkeys)
-rm -f /etc/sudoers.d/nobody-perms
-sh -c "touch /etc/sudoers.d/nobody-perms"
-sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/system/main\" >> /etc/sudoers.d/nobody-perms"
-sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/system/leds\" >> /etc/sudoers.d/nobody-perms"
-sh -c "echo \"nobody ALL=(ALL) NOPASSWD:/opt/system/xmit\" >> /etc/sudoers.d/nobody-perms"
-chown root:root /etc/sudoers.d/nobody-perms
-chmod u=rwx,g=rx,o=rx /etc/sudoers.d/nobody-perms
-chmod u=r,g=r,o= /etc/sudoers.d/nobody-perms
 
 ## Boot Service
 cp -f /tmp/config/rc.local /etc/

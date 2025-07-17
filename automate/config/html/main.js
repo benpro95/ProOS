@@ -989,9 +989,12 @@ function addHTTPtoURL(linkin) {
   return linkout;
 }
 
-function base64URIEncode($data) 
-{ 
-  return rtrim(strtr(base64_encode($data), '+/', '-_'), '='); 
+function base64URLSafeEncode(buffer) 
+{
+  return buffer.toString('base64')
+    .replace(/\+/g, '-') // Convert '+' to '-'
+    .replace(/\//g, '_') // Convert '/' to '_'
+    .replace(/=+$/, ''); // Remove ending '='
 }
 
 async function lookupURL() {
@@ -1008,7 +1011,7 @@ async function lookupURL() {
     // add HTTPs to URL
     let url = addHTTPtoURL(urlin);
     urlBoxElem.value = url;
-    let encoded_url = base64URIEncode(url);
+    let encoded_url = base64URLSafeEncode(url);
     console.log(encoded_url);
     return;
     // search for URLs title

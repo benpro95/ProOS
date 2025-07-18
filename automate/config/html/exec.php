@@ -9,7 +9,7 @@ if (isset($_REQUEST['action'], $_REQUEST['arg'], $_REQUEST['var'])) {
 	$var = $_REQUEST['var'];
 
 	// check for invalid characters
-	$regex = '/^[A-Za-z0-9_.#%&-]*$/';
+	$regex = '/^[A-Za-z0-9_.#%@&-]*$/';
 	$input = $action . $arg . $var;
 	$matchout = preg_match_all($regex, $input);
 	if ($matchout === 0) {

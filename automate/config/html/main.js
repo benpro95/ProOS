@@ -992,9 +992,9 @@ function addHTTPtoURL(linkin) {
 function base64URLSafeEncode(buffer) 
 {
   return btoa(buffer)
-    .replace(/\+/g, '-') // Convert '+' to '-'
-    .replace(/\//g, '_') // Convert '/' to '_'
-    .replace(/=+$/, ''); // Remove ending '='
+    .replace(/\+/g, '-')  // Convert '+' to '-'
+    .replace(/\//g, '_')  // Convert '/' to '_'
+    .replace(/\=/g, '@'); // Convert '=' to '@'
 }
 
 async function lookupURL() {
@@ -1113,7 +1113,7 @@ function showAmpInput() {
       let _title;   // menu button title
       let _menudata = "";
       // apple TV input 
-      _menubtn = "gencmd";
+      _menubtn = "cmd";
       _title = "Optical I"  
       _cmd = "opt-a";
       _indtype = 'blkind';
@@ -1122,7 +1122,7 @@ function showAmpInput() {
       }
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // aux optical input
-      _menubtn = "gencmd";
+      _menubtn = "cmd";
       _title = "Optical II"  
       _cmd = "opt-b";
       _indtype = 'blkind';
@@ -1131,7 +1131,7 @@ function showAmpInput() {
       } 
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // coaxial input
-      _menubtn = "gencmd";
+      _menubtn = "cmd";
       _title = "Coaxial"  
       _cmd = "coaxial";  
       _indtype = 'blkind';
@@ -1140,7 +1140,7 @@ function showAmpInput() {
       }
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // aux analog input
-      _menubtn = "gencmd";
+      _menubtn = "cmd";
       _title = "Analog"  
       _cmd = "aux";
       _indtype = 'blkind';
@@ -1171,7 +1171,7 @@ function showPowerMenu(target,menu) {
     // show menu
     _elem.style.display = 'block';
     sendCmd('main',target,menu).then((data) => { // GET request
-      const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // remove newlines
+      const resp = data.replace(/(\r\n|\n|\r)/gm, ''); // remove newlines
       // draw menu items
       let _menubtn; // menu type
       let _cmd;     // remote host command 
@@ -1332,33 +1332,29 @@ function createListItem(_col0,_col1,_col2,_id) {
   // API call menu
   if (_col1 == 'ledmenu') {
     _elm.addEventListener("click", function(event) {
-      const _sendcmd = _col0;
-      sendCmd('leds',_sendcmd,'');
+      sendCmd('leds',_col0,'');
     });
   }
   if (_col1 == 'relaxmenu') {
     _elm.addEventListener("click", function(event) {
-      const _relaxcmd = _col0;
-      relaxSend(_relaxcmd);
+      relaxSend(_col0);
     });
   } 
   // link only menu
   if (_col1 == 'link') {
     _elm.href = _col0;
   }
-  // indicator / status menu  
-  if (_col1 == 'blkind' || // black indicator
-      _col1 == 'grnind' || // green indicator
-      _col1 == 'redind' || // red indicator
-      _col1 == 'ylwind' || // yellow indicator
-      _col1 == 'noind') { // no indicator
+  // status menus
+  if (_col1.includes('ind')) { // indicators
     // power toggle type
     const _icon = document.createElement('span');
     const field = _col0.split("~");
     const menutype = field[0]; // menu button type
     const target   = field[1]; // target server 
     const cmd      = field[2]; // target command
+    let hoverOff = true;
     if (menutype == 'oncmd') { // power-on remote API call on click
+      hoverOff = false;
       _icon.classList.add('fa-solid');
       _icon.classList.add('fa-toggle-on');
       _icon.classList.add('leftjfy'); // left-justify icon
@@ -1368,6 +1364,7 @@ function createListItem(_col0,_col1,_col2,_id) {
       });
     }
     if (menutype == 'offcmd') { // power-off remote API call on click
+      hoverOff = false;
       _icon.classList.add('fa-solid');
       _icon.classList.add('fa-toggle-off');
       _icon.classList.add('leftjfy'); // left-justify icon
@@ -1377,6 +1374,7 @@ function createListItem(_col0,_col1,_col2,_id) {
       });
     }
     if (menutype == 'sleepmode') { // sleep PC type menu
+      hoverOff = false;
       _icon.classList.add('fa-solid');
       _icon.classList.add('fa-moon');
       _icon.classList.add('leftjfy'); // left-justify icon
@@ -1385,7 +1383,8 @@ function createListItem(_col0,_col1,_col2,_id) {
         sendCmd('main',target,cmd);
       });
     }
-    if (menutype == 'gencmd') { // generic remote API call on click
+    if (menutype == 'cmd') { // generic remote API call on click
+      hoverOff = false;
       _elm.addEventListener("click", function(event) {
         sendCmd('main',target,cmd);
       });
@@ -1405,6 +1404,10 @@ function createListItem(_col0,_col1,_col2,_id) {
     if (_col1 == 'ylwind'){
       _dot.classList.add('ind_dot');
       _dot.classList.add('ind_dot_yellow');
+    }
+    // disable hover/click on non-clickable menus
+    if (hoverOff === true){
+      _elm.classList.add('no_select');
     }
     _dot.id = "ind-" + _col2;
     _elm.appendChild(_dot);

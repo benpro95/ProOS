@@ -54,7 +54,7 @@ body {
 }
 
 .pg-bottom {
-  padding-bottom: 150px; 
+  padding-bottom: 200px; 
 }
 
 .led-grid {
@@ -410,6 +410,7 @@ input.chkbox {
   min-width: 130px;
 }
 
+/* dropdown menu content */
 .dd-content {
   cursor: pointer;
   display: none;

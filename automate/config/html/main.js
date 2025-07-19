@@ -1277,11 +1277,13 @@ function drawMenu(data,menu) {
   removeDynMenus();
   if (!(data === null || data === "")) {
     // erase global data
-    while (fileData.length) { fileData.pop(); } 
+    while (fileData.length) { 
+      fileData.pop(); 
+    } 
     for (var idx in data) {
       let line = data[idx].toString();
       if (line != "") {
-        fileData.push(line); // write to register
+        fileData.push(line); // write to array
         const navElement = document.getElementById(menu);
         const linearr = line.split("|");
         // 0=Host, 1=Type, 2=Name
@@ -1293,7 +1295,7 @@ function drawMenu(data,menu) {
         dynMenuActive = 1;
       }
     }
-    // store menu name at end of register
+    // store menu name at end of array
     fileData.push(menu);
   } else {
     console.log("drawMenu: no data");

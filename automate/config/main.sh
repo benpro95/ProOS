@@ -418,6 +418,8 @@ if [ "$SECOND_ARG" != "" ]; then
   LINKTITLE=$(curl -s -X GET "$DECODED_URL" | xmllint -html -xpath "//head/title/text()" - 2>/dev/null)
   if [[ "$LINKTITLE" != "" ]] && [[ "$LINKTITLE" != "\n" ]]; then
     echo "$LINKTITLE"
+  else
+    echo "Error!"
   fi
 fi
 exit
@@ -429,12 +431,16 @@ exit
 ;;
 
 relax)
-## Turn Off TV
-LOCALCMD "brtvoff"
 ## Bedroom Audio
 TARGET="$BRPI_IP"; XMITCMD="ampstateon"; CALLAPI
 ## Relax Sounds on Bedroom Pi
 TARGET="$BRPI_IP"; XMITCMD="relax"; CALLAPI
+## Turn Off TV
+LOCAL_CMD "brtvoff"
+## Send Sleep Command
+TARGET="$BRPC_IP"
+XMITCMD="sleep"
+CALLAPI
 exit
 ;;
 

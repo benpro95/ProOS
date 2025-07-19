@@ -9,10 +9,10 @@ apt-get --yes update
 apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates htop \
  apt-transport-https wget unzip gnupg rsync curl screen ethtool libdbus-1-dev \
  libdbus-glib-1-dev locales gnupg scrub binutils avahi-daemon kodi autofs \
- cifs-utils playerctl
+ cifs-utils playerctl triggerhappy
 
 ## SSH Configuration
-cp /tmp/config/sshd_config /etc/ssh/
+cp -f /tmp/config/sshd_config /etc/ssh/
 chmod 644 /etc/ssh/sshd_config
 chown root:root /etc/ssh/sshd_config
 mkdir -p /root/.ssh
@@ -35,6 +35,12 @@ chmod 400 /etc/auto.creds
 chown root:root /etc/auto.creds
 mkdir -p /mnt/smb
 systemctl enable autofs
+
+## Hotkey Configuration
+cp -f /tmp/config/hotkeys.conf /etc/triggerhappy/triggers.d/
+chmod 644 /etc/triggerhappy/triggers.d/hotkeys.conf
+chown root:root /etc/triggerhappy/triggers.d/hotkeys.conf
+systemctl restart triggerhappy
 
 ## Install Web Server
 apt-get install -y --no-upgrade lighttpd php-cgi php php-common

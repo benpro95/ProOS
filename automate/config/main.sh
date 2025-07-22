@@ -392,7 +392,7 @@ relax)
 ## Bedroom Audio
 CALLAPI "$BRPI_IP" "ampstateon" ""
 ## Relax Sounds on Bedroom Pi
-CALLAPI "$BRPI_IP" "relax" ""
+CALLAPI "$BRPI_IP" "relax" "$SECOND_ARG"
 ## Turn Off TV
 LOCAL_CMD "brtvoff"
 ## Send Sleep Command

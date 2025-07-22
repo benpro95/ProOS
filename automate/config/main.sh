@@ -3,16 +3,13 @@
 ## Main Home Automation Script by Ben Provenzano III v31 ##
 ###########################################################
 
-TARGET=""
-XMITCMD=""
-RESPOUT=""
 DELIM="|"
 RAMDISK="/var/www/html/ram"
 LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
 MAX_PING_WAIT="0.5" ## Max Ping Timeout (s)
 LOCAL_DOMAIN="home" ## Local DNS Domain
-XMIT_IP="10.177.1.12" ## Living Room Xmit
+LRXMIT_IP="10.177.1.12" ## LEDwall
 DESK_IP="10.177.1.14" ## Desktop
 BRPI_IP="10.177.1.15" ## Bedroom Pi
 BRPC_IP="10.177.1.17" ## Bedroom PC IP
@@ -22,29 +19,21 @@ BRPC_MAC="90:2e:16:46:86:43" ## Bedroom PC MAC
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 10 --retry 1 --retry-delay 1 --no-keepalive"
 
 function CALLAPI(){
-  if [[ "$XMITCMD" == "" ]]; then
+  local TARGET="$1"
+  local API_ARG1="$2"
+  local API_ARG2="$3"
+  if [[ "$API_ARG1" == "" ]]; then
     return
   fi
-  ## Default Target 
-  if [[ "$TARGET" == "" ]]; then
-    ## ESP32 Xmit (discard API response, runs in background)
-    SERVER="http://$XMIT_IP:80"
-    /usr/bin/curl $CURLARGS --header "Accept: ####?|$XMITCMD" $SERVER > /dev/null 2>&1 &
-    RESPOUT=""
-  else
-    ## ProOS home automation Pi
-    DATA="var=$SECOND_ARG&arg=$XMITCMD&action=main"
-    SERVER="http://$TARGET:80/exec.php"
-    ## API GET request wait then read response
-    DELIM="|"
-    APIRESP="$(/usr/bin/curl $CURLARGS --data $DATA $SERVER)"
-    TMPSTR="${APIRESP#*$DELIM}"
-    RESPOUT="${TMPSTR%$DELIM*}"
-    echo "$RESPOUT"
-  fi
-  ## Clear data
-  XMITCMD=""
-  TARGET=""
+  ## ProOS home automation Pi
+  DATA="var=$API_ARG2&arg=$API_ARG1&action=main"
+  SERVER="http://$TARGET:80/exec.php"
+  ## API GET request wait then read response
+  DELIM="|"
+  APIRESP="$(/usr/bin/curl $CURLARGS --data $DATA $SERVER)"
+  TMPSTR="${APIRESP#*$DELIM}"
+  RESPOUT="${TMPSTR%$DELIM*}"
+  echo "$RESPOUT"
 }
 
 function LOCAL_CMD(){
@@ -109,9 +98,7 @@ function LOCAL_CMD(){
     if [[ "$(LOCAL_PING "$BRPC_IP")" == "1" ]]
     then ## Host Online
       ## Send Sleep Command
-      TARGET="$BRPC_IP"
-      XMITCMD="sleep"
-      CALLAPI
+      CALLAPI "$BRPC_IP" "sleep" ""
     else ## Host Offline
       echo "$DESK_IP is already offline"
     fi
@@ -199,8 +186,23 @@ function WAKE_BRPC() {
   fi
 }
 
+function LIGHTS_OFF(){
+  ## Window Lamp
+  LRXMIT "rfc1off"
+  ## Dresser Lamp
+  LOCAL_CMD "brlamp1off"
+}
+
+function LIGHTS_ON(){
+  ## Window Lamp
+  LRXMIT "rfc1on"
+  ## Dresser Lamp
+  LOCAL_CMD "brlamp1on"
+}
+
 function LRXMIT(){
-case "$XMITCMD" in
+local CMD_IN="$1"
+case "$CMD_IN" in
   ### HiFi Preamp ###
   ## Power
   "hifistate")
@@ -213,15 +215,11 @@ case "$XMITCMD" in
     ;;
   "hifistateoff")
     ## Mute Subwoofer Amp
-    XMITCMD="0|0|551520375"
     CALLAPI
-    sleep 1.25
     ## Power Off Preamp  
-    XMITCMD="0|0|1261859214"
     CALLAPI
     ;;
   "hifistateon")
-    XMITCMD="0|0|1261869414"
     CALLAPI
     ;;
   "wkststate")
@@ -235,7 +233,6 @@ case "$XMITCMD" in
   "wkststateoff")
     if [[ "$(LOCAL_PING "$DESK_IP")" == "1" ]]
     then ## Host Online
-      XMITCMD="2|2|32"
       CALLAPI
     else ## Host Offline
       echo "$DESK_IP is already offline"
@@ -246,68 +243,55 @@ case "$XMITCMD" in
     then ## Host Online
       echo "$DESK_IP is already online"
     else ## Host Offline
-      XMITCMD="2|2|32"
       CALLAPI
     fi
     ;;
   ## DAC
   "dac")
-    XMITCMD="0|0|1261793423"
     CALLAPI
     ;;
   ## Aux
   "aux")
-    XMITCMD="0|0|1261826063"
     CALLAPI   
     ;;
   ## Phono
   "phono")
-    XMITCMD="0|0|1261766903"
     CALLAPI   
     ;;
   ## Airplay
   "airplay-preamp")
-    XMITCMD="0|0|1261799543"
     CALLAPI   
     ;;   
   ## Volume Limit Mode
   "vlimit")
-    XMITCMD="0|0|1261783223"
     CALLAPI   
     ;;  
   ## Optical Mode
   "optical-preamp")
-    XMITCMD="0|0|1261824023"
     CALLAPI   
     ;;
   ## Key Toggle Hi-Pass Filter
   "togglehpf")
-    XMITCMD="0|0|1261875534"
     CALLAPI   
     ;;
   ## Key Mute / Toggle
   "mute")
-    XMITCMD="0|0|1270259807"
     CALLAPI   
     ;;
   ## Key Vol Down Fine
   "dwn")
-    XMITCMD="0|0|1261885734"
     CALLAPI
     ;;
   ## Key Vol Up Fine
   "up")
-    XMITCMD="0|0|1261853094"
     CALLAPI
     ;;
   ## Key Vol Down Course
   "dwnc")
-    XMITCMD="0|0|1270267967"
     CALLAPI
     ;;
   ## Key Vol Up Course
   "upc")
-    XMITCMD="0|0|1270235327"
     CALLAPI
     ;;
   ##
@@ -315,90 +299,64 @@ case "$XMITCMD" in
   ##
   ## Mute Key
   "submute")
-    XMITCMD="0|0|551506095"
     CALLAPI   
     ;;
   ##
   ## (0) Key
   "subon")
-    XMITCMD="0|0|551504055"
     CALLAPI   
     ;;
   ##
   ## (1) Key
   "suboff")
-    XMITCMD="0|0|551520375"
     CALLAPI   
     ;;
   ##
   ## Vol (+) Key
   "subup")
-    XMITCMD="0|0|551502015"
     CALLAPI
     ;;
   ##
   ## Vol (-) Key
   "subdwn")
-    XMITCMD="0|0|551534655"
     CALLAPI
     ;;
   ### DAM1021 DAC (Onn Soundbar Remote) NEC 32-bit
   ##
   ## USB Input (Music Button)
   "usb")
-    XMITCMD="0|0|-300872971"
     CALLAPI
     ;;
   ## Coaxial Input (Aux Button)
   "coaxial")
-    XMITCMD="0|0|-300816361"
     CALLAPI
     ;;
   ## Optical Input (TV Button)
   "optical")
-    XMITCMD="0|0|-300813811"
     CALLAPI
     ;;
   ## Auto Input (Play Button)
   "inauto")
-    XMITCMD="0|0|-300833701"
     CALLAPI
     ;;
   ##
   ## ESP32 Toggle PC Power
   ##
   "rfb3")
-    XMITCMD="2|2|32"
     CALLAPI
     ;;
   ##
   ## Main Lamp Controller
   "rfc1on")
-    XMITCMD="1|0|834511"
-    CALLAPI
+    CALLAPI "$LRXMIT_IP" "extcom" "02001"
     ;;
   "rfc1off")
-    XMITCMD="1|0|834512"
-    CALLAPI
+    CALLAPI "$LRXMIT_IP" "extcom" "02002"
     ;;
 *)
   echo "invalid Xmit command!"
   ;;
 esac
-}
-
-function LIGHTS_OFF(){
-  ## Window Lamp
-  XMITCMD="rfc1off"; LRXMIT
-  ## Dresser Lamp
-  LOCAL_CMD "brlamp1off"
-}
-
-function LIGHTS_ON(){
-  ## Window Lamp
-  XMITCMD="rfc1on"; LRXMIT
-  ## Dresser Lamp
-  LOCAL_CMD "brlamp1on"
 }
 
 
@@ -432,27 +390,25 @@ exit
 
 relax)
 ## Bedroom Audio
-TARGET="$BRPI_IP"; XMITCMD="ampstateon"; CALLAPI
+CALLAPI "$BRPI_IP" "ampstateon" ""
 ## Relax Sounds on Bedroom Pi
-TARGET="$BRPI_IP"; XMITCMD="relax"; CALLAPI
+CALLAPI "$BRPI_IP" "relax" ""
 ## Turn Off TV
 LOCAL_CMD "brtvoff"
 ## Send Sleep Command
-TARGET="$BRPC_IP"
-XMITCMD="sleep"
-CALLAPI
+CALLAPI "$BRPC_IP" "sleep" ""
 exit
 ;;
 
 stop-br)
-## Stop Relax Sounds
-TARGET="$BRPI_IP"; XMITCMD="stoprelax"; CALLAPI
+## Stop Relax Sounds 
+CALLAPI "$BRPI_IP" "stoprelax" ""
 exit
 ;;
 
 ## Forward Command to Bedroom Pi
 brpi)
-TARGET="$BRPI_IP"; XMITCMD="$SECOND_ARG"; CALLAPI
+CALLAPI "$BRPI_IP" "$SECOND_ARG" ""
 exit
 ;;
 
@@ -464,7 +420,7 @@ exit
 
 ## Forward Command to Living Room Xmit
 lrxmit)
-XMITCMD="$SECOND_ARG"; LRXMIT
+LRXMIT "$SECOND_ARG"
 exit
 ;;
 
@@ -478,7 +434,7 @@ exit
 
 mainon)
 ## Window Lamp
-XMITCMD="rfc1on"; LRXMIT 
+LRXMIT "rfc1on"
 exit
 ;;
 
@@ -513,11 +469,11 @@ LOCAL_CMD "retropion"
 ## Retro Macs
 LOCAL_CMD "brmacson"
 ## PC Power On
-XMITCMD="wkststateon"; LRXMIT 
+LRXMIT "wkststateon"
 ## Main Room Audio
-XMITCMD="hifion"; LRXMIT
+LRXMIT "hifion"
 ## Bedroom Audio
-TARGET="$BRPI_IP"; XMITCMD="ampstateon"; CALLAPI
+CALLAPI "$BRPI_IP" "ampstateon" ""
 ## Bedroom TV & PC
 LOCAL_CMD "brtvon"
 exit
@@ -533,11 +489,11 @@ LOCAL_CMD "retropioff"
 ## Retro Macs
 LOCAL_CMD "brmacsoff"
 ## PC Power Off
-XMITCMD="wkststateoff"; LRXMIT 
+LRXMIT "wkststateoff"
 ## Main Room Audio
-XMITCMD="hifioff"; LRXMIT 
+LRXMIT "hifioff"
 ## Bedroom Audio
-TARGET="$BRPI_IP"; XMITCMD="ampstateoff"; CALLAPI
+CALLAPI "$BRPI_IP" "ampstateoff" ""
 ## Bedroom TV
 LOCAL_CMD "brtvoff"
 exit
@@ -547,35 +503,35 @@ exit
 
 autodac)
 ## Auto Decoder Input
-XMITCMD="inauto"; LRXMIT 
+LRXMIT "inauto"
 ## Preamp DAC Input
-XMITCMD="dac"; LRXMIT 
+LRXMIT "dac"
 exit
 ;;
 
 usb)
 ## USB Decoder Input
-XMITCMD="usb"; LRXMIT
+LRXMIT "usb"
 ## Preamp DAC Input
-XMITCMD="dac"; LRXMIT
+LRXMIT "dac"
 exit
 ;;
 
 ## Coax Input
 coax)
 ## Coaxial Decoder Input
-XMITCMD="coaxial"; LRXMIT 
+LRXMIT "coaxial"
 ## Preamp AirPlay Mode
-XMITCMD="airplay-preamp"; LRXMIT 
+LRXMIT "airplay-preamp"
 exit
 ;;
 
 ## Optical Input
 opt)
 ## Optical Decoder Input
-XMITCMD="optical"; LRXMIT
+LRXMIT "optical"
 ## Preamp DAC Input
-XMITCMD="optical-preamp"; LRXMIT
+LRXMIT "optical-preamp"
 exit
 ;;
 
@@ -590,12 +546,12 @@ SERVERARG="$SECOND_ARG"
 ## start / stop legacy services
 if [ "$SERVERARG" == "startlegacy" ]; then
   echo "Starting legacy services..." &>> $LOGFILE
-  TARGET="$BRPI_IP"; XMITCMD="apd-on"; CALLAPI
+  CALLAPI "$BRPI_IP" "apd-on" ""
   exit
 fi
 if [ "$SERVERARG" == "stoplegacy" ]; then
   echo "Stopping legacy services..." &>> $LOGFILE
-  TARGET="$BRPI_IP"; XMITCMD="apd-off"; CALLAPI
+  CALLAPI "$BRPI_IP" "apd-off" ""
   exit
 fi
 ## write trigger file
@@ -649,8 +605,7 @@ exit
 
 *)
   ## command not matched above, pass argument to ESP32-Xmit
-  XMITCMD="$FIRST_ARG" 
-  LRXMIT
+  LRXMIT "$FIRST_ARG"
   exit
 ;;
 esac

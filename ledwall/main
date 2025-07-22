@@ -1,12 +1,27 @@
 #!/bin/bash
 ###########################################################
-## LEDwall main script by Ben Provenzano III v7 ###########
+## LEDwall main script by Ben Provenzano III v8 ###########
 ###########################################################
 ###########################################################
+
+## Arduino's Serial Port
+ARDUINO_PORT="ttyUSB0"
+
+## Read Command-Line Arguments
+ARG1=$1
+ARG2=$2
+
+ZTERM_COM() {
+  local CMD_DATA="$1"
+  /opt/rpi/singleton.sh ZTERM_PROC /usr/bin/ztermcom $CMD_DATA
+}
 
 case "$1" in
 
 boot)
+## External Serial COM
+ln -sf /dev/$ARDUINO_PORT /dev/zterm-tty
+ZTERM_COM "i"
 ## WiFi Toggle Switch
 systemctl start rpi-wifiswitch
 ## LED Controller
@@ -116,17 +131,40 @@ fi
 exit
 ;;
 
+## Pass command to external serial port
+extcom)
+ZTERM_COM "$ARG2"
+exit
+;;
+
+serialmon)
+/opt/rpi/arduino-cli monitor -p /dev/$ARDUINO_PORT \
+  -b arduino:avr:uno --config 9600
+exit
+;;
+
+update-fw)
+## Update Arduino over USB
+rm -rf /opt/fw-build
+mkdir -p /opt/fw-build
+arduino-cli -v compile --fqbn arduino:avr:uno \
+  /opt/rpi/AutomateHub_2/AutomateHub_2.ino --build-path /opt/fw-build
+arduino-cli -v upload -p /dev/$ARDUINO_PORT \
+  --fqbn arduino:avr:uno --input-dir /opt/fw-build
+LOCALCOM "i"
+exit
+;;
 	    
     *)
-        if [ "$1" == "" ]; then
+        if [ "$ARG1" == "" ]; then
           echo "Enter valid command."
         else  
-	      if [ "$2" == "" ]; then
-	        echo "Sending $1 command..."
+	      if [ "$ARG2" == "" ]; then
+	        echo "Sending $ARG1 command..."
 	      else
-	      	echo "Sending $1:$2 command..."
+	      	echo "Sending $ARG1:$ARG2 command..."
 	      fi  
-	      /opt/rpi/leds "$1" "$2" 
+	      /opt/rpi/leds "$ARG1" "$ARG2" 
 	    fi
       exit
      ;;

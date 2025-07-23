@@ -19,9 +19,9 @@ BRPC_MAC="90:2e:16:46:86:43" ## Bedroom PC MAC
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 10 --retry 1 --retry-delay 1 --no-keepalive"
 
 function CALLAPI(){
-  local TARGET="{$1}"
-  local API_ARG1="{$2}"
-  local API_ARG2="{$3}"
+  local TARGET="${1}"
+  local API_ARG1="${2}"
+  local API_ARG2="${3}"
   if [[ "$API_ARG1" == "" ]]; then
     return
   fi
@@ -37,7 +37,7 @@ function CALLAPI(){
 }
 
 function LOCAL_CMD(){
-  local TTY_CMD="$1"
+  local TTY_CMD="${1}"
   case "$TTY_CMD" in
   ## RF Power Controller (under dresser)
   ##
@@ -120,7 +120,7 @@ function LOCAL_CMD(){
 }
 
 function LOCAL_PING(){
-  local LOCAL_PING_ADR="$1"
+  local LOCAL_PING_ADR="${1}"
   if ping -4 -A -c 1 -i "$MAX_PING_WAIT" -W "$MAX_PING_WAIT" "$LOCAL_PING_ADR" > /dev/null 2> /dev/null
   then
     echo "1" ## Online
@@ -131,8 +131,8 @@ function LOCAL_PING(){
 
 function LOCALCOM_RESP(){
   ## read response character position
-  local RESP_CMD="$1"
-  local RESP_POS="$2"
+  local RESP_CMD="${1}"
+  local RESP_POS="${2}"
   TTY_RAW="$(LOCALCOM $RESP_CMD)"
   ## extract response data
   TMP_STR="${TTY_RAW#*$DELIM}"
@@ -168,12 +168,12 @@ function LOCALCOM_RESP(){
 }
 
 function LOCALCOM(){
-  local ZTERM_CMD="$1"
+  local ZTERM_CMD="${1}"
   /usr/bin/singleton ZTERM_PROC /usr/bin/ztermcom $ZTERM_CMD
 }
 
 function LED_PRESET(){
-  local LED_PRESET_CMD="$1"
+  local LED_PRESET_CMD="${1}"
   /opt/system/leds "$LED_PRESET_CMD"
 }
 

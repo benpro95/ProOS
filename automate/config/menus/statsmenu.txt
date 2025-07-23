@@ -1,7 +1,6 @@
 aptcam.home|Aptcam|ping
 files.home|Files|ping
 xmit.home|Xmit|ping
-xana.home|Xana|ping
 plex.home|Plex|ping
 brpi.home|BrPi|ping
 unifi.home|UniFi|ping

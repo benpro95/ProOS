@@ -19,9 +19,9 @@ BRPC_MAC="90:2e:16:46:86:43" ## Bedroom PC MAC
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 10 --retry 1 --retry-delay 1 --no-keepalive"
 
 function CALLAPI(){
-  local TARGET="$1"
-  local API_ARG1="$2"
-  local API_ARG2="$3"
+  local TARGET="{$1}"
+  local API_ARG1="{$2}"
+  local API_ARG2="{$3}"
   if [[ "$API_ARG1" == "" ]]; then
     return
   fi
@@ -203,25 +203,7 @@ function LIGHTS_ON(){
 function LRXMIT(){
 local CMD_IN="$1"
 case "$CMD_IN" in
-  ### HiFi Preamp ###
-  ## Power
-  "hifistate")
-    if [[ "$(LOCAL_PING "hifipi.$LOCAL_DOMAIN")" == "1" ]]
-    then ## Host Online
-      echo "1"
-    else ## Host Offline
-      echo "0"
-    fi
-    ;;
-  "hifistateoff")
-    ## Mute Subwoofer Amp
-    CALLAPI
-    ## Power Off Preamp  
-    CALLAPI
-    ;;
-  "hifistateon")
-    CALLAPI
-    ;;
+  ### Desktop PC ###
   "wkststate")
     if [[ "$(LOCAL_PING "$DESK_IP")" == "1" ]]
     then ## Host Online
@@ -233,7 +215,7 @@ case "$CMD_IN" in
   "wkststateoff")
     if [[ "$(LOCAL_PING "$DESK_IP")" == "1" ]]
     then ## Host Online
-      CALLAPI
+      CALLAPI "$LRXMIT_IP" "extcom" "02010"  
     else ## Host Offline
       echo "$DESK_IP is already offline"
     fi
@@ -243,110 +225,101 @@ case "$CMD_IN" in
     then ## Host Online
       echo "$DESK_IP is already online"
     else ## Host Offline
-      CALLAPI
+      CALLAPI "$LRXMIT_IP" "extcom" "02010"  
     fi
     ;;
-  ## DAC
-  "dac")
-    CALLAPI
+  ### HiFi Preamp/DAC ###
+  "hifistate")
+    if [[ "$(LOCAL_PING "hifipi.$LOCAL_DOMAIN")" == "1" ]]
+    then ## Host Online
+      echo "1"
+    else ## Host Offline
+      echo "0"
+    fi
+    ;;
+  "hifistateoff")
+    CALLAPI "$LRXMIT_IP" "extcom" "02122" ## Subwoofer Amp Off
+    CALLAPI "$LRXMIT_IP" "extcom" "02103" ## Preamp Off
+    ;;
+  "hifistateon")
+    CALLAPI "$LRXMIT_IP" "extcom" "02102" ## Preamp On
+    ;;
+  "hifitoggle")
+    CALLAPI "$LRXMIT_IP" "extcom" "02101" ## Preamp On/Off
     ;;
   ## Aux
   "aux")
-    CALLAPI   
+    CALLAPI "$LRXMIT_IP" "extcom" "02108"   
     ;;
   ## Phono
   "phono")
-    CALLAPI   
+    CALLAPI "$LRXMIT_IP" "extcom" "02109"
+    ;;  
+  ## DAC USB Input
+  "usb")
+    CALLAPI "$LRXMIT_IP" "extcom" "02107" ## Preamp Digital
+    CALLAPI "$LRXMIT_IP" "extcom" "02130" ## DAC USB
     ;;
-  ## Airplay
-  "airplay-preamp")
-    CALLAPI   
-    ;;   
+  ## Coaxial Input 
+  "coax")
+    CALLAPI "$LRXMIT_IP" "extcom" "02110" ## Preamp Digital (AirPlay Label)
+    CALLAPI "$LRXMIT_IP" "extcom" "02131" ## DAC Coax
+    ;;
+  ## Optical Input 
+  "opt")
+    CALLAPI "$LRXMIT_IP" "extcom" "02112" ## Preamp Digital (Optical Label) 
+    CALLAPI "$LRXMIT_IP" "extcom" "02132" ## DAC Optical
+    ;;
+  ## Auto Input
+  "autodac")
+    CALLAPI "$LRXMIT_IP" "extcom" "02107" ## Preamp Digital
+    CALLAPI "$LRXMIT_IP" "extcom" "02133" ## DAC Auto Select
+    ;;
   ## Volume Limit Mode
   "vlimit")
-    CALLAPI   
-    ;;  
-  ## Optical Mode
-  "optical-preamp")
-    CALLAPI   
-    ;;
-  ## Key Toggle Hi-Pass Filter
+    CALLAPI "$LRXMIT_IP" "extcom" "02111"   
+    ;;      
+  ## Toggle Hi-Pass Filter
   "togglehpf")
-    CALLAPI   
+    CALLAPI "$LRXMIT_IP" "extcom" "02106"   
     ;;
-  ## Key Mute / Toggle
+  ## Mute / Toggle
   "mute")
-    CALLAPI   
+    CALLAPI "$LRXMIT_IP" "extcom" "02115"   
     ;;
-  ## Key Vol Down Fine
+  ## Vol Down Fine
   "dwn")
-    CALLAPI
+    CALLAPI "$LRXMIT_IP" "extcom" "02104"
     ;;
-  ## Key Vol Up Fine
+  ## Vol Up Fine
   "up")
-    CALLAPI
+    CALLAPI "$LRXMIT_IP" "extcom" "02105"
     ;;
-  ## Key Vol Down Course
+  ## Vol Down Course
   "dwnc")
-    CALLAPI
+    CALLAPI "$LRXMIT_IP" "extcom" "02113"
     ;;
-  ## Key Vol Up Course
+  ## Vol Up Course
   "upc")
-    CALLAPI
+    CALLAPI "$LRXMIT_IP" "extcom" "02114"
     ;;
-  ##
-  ### Class D Amp (Philips Universal Remote) NEC 32-bit
-  ##
-  ## Mute Key
+  ### Class D Amp ###
   "submute")
-    CALLAPI   
+    CALLAPI "$LRXMIT_IP" "extcom" "02120"   
     ;;
-  ##
-  ## (0) Key
   "subon")
-    CALLAPI   
+    CALLAPI "$LRXMIT_IP" "extcom" "02121"   
     ;;
-  ##
-  ## (1) Key
   "suboff")
-    CALLAPI   
+    CALLAPI "$LRXMIT_IP" "extcom" "02122"   
     ;;
-  ##
-  ## Vol (+) Key
   "subup")
-    CALLAPI
+    CALLAPI "$LRXMIT_IP" "extcom" "02123"
     ;;
-  ##
-  ## Vol (-) Key
   "subdwn")
-    CALLAPI
+    CALLAPI "$LRXMIT_IP" "extcom" "02124"
     ;;
-  ### DAM1021 DAC (Onn Soundbar Remote) NEC 32-bit
-  ##
-  ## USB Input (Music Button)
-  "usb")
-    CALLAPI
-    ;;
-  ## Coaxial Input (Aux Button)
-  "coaxial")
-    CALLAPI
-    ;;
-  ## Optical Input (TV Button)
-  "optical")
-    CALLAPI
-    ;;
-  ## Auto Input (Play Button)
-  "inauto")
-    CALLAPI
-    ;;
-  ##
-  ## ESP32 Toggle PC Power
-  ##
-  "rfb3")
-    CALLAPI
-    ;;
-  ##
-  ## Main Lamp Controller
+  ### Window Lamp ###
   "rfc1on")
     CALLAPI "$LRXMIT_IP" "extcom" "02001"
     ;;
@@ -358,7 +331,6 @@ case "$CMD_IN" in
   ;;
 esac
 }
-
 
 ########################
 
@@ -499,42 +471,6 @@ LOCAL_CMD "brtvoff"
 exit
 ;;
 
-## Living Room DAC ##
-
-autodac)
-## Auto Decoder Input
-LRXMIT "inauto"
-## Preamp DAC Input
-LRXMIT "dac"
-exit
-;;
-
-usb)
-## USB Decoder Input
-LRXMIT "usb"
-## Preamp DAC Input
-LRXMIT "dac"
-exit
-;;
-
-## Coax Input
-coax)
-## Coaxial Decoder Input
-LRXMIT "coaxial"
-## Preamp AirPlay Mode
-LRXMIT "airplay-preamp"
-exit
-;;
-
-## Optical Input
-opt)
-## Optical Decoder Input
-LRXMIT "optical"
-## Preamp DAC Input
-LRXMIT "optical-preamp"
-exit
-;;
-
 server)
 ## server controls
 if [[ "${SECOND_ARG}" == "" ]]
@@ -605,7 +541,7 @@ exit
 
 *)
   ## command not matched above, pass argument to ESP32-Xmit
-  LRXMIT "$FIRST_ARG"
+  LRXMIT "$FIRST_ARG" 
   exit
 ;;
 esac

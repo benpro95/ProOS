@@ -82,6 +82,7 @@ void serialProcess() {
 }
  
 void processSerialData(char rc, char startInd ,char endInd) {
+  // while reading
   if (serialReading == 1) {
     // end-of-reading
     if (rc == endInd) {
@@ -102,7 +103,7 @@ void processSerialData(char rc, char startInd ,char endInd) {
       }
     }
   } else {
-    // start reading
+    // start-of-reading
     if (rc == startInd) {
       serialReading = 1;
       serialCurPos = 0;
@@ -288,12 +289,12 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
     writeSerialMessage(1); 
     break;
   case 104:
-    // volume down slow
+    // volume down slow/fine
     IrSender.sendNEC(IR_Preamp_A3, 0x9B, 0); 
     writeSerialMessage(1); 
     break;
   case 105:
-    // volume up slow
+    // volume up slow/fine
     IrSender.sendNEC(IR_Preamp_A3, 0x9A, 0);
     writeSerialMessage(1); 
     break;
@@ -303,17 +304,17 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
     writeSerialMessage(1); 
     break;    
   case 107:
-    // input (1)
+    // input (1) dac input
     IrSender.sendNEC(IR_Preamp_A2, 0xE, 0);
     writeSerialMessage(1); 
     break;   
   case 108:
-    // input (2)
+    // input (2) aux
     IrSender.sendNEC(IR_Preamp_A2, 0xF, 0);
     writeSerialMessage(1); 
     break;   
   case 109:
-    // input (3)
+    // input (3) phono
     IrSender.sendNEC(IR_Preamp_A2, 0x10, 0);
     writeSerialMessage(1); 
     break;  
@@ -333,12 +334,12 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
     writeSerialMessage(1); 
     break;   
   case 113:
-    // volume down fast
+    // volume down fast/course
     IrSender.sendNEC(IR_Preamp_A1, 0x3, 0);
     writeSerialMessage(1); 
     break; 
   case 114:
-    // volume up fast
+    // volume up fast/course
     IrSender.sendNEC(IR_Preamp_A1, 0x2, 0);
     writeSerialMessage(1); 
     break; 

@@ -99,11 +99,11 @@ if [ ! -e /usr/bin/arduino-cli ]; then
 fi
 
 ## Arduino Firmware
-mkdir -p /opt/pwr_fw
-cp -f /tmp/config/firmware/AutomateHub_1/AutomateHub_1.ino /opt/pwr_fw/pwr_fw.ino
-cp -f /tmp/config/firmware/AutomateHub_1/neotimer.h /opt/pwr_fw/
-chmod -Rv 644 /opt/pwr_fw/*
-chown -Rv root:root /opt/pwr_fw/*
+rm -rf /opt/AutomateHub_1
+mkdir -p /opt/AutomateHub_1
+cp -rv /tmp/config/firmware/AutomateHub_1/* /opt/AutomateHub_1/
+chmod -R 644 /opt/AutomateHub_1/*
+chown -R root:root /opt/AutomateHub_1/*
 
 ## Xmit Serial COM
 rm -f /usr/bin/ztermcom

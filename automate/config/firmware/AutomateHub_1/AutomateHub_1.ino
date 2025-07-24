@@ -11,26 +11,30 @@
 
 // local libraries
 #include "neotimer.h"
+#include "DHT.h"
 
 // general constants
-const uint8_t debounceDelay = 75;
+const uint8_t debounceDelay = 75; // in ms
 const char nullTrm = '\0';
 
 // power control I/O
-#define PWR_TRIG_1 9 // trigger #1 TIP
-#define PWR_SENS_1 2 // sense #1 RING
-#define PWR_TRIG_2 8 // trigger #2 TIP
-#define PWR_SENS_2 3 // sense #2 RING
-#define PWR_TRIG_3 7 // trigger #3 TIP
-#define PWR_SENS_3 4 // sense #3 RING
+#define PWR_TRIG_1 9 // TRIGGER TIP
+#define PWR_SENS_1 2 // SENSE RING
+#define PWR_IO_2 8 // GREEN TIP (RING 5v)
+#define PWR_IO_3 7 // YELLOW TIP (RING 5v)
+#define PWR_IO_4 4 // WHITE TIP (RING 5v)
+
+// DHT humidity-temperature sensor
+#define DHTTYPE DHT22   // DHT 22 (AM2302), AM2321
+DHT dht(PWR_IO_2, DHTTYPE);
 
 // analog inputs
-#define ADC_IN_1 A0 // TIP
-#define ADC_IN_2 A1 // RING
+#define ADC_IN_1 A0 // RED TIP
+#define ADC_IN_2 A1 // RED RING
 
 // toggle switch inputs
-#define PWR_SWITCH_2 6 // TIP
-#define PWR_SWITCH_1 5 // RING
+#define PWR_SWITCH_2 6 // BLUE TIP
+#define PWR_SWITCH_1 5 // BLUE RING
 bool powerButton_1Last = 0;
 bool powerButton_1State = 0;
 uint32_t powerButton_1Millis;
@@ -74,26 +78,22 @@ void initGPIO() {
   // activity LED
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);
-  // I/O port #1
+  // 3.5mm digital I/O ports
   pinMode(PWR_TRIG_1, OUTPUT);
   digitalWrite(PWR_TRIG_1, LOW);
   pinMode(PWR_SENS_1, INPUT_PULLUP);
-  // I/O port #2
-  pinMode(PWR_TRIG_2, OUTPUT);
-  digitalWrite(PWR_TRIG_2, LOW);
-  pinMode(PWR_SENS_2, INPUT_PULLUP);
-  // I/O port #3
-  pinMode(PWR_TRIG_3, OUTPUT);
-  digitalWrite(PWR_TRIG_3, LOW);
-  pinMode(PWR_SENS_3, INPUT_PULLUP);
-  // analog in port
+  pinMode(PWR_IO_3, INPUT_PULLUP);
+  pinMode(PWR_IO_4, INPUT_PULLUP);
+  // 3.5mm analog in port
   pinMode(ADC_IN_1, INPUT_PULLUP);
   pinMode(ADC_IN_2, INPUT_PULLUP);
-  // switch(s) in port
+  // 3.5mm switch(s) in port
   pinMode(PWR_SWITCH_1, INPUT_PULLUP);
   pinMode(PWR_SWITCH_2, INPUT_PULLUP);
+  // DHT22 sensor 
+  dht.begin();
   // startup delay
-  delay(350);
+  delay(500);
   digitalWrite(LED_BUILTIN, LOW);
 }
 
@@ -432,6 +432,25 @@ void powerPulse(int _powerPin) {
   digitalWrite(_powerPin, LOW);
 }
 
+void DHT_Test(){
+  // Reading temperature or humidity takes about 250 milliseconds!
+  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
+  float h = dht.readHumidity();
+  // Read temperature as Fahrenheit (isFahrenheit = true)
+  float t = dht.readTemperature(true);
+
+  if (isnan(t) || isnan(h)) { // Check that DHT sensor is working
+    Serial.print("Failed to Read from DHT");
+    return;
+  }
+
+  Serial.print(F("Humidity: "));
+  Serial.print(h);
+  Serial.print(F("%  Temperature: "));
+  Serial.print(t);
+
+}
+
 // main control functions
 void internalFunctions(uint16_t command) {
   // power trigger #1 
@@ -465,5 +484,8 @@ void internalFunctions(uint16_t command) {
         powerPulse(PWR_TRIG_1);
       }
     }
+  }
+  if (command == 5) {
+    DHT_Test();
   }
 }

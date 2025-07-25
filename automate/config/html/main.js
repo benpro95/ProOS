@@ -20,7 +20,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "8.91";
+let siteVersion = "9.1.1";
 
 //////////////////////
 
@@ -149,6 +149,18 @@ function classDisplay(_elem, _state) {
   for (_itr = 0; _itr < _class.length; _itr++) {
     _class[_itr].style.display = _state;
   }
+}
+
+function checkElemIsVisibleByID(id){
+  let _elmvis = false;
+  let _elem = document.getElementById(id);
+  if (_elem) {
+    var _style = window.getComputedStyle(_elem)
+    if (_style.display !== 'none') {
+      _elmvis = true;
+    }
+  }
+  return _elmvis;
 }
 
 // back to home page 
@@ -445,23 +457,6 @@ function show_aboutPrompt(){
 
 async function aboutPrompt(){
   show_aboutPrompt();
-}
-
-function mountFUSEvolume() {
-  let _elmvis = false;
-  let _elem = document.getElementById('about__prompt');
-  if (_elem) {
-    var _style = window.getComputedStyle(_elem)
-    if (_style.display !== 'none') {
-      _elmvis = true;
-    }
-  }
-  if (_elmvis === true) {
-    serverAction('files-mnt_vol_region');
-  } else {
-    serverAction('files-mnt_arch_region');
-  }
-  serverSend(0);
 }
 
 async function showPiWiFiPrompt(){
@@ -1495,7 +1490,7 @@ function savePOST(file,data) {
   const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+file+"&action=update";
   // convert data to JSON object
   let _json = JSON.stringify(data);
-  // Send data as HTTP POST request
+  // submit request
   const xhr = new XMLHttpRequest();
   xhr.open("POST", url);
   xhr.setRequestHeader("Content-Type", "text/plain");
@@ -1503,16 +1498,7 @@ function savePOST(file,data) {
     if (xhr.readyState === XMLHttpRequest.DONE) {
       if (xhr.status == 200) {
         // action on successful transmit
-        if (file === 'message') {
-          sendCmd('main','message','');
-        }
-        if (file === 'pwd') {
-          serverAction('attach_bkps');
-          serverSend(0);
-        }
-        if (file === 'fusearch') {
-          mountFUSEvolume();
-        }
+        afterPOSTActions(file);
       }
       if (xhr.status !== 200) {
         console.log("failed to send POST: savePOST("+file+")");
@@ -1520,6 +1506,21 @@ function savePOST(file,data) {
     }
   }
   xhr.send(_json);
+}
+
+function afterPOSTActions(action) {
+  let _send = false;
+  if (action === 'pwd') {
+    serverAction('attach_bkps');
+    _send = true;
+  }
+  if (action === 'fusearch') {
+    serverAction('files-mnt_arch_region');
+    _send = true;
+  }
+  if (_send === true) {
+    serverSend(0);
+  }
 }
 
 // load entire text file

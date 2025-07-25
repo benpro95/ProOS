@@ -239,6 +239,7 @@ case "$CMD_IN" in
     ;;
   "hifistateoff")
     CALLAPI "$LRXMIT_IP" "extcom" "02122" ## Subwoofer Amp Off
+    sleep 0.5
     CALLAPI "$LRXMIT_IP" "extcom" "02103" ## Preamp Off
     ;;
   "hifistateon")

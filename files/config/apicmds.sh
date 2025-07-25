@@ -87,16 +87,8 @@ then
   exit
 fi
 
-## Volumes Region
-if [[ $CMD == "mnt_vol_region" ]]
-then
-  MNT_FUSEFS "Volumes"
-  exit
-fi
-
 UMOUNT_ALLFUSE(){
   UMNT_FUSEFS "Archive"
-  UMNT_FUSEFS "Volumes"
 }
 
 ## Detach FUSE Regions

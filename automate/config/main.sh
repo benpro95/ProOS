@@ -73,7 +73,7 @@ function LOCAL_CMD(){
     ;;
   ### Room Temperature & Humidity
   "roomth")
-    LOCALCOM "01005"
+    LOCALCOM_RESP "01005" ""
     ;;
   ## Bedroom TV / PC
   "brtv")
@@ -134,41 +134,47 @@ function LOCAL_PING(){
 }
 
 function LOCALCOM_RESP(){
-  ## read response character position
+  ## read character position
   local RESP_CMD="${1}"
   local RESP_POS="${2}"
   TTY_RAW="$(LOCALCOM $RESP_CMD)"
   ## extract response data
   TMP_STR="${TTY_RAW#*$DELIM}"
   TTY_OUT="${TMP_STR%$DELIM*}"
-  TTY_CHR_CNT="${#TTY_OUT}"
-  ## process response type
-  case "$TTY_CHR_CNT" in
-  ## 3-byte response 
-  "3")
-    ## extract single-byte by position
-    TTY_CHR="${TTY_OUT:$RESP_POS:1}"
-    ## re-map serial response
-    if [[ "$TTY_CHR" == "9" ]]; then
-      echo "1" ## Online
-    else 
-      echo "0"
-    fi  
-    ;;
-  ## single-byte response
-  "1")
-    TTY_CHR="${TTY_OUT:0:1}"
-    if [[ "$TTY_CHR" == "1" ]]; then
-      echo "1" ## Online
-    else
-      echo "0"
-    fi
-    ;;
-  *)
-    ## error response
-    echo "X"
-    ;;
-  esac
+  if [[ "$RESP_POS" == "" ]]; then
+    ## send entire response
+    echo "$TTY_OUT"
+  else
+    ## process by response length
+    TTY_CHR_CNT="${#TTY_OUT}"
+    case "$TTY_CHR_CNT" in
+    ## 3-byte response
+    "3")
+      ## extract single-byte by position
+      TTY_CHR="${TTY_OUT:$RESP_POS:1}"
+      ## re-map serial response
+      if [[ "$TTY_CHR" == "9" ]]; then
+        echo "1" ## Online
+      else 
+        echo "0" ## Offline
+      fi  
+      ;;
+    ## single-byte response
+    "1")
+      TTY_CHR="${TTY_OUT:0:1}"
+      if [[ "$TTY_CHR" == "1" ]]; then
+        echo "1" ## Online
+      else
+        echo "0" ## Offline
+      fi
+      ;;
+    ## 
+    *)
+      ## invalid response
+      echo "X"
+      ;;
+    esac
+  fi
 }
 
 function LOCALCOM(){

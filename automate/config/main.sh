@@ -71,6 +71,10 @@ function LOCAL_CMD(){
   "retropioff")
     LOCALCOM "10005"
     ;;
+  ### Room Temperature & Humidity
+  "roomth")
+    LOCALCOM "01005"
+    ;;
   ## Bedroom TV / PC
   "brtv")
     if [[ "$(LOCALCOM_RESP '01003' '0')" == "1" ]]; then

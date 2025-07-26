@@ -1,7 +1,7 @@
 /*
  * Ben Provenzano III
  * -----------------
- * v2.8 - 07/06/2025
+ * v3.1 - 07/025/2025
  * Automate Hub #1
  * -----------------
  */
@@ -20,17 +20,13 @@ const char nullTrm = '\0';
 // power control I/O
 #define PWR_TRIG_1 9 // TRIGGER TIP
 #define PWR_SENS_1 2 // SENSE RING
-#define PWR_IO_2 8 // GREEN TIP (RING 5v)
-#define PWR_IO_3 7 // YELLOW TIP (RING 5v)
-#define PWR_IO_4 4 // WHITE TIP (RING 5v)
-
-// DHT humidity-temperature sensor
-#define DHTTYPE DHT22   // DHT 22 (AM2302), AM2321
-DHT dht(PWR_IO_2, DHTTYPE);
+#define PWR_IO_2   8 // GREEN TIP (RING 5v)
+#define PWR_IO_3   7 // YELLOW TIP (RING 5v)
+#define PWR_IO_4   4 // WHITE TIP (RING 5v)
 
 // analog inputs
-#define ADC_IN_1 A0 // RED TIP
-#define ADC_IN_2 A1 // RED RING
+#define ADC_IN_1  A0 // RED TIP
+#define ADC_IN_2  A1 // RED RING
 
 // toggle switch inputs
 #define PWR_SWITCH_2 6 // BLUE TIP
@@ -62,16 +58,19 @@ bool serialMsgEnd = 0;
 const uint8_t maxFwrdWait = 650; // max wait in (ms) for external serial response
 Neotimer maxFwrdRead = Neotimer();
 
+// DHT humidity-temperature sensor
+#define DHTTYPE DHT22   // DHT 22 (AM2302), AM2321
+DHT dht(PWR_IO_2, DHTTYPE);
+const uint16_t dhtDeadTime = 2500; // in ms
+Neotimer dhtLockoutTimer = Neotimer();
+bool dhtLockout = false;
+char dhtHumidity[8];
+char dhtTemp[8];
+
 void setup() {
   initGPIO();
+  initTimers();
   initSerial();
-}
-
-void initSerial() {
-  Serial.begin(serialBaudRate);
-  ExtSerial.begin(serialBaudRate);
-  serialMessageIn[0] = nullTrm;
-  serialMessageOut[0] = nullTrm;
 }
 
 void initGPIO() {
@@ -97,14 +96,37 @@ void initGPIO() {
   digitalWrite(LED_BUILTIN, LOW);
 }
 
+void initTimers() {
+  maxFwrdRead.reset();
+  maxFwrdRead.stop();
+  dhtLockoutTimer.reset();
+  dhtLockoutTimer.stop();
+}
+
+void initSerial() {
+  Serial.begin(serialBaudRate);
+  ExtSerial.begin(serialBaudRate);
+  serialMessageIn[0] = nullTrm;
+  serialMessageOut[0] = nullTrm;
+}
+
 void loop() {
   serialProcess();
   readDigitalInputs();
+  dhtLock();
 }
 
 void readDigitalInputs() {
   readPowerButton_1();
   readPowerButton_2();
+}
+
+void dhtLock() {
+  if (dhtLockoutTimer.done()) {
+    dhtLockoutTimer.reset();
+    dhtLockoutTimer.stop();
+    dhtLockout = false;
+  }
 }
 
 void readPowerButton_1() {
@@ -232,6 +254,8 @@ void writeSerialData(bool InOut) {
   Serial.print(respDelimiter);
   Serial.print('\n');
   digitalWrite(LED_BUILTIN, LOW);
+  // reset output buffer
+  serialMessageOut[0] = nullTrm;
 }
 
 void disableFwrdMode() {
@@ -432,23 +456,31 @@ void powerPulse(int _powerPin) {
   digitalWrite(_powerPin, LOW);
 }
 
-void DHT_Test(){
-  // Reading temperature or humidity takes about 250 milliseconds!
-  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-  float h = dht.readHumidity();
-  // Read temperature as Fahrenheit (isFahrenheit = true)
-  float t = dht.readTemperature(true);
-
-  if (isnan(t) || isnan(h)) { // Check that DHT sensor is working
-    Serial.print("Failed to Read from DHT");
-    return;
+void readTempHumidity(){
+  if (dhtLockout == false) {
+    // start lockout timer
+    dhtLockoutTimer.set(dhtDeadTime);
+    dhtLockoutTimer.start();
+    dhtLockout = true;
+    // take a new sensor reading
+    float _humi = dht.readHumidity();
+    float _temp = dht.readTemperature(true); // read in F
+    if (isnan(_humi) || isnan(_temp)) { // check DHT sensor is online
+      Serial.print("Failed to read DHT sensor!");
+      return;
+    }
+    if (_humi > 300 || _temp > 300) { // check for invalid reading
+      Serial.print("Invalid DHT sensor reading!");
+      return;
+    }
+    // convert floats to char arrays (999.9 rounding)
+    dhtTemp[0] = nullTrm;
+    dhtHumidity[0] = nullTrm;
+    dtostrf(_temp, 4, 1, dhtTemp);
+    dtostrf(_humi, 4, 1, dhtHumidity);
   }
-
-  Serial.print(F("Humidity: "));
-  Serial.print(h);
-  Serial.print(F("%  Temperature: "));
-  Serial.print(t);
-
+  // combine arrays then write to output buffer
+  sprintf(serialMessageOut ,"%s~%s" ,dhtTemp ,dhtHumidity);
 }
 
 // main control functions
@@ -486,6 +518,7 @@ void internalFunctions(uint16_t command) {
     }
   }
   if (command == 5) {
-    DHT_Test();
+    // read rooms temperature & humidity
+    readTempHumidity();
   }
 }

@@ -19,7 +19,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "9.2";
+let siteVersion = "10.0";
 
 //////////////////////
 
@@ -45,9 +45,9 @@ function handleClicks(event) {
         event.target.classList.contains('button__text') || // button text click
         event.target.classList.contains('mainmenu__anchor') || // main menu click
         event.target.classList.contains('bookmarked__item') || // bookmark menu click
-        event.target.classList.contains('fa-regular') || // font -
-        event.target.classList.contains('fa-brands') ||  // awesome -
-        event.target.classList.contains('fa-solid') ||   // icon clicks
+        event.target.classList.contains('fas') || // icon clicks
+        event.target.classList.contains('fad') ||
+        event.target.classList.contains('fab') ||
         event.target.classList.contains('am-spinner') || // spinner clicks
         event.target.classList.contains('dropbtn') || // dropdown button click
         event.target.classList.contains('chkbox'))) { // checkbox click
@@ -229,26 +229,24 @@ function isObjEmpty(obj) {
 }
 
 // transmit a command
-function sendCmd(act, arg1, arg2) {
+async function sendCmd(act, arg1, arg2) {
   // construct API URL
   const url = location.protocol+"//"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
   // send request 
-  return fetch(url, {
+  const response = await fetch(url, {
     method: 'GET'
-  }) 
-  // process JSON response
-  .then(response => {
-  return response.json().then((obj) => {
-      var out = null;
-      var empty = isObjEmpty(obj);
-      if (empty === false) {
-        out = obj.toString();
-      } // return string
-      return out;
-    }).catch((err) => {
-      console.log('sendCmd: ' + err);
-    })
   });
+  try {
+    const obj = await response.json();
+    var out = null;
+    var empty = isObjEmpty(obj);
+    if (empty === false) {
+      out = obj.toString();
+    } 
+    return out; // return data
+  } catch (err) {
+    console.log('sendCmd: ' + err);
+  }
 }
 
 /// text popup window ///
@@ -322,7 +320,7 @@ function closeServerOptions(){
 
 /// END- text popup window ///
 
-function piWiFiPrompt(){
+async function piWiFiPrompt(){
   let pinetprompt = document.createElement("div"); 
   pinetprompt.className= "prompt__win"; 
   // SSID text
@@ -408,7 +406,7 @@ function piWiFiPrompt(){
   }); 
 }
 
-function show_aboutPrompt(){
+async function aboutPrompt(){
   let aboutprompt = document.createElement("div"); 
   aboutprompt.id= "about__prompt";
   // title
@@ -449,16 +447,14 @@ function show_aboutPrompt(){
   });   
 }
 
-async function aboutPrompt(){
-  show_aboutPrompt();
-}
-
-function tempHumidity(){
+async function showTempHumidity(){
+  // create window
   let tempprompt = document.createElement("div"); 
   tempprompt.id= "temp__prompt";
-  // title
+  // default layout
   let temptext = document.createElement("div");
-  temptext.innerHTML = "---";
+  temptext.innerHTML = '---';
+  temptext.id = 'temp__text';
   tempprompt.appendChild(temptext);
   // cancel button
   let tempcancelb = document.createElement("button");
@@ -467,18 +463,23 @@ function tempHumidity(){
   tempcancelb.id = "temp__btn";
   tempcancelb.type="button"; 
   tempprompt.appendChild(tempcancelb); 
-  document.body.appendChild(tempprompt); 
+  document.body.appendChild(tempprompt);
+  // call API for data
+  sendCmd('main','localcmd','roomth').then((data) => { // GET request
+    const resp = data.replace(/(\r\n|\n|\r)/gm, "");
+    let _elem = document.getElementById('temp__text');
+    if (_elem) {
+      _elem.innerHTML = resp;
+    }
+  });
+  // button actions
   new Promise(function(resolve, reject) {
     tempprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
       if (e.target.tagName !== 'BUTTON') { return; } // nothing to do - user clicked somewhere else
       tempprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
       document.body.removeChild(tempprompt);  //as we are done clean up by removing the password-prompt
     });
-  });   
-}
-
-async function showTempHumidity(){
-  tempHumidity();
+  });  
 }
 
 async function showPiWiFiPrompt(){
@@ -498,7 +499,7 @@ async function showPiWiFiPrompt(){
   }
 }
 
-function show_wifiPwdPrompt(){
+async function wifiPrompt(){
   let wifiprompt = document.createElement("div");
   wifiprompt.id = "wifi__prompt";
   let wifitext = document.createElement("div");
@@ -522,14 +523,10 @@ function show_wifiPwdPrompt(){
   new Promise(function(resolve, reject) {
       wifiprompt.addEventListener('click', function handleButtonClicks(e) {
         if (e.target.tagName !== 'BUTTON') { return; }
-	        wifiprompt.removeEventListener('click', handleButtonClicks);
-	        document.body.removeChild(wifiprompt);
+          wifiprompt.removeEventListener('click', handleButtonClicks);
+          document.body.removeChild(wifiprompt);
       });
   });   
-}
-
-async function wifiPrompt(){
-  show_wifiPwdPrompt();
 }
 
 function passwordPrompt(){
@@ -868,42 +865,42 @@ async function drawBookmarkPrompt(add,url,name,elem){
   let editFavCancelBtn = document.createElement("button");
   editFavCancelBtn.classList.add("editFav__button");
   editFavCancelBtn.classList.add("button");
-  editFavCancelBtn.classList.add("fa-solid");
+  editFavCancelBtn.classList.add("fad");
   editFavCancelBtn.classList.add("fa-ban");
   editFavCancelBtn.type = "button";
   // lookup favorites
   let editFavLookupBtn = document.createElement("button");
   editFavLookupBtn.classList.add("editFav__button");
   editFavLookupBtn.classList.add("button");
-  editFavLookupBtn.classList.add("fa-solid");
+  editFavLookupBtn.classList.add("fad");
   editFavLookupBtn.classList.add("fa-search");
   editFavLookupBtn.type = "button";
   // save button
   let editFavSaveBtn = document.createElement("button");
   editFavSaveBtn.classList.add("editFav__button");
   editFavSaveBtn.classList.add("button");
-  editFavSaveBtn.classList.add("fa-solid");
-  editFavSaveBtn.classList.add("fa-floppy-disk");
+  editFavSaveBtn.classList.add("fad");
+  editFavSaveBtn.classList.add("fa-save");
   editFavSaveBtn.type = "button";
   // delete button
   let editFavDeleteBtn = document.createElement("button");
   editFavDeleteBtn.classList.add("editFav__button");
   editFavDeleteBtn.classList.add("button");
-  editFavDeleteBtn.classList.add("fa-solid");
-  editFavDeleteBtn.classList.add("fa-trash-can");
+  editFavDeleteBtn.classList.add("fad");
+  editFavDeleteBtn.classList.add("fa-trash-alt");
   editFavDeleteBtn.type = "button";
   // up button
   let editFavUpBtn = document.createElement("button");
   editFavUpBtn.classList.add("editFav__button");
   editFavUpBtn.classList.add("button");
-  editFavUpBtn.classList.add("fa-solid");
+  editFavUpBtn.classList.add("fad");
   editFavUpBtn.classList.add("fa-arrow-up");
   editFavUpBtn.type = "button"; 
   // down button
   let editFavDownBtn = document.createElement("button");
   editFavDownBtn.classList.add("editFav__button");
   editFavDownBtn.classList.add("button");
-  editFavDownBtn.classList.add("fa-solid");
+  editFavDownBtn.classList.add("fad");
   editFavDownBtn.classList.add("fa-arrow-down");
   editFavDownBtn.type = "button";
   // append elements to window
@@ -1364,7 +1361,7 @@ function createListItem(_col0,_col1,_col2,_id) {
     let hoverOff = true;
     if (menutype == 'oncmd') { // power-on remote API call on click
       hoverOff = false;
-      _icon.classList.add('fa-solid');
+      _icon.classList.add('fa');
       _icon.classList.add('fa-toggle-on');
       _icon.classList.add('leftjfy'); // left-justify icon
       _elm.appendChild(_icon);
@@ -1374,7 +1371,7 @@ function createListItem(_col0,_col1,_col2,_id) {
     }
     if (menutype == 'offcmd') { // power-off remote API call on click
       hoverOff = false;
-      _icon.classList.add('fa-solid');
+      _icon.classList.add('fa');
       _icon.classList.add('fa-toggle-off');
       _icon.classList.add('leftjfy'); // left-justify icon
       _elm.appendChild(_icon);
@@ -1384,7 +1381,7 @@ function createListItem(_col0,_col1,_col2,_id) {
     }
     if (menutype == 'sleepmode') { // sleep PC type menu
       hoverOff = false;
-      _icon.classList.add('fa-solid');
+      _icon.classList.add('fa');
       _icon.classList.add('fa-moon');
       _icon.classList.add('leftjfy'); // left-justify icon
       _elm.appendChild(_icon);

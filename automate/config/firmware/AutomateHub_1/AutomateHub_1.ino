@@ -10,7 +10,7 @@
 #include <SoftwareSerial.h>
 
 // local libraries
-#include "neotimer.h"
+#include "NeoTimer.h"
 #include "DHTStable.h"
 
 // general constants
@@ -51,20 +51,126 @@ const char serialDataEnd = '>';
 const char respDelimiter = '|';
 char serialMessageOut[maxMessage + 1];
 char serialMessageIn[maxMessage + 1];
+uint16_t serialCurPos = 0;
 bool serialFwrdMode = 0;
 bool serialReading = 0;
-uint16_t serialCurPos = 0;
 bool serialMsgEnd = 0;
 const uint8_t maxFwrdWait = 650; // max wait in (ms) for external serial response
 Neotimer maxFwrdRead = Neotimer();
 
 // DHT humidity-temperature sensor
-const uint16_t dhtDeadTime = 2500; // in ms
-Neotimer dhtLockoutTimer = Neotimer();
-bool dhtLockout = false;
-float dhtHumidity = 0;
-float dhtTemp = 0;
 DHTStable DHT;
+float dhtTemp = 0;
+float dhtHumidity = 0;
+Neotimer dhtLockoutTimer = Neotimer();
+const uint16_t dhtDeadTime = 2500; // sensor dead-time in (ms)
+bool dhtLockout = false;
+
+///////////////////////////////////////
+
+// main control functions
+void internalFunctions(uint16_t command) {
+  // power trigger #1 
+  if (command >= 1 && command <= 4) {
+    int state = powerSense(PWR_SENS_1);
+    if (command == 3) { // status
+      // write status back to serial
+      switch (state) {
+        case 1: // power off (inverted)
+          sprintf(serialMessageOut ,"0");
+          break;
+        case 0: // power on (inverted)
+          sprintf(serialMessageOut ,"1");
+          break;
+        default: // invalid response
+          sprintf(serialMessageOut ,"X");
+          break;
+      }
+    } else {
+      if (state == 0) { // device on
+        if (command == 2) { // power off
+          powerPulse(PWR_TRIG_1);
+        }
+      } else { // device off
+        if (command == 1) { // power on
+          powerPulse(PWR_TRIG_1);
+        }
+      }
+      if (command == 4) { // toggle power
+        powerPulse(PWR_TRIG_1);
+      }
+    }
+  }
+  if (command == 5) {
+    // read rooms temperature & humidity
+    readTempHumidity();
+  }
+}
+
+// return average digital input reading
+int powerSense(int powerSensePin) {
+  const int inputReadings = 16;
+  int readings[inputReadings];
+  int total = 0;
+  for (int idx = 0; idx < inputReadings; idx++) {
+    // read then add the reading to the total
+    total = total + digitalRead(powerSensePin);
+  }
+  switch (total) {
+    case inputReadings:
+    // high reading
+      return 1;
+    case 0:
+    // low reading
+      return 0;
+    default:
+    // invalid reading
+      return -1;
+  }
+}
+
+void powerPulse(int _powerPin) {
+  digitalWrite(_powerPin, HIGH);
+  delay(250);
+  digitalWrite(_powerPin, LOW);
+}
+
+void readTempHumidity(){
+  if (dhtLockout == false) {
+    // start lockout timer
+    dhtLockoutTimer.set(dhtDeadTime);
+    dhtLockoutTimer.start();
+    dhtLockout = true;
+    // take a new sensor reading
+    dhtTemp = 0;
+    dhtHumidity = 0;
+    int _chk = DHT.read22(PWR_IO_2);
+    switch (_chk)
+    {
+    case DHTLIB_OK:
+        dhtTemp = ((DHT.getTemperature() * 9) + 3) / 5 + 32;
+        dhtHumidity = DHT.getHumidity();
+        break;
+    case DHTLIB_ERROR_CHECKSUM:
+        Serial.print("DHT INVALID CHECKSUM!");
+        break;
+    case DHTLIB_ERROR_TIMEOUT:
+        Serial.print("DHT TIMEOUT ERROR!");
+        break;
+    default:
+        Serial.print("DHT UNKNOWN ERROR!");
+        break;
+    }
+  }
+  // convert floats to characters
+  char _temp[8], _humi[8];
+  dtostrf(dhtTemp, 3, 1, _temp);
+  dtostrf(dhtHumidity, 3, 1, _humi);
+  // concat arrays then write to output buffer
+  sprintf(serialMessageOut ,"%s~%s" ,_temp ,_humi);
+}
+
+/// initialization routines ///
 
 void setup() {
   initGPIO();
@@ -106,6 +212,8 @@ void initSerial() {
   serialMessageIn[0] = nullTrm;
   serialMessageOut[0] = nullTrm;
 }
+
+/// superloop ///
 
 void loop() {
   serialProcess();
@@ -422,108 +530,5 @@ void routeMessage(bool origin, uint8_t reg, uint16_t ctldata) {
     serialFwrdMode = 1;
     maxFwrdRead.set(maxFwrdWait);
     maxFwrdRead.start();
-  }
-}
-
-// return average digital input reading
-int powerSense(int powerSensePin) {
-  const int inputReadings = 16;
-  int readings[inputReadings];
-  int total = 0;
-  for (int idx = 0; idx < inputReadings; idx++) {
-    // read then add the reading to the total
-    total = total + digitalRead(powerSensePin);
-  }
-  switch (total) {
-    case inputReadings:
-    // high reading
-      return 1;
-    case 0:
-    // low reading
-      return 0;
-    default:
-    // invalid reading
-      return -1;
-  }
-}
-
-void powerPulse(int _powerPin) {
-  digitalWrite(_powerPin, HIGH);
-  delay(250);
-  digitalWrite(_powerPin, LOW);
-}
-
-void readTempHumidity(){
-  if (dhtLockout == false) {
-    // start lockout timer
-    dhtLockoutTimer.set(dhtDeadTime);
-    dhtLockoutTimer.start();
-    dhtLockout = true;
-    // take a new sensor reading
-    dhtTemp = 0;
-    dhtHumidity = 0;
-    int _chk = DHT.read22(PWR_IO_2);
-    switch (_chk)
-    {
-    case DHTLIB_OK:
-        dhtTemp = ((DHT.getTemperature() * 9) + 3) / 5 + 32;
-        dhtHumidity = DHT.getHumidity();
-        break;
-    case DHTLIB_ERROR_CHECKSUM:
-        Serial.print("DHT checksum error");
-        break;
-    case DHTLIB_ERROR_TIMEOUT:
-        Serial.print("DHT time-out error");
-        break;
-    default:
-        Serial.print("DHT unknown error");
-        break;
-    }
-  }
-  // convert floats to characters
-  char _temp[8], _humi[8];
-  dtostrf(dhtTemp, 3, 1, _temp);
-  dtostrf(dhtHumidity, 3, 1, _humi);
-  // combine arrays then write to output buffer
-  sprintf(serialMessageOut ,"%s~%s" ,_temp ,_humi);
-}
-
-// main control functions
-void internalFunctions(uint16_t command) {
-  // power trigger #1 
-  if (command >= 1 && command <= 4) {
-    int state = powerSense(PWR_SENS_1);
-    if (command == 3) { // status
-      // write status back to serial
-      switch (state) {
-        case 1: // power off (inverted)
-          serialMessageOut[0] = '0';
-          break;
-        case 0: // power on (inverted)
-          serialMessageOut[0] = '1';
-          break;
-        default: // invalid response
-          serialMessageOut[0] = 'X';
-          break;
-      }
-      serialMessageOut[1] = nullTrm;
-    } else {
-      if (state == 0) { // device on
-        if (command == 2) { // power off
-          powerPulse(PWR_TRIG_1);
-        }
-      } else { // device off
-        if (command == 1) { // power on
-          powerPulse(PWR_TRIG_1);
-        }
-      }
-      if (command == 4) { // toggle power
-        powerPulse(PWR_TRIG_1);
-      }
-    }
-  }
-  if (command == 5) {
-    // read rooms temperature & humidity
-    readTempHumidity();
   }
 }

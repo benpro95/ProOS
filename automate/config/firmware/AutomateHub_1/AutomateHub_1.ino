@@ -62,8 +62,8 @@ Neotimer maxFwrdRead = Neotimer();
 const uint16_t dhtDeadTime = 2500; // in ms
 Neotimer dhtLockoutTimer = Neotimer();
 bool dhtLockout = false;
-char dhtHumidity[10];
-char dhtTemp[10];
+float dhtHumidity = 0;
+float dhtTemp = 0;
 DHTStable DHT;
 
 void setup() {
@@ -460,35 +460,32 @@ void readTempHumidity(){
     dhtLockoutTimer.start();
     dhtLockout = true;
     // take a new sensor reading
-    int chk = DHT.read22(PWR_IO_2);
-    switch (chk)
+    dhtTemp = 0;
+    dhtHumidity = 0;
+    int _chk = DHT.read22(PWR_IO_2);
+    switch (_chk)
     {
     case DHTLIB_OK:
+        dhtTemp = ((DHT.getTemperature() * 9) + 3) / 5 + 32;
+        dhtHumidity = DHT.getHumidity();
         break;
     case DHTLIB_ERROR_CHECKSUM:
         Serial.print("DHT checksum error");
-        return;
+        break;
     case DHTLIB_ERROR_TIMEOUT:
-        Serial.print("DHT time out error");
-        return;
+        Serial.print("DHT time-out error");
+        break;
     default:
         Serial.print("DHT unknown error");
-        return;
+        break;
     }
-    float _humi = DHT.getHumidity();
-    float _temp = ((DHT.getTemperature() * 9) + 3) / 5 + 32;
-    if (isnan(_humi) || isnan(_temp) || _humi > 300 || _temp > 300) {
-      Serial.print("Invalid DHT sensor reading!");
-      return;
-    }
-    // convert floats to char arrays (999.9 rounding)
-    dhtTemp[0] = nullTrm;
-    dhtHumidity[0] = nullTrm;
-    dtostrf(_temp, 3, 1, dhtTemp);
-    dtostrf(_humi, 3, 1, dhtHumidity);
   }
+  // convert floats to characters
+  char _temp[8], _humi[8];
+  dtostrf(dhtTemp, 3, 1, _temp);
+  dtostrf(dhtHumidity, 3, 1, _humi);
   // combine arrays then write to output buffer
-  sprintf(serialMessageOut ,"%s~%s" ,dhtTemp ,dhtHumidity);
+  sprintf(serialMessageOut ,"%s~%s" ,_temp ,_humi);
 }
 
 // main control functions

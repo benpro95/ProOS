@@ -11,7 +11,7 @@
 
 // local libraries
 #include "neotimer.h"
-#include "DHT.h"
+#include "DHTStable.h"
 
 // general constants
 const uint8_t debounceDelay = 75; // in ms
@@ -59,13 +59,12 @@ const uint8_t maxFwrdWait = 650; // max wait in (ms) for external serial respons
 Neotimer maxFwrdRead = Neotimer();
 
 // DHT humidity-temperature sensor
-#define DHTTYPE DHT22   // DHT 22 (AM2302), AM2321
-DHT dht(PWR_IO_2, DHTTYPE);
 const uint16_t dhtDeadTime = 2500; // in ms
 Neotimer dhtLockoutTimer = Neotimer();
 bool dhtLockout = false;
-char dhtHumidity[8];
-char dhtTemp[8];
+char dhtHumidity[10];
+char dhtTemp[10];
+DHTStable DHT;
 
 void setup() {
   initGPIO();
@@ -89,8 +88,6 @@ void initGPIO() {
   // 3.5mm switch(s) in port
   pinMode(PWR_SWITCH_1, INPUT_PULLUP);
   pinMode(PWR_SWITCH_2, INPUT_PULLUP);
-  // DHT22 sensor 
-  dht.begin();
   // startup delay
   delay(500);
   digitalWrite(LED_BUILTIN, LOW);
@@ -463,21 +460,32 @@ void readTempHumidity(){
     dhtLockoutTimer.start();
     dhtLockout = true;
     // take a new sensor reading
-    float _humi = dht.readHumidity();
-    float _temp = dht.readTemperature(true); // read in F
-    if (isnan(_humi) || isnan(_temp)) { // check DHT sensor is online
-      Serial.print("Failed to read DHT sensor!");
-      return;
+    int chk = DHT.read22(PWR_IO_2);
+    switch (chk)
+    {
+    case DHTLIB_OK:
+        break;
+    case DHTLIB_ERROR_CHECKSUM:
+        Serial.print("DHT checksum error");
+        return;
+    case DHTLIB_ERROR_TIMEOUT:
+        Serial.print("DHT time out error");
+        return;
+    default:
+        Serial.print("DHT unknown error");
+        return;
     }
-    if (_humi > 300 || _temp > 300) { // check for invalid reading
+    float _humi = DHT.getHumidity();
+    float _temp = ((DHT.getTemperature() * 9) + 3) / 5 + 32;
+    if (isnan(_humi) || isnan(_temp) || _humi > 300 || _temp > 300) {
       Serial.print("Invalid DHT sensor reading!");
       return;
     }
     // convert floats to char arrays (999.9 rounding)
     dhtTemp[0] = nullTrm;
     dhtHumidity[0] = nullTrm;
-    dtostrf(_temp, 4, 1, dhtTemp);
-    dtostrf(_humi, 4, 1, dhtHumidity);
+    dtostrf(_temp, 3, 1, dhtTemp);
+    dtostrf(_humi, 3, 1, dhtHumidity);
   }
   // combine arrays then write to output buffer
   sprintf(serialMessageOut ,"%s~%s" ,dhtTemp ,dhtHumidity);

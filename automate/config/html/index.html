@@ -17,24 +17,21 @@
 
 <!-- homepage navigation bar -->
 <div class="topnav">
-  
   <!-- hamburger button -->
   <div class="server-grid">
-    <a onclick="showDynMenu('mainmenu')" class="mainmenu__anchor">
+    <a onclick="showDynMenu('mainmenu')" class="dropbtn">
       <i class="fa-solid fa-list"></i>
     </a>
   </div>
   <div class="pi-grid ledpi-grid">
-    <a onclick="showMenu('pi-mainmenu')" class="mainmenu__anchor">
+    <a onclick="showMenu('pi-mainmenu')" class="dropbtn">
       <i class="fa-solid fa-list"></i>
     </a>
   </div>
-
   <!-- themes button -->
   <a onclick="showDynMenu('thememenu')" class="dropbtn">
     <i class="fa-solid fa-palette"></i>
   </a>
-
   <!-- bookmark buttons -->
   <div class="server-grid">
     <a onclick="showBookmarks()" class="dropbtn">
@@ -49,29 +46,27 @@
       </a> 
     </div>
   </div>
-
-  <!-- progress bar -->
-  <a onclick="GoToHomePage()" id="load__progress">
-     <div id="load__bar"></div>
-  </a>
-
+  <!-- right label-->
+  <div class="server-grid">
+    <a onclick="showStatusMenu()" id="nav_right_menu" class="dropbtn">
+      <i class="fa-solid fa-info"></i>
+    </a>
+  </div>
 </div>
 
 <!-- volume popup -->
 <div id="vol-popup"></div>
 
 <!-- homepage dropdown menus -->
-
 <div class="server-grid">
-  <div class="main_dropdown">
+  <div class="nav_dd_left">
   <div class="dd-content dd-menu" id="mainmenu">
     <a onclick="aboutPrompt()"><i class="fa-solid fa-info"></i> About</a>
   </div>
   </div>
 </div>
-
 <div class="pi-grid ledpi-grid">
-  <div class="main_dropdown">
+  <div class="nav_dd_left">
     <div class="dd-content dd-menu" id="pi-mainmenu">
       <a onclick="aboutPrompt()"><i class="fa-solid fa-info"></i> About</a>
       <a onclick="openLogWindow()"><i class="fa-solid fa-gear"></i> System</a>
@@ -79,19 +74,20 @@
     </div>
   </div>
 </div>
-
-<div class="main_dropdown">
+<div class="nav_dd_left">
   <div class="dd-content dd-menu" id="thememenu">
   </div>
 </div>
-
-<div class="main_dropdown">
+<div class="nav_dd_left">
   <div class="dd-content dd-menu" id="bookmarks">
+  </div>
+</div>
+<div class="nav_dd_right">
+  <div class="dd-content dd-menu ind-button" id="statsmenu">
   </div>
 </div>
 
 <!-- main grid -->
-
 <p></p>
 
 <div class="server-grid ledpi-grid">
@@ -151,16 +147,12 @@
       <div class="server-grid">
         <p class="parstd"></p>
         <!---->
-        <button type="button" class="button" onclick="sendCmd('leds','randcolor','');">
+        <button type="button" class="button" onclick="sendCmd('leds','randcolor','')">
           <span class="button__text"><i class="fa-solid fa-rotate"></i> Colors</span>
         </button>
-        <div class="dropdown">
-          <button type="button" class="button" onclick="showStatusMenu()">
-            <span class="button__text" id="stat-text"><i class="fa-solid fa-info"></i> Status</span>
-            <span class="button__text" id="stat-spinner"></span>
-          </button>
-          <div class="dd-content ind-button" id="statsmenu"></div>
-        </div>
+        <button type="button" class="button" onclick="showTempHumidity()">
+          <span class="button__text"><i class="large__icon fa-solid fa-temperature-half"></i></span>
+        </button>
         <div class="dropdown">
           <button type="button" class="button" onclick="showMenu('lightmenu')">
             <span class="button__text"><i class="fa-regular fa-lightbulb"></i> Lights</span>

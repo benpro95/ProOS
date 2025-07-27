@@ -9,7 +9,6 @@ let dynMenuActive = 0;
 let colorPromptActive = 0;
 let resizeState = false;
 let bookmarkState = 0;
-let loadBarState = 0;
 let serverCmdData;
 let socket = null;
 let fileData = [];
@@ -94,11 +93,8 @@ function loadPage() {
       classDisplay('ledpi-grid','block');
     }    
   }
-  // set title
-  let currentTheme;
-  let elem = document.getElementById("load__bar");
-  elem.textContent = serverSite;
   // set theme
+  let currentTheme;
   let _theme = localStorage.getItem("main-color")
   if (_theme === null || _theme === undefined || _theme === "") {
     currentTheme = "#1f2051"; // dark blue
@@ -274,8 +270,6 @@ async function serverSend() {
     // scroll to bottom of page
     let txtArea = document.getElementById("logTextBox");
     txtArea.scrollTop = txtArea.scrollHeight;
-    // animations
-    loadBar(2.5);
   }
   sendBtnAlert("off");
   serverCmdData = null;
@@ -457,6 +451,34 @@ function show_aboutPrompt(){
 
 async function aboutPrompt(){
   show_aboutPrompt();
+}
+
+function tempHumidity(){
+  let tempprompt = document.createElement("div"); 
+  tempprompt.id= "temp__prompt";
+  // title
+  let temptext = document.createElement("div");
+  temptext.innerHTML = "---";
+  tempprompt.appendChild(temptext);
+  // cancel button
+  let tempcancelb = document.createElement("button");
+  tempcancelb.innerHTML = "Close";
+  tempcancelb.className ="button"; 
+  tempcancelb.id = "temp__btn";
+  tempcancelb.type="button"; 
+  tempprompt.appendChild(tempcancelb); 
+  document.body.appendChild(tempprompt); 
+  new Promise(function(resolve, reject) {
+    tempprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
+      if (e.target.tagName !== 'BUTTON') { return; } // nothing to do - user clicked somewhere else
+      tempprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
+      document.body.removeChild(tempprompt);  //as we are done clean up by removing the password-prompt
+    });
+  });   
+}
+
+async function showTempHumidity(){
+  tempHumidity();
 }
 
 async function showPiWiFiPrompt(){
@@ -1053,8 +1075,6 @@ function saveBookmarks() {
   })
   // transmit file
   savePOST('bookmarks',[_file]);
-  // animations
-  loadBar(1.0);
 }
 
 // close add / edit window
@@ -1221,17 +1241,9 @@ function showStatusMenu() {
     _elem.style.display = 'none';
   } else {
     hideDropdowns(false);
-    // start spinner animation
-    let btnText = document.getElementById('stat-text');
-    let btnSpinner = document.getElementById('stat-spinner');
-    btnText.style.visibility = 'hidden';
-    btnSpinner.classList.add('btn-spinner');
     // show menu
     _elem.style.display = 'block';
     sendCmd('main','status','').then((data) => { // GET request
-      // stop spinner animation
-      btnText.style.visibility = 'visible';
-      btnSpinner.classList.remove('btn-spinner');
       // draw menu items
       drawMenu(data.split("\n"),_menu);
     });
@@ -1603,30 +1615,6 @@ function openSendWindow() {
   // open send text window
   closeSendbox();
   document.getElementById("sendForm").style.display = "block";
-}
-
-// loading bar animation 
-async function loadBar(_interval) {
-  if (loadBarState === 0) {
-    loadBarState = 1;
-    let elem = document.getElementById("load__bar");
-    elem.textContent = " ";  
-    let width = 1;
-    let id = setInterval(frame, _interval);
-    function frame() {
-      if (width >= 100) {
-        clearInterval(id);
-        loadBarState = 0;
-      } else {
-        width++;
-        elem.style.width = width + "%";
-      }
-      if (width >= 100) {
-        elem.style.width = 0;  
-        elem.textContent = serverSite;  
-      }
-    }
-  }
 }
 
 function hexToRgb(hex) {

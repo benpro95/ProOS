@@ -58,10 +58,15 @@
 <!-- homepage dropdown menus -->
 
 <div class="nav_dd_left">
-  <div class="dd-content dd-menu" id="mainmenu">
-    <a onclick="aboutPrompt()"><i class="fad fa-info"></i> About</a>
-    <div class="pi-grid ledpi-grid">
-      <a onclick="openLogWindow()"><i class="fad fa-gear"></i> System</a>
+  <div class="server-grid">
+    <div class="dd-content dd-menu" id="mainmenu">
+      <a onclick="aboutPrompt()"><i class="fad fa-info"></i> About</a>
+    </div>
+  </div>
+  <div class="pi-grid ledpi-grid">
+    <div class="dd-content dd-menu" id="pi-mainmenu">
+      <a onclick="aboutPrompt()"><i class="fad fa-info"></i> About</a>
+      <a onclick="openLogWindow()"><i class="fad fa-wrench"></i> System</a>
       <a onclick="GoToHomePage()"><i class="fad fa-home"></i> Home</a>
     </div>
   </div>
@@ -463,7 +468,7 @@
         <span class="button__text"><i class="fad fa-history"></i> History</span>
       </button>    
       <button type="button" class="button svropt_button" onclick="getPassword('pwd')">
-        <span class="button__text"><i class="fad fa-unlock"></i> Unlock</span>
+        <span class="button__text"><i class="fad fa-unlock-alt"></i> Unlock</span>
       </button>           
       <button type="button" class="button svropt_button" onclick="serverAction('detach_bkps')">
         <span class="button__text"><i class="fad fa-eject"></i> Eject</span>

@@ -19,14 +19,24 @@ if [ ! -e /etc/locales.generated ]; then
   touch /etc/locales.generated
 fi
 
-## SSH key for root user
+## Create 'ben' user
+useradd -m ben
+
+## Public key for root user
 mkdir -p /root/.ssh
-cp /tmp/config/authorized_keys /root/.ssh/
+cp -f /tmp/config/authorized_keys /root/.ssh/
 chown root:root /root/.ssh/authorized_keys
 chmod 644 /root/.ssh/authorized_keys
 
+## Public key for ben user
+mkdir -p /home/ben/.ssh
+cp -f /tmp/config/auth_key_ben.pub /home/ben/.ssh/authorized_keys
+chown -R ben:ben /home/ben/.ssh
+chmod 644 /home/ben/.ssh/authorized_keys
+
 ## Disable password login
 passwd -d root
+passwd -d ben
 
 ## SSH Configuration
 cp /tmp/config/sshd_config /etc/ssh
@@ -37,11 +47,17 @@ chown root:root /etc/ssh/sshd_config
 touch /root/.hushlogin
 chmod 644 /root/.hushlogin
 chown root:root /root/.hushlogin
+touch /home/ben/.hushlogin
+chmod 644 /home/ben/.hushlogin
+chown ben:ben /home/ben/.hushlogin
 
-## Login Script
+## Login Scripts
 cp /tmp/config/profile /root/.profile
 chown root:root /root/.profile
 chmod +x /root/.profile
+cp /tmp/config/profile_ben /home/ben/.profile
+chown ben:ben /home/ben/.profile
+chmod +x /home/ben/.profile
 
 ## System Configuration
 cp /tmp/config/sysctl.conf /etc
@@ -69,7 +85,8 @@ chown root:root /etc/rsyslog.d/ignore-session-slice.conf
 
 ## Deployment Work Folder
 mkdir -p /opt/deploy
-chmod -R 777 /opt/deploy
+chmod 777 /opt/deploy
+chown ben:ben /opt/deploy
 
 ## Reload services
 systemctl daemon-reload

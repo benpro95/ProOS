@@ -10,9 +10,9 @@ DOMAIN=""
 ## Modules folder
 ROOTDIR="/mnt/ProOS"
 ## SSH keys folder
-KEYS="/home/ben/.keys"
+KEYS="/mnt/ProOS/mgmt/keys"
 ## Work folder
-WORKDIR="/home/ben/.work"
+WORKDIR="/opt/deploy"
 ## Read arguments
 MODULE=$1
 CMD=$2

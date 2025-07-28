@@ -89,7 +89,7 @@ cp -f /tmp/config/github.rsa $B_HOMEDIR/.ssh/id_rsa
 chmod 600 $B_HOMEDIR/.ssh/id_rsa
 chown -R $B_USER:shared $B_HOMEDIR/.ssh
 
-## permissions allow running scripts as elevated (ben) user
+## Permissions allow running scripts as elevated (ben) user
 rm -f /etc/sudoers.d/www-perms
 sh -c "touch /etc/sudoers.d/www-perms"
 sh -c "echo \"monitor ALL=(ben) NOPASSWD:/usr/bin/apicmds\" >> /etc/sudoers.d/www-perms"
@@ -197,6 +197,5 @@ systemctl restart cron
 systemctl restart rsyslog
 
 ## Clean-up
-systemctl daemon-reload
 rm -r /tmp/config/
 exit

@@ -72,7 +72,7 @@
                 "commandline": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
                 "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
                 "hidden": false,
-                "name": "Windows PowerShell"
+                "name": "PowerShell"
             },
             {
                 "commandline": "%SystemRoot%\\System32\\cmd.exe",
@@ -81,17 +81,22 @@
                 "name": "Command Prompt"
             },
             {
-                "colorScheme": "Dark+",
+                "adjustIndistinguishableColors": "indexed",
+                "colorScheme": "IBM 5153",
+                "commandline": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe ssh -i D:\\VMware\\Debian\\config\\wkst-deb.rsa ben@wkst-deb.home",
+                "experimental.retroTerminalEffect": false,
                 "font": 
                 {
-                    "face": "Hack",
-                    "size": 15
+                    "face": "Cascadia Code",
+                    "size": 16,
+                    "weight": "semi-light"
                 },
                 "guid": "{58ad8b0c-3ef8-5f4d-bc6f-13e4c00f2530}",
                 "hidden": false,
-                "name": "Debian",
-                "opacity": 95,
-                "source": "Windows.Terminal.Wsl"
+                "name": "Linux",
+                "opacity": 92,
+                "source": "Windows.Terminal.Wsl",
+                "useAcrylic": false
             }
         ]
     },

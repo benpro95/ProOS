@@ -168,7 +168,11 @@ function GoToHomePage() {
 }
 
 function GoToExtPage(_path) {
-  window.location = "https://"+_path;   
+  let url = "https://"+_path;   
+  if (!(url == null || url == "" || url == "about:blank")) {
+    // open URL in new tab
+    window.open(url, "_blank");
+  }
 }
 
 function GotoSubURL(_path) {

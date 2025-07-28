@@ -43,9 +43,7 @@ return
 
 ;; Mute ################
 
-F11::
-SoundSet, +1, , mute
-return
+F11::Volume_Mute
 
 !F11::
 Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data var=&arg=mute&action=main https://automate.home/exec.php, , hide
@@ -57,9 +55,7 @@ return
 
 ;; Volume Down #########
 
-F12::
-SoundSet, -2
-return
+F12::Volume_Down
 
 !F12::
 Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data var=&arg=dwn&action=main https://automate.home/exec.php, , hide
@@ -71,9 +67,7 @@ return
 
 ;; Volume Up ###########
 
-Insert::
-SoundSet, +2
-return
+Insert::Volume_Up
 
 !Insert::
 Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data var=&arg=up&action=main https://automate.home/exec.php, , hide

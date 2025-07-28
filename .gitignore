@@ -9,6 +9,7 @@ automate/config/html/img/wifi.png
 automate/config/html/wifi.js
 automate/config/html/fonts
 unifi/firmware
+mgmt/keys
 pve/vmbkps
 pve/photos
 *auto.creds*

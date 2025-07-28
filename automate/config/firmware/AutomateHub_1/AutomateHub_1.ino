@@ -62,6 +62,7 @@ Neotimer maxFwrdRead = Neotimer();
 DHTStable DHT;
 float dhtTemp = 0;
 float dhtHumidity = 0;
+bool okDHTReading = false;
 Neotimer dhtLockoutTimer = Neotimer();
 const uint16_t dhtDeadTime = 2500; // sensor dead-time in (ms)
 bool dhtLockout = false;
@@ -144,12 +145,14 @@ void readTempHumidity(){
     // take a new sensor reading
     dhtTemp = 0;
     dhtHumidity = 0;
+    okDHTReading = false;
     int _chk = DHT.read22(PWR_IO_2);
     switch (_chk)
     {
     case DHTLIB_OK:
         dhtTemp = ((DHT.getTemperature() * 9) + 3) / 5 + 32;
         dhtHumidity = DHT.getHumidity();
+        okDHTReading = true;
         break;
     case DHTLIB_ERROR_CHECKSUM:
         Serial.print("DHT INVALID CHECKSUM!");
@@ -162,12 +165,16 @@ void readTempHumidity(){
         break;
     }
   }
-  // convert floats to characters
-  char _temp[8], _humi[8];
-  dtostrf(dhtTemp, 3, 1, _temp);
-  dtostrf(dhtHumidity, 3, 1, _humi);
-  // concat arrays then write to output buffer
-  sprintf(serialMessageOut ,"%s~%s" ,_temp ,_humi);
+  if (okDHTReading == true) {
+    // convert floats to characters
+    char _temp[8], _humi[8];
+    dtostrf(dhtTemp, 3, 1, _temp);
+    dtostrf(dhtHumidity, 3, 1, _humi);
+    // concat arrays then write to output buffer
+    sprintf(serialMessageOut ,"%s~%s" ,_temp ,_humi);
+  } else {
+    sprintf(serialMessageOut ,"X");
+  }
 }
 
 /// initialization routines ///

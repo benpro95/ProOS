@@ -62,7 +62,7 @@ Neotimer maxFwrdRead = Neotimer();
 DHTStable DHT;
 float dhtTemp = 0;
 float dhtHumidity = 0;
-bool okDHTReading = false;
+bool dhtReadingOk = false;
 Neotimer dhtLockoutTimer = Neotimer();
 const uint16_t dhtDeadTime = 2500; // sensor dead-time in (ms)
 bool dhtLockout = false;
@@ -138,21 +138,22 @@ void powerPulse(int _powerPin) {
 
 void readTempHumidity(){
   if (dhtLockout == false) {
+    dhtTemp = 0;
+    dhtHumidity = 0;
+    dhtReadingOk = false;
     // start lockout timer
     dhtLockoutTimer.set(dhtDeadTime);
     dhtLockoutTimer.start();
     dhtLockout = true;
-    // take a new sensor reading
-    dhtTemp = 0;
-    dhtHumidity = 0;
-    okDHTReading = false;
+    // verify sensor is functioning
     int _chk = DHT.read22(PWR_IO_2);
     switch (_chk)
     {
     case DHTLIB_OK:
-        dhtTemp = ((DHT.getTemperature() * 9) + 3) / 5 + 32;
+        // take a new sensor reading
+        dhtTemp = ((DHT.getTemperature() * 9) + 3) / 5 + 32; // convert C -> F
         dhtHumidity = DHT.getHumidity();
-        okDHTReading = true;
+        dhtReadingOk = true;
         break;
     case DHTLIB_ERROR_CHECKSUM:
         Serial.print("DHT INVALID CHECKSUM!");
@@ -165,7 +166,7 @@ void readTempHumidity(){
         break;
     }
   }
-  if (okDHTReading == true) {
+  if (dhtReadingOk == true) {
     // convert floats to characters
     char _temp[8], _humi[8];
     dtostrf(dhtTemp, 3, 1, _temp);

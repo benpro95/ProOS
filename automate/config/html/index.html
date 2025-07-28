@@ -37,7 +37,7 @@
     </a>
     <div class="bookmark-buttons">
       <a onclick="editBookmark()" class="dropbtn">
-        <i class="fad fa-gear"></i>
+        <i class="fad fa-edit"></i>
       </a>   
       <a onclick="addBookmark()" class="dropbtn">
         <i class="fad fa-plus"></i>
@@ -47,7 +47,7 @@
   <!-- right label-->
   <div class="server-grid">
     <a onclick="showStatusMenu()" id="nav_right_menu" class="dropbtn">
-      <i class="fad fa-info"></i>
+      <i class="fad fa-tasks-alt"></i>
     </a>
   </div>
 </div>
@@ -146,12 +146,12 @@
         <p class="parstd"></p>
         <!---->
         <button type="button" class="button" onclick="sendCmd('leds','randcolor','')">
-          <span class="button__text"><i class="fad fa-pencil-paintbrush"></i> Colors</span>
+          <span class="button__text"><i class="fad fa-tint"></i> Colors</span>
         </button>
         <button type="button" class="button" onclick="showTempHumidity()">
           <span class="button__text">
-            <i class="large__icon fad fa-temperature-hot"></i>
-            <i class="large__icon fad fa-humidity"></i>
+            <i class="fad fa-temperature-hot large__icon"></i>
+            <i class="fad fa-humidity large__icon"></i>
           </span>
         </button>
         <div class="dropdown">
@@ -168,11 +168,11 @@
         <!---->
         <div class="dropdown">
           <button type="button" class="button" onclick="showMenu('allmenu')">
-            <span class="button__text"><i class="fad fa-power-off"></i> Power</span>
+            <span class="button__text"><i class="fad fa-power-off"></i> Room</span>
           </button>  
           <div class="dd-content dd-button" id="allmenu">
-            <a onclick="sendCmd('main','allon','')"><i class="fad fa-toggle-on"></i> Apt On</a>
-            <a onclick="sendCmd('main','alloff','')"><i class="fad fa-toggle-off"></i> Apt Off</a>
+            <a onclick="sendCmd('main','allon','')"><i class="fad fa-toggle-on"></i> On</a>
+            <a onclick="sendCmd('main','alloff','')"><i class="fad fa-toggle-off"></i> Off</a>
           </div>
         </div>
         <button type="button" class="button" onclick="openCamWindow()">   
@@ -187,7 +187,7 @@
           <!---->
           <div class="dropdown">
             <button type="button" class="button" onclick="showPowerMenu('lrxmit','wkststate')">
-              <span class="button__text" id="wkststate-text"><i class="fad fa-computer"></i> Desktop</span>
+              <span class="button__text" id="wkststate-text"><i class="fad fa-desktop"></i> Desktop</span>
               <span class="button__text" id="wkststate-spinner"></span>
             </button>
             <div class="dd-content ind-button" id="wkststate-menu"></div>
@@ -202,7 +202,7 @@
           </div>
           <div class="dropdown">
             <button type="button" class="button" onclick="showMenu('winlight-menu')">
-              <span class="button__text"><i class="fad fa-lightbulb"></i> Window</span>
+              <span class="button__text"><i class="fad fa-lamp-floor"></i> Window</span>
             </button>  
             <div class="dd-content dd-button" id="winlight-menu">
               <a onclick="sendCmd('main','rfc1on','')"><i class="fad fa-toggle-on"></i> On</a>
@@ -220,13 +220,13 @@
       <div class="hifi-grid">
         <!--HIFI GRID-->
         <button type="button" class="button" id="voldwnbtn" onclick="sendVol('dwn')">
-            <span class="button__text"><i class="fad fa-volume-down"></i></span>
+            <span class="button__text"><i class="fad fa-volume-down fa-lg"></i></span>
         </button>
         <button type="button" class="button" id="volmutebtn" onclick="sendVol('mute')">
-            <span class="button__text"><i class="fad fa-volume-mute"></i></span>
+            <span class="button__text"><i class="fad fa-volume-mute fa-lg"></i></span>
         </button>
         <button type="button" class="button" id="volupbtn" onclick="sendVol('up')">
-            <span class="button__text"><i class="fad fa-volume-up"></i></span>
+            <span class="button__text"><i class="fad fa-volume-up fa-lg"></i></span>
         </button>
         <!---->
         <p class="parstd"></p>
@@ -251,7 +251,7 @@
           <span class="button__text"><i class="fad fa-wave-square"></i> Optical</span>
         </button>
         <button type="button" class="button" onclick="sendCmd('main','autodac','')">
-          <span class="button__text"><i class="fad fa-arrows-rotate"></i> Auto</span>
+          <span class="button__text"><i class="fad fa-waveform"></i> Auto</span>
         </button>
         <button type="button" class="button" onclick="sendCmd('main','usb','')">
           <span class="button__text"><i class="fab fa-usb"></i> USB</span>
@@ -260,10 +260,10 @@
         <p class="parstd"></p> 
         <!---->
         <button type="button" class="button" onclick="sendCmd('main','aux','')">
-          <span class="button__text"><i class="fad fa-microphone"></i> Aux</span> 
+          <span class="button__text"><i class="fad fa-wave-sine"></i> Aux</span> 
         </button>
         <button type="button" class="button" onclick="sendCmd('main','phono','')">
-          <span class="button__text"><i class="fad fa-compact-disc"></i> Phono</span>
+          <span class="button__text"><i class="fad fa-turntable"></i> Phono</span>
         </button>
         <button type="button" class="button" onclick="sendCmd('main','coax','')">   
           <span class="button__text"><i class="fab fa-apple"></i> AirPlay</span>
@@ -295,7 +295,7 @@
           </div>
         </div>
         <div class="dropdown">
-          <button type="button" class="button button_ctrl" onclick="showMenu('br-menu')">
+          <button type="button" class="button button_dark" onclick="showMenu('br-menu')">
             <span class="button__text"><i class="fad fa-bed"></i> Bedroom</span>
           </button>  
           <div class="dd-content dd-button" id="br-menu">
@@ -304,7 +304,7 @@
         </div>
         <div class="dropdown">
           <button type="button" class="button" onclick="showPowerMenu('localcmd','brlamp1')">
-            <span class="button__text" id="brlamp1-text"><i class="fad fa-lightbulb"></i> Dresser</span>
+            <span class="button__text" id="brlamp1-text"><i class="fad fa-lamp-desk"></i> Dresser</span>
             <span class="button__text" id="brlamp1-spinner"></span>
           </button>
           <div class="dd-content ind-button" id="brlamp1-menu"></div>
@@ -313,13 +313,13 @@
         <p class="parstd"></p> 
         <!---->
         <button type="button" class="button" onclick="sendVol('dwn')">
-          <span class="button__text"><i class="fad fa-volume-down"></i></span>
+          <span class="button__text"><i class="fad fa-volume-down fa-lg"></i></span>
         </button>
         <button type="button" class="button" onclick="sendVol('mute')">
-            <span class="button__text"><i class="fad fa-volume-mute"></i></span>
+            <span class="button__text"><i class="fad fa-volume-mute fa-lg"></i></span>
         </button>
         <button type="button" class="button" onclick="sendVol('up')">
-            <span class="button__text"><i class="fad fa-volume-up"></i></span>
+            <span class="button__text"><i class="fad fa-volume-up fa-lg"></i></span>
         </button>
         <!---->
         <p class="parstd"></p> 
@@ -357,7 +357,7 @@
         </div>
         <div class="dropdown">
           <button type="button" class="button" onclick="showAmpInput()">
-            <span class="button__text" id="ampinp-text"><i class="fad fa-sitemap"></i> Inputs</span>
+            <span class="button__text" id="ampinp-text"><i class="fad fa-sliders-v"></i> Inputs</span>
             <span class="button__text" id="ampinp-spinner"></span>
           </button>
           <div class="dd-content ind-button" id="brinpmenu"></div>
@@ -446,13 +446,13 @@
         </div>
       </div>
       <button type="button" class="button svropt_button" onclick="closeServerOptions()">
-        <span class="button__text"><i class="fad fa-times"></i> Close</span>
+        <span class="button__text"><i class="fas fa-times"></i> Close</span>
       </button>
       <button type="button" class="button svropt_button" onclick="serverAction('files-git_push')"> 
-        <span class="button__text"><i class="fas fa-code-merge"></i> Sync Git</span>
+        <span class="button__text"><i class="fad fa-code-merge"></i> Sync Git</span>
       </button>    
       <button type="button" class="button svropt_button" onclick="serverAction('files-clearlog')">
-        <span class="button__text"><i class="fas fa-eraser"></i> Clear Log</span>
+        <span class="button__text"><i class="fad fa-file-times"></i> Clear Log</span>
       </button>
     </div>
     <div class="svropt__backup">
@@ -478,7 +478,7 @@
         <span class="button__text"></i> Snapshots</span>
       </button>        
       <button type="button" class="button svropt_button" onclick="closeServerOptions()">
-        <span class="button__text"><i class="fad fa-times"></i> Close</span>
+        <span class="button__text"><i class="fas fa-times"></i> Close</span>
       </button>
       <button type="button" class="button svropt_button" onclick="openServerOptions()">
         <span class="button__text"><i class="fad fa-arrow-left"></i> Back</span>
@@ -534,7 +534,7 @@
         </div>
       </div>
       <button type="button" class="button svropt_button_lgr" onclick="closeServerOptions()">
-        <span class="button__text"><i class="fad fa-times"></i> Close</span>
+        <span class="button__text"><i class="fas fa-times"></i> Close</span>
       </button>
       <button type="button" class="button svropt_button" onclick="openServerOptions()">
         <span class="button__text"><i class="fad fa-arrow-left"></i> Back</span>
@@ -560,7 +560,7 @@
       <span class="button__text"></i> Temperature</span>
     </button> 
     <button type="button" class="button svropt_button" onclick="closeServerOptions()">
-      <span class="button__text"><i class="fad fa-times"></i> Close</span>
+      <span class="button__text"><i class="fas fa-times"></i> Close</span>
     </button>  
     <button type="button" class="button svropt_button" onclick="serverAction('clearlog')">
       <span class="button__text"></i> Clear Log</span>
@@ -576,10 +576,10 @@
     <textarea readonly class="scroll-bar" id="logTextBox" spellcheck="false" placeholder="" required="">
     </textarea>  
     <button type="button" class="button button_left_txtwin" onclick="closePopup()">
-          <span class="button__textsmall"><i class="fad fa-times"></i></span>
+          <span class="button__textsmall"><i class="fas fa-times"></i></span>
     </button>       
     <button type="button" class="button button_left_txtwin" onclick="openServerOptions()">
-          <span class="button__textsmall"><i class="fad fa-sliders-v"></i></span>
+          <span class="button__textsmall"><i class="fad fa-sliders-h"></i></span>
     </button>           
     <button type="button" class="button button_left_txtwin" onclick="loadLog('sysout')">
           <span class="button__textsmall"><i class="fad fa-sync-alt"></i></span>

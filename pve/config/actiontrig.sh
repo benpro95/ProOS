@@ -194,6 +194,13 @@ if [ -e $TRIGGERS_DIR/pve_vmsbkp.txt ]; then
   chmod 777 $VM_CONFS/files/lxc.conf
   ###
   echo ""
+  echo "Backing-up Mgmt LXC 102..."
+  vzdump 102 --mode snapshot --compress zstd --node pve --storage local \
+   --maxfiles 1 --remove 1 --exclude-path /mnt/ProOS
+  cp -v /etc/pve/lxc/102.conf $VM_CONFS/mgmt/lxc.conf
+  chmod 777 $VM_CONFS/mgmt/lxc.conf
+  ###  
+  echo ""
   echo "Backing-up Plex LXC 104..."
   vzdump 104 --mode snapshot --compress zstd --node pve --storage local \
    --maxfiles 1 --remove 1 --exclude-path /mnt/transcoding
@@ -233,7 +240,7 @@ if [ -e $TRIGGERS_DIR/pve_vmsbkp.txt ]; then
   echo ""
   echo "Copying VM's to Datastore..."
   chmod -R 777 /var/lib/vz/dump/vzdump-*
-  rsync --progress -a --exclude="*qemu-103*" --exclude="*qemu-105*" \
+  rsync --progress -a --exclude="*qemu-105*" \
    /var/lib/vz/dump/vzdump-* /mnt/datastore/data/ProOS/pve/vmbkps/
   echo "Backup Complete."
   EXIT_ROUTINE

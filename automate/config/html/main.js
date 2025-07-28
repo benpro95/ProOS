@@ -18,7 +18,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "10.0";
+let siteVersion = "10.1";
 
 //////////////////////
 
@@ -42,11 +42,10 @@ function handleClicks(event) {
   // don't hide menus when clicking these elements
   if (!(event.target.classList.contains('button') || // button click
         event.target.classList.contains('button__text') || // button text click
-        event.target.classList.contains('mainmenu__anchor') || // main menu click
         event.target.classList.contains('bookmarked__item') || // bookmark menu click
-        event.target.classList.contains('fas') || // icon clicks
-        event.target.classList.contains('fad') ||
-        event.target.classList.contains('fab') ||
+        event.target.classList.contains('fas') || // solid icon clicks
+        event.target.classList.contains('fad') || // duotone icon clicks
+        event.target.classList.contains('fab') || // brand icon clicks
         event.target.classList.contains('am-spinner') || // spinner clicks
         event.target.classList.contains('dropbtn') || // dropdown button click
         event.target.classList.contains('chkbox'))) { // checkbox click

@@ -529,12 +529,10 @@ input.chkbox {
 #pinet__prompt {
   background-color: black;
   border: 1px solid white;
-  text-align: center;
-  text-decoration: none;
   position: fixed;
-  top: 25%;
-  left: 15%;
-  width: auto;  
+  top: 30%;
+  left: 10%;
+  width: 350px;  
   height: auto;
   padding: 16px; 
   color: #fff;

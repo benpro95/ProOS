@@ -486,7 +486,11 @@ input.chkbox {
   width: 5px;
 }
 
-.prompt__win {
+/*
+ *  Password Prompt Style
+ */
+
+#pass__prompt_win {
   background-color: black;
   border: 1px solid white;
   position: fixed;
@@ -498,10 +502,6 @@ input.chkbox {
   color: #fff;
   z-index: 998;
 }
-
-/*
- *  Password Prompt Style
- */
 
 #pass__textbox {
   margin: 15px;
@@ -525,6 +525,21 @@ input.chkbox {
 /*
  *  Pi WiFi Connection Manager
  */
+
+#pinet__prompt {
+  background-color: black;
+  border: 1px solid white;
+  text-align: center;
+  text-decoration: none;
+  position: fixed;
+  top: 25%;
+  left: 15%;
+  width: auto;  
+  height: auto;
+  padding: 16px; 
+  color: #fff;
+  z-index: 998;
+}
 
 #pinet__ssidbox {
   margin: 15px;

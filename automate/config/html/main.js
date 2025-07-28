@@ -6,7 +6,6 @@ let ctlMode;
 let ctlCommand = 0;
 let selectedVM = "";
 let dynMenuActive = 0;
-let colorPromptActive = 0;
 let resizeState = false;
 let bookmarkState = 0;
 let serverCmdData;
@@ -320,9 +319,117 @@ function closeServerOptions(){
 
 /// END- text popup window ///
 
-async function piWiFiPrompt(){
+async function aboutPrompt(){
+  const _winid = 'about__prompt';
+  // only allow one-instance of the window
+  if (document.getElementById(_winid)) {
+    return;
+  }
+  let aboutprompt = document.createElement("div"); 
+  aboutprompt.id= _winid;
+  // title
+  let abouttext = document.createElement("div");
+  abouttext.innerHTML = sysModel + " Controller";
+  aboutprompt.appendChild(abouttext); 
+  // logo
+  let img = document.createElement("img");
+  img.src = "img/automate.png";
+  img.id = "about__img";
+  aboutprompt.appendChild(img);
+  // version details
+  let currentDate = new Date();
+  let currentYear = currentDate.getFullYear();
+  let aboutdets2 = document.createElement("div"); 
+  aboutdets2.innerHTML = "Version: " + siteVersion + " (" + currentYear + ")";
+  aboutdets2.className = "about__text";
+  aboutprompt.appendChild(aboutdets2);
+  // author details
+  let aboutdets1 = document.createElement("div"); 
+  aboutdets1.innerHTML = "by Ben Provenzano III";
+  aboutdets1.className = "about__text";
+  aboutprompt.appendChild(aboutdets1); 
+  // cancel button
+  let aboutcancelb = document.createElement("button");
+  aboutcancelb.innerHTML = "Close";
+  aboutcancelb.className ="button"; 
+  aboutcancelb.id = "about__btn";
+  aboutcancelb.type="button"; 
+  aboutprompt.appendChild(aboutcancelb); //append cancel-button
+  document.body.appendChild(aboutprompt); //append the password-prompt so it gets visible
+  new Promise(function(resolve, reject) {
+    aboutprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
+      if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
+      aboutprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
+      document.body.removeChild(aboutprompt);  //as we are done clean up by removing the password-prompt
+    });
+  });   
+}
+
+async function showTempHumidity(){
+  const _winid = 'temp__prompt';
+  // only allow one-instance of the window
+  if (document.getElementById(_winid)) {
+    return;
+  }
+  // create window
+  let tempprompt = document.createElement("div"); 
+  tempprompt.id= _winid;
+  // default layout
+  let temptext = document.createElement("div");
+  temptext.innerHTML = '---';
+  temptext.id = 'temp__text';
+  tempprompt.appendChild(temptext);
+  // cancel button
+  let tempcancelb = document.createElement("button");
+  tempcancelb.innerHTML = "Close";
+  tempcancelb.className ="button"; 
+  tempcancelb.id = "temp__btn";
+  tempcancelb.type="button"; 
+  tempprompt.appendChild(tempcancelb); 
+  document.body.appendChild(tempprompt);
+  // call API for data
+  sendCmd('main','localcmd','roomth').then((data) => { // GET request
+    const resp = data.replace(/(\r\n|\n|\r)/gm, "");
+    let _elem = document.getElementById('temp__text');
+    if (_elem) {
+      _elem.innerHTML = resp;
+    }
+  });
+  // button actions
+  new Promise(function(resolve, reject) {
+    tempprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
+      if (e.target.tagName !== 'BUTTON') { return; } // nothing to do - user clicked somewhere else
+      tempprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
+      document.body.removeChild(tempprompt);  //as we are done clean up by removing the password-prompt
+    });
+  });  
+}
+
+async function showPiWiFiPrompt(){
+  const winid = "pinet__prompt";
+  // only allow one-instance of the window
+  if (document.getElementById(winid)) {
+    return;
+  }
+  let result;
+  try {
+    hideDropdowns(true);
+    result = await piWiFiPrompt(winid);
+    if (result !== null) {  
+      if (result !== '') {  
+        sendCmd('main-www','confwpa',result);
+        document.getElementById("logTextBox").value = "Wi-Fi configuration updated, select client mode to apply changes.";
+      }
+    } 
+    result = "";
+  } catch(e){
+    result = "";
+  }
+}
+
+async function piWiFiPrompt(_winid){
   let pinetprompt = document.createElement("div"); 
-  pinetprompt.className= "prompt__win"; 
+  pinetprompt.id = _winid; 
   // SSID text
   let pinettext1 = document.createElement("div"); 
   pinettext1.innerHTML = "Network (SSID):"; 
@@ -406,102 +513,14 @@ async function piWiFiPrompt(){
   }); 
 }
 
-async function aboutPrompt(){
-  let aboutprompt = document.createElement("div"); 
-  aboutprompt.id= "about__prompt";
-  // title
-  let abouttext = document.createElement("div");
-  abouttext.innerHTML = sysModel + " Controller";
-  aboutprompt.appendChild(abouttext); 
-  // logo
-  let img = document.createElement("img");
-  img.src = "img/automate.png";
-  img.id = "about__img";
-  aboutprompt.appendChild(img);
-  // version details
-  let currentDate = new Date();
-  let currentYear = currentDate.getFullYear();
-  let aboutdets2 = document.createElement("div"); 
-  aboutdets2.innerHTML = "Version: " + siteVersion + " (" + currentYear + ")";
-  aboutdets2.className = "about__text";
-  aboutprompt.appendChild(aboutdets2);
-  // author details
-  let aboutdets1 = document.createElement("div"); 
-  aboutdets1.innerHTML = "by Ben Provenzano III";
-  aboutdets1.className = "about__text";
-  aboutprompt.appendChild(aboutdets1); 
-  // cancel button
-  let aboutcancelb = document.createElement("button");
-  aboutcancelb.innerHTML = "Close";
-  aboutcancelb.className ="button"; 
-  aboutcancelb.id = "about__btn";
-  aboutcancelb.type="button"; 
-  aboutprompt.appendChild(aboutcancelb); //append cancel-button
-  document.body.appendChild(aboutprompt); //append the password-prompt so it gets visible
-  new Promise(function(resolve, reject) {
-    aboutprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
-      if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
-      aboutprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
-      document.body.removeChild(aboutprompt);  //as we are done clean up by removing the password-prompt
-    });
-  });   
-}
-
-async function showTempHumidity(){
-  // create window
-  let tempprompt = document.createElement("div"); 
-  tempprompt.id= "temp__prompt";
-  // default layout
-  let temptext = document.createElement("div");
-  temptext.innerHTML = '---';
-  temptext.id = 'temp__text';
-  tempprompt.appendChild(temptext);
-  // cancel button
-  let tempcancelb = document.createElement("button");
-  tempcancelb.innerHTML = "Close";
-  tempcancelb.className ="button"; 
-  tempcancelb.id = "temp__btn";
-  tempcancelb.type="button"; 
-  tempprompt.appendChild(tempcancelb); 
-  document.body.appendChild(tempprompt);
-  // call API for data
-  sendCmd('main','localcmd','roomth').then((data) => { // GET request
-    const resp = data.replace(/(\r\n|\n|\r)/gm, "");
-    let _elem = document.getElementById('temp__text');
-    if (_elem) {
-      _elem.innerHTML = resp;
-    }
-  });
-  // button actions
-  new Promise(function(resolve, reject) {
-    tempprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
-      if (e.target.tagName !== 'BUTTON') { return; } // nothing to do - user clicked somewhere else
-      tempprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
-      document.body.removeChild(tempprompt);  //as we are done clean up by removing the password-prompt
-    });
-  });  
-}
-
-async function showPiWiFiPrompt(){
-  let result;
-  try {
-    hideDropdowns(true);
-    result = await piWiFiPrompt();
-    if (result !== null) {  
-      if (result !== '') {  
-        sendCmd('main-www','confwpa',result);
-        document.getElementById("logTextBox").value = "Wi-Fi configuration updated, select client mode to apply changes.";
-      }
-    } 
-    result = "";
-  } catch(e){
-    result = "";
-  }
-}
-
 async function wifiPrompt(){
+  const _winid = "wifi__prompt";
+  // only allow one-instance of the window
+  if (document.getElementById(_winid)) {
+    return;
+  }
   let wifiprompt = document.createElement("div");
-  wifiprompt.id = "wifi__prompt";
+  wifiprompt.id = _winid;
   let wifitext = document.createElement("div");
   wifitext.innerHTML = "Scan for WiFi Access"; 
   wifiprompt.appendChild(wifitext);
@@ -529,9 +548,30 @@ async function wifiPrompt(){
   });   
 }
 
+async function getPassword(_type){
+  let result;
+  try{
+    hideDropdowns(true);
+    result = await passwordPrompt();
+    if (result !== null) {  
+      if (result !== '') {
+        savePOST(_type,[result]);
+      }
+    }
+    result = "";
+  } catch(e){
+    result = "";
+  }
+}
+
 function passwordPrompt(){
+  const _winid = "pass__prompt_win";
+  // only allow one-instance of the window
+  if (document.getElementById(_winid)) {
+    return;
+  }
   let pwprompt = document.createElement("div"); //creates the div to be used as a prompt
-  pwprompt.className = "prompt__win"; //gives the prompt an id - not used in my example but good for styling with css-file
+  pwprompt.id = _winid; //gives the prompt an id
   let pwtextdiv = document.createElement("div"); //create the div for the password-text
   pwtextdiv.innerHTML = "Enter password:"; //put inside the text
   pwprompt.appendChild(pwtextdiv); //append the text-div to the password-prompt
@@ -579,21 +619,120 @@ function passwordPrompt(){
   }); 
 }
 
-async function getPassword(_type){
-  let result;
-  try{
-    hideDropdowns(true);
-    result = await passwordPrompt();
-    if (result !== null) {  
-      if (result !== '') {
-        savePOST(_type,[result]);
-      }
-    }
-    result = "";
-  } catch(e){
-    result = "";
+async function colorPrompt(){
+  const winid = "color__prompt";
+  // only allow one-instance of the window
+  if (document.getElementById(winid)) {
+    return;
+  }
+  hideDropdowns(true);
+  let colorprompt = document.createElement("div"); //creates the div to be used as a prompt
+  colorprompt.id= winid; //gives the prompt an id
+  let colortext = document.createElement("div"); //create the div for the password-text
+  colortext.innerHTML = "Pick a color:"; //put inside the text
+  colortext.id = "color__text";
+  colorprompt.appendChild(colortext); //append the text-div to the prompt
+  // the cancel-button
+  let colorcancelb = document.createElement("button"); 
+  colorcancelb.innerHTML = "Close";
+  colorcancelb.className ="button"; 
+  colorcancelb.type="button"; 
+  colorprompt.appendChild(colorcancelb); //append cancel-button
+  // the set color-button
+  let colorsetb = document.createElement("button"); 
+  colorsetb.innerHTML = "Apply";
+  colorsetb.className ="button"; 
+  colorsetb.type="button"; 
+  colorprompt.appendChild(colorsetb); //append set-button
+  // color selector box
+  let colorinput = document.createElement("input");
+  colorinput.id = "color__box";
+  colorinput.name = "color";
+  colorinput.type = "color";
+  colorinput.value = "#000000";
+  colorprompt.appendChild(colorinput);
+  // append the password-prompt so it is visible
+  document.body.appendChild(colorprompt); 
+  let _colorval;
+  new Promise(function(resolve, reject) {
+      colorinput.addEventListener('input', function () {
+        _colorval = colorinput.value; // save color values
+      });
+      colorprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
+        if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
+        if (e.target === colorsetb) { 
+          // set button action
+          updateColor(_colorval);
+        } else { // close button
+          colorprompt.removeEventListener('click', handleButtonClicks);
+          document.body.removeChild(colorprompt);  //as we are done clean up by removing the-prompt
+        }  
+      });
+  });   
+}
+
+function updateColor(_hexin) {
+  let _proto = 'wss://';
+  let color;
+  if (location.protocol === 'http:'){
+    _proto = 'ws://';
+  }
+  _host = _proto + location.hostname + ":7890";
+  // Connect to a Fadecandy server
+  socket = new WebSocket(_host);
+  socket.onopen = function(event) {
+    color = hexToRgb(_hexin);
+    let rounds = 32;
+    for (let i = 0; i < rounds; i++) {
+        writeFrame(
+        color.r,
+        color.g,
+        color.b);
+    }           
   }
 }
+
+function hexToRgb(hex) {
+  // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+  let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+  hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+      return r + r + g + g + b + b;
+  });
+  let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+  } : null;
+}
+
+// Set all pixels to a given color
+function writeFrame(red, green, blue) {
+  let leds = 512;
+  let packet = new Uint8ClampedArray(4 + leds * 3);
+  if (socket.readyState != 1 /* OPEN */) {
+      // The server connection isn't open. Nothing to do.
+      return;
+  }
+  if (socket.bufferedAmount > packet.length) {
+      // The network is lagging, and we still haven't sent the previous frame.
+      // Don't flood the network, it will just make us laggy.
+      // If fcserver is running on the same computer, it should always be able
+      // to keep up with the frames we send, so we shouldn't reach this point.
+      return;
+  }
+  // Dest position in our packet. Start right after the header.
+  let dest = 4;
+  // Sample the center pixel of each LED
+  for (let i = 0; i < leds; i++) {
+      packet[dest++] = red;
+      packet[dest++] = green;
+      packet[dest++] = blue;
+  }
+  socket.send(packet.buffer);
+}
+
+/// END DYNAMIC WINDOWS ///
 
 function relaxSend(_cmd) {
   sendCmd('main','relax',_cmd);
@@ -1612,120 +1751,4 @@ function openSendWindow() {
   // open send text window
   closeSendbox();
   document.getElementById("sendForm").style.display = "block";
-}
-
-function hexToRgb(hex) {
-  // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
-  let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-  hex = hex.replace(shorthandRegex, function(m, r, g, b) {
-      return r + r + g + g + b + b;
-  });
-  let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16)
-  } : null;
-}
-
-function updateSettings(_hexin) {
-  let _proto = 'wss://';
-  let color;
-  if (location.protocol === 'http:'){
-    _proto = 'ws://';
-  }
-  _host = _proto + location.hostname + ":7890";
-  // Connect to a Fadecandy server
-  socket = new WebSocket(_host);
-  socket.onopen = function(event) {
-    color = hexToRgb(_hexin);
-    let rounds = 32;
-    for (let i = 0; i < rounds; i++) {
-        writeFrame(
-        color.r,
-        color.g,
-        color.b);
-    }           
-  }
-}
-
-// Set all pixels to a given color
-function writeFrame(red, green, blue) {
-  let leds = 512;
-  let packet = new Uint8ClampedArray(4 + leds * 3);
-  if (socket.readyState != 1 /* OPEN */) {
-      // The server connection isn't open. Nothing to do.
-      return;
-  }
-  if (socket.bufferedAmount > packet.length) {
-      // The network is lagging, and we still haven't sent the previous frame.
-      // Don't flood the network, it will just make us laggy.
-      // If fcserver is running on the same computer, it should always be able
-      // to keep up with the frames we send, so we shouldn't reach this point.
-      return;
-  }
-  // Dest position in our packet. Start right after the header.
-  let dest = 4;
-  // Sample the center pixel of each LED
-  for (let i = 0; i < leds; i++) {
-      packet[dest++] = red;
-      packet[dest++] = green;
-      packet[dest++] = blue;
-  }
-  socket.send(packet.buffer);
-}
-
-async function colorPrompt(){
-  hideDropdowns(true);
-  if (colorPromptActive === 0) {
-    await show_colorPrompt("Pick a color:");
-  } 
-}
-
-function show_colorPrompt(text){
-  colorPromptActive = 1; 
-  let colorprompt = document.createElement("div"); //creates the div to be used as a prompt
-  colorprompt.id= "color__prompt"; //gives the prompt an id - not used in my example but good for styling with css-file
-  let colortext = document.createElement("div"); //create the div for the password-text
-  colortext.innerHTML = text; //put inside the text
-  colortext.id = "color__text";
-  colorprompt.appendChild(colortext); //append the text-div to the prompt
-  // the cancel-button
-  let colorcancelb = document.createElement("button"); 
-  colorcancelb.innerHTML = "Close";
-  colorcancelb.className ="button"; 
-  colorcancelb.type="button"; 
-  colorprompt.appendChild(colorcancelb); //append cancel-button
-  // the set color-button
-  let colorsetb = document.createElement("button"); 
-  colorsetb.innerHTML = "Apply";
-  colorsetb.className ="button"; 
-  colorsetb.type="button"; 
-  colorprompt.appendChild(colorsetb); //append set-button
-  // color selector box
-  let colorinput = document.createElement("input");
-  colorinput.id = "color__box";
-  colorinput.name = "color";
-  colorinput.type = "color";
-  colorinput.value = "#000000";
-  colorprompt.appendChild(colorinput);
-  // append the password-prompt so it is visible
-  document.body.appendChild(colorprompt); 
-  let _colorval;
-  new Promise(function(resolve, reject) {
-      colorinput.addEventListener('input', function () {
-        _colorval = colorinput.value; // save color values
-      });
-      colorprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
-        if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
-        if (e.target === colorsetb) { 
-          // set button action
-          updateSettings(_colorval);
-        } else { // close button
-          colorprompt.removeEventListener('click', handleButtonClicks);
-          document.body.removeChild(colorprompt);  //as we are done clean up by removing the-prompt
-          colorPromptActive = 0;
-        }  
-      });
-  });   
 }

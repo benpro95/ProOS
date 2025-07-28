@@ -174,6 +174,7 @@ void readTempHumidity(){
     // concat arrays then write to output buffer
     sprintf(serialMessageOut ,"%s~%s" ,_temp ,_humi);
   } else {
+    // error response
     sprintf(serialMessageOut ,"X");
   }
 }

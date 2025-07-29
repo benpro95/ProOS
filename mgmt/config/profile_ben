@@ -4,13 +4,13 @@
 alias matrix='/usr/bin/cmatrix'
 alias login="/mnt/ProOS/login.sh"
 alias logon="/mnt/ProOS/login.sh"
+alias less='less --RAW-CONTROL-CHARS'
 
-# You may uncomment the following lines if you want `ls' to be colorized:
-export LS_OPTIONS='--color=auto'
-eval "`dircolors`"
-alias ls='ls $LS_OPTIONS'
-alias ll='ls $LS_OPTIONS -l'
-alias l='ls $LS_OPTIONS -lA'
+## Colorized Lists
+export LS_OPTS='--color=auto'
+alias ls='ls $LS_OPTS'
+alias ll='ls $LS_OPTS -l'
+alias l='ls $LS_OPTS -lA'
 
 # Set text colors
 ambertty=`tput setaf 3`
@@ -19,18 +19,36 @@ resettty=`tput sgr0`
 
 uname -m -n -s -o -r
 echo "${ambertty}"
-echo "  _____            ____   _____ "
-echo " |  __ \          / __ \ / ____|"
-echo " | |__) | __ ___ | |  | | (___  "
-echo " |  ___/ '__/ _ \| |  | |\___ \ "
-echo " | |   | | | (_) | |__| |____) |"
-echo " |_|   |_|  \___/ \____/|_____/ "
+RANDOPT=$(( $RANDOM % 3 ))
+if [[ $RANDOPT == "0" ]]
+then
+  echo "    ____             ____  _____"
+  echo "   / __ \_________  / __ \/ ___/"
+  echo "  / /_/ / ___/ __ \/ / / /\__ \ "
+  echo " / ____/ /  / /_/ / /_/ /___/ / "
+  echo "/_/   /_/   \____/\____//____/  "
+fi
+if [[ $RANDOPT == "1" ]]
+then
+  echo "  _____            ____   _____ "
+  echo " |  __ \          / __ \ / ____|"
+  echo " | |__) | __ ___ | |  | | (___  "
+  echo " |  ___/ '__/ _ \| |  | |\___ \ "
+  echo " | |   | | | (_) | |__| |____) |"
+  echo " |_|   |_|  \___/ \____/|_____/ "
+fi
+if [[ $RANDOPT == "2" ]]
+then
+  echo " ____  ____   ___   ___   _____"
+  echo "|    \|    \ /   \ /   \ / ___/"
+  echo "|  o  )  D  )     |     (   \_ "
+  echo "|   _/|    /|  O  |  O  |\__  |"
+  echo "|  |  |    \|     |     |/  \ |"
+  echo "|  |  |  .  \     |     |\    |"
+  echo "|__|  |__|\_|\___/ \___/  \___|"
+fi
 echo "${bluetty}"
 echo "by Ben Provenzano III"
 echo "${resettty}"
-
-alias less='less --RAW-CONTROL-CHARS'
-export LS_OPTS='--color=auto'
-alias ls='ls ${LS_OPTS}'
 
 cd /mnt/ProOS

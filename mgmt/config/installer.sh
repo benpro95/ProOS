@@ -21,6 +21,7 @@ fi
 
 ## Create 'ben' user
 useradd -m ben
+usermod -s /bin/bash ben
 
 ## Public key for root user
 mkdir -p /root/.ssh

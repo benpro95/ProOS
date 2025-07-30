@@ -389,6 +389,14 @@ async function showTempHumidity(){
   tempcancelb.id = "temp__btn";
   tempcancelb.type="button"; 
   tempprompt.appendChild(tempcancelb); 
+  // thermometer
+  let termometer = document.createElement("div"); 
+  termometer.id = "termometer";
+  let temperature = document.createElement("div"); 
+  temperature.id = "temperature";
+  termometer.appendChild(temperature); 
+  tempprompt.appendChild(termometer); 
+  // add window to DOM
   document.body.appendChild(tempprompt);
   // call API for data
   sendCmd('main','localcmd','roomth').then((data) => { // GET request
@@ -396,6 +404,7 @@ async function showTempHumidity(){
     let _elem = document.getElementById('temp__text');
     if (_elem) {
       _elem.innerHTML = resp;
+      setTemperature();
     }
   });
   // button actions
@@ -406,6 +415,16 @@ async function showTempHumidity(){
       document.body.removeChild(tempprompt);  //as we are done clean up by removing the password-prompt
     });
   });  
+}
+
+function setTemperature() {
+  const minTemp = 40;
+	const maxTemp = 100;
+  let value = 75;
+  let height = (value - minTemp) / (maxTemp - minTemp) * 100 + "%";
+  console.log(height);
+	document.getElementById("temperature").style.height = height;
+	document.getElementById("temperature").dataset.value = value + "°F";
 }
 
 async function showPiWiFiPrompt(){

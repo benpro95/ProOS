@@ -404,7 +404,8 @@ async function showTempHumidity(){
     let _elem = document.getElementById('temp__text');
     if (_elem) {
       _elem.innerHTML = resp;
-      setTemperature();
+      const resp_arr = resp.split("~");
+      setThermometer(resp_arr[0]);
     }
   });
   // button actions
@@ -417,14 +418,12 @@ async function showTempHumidity(){
   });  
 }
 
-function setTemperature() {
-  const minTemp = 40;
+function setThermometer(tvalue) {
+  const minTemp = 30;
 	const maxTemp = 100;
-  let value = 75;
-  let height = (value - minTemp) / (maxTemp - minTemp) * 100 + "%";
-  console.log(height);
-	document.getElementById("temperature").style.height = height;
-	document.getElementById("temperature").dataset.value = value + "°F";
+  let window = document.getElementById("temperature");
+	window.style.height = (tvalue - minTemp) / (maxTemp - minTemp) * 100 + "%";
+	window.dataset.value = tvalue + "°F";
 }
 
 async function showPiWiFiPrompt(){

@@ -196,20 +196,6 @@ function WAKE_BRPC() {
   fi
 }
 
-function LIGHTS_OFF(){
-  ## Window Lamp
-  LRXMIT "rfc1off"
-  ## Dresser Lamp
-  LOCAL_CMD "brlamp1off"
-}
-
-function LIGHTS_ON(){
-  ## Window Lamp
-  LRXMIT "rfc1on"
-  ## Dresser Lamp
-  LOCAL_CMD "brlamp1on"
-}
-
 function LRXMIT(){
 local CMD_IN="$1"
 case "$CMD_IN" in
@@ -343,6 +329,20 @@ case "$CMD_IN" in
 esac
 }
 
+function LIGHTS_OFF(){
+  ## Window Lamp
+  LRXMIT "rfc1off"
+  ## Dresser Lamp
+  LOCAL_CMD "brlamp1off"
+}
+
+function LIGHTS_ON(){
+  ## Window Lamp
+  LRXMIT "rfc1on"
+  ## Dresser Lamp
+  LOCAL_CMD "brlamp1on"
+}
+
 ########################
 
 ## Read command line arguments
@@ -350,68 +350,6 @@ FIRST_ARG="${1//$'\n'/}"
 SECOND_ARG="${2//$'\n'/}"
 
 case "$FIRST_ARG" in
-
-sitelookup)
-## Lookup Website Title from URL
-if [ "$SECOND_ARG" != "" ]; then
-  BASE64_IN=$(echo "$SECOND_ARG" | sed "s|-|+|g" | sed "s|_|/|g" | sed "s|@|=|g")
-  DECODED_URL=$(openssl enc -base64 -d <<< "$BASE64_IN")
-  LINKTITLE=$(curl -s -X GET "$DECODED_URL" | xmllint -html -xpath "//head/title/text()" - 2>/dev/null)
-  if [[ "$LINKTITLE" != "" ]] && [[ "$LINKTITLE" != "\n" ]]; then
-    echo "$LINKTITLE"
-  else
-    echo "Error!"
-  fi
-fi
-exit
-;;
-
-localping)
-LOCAL_PING "$SECOND_ARG.$LOCAL_DOMAIN"
-exit
-;;
-
-relax)
-## Bedroom Audio
-CALLAPI "$BRPI_IP" "ampstateon" ""
-## Relax Sounds on Bedroom Pi
-CALLAPI "$BRPI_IP" "relax" "$SECOND_ARG"
-## Turn Off TV
-LOCAL_CMD "brtvoff"
-## Send Sleep Command
-CALLAPI "$BRPC_IP" "sleep" ""
-exit
-;;
-
-stop-br)
-## Stop Relax Sounds 
-CALLAPI "$BRPI_IP" "stoprelax" ""
-exit
-;;
-
-## Forward Command to Bedroom Pi
-brpi)
-CALLAPI "$BRPI_IP" "$SECOND_ARG" ""
-exit
-;;
-
-## Forward Command to Local COM Port
-localcmd)
-LOCAL_CMD "$SECOND_ARG"
-exit
-;;
-
-## Forward Command to Living Room Xmit
-lrxmit)
-LRXMIT "$SECOND_ARG"
-exit
-;;
-
-status)
-## Show System Status
-/opt/system/status
-exit
-;;
 
 ## Desktop Keyboard F1,F2 ##
 
@@ -467,6 +405,8 @@ LOCAL_CMD "brmacsoff"
 CALLAPI "$BRPI_IP" "ampstateoff" ""
 ## Bedroom TV
 LOCAL_CMD "brtvoff"
+## Sleep PC
+CALLAPI "$BRPC_IP" "sleep" ""
 exit
 ;;
 
@@ -496,10 +436,71 @@ LRXMIT "hifioff"
 exit
 ;;
 
-## Server Commands ##
+## Forward Command to Local COM Port
+localcmd)
+LOCAL_CMD "$SECOND_ARG"
+exit
+;;
 
+## Forward Command to Living Room Xmit
+lrxmit)
+LRXMIT "$SECOND_ARG"
+exit
+;;
+
+## Sleep Sounds
+relax)
+## Bedroom Audio
+CALLAPI "$BRPI_IP" "ampstateon" ""
+## Relax Sounds on Bedroom Pi
+CALLAPI "$BRPI_IP" "relax" "$SECOND_ARG"
+## Turn Off TV
+LOCAL_CMD "brtvoff"
+## Send Sleep Command
+CALLAPI "$BRPC_IP" "sleep" ""
+exit
+;;
+
+## Stop Relax Sounds 
+stop-br)
+CALLAPI "$BRPI_IP" "stoprelax" ""
+exit
+;;
+
+## Forward Command to Bedroom Pi
+brpi)
+CALLAPI "$BRPI_IP" "$SECOND_ARG" ""
+exit
+;;
+
+localping)
+LOCAL_PING "$SECOND_ARG.$LOCAL_DOMAIN"
+exit
+;;
+
+## Show System Status
+status)
+/opt/system/status
+exit
+;;
+
+## Lookup Website Title from URL
+sitelookup)
+if [ "$SECOND_ARG" != "" ]; then
+  BASE64_IN=$(echo "$SECOND_ARG" | sed "s|-|+|g" | sed "s|_|/|g" | sed "s|@|=|g")
+  DECODED_URL=$(openssl enc -base64 -d <<< "$BASE64_IN")
+  LINKTITLE=$(curl -s -X GET "$DECODED_URL" | xmllint -html -xpath "//head/title/text()" - 2>/dev/null)
+  if [[ "$LINKTITLE" != "" ]] && [[ "$LINKTITLE" != "\n" ]]; then
+    echo "$LINKTITLE"
+  else
+    echo "Error!"
+  fi
+fi
+exit
+;;
+
+## Server Controls
 server)
-## server controls
 if [[ "${SECOND_ARG}" == "" ]]
 then
   echo "server argument cannot be empty!"

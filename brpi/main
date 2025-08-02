@@ -118,28 +118,47 @@ exit
 ;;
 
 ampstateon)
+## Power On (Last Input)
 ZTERM_COM "01001" 
 BLINKLED
 exit
 ;;
 
 ampstateoff)
+## Power Off
 ZTERM_COM "01002" 
 BLINKLED
 exit
 ;;
 
+ampon-coax)
+## Power On (Coaxial Input)
+ZTERM_COM "01003" 
+BLINKLED
+exit
+;;
+
+ampon-optb)
+## Power On (Optical #B Input)
+ZTERM_COM "01004" 
+BLINKLED
+exit
+;;
+
 ampstate)
+## Power State
 ZTERM_COM "01005"
 exit
 ;;
 
 inputstate)
+## Input State
 ZTERM_COM "01006"
 exit
 ;;
 
 volstate)
+## Volume State
 ZTERM_COM "01007"
 exit
 ;;

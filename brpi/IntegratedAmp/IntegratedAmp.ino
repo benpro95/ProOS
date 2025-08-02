@@ -1,5 +1,5 @@
  /////////////////////////////////////////////////////////////////////////
-// Integrated Amp Controller v2.1
+// Integrated Amp Controller v2.4
 // by Ben Provenzano III
 //////////////////////////////////////////////////////////////////////////
 
@@ -8,12 +8,11 @@
 #include <Encoder.h>
 
 // local libraries
-#include "neotimer.h"
-
+#include "NeoTimer.h"
 
 // common resources
 bool powerState = 0;
-bool powerCycle = 0;
+bool powerChanged = 0;
 uint8_t debounceDelay = 75; // button debounce in (ms)
 const char nullTrm = '\0'; // null terminator
 
@@ -341,9 +340,28 @@ void writeVolumeStatus() {
 }
 
 void writeSerialMessage(int16_t value) {
-  serialMessageOut[0] = nullTrm;
   uint16_t length = snprintf(NULL, 0, "%d", value);
   snprintf(serialMessageOut, length + 1, "%d", value);
+}
+
+// set power states
+void setPowerOn(uint8_t _input) {
+  if (powerState == 0) {
+    // set specific input on power-up
+    if (_input > 0) {
+      lastInput = _input;
+    }
+    // turn-on system
+    powerChanged = 1;
+    powerState = 1; 
+  }
+}
+void setPowerOff() {
+  if (powerState == 1) {
+    // turn-off system
+    powerChanged = 1;
+    powerState = 0;
+  }
 }
 
 // RS-232 control functions
@@ -352,13 +370,21 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
   switch (_register) {
   // power select
   case 1:
-    // power amplifier on (01001)
+    // power on amp to last input (01001)
     if (_ctldata == 1) {
-      powerOn();
+      setPowerOn(0);
     }
-    // power amplifier off (01002)
+    // power off amplifier (01002)
     if (_ctldata == 2) { 
-      powerOff();
+      setPowerOff();
+    }
+    // power on amp to coaxial input (01003)
+    if (_ctldata == 3) { 
+      setPowerOn(3);
+    }
+    // power on amp to optical #2 input (01004)
+    if (_ctldata == 4) { 
+      setPowerOn(2);
     }
     // power status (01005)
     if (_ctldata == 5) {
@@ -377,19 +403,19 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
       writeVolumeStatus();
     }
     // trigger R on (01008)
-    if (_ctldata == 3) { 
+    if (_ctldata == 8) { 
       writeMCP(trigger1Pin, LOW);
     }
     // trigger R off (01009)    
-    if (_ctldata == 4) {
+    if (_ctldata == 9) {
       writeMCP(trigger1Pin, HIGH);
     }
     // trigger L on (01010)
-    if (_ctldata == 3) { 
+    if (_ctldata == 10) { 
       writeMCP(trigger2Pin, LOW);
     }
     // trigger L off (01011)    
-    if (_ctldata == 4) {
+    if (_ctldata == 11) {
       writeMCP(trigger2Pin, HIGH);
     }
     break;
@@ -483,7 +509,8 @@ void processSerialData(char rc, char startInd ,char endInd) {
   }
 }
 
-void writeSerial() { // write response back to computer
+void writeSerial() { 
+  // write response back to computer
   digitalWrite(LED_BUILTIN, HIGH);
   Serial.print(respDelimiter);
   for(uint8_t _idx = 0; _idx < maxMessage; _idx++) {
@@ -495,8 +522,10 @@ void writeSerial() { // write response back to computer
     }
   }
   Serial.print(respDelimiter);
-  Serial.print('\n');
+  Serial.print('\n'); // newline
   digitalWrite(LED_BUILTIN, LOW);
+  // reset output buffer
+  serialMessageOut[0] = nullTrm;
 }
 
 // decode serial message
@@ -559,7 +588,7 @@ void decodeMessage() {
         // store pointer position
         _cmd2pos = _idx;
         break;
-      }  
+      }
       _count++;
     }
   }
@@ -651,7 +680,7 @@ void readPowerButton() {
       // power button was pressed
       if (powerButton == 0) {
         powerState = !powerState; // toggle power state 
-        powerCycle = 1; // set power cycle flag
+        powerChanged = 1; // set power cycle flag
       }
     }
   }
@@ -702,24 +731,8 @@ void readButtonStates() {
   }
 }
 
-// set power states
-void powerOff() {
-  if (powerState == 1) {
-    // turn-off system
-    powerCycle = 1;
-    powerState = 0;
-  }
-}
-void powerOn() {
-  if (powerState == 0) {
-    // turn-on system
-    powerCycle = 1;
-    powerState = 1; 
-  }
-}
-
 void powerOnLogic() {
-  // last set audio input
+  // set audio input
   audioInput(lastInput);
   // un-mute PGA
   digitalWrite(volumeMutePin,LOW);
@@ -836,8 +849,8 @@ void setBlinkFrontLED(uint32_t _speed, uint32_t _cycles, bool _continous) {
 
 void setPowerState() {
   // power state changed actions  
-  if (powerCycle == 1){
-    powerCycle = 0;
+  if (powerChanged == 1){
+    powerChanged = 0;
     if (powerState == 1) {   
       // startup LED blinks
       setBlinkFrontLED(250,7,0);

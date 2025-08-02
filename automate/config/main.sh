@@ -450,8 +450,8 @@ exit
 
 ## Sleep Sounds
 relax)
-## Bedroom Audio
-CALLAPI "$BRPI_IP" "ampstateon" ""
+## Bedroom Audio (Coaxial Mode)
+CALLAPI "$BRPI_IP" "ampon-coax" ""
 ## Relax Sounds on Bedroom Pi
 CALLAPI "$BRPI_IP" "relax" "$SECOND_ARG"
 ## Turn Off TV

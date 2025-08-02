@@ -3,7 +3,7 @@
 
 // global variables //
 let ctlMode;
-let ctlCommand = 0;
+let ctlCommand;
 let selectedVM = "";
 let dynMenuActive = 0;
 let resizeState = false;
@@ -382,13 +382,6 @@ async function showTempHumidity(){
   temptext.innerHTML = 'Temperature/Humidity';
   temptext.id = 'temp_top_text';
   tempprompt.appendChild(temptext);
-  // cancel button
-  let tempcancelb = document.createElement("button");
-  tempcancelb.innerHTML = "Close";
-  tempcancelb.className ="button"; 
-  tempcancelb.id = "temp__btn";
-  tempcancelb.type="button"; 
-  tempprompt.appendChild(tempcancelb);
   // thermometer container
   let tempcon = document.createElement("div");
   tempcon.id = 'temp_therm_grid';
@@ -409,33 +402,64 @@ async function showTempHumidity(){
   hmeter.appendChild(hdisplay);
   tempcon.appendChild(hmeter); 
   // add thermo container to window
-  tempprompt.appendChild(tempcon); 
+  tempprompt.appendChild(tempcon);
+  // buttons container
+  let btnscon = document.createElement("div");
+  // cancel button
+  let tempcancelb = document.createElement("button");
+  tempcancelb.classList.add("button");
+  tempcancelb.classList.add("temp__btn");
+  tempcancelb.classList.add("fas");
+  tempcancelb.classList.add("fa-times");
+  tempcancelb.type = "button";
+  btnscon.appendChild(tempcancelb);
+  // refresh button
+  let temprefreshb = document.createElement("button");
+  temprefreshb.classList.add("button");
+  temprefreshb.classList.add("temp__btn");
+  temprefreshb.classList.add("fad");
+  temprefreshb.classList.add("fa-sync");
+  temprefreshb.type = "button";
+  btnscon.appendChild(temprefreshb);
+  // add buttons container to window
+  tempprompt.appendChild(btnscon);
   // add window to DOM
   document.body.appendChild(tempprompt);
   // call API for data
-  sendCmd('main','localcmd','roomth').then((data) => { // GET request
-    const resp = data.replace(/(\r\n|\n|\r)/gm, "");
+  getTemperatureData();
+  // button actions
+  new Promise(function() {
+    tempprompt.addEventListener('click', function handleButtonClicks(e) {
+      if (e.target.tagName !== 'BUTTON') { return; } 
+        // close button
+        if (e.target === tempcancelb) {
+          tempprompt.removeEventListener('click', handleButtonClicks); 
+          document.body.removeChild(tempprompt);  
+        }
+        // refresh button
+        if (e.target === temprefreshb) {
+          getTemperatureData();
+        }
+    });
+  });
+}
+
+function getTemperatureData() {
+  sendCmd('main','localcmd','roomth').then((data) => { // send request
+    const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // read response
     const resp_arr = resp.split("~");
     if (resp_arr.length == 2) {
-      if (!(isNaN(resp_arr[0]))&&(!(isNaN(resp_arr[1])))) {
-        setThermometer(resp_arr[0],resp_arr[1]);
-      }
+      const temp = resp_arr[0];
+      const hum = resp_arr[1];
+      setThermometer(temp,hum); // set thermometers
     } else {
       setErrorThermo();
     }
   });
-  // button actions
-  new Promise(function() {
-    tempprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
-      if (e.target.tagName !== 'BUTTON') { return; } // nothing to do - user clicked somewhere else
-      tempprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
-      document.body.removeChild(tempprompt);  //as we are done clean up by removing the password-prompt
-    });
-  });  
 }
 
 function setThermometer(tvalue,hvalue) {
-  // limits
+  // thermometer limits
   const minTemp = 25;
 	const maxTemp = 100;
   const minHumidity = 5;
@@ -471,11 +495,11 @@ function setErrorThermo() {
   let humd = document.getElementById("thermo__2");
   if (temp) {
     temp.style.height = "0%";
-    temp.dataset.value = "N/A";
+    temp.dataset.value = "---";
   }
   if (humd) {
     humd.style.height = "0%";
-    humd.dataset.value = "N/A";
+    humd.dataset.value = "---";
   }
 }
 
@@ -815,13 +839,13 @@ function relaxSend(_cmd) {
 // volume controls
 function sendVol(_cmd) {
   // volume mode
-  if (ctlCommand === 0 ){
+  if (ctlCommand == 'lr' ){
     sendCmd('main',_cmd,''); // living room system 
   }
-  if (ctlCommand === 1 ){
+  if (ctlCommand == 'br' ){
     setAmpVolume(_cmd); // bedroom system
   }
-  if (ctlCommand === 2 ){
+  if (ctlCommand == 'subs' ){
     sendCmd('main','sub'+_cmd,''); // living room subwoofers
   }
 }
@@ -854,13 +878,26 @@ function showVolumePopup(vol) {
   }
 }
 
+function roomOnOff(action){
+   if (ctlCommand == 'lr'){
+    // living room
+    sendCmd('main','lr' + action,'');
+    return;
+  }
+  if (ctlCommand == 'br'){
+    // bedroom
+    sendCmd('main','br' + action,'');
+    return;
+  }
+}
+
 function subModeToggle() {
   // toggle subwoofer mode
-  if (ctlCommand === 2 ){
+  if (ctlCommand == 'subs' ){
     ctlsMenu('lr');
     return;
   }
-  if (ctlCommand === 0 || ctlCommand === 1 ){
+  if (ctlCommand != 'subs'){
     ctlsMenu('subs');
     return;
   } 
@@ -891,6 +928,7 @@ function subMode(_action) {
 
 // controls menu actions
 function ctlsMenu(_mode) {
+  ctlCommand = _mode; 
   // living room controls
   if ((_mode === 'lr') || (_mode === 'subs')) {
     // disable bedroom grid
@@ -900,12 +938,9 @@ function ctlsMenu(_mode) {
     if (_mode === 'lr') {
       // hide subwoofer controls 
       subMode('hide');
-      // hifi controls
-      ctlCommand = 0;
     } else {
       // subwoofer controls
       subMode('show');
-      ctlCommand = 2; 
     }
   } 
   // bedroom controls
@@ -916,7 +951,6 @@ function ctlsMenu(_mode) {
     subMode('hide');
     // enable bedroom grid
     classDisplay('bedroom-grid','block');
-    ctlCommand = 1;
   }
   // save state 
   localStorage.setItem("ctls-mode", _mode);
@@ -1078,8 +1112,8 @@ async function drawBookmarkPrompt(add,url,name,elem){
   let editFavCancelBtn = document.createElement("button");
   editFavCancelBtn.classList.add("editFav__button");
   editFavCancelBtn.classList.add("button");
-  editFavCancelBtn.classList.add("fad");
-  editFavCancelBtn.classList.add("fa-ban");
+  editFavCancelBtn.classList.add("fas");
+  editFavCancelBtn.classList.add("fa-times");
   editFavCancelBtn.type = "button";
   // lookup favorites
   let editFavLookupBtn = document.createElement("button");

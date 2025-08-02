@@ -440,21 +440,15 @@ LIGHTS_OFF
 exit
 ;;
 
-## All Power Off ##
+## Bedroom Power ##
 
-allon)
-## All Lights
-LIGHTS_ON
-## LEDwalls
-LED_PRESET "abstract"
+bron)
+## Dresser Lamp
+LOCAL_CMD "brlamp1on"
 ## RetroPi 
 LOCAL_CMD "retropion"
 ## Retro Macs
 LOCAL_CMD "brmacson"
-## PC Power On
-LRXMIT "wkststateon"
-## Main Room Audio
-LRXMIT "hifion"
 ## Bedroom Audio
 CALLAPI "$BRPI_IP" "ampstateon" ""
 ## Bedroom TV & PC
@@ -462,25 +456,47 @@ LOCAL_CMD "brtvon"
 exit
 ;;
 
-alloff)
-## All Lights
-LIGHTS_OFF
-## Blank LEDwalls
-/opt/system/leds stop
+broff)
+## Dresser Lamp
+LOCAL_CMD "brlamp1off"
 ## RetroPi 
 LOCAL_CMD "retropioff"
 ## Retro Macs
 LOCAL_CMD "brmacsoff"
-## PC Power Off
-LRXMIT "wkststateoff"
-## Main Room Audio
-LRXMIT "hifioff"
 ## Bedroom Audio
 CALLAPI "$BRPI_IP" "ampstateoff" ""
 ## Bedroom TV
 LOCAL_CMD "brtvoff"
 exit
 ;;
+
+## Living Room Power ##
+
+lron)
+## Window Lamp
+LRXMIT "rfc1on"
+## LEDwalls
+LED_PRESET "abstract"
+## PC Power On
+LRXMIT "wkststateon"
+## Main Room Audio
+LRXMIT "hifion"
+exit
+;;
+
+lroff)
+## Window Lamp
+LRXMIT "rfc1off"
+## Blank LEDwalls
+/opt/system/leds stop
+## PC Power Off
+LRXMIT "wkststateoff"
+## Main Room Audio
+LRXMIT "hifioff"
+exit
+;;
+
+## Server Commands ##
 
 server)
 ## server controls

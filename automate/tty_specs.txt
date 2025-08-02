@@ -37,13 +37,3 @@ Black Shielded = Analog 0 In
 Red Shielded = Analog 1 In
 Shield = Ground
 
-
-PWR_SENS_1
-PWR_TRIG_2 
-PWR_SENS_2 
-PWR_TRIG_3 
-PWR_SENS_3
-ADC_IN_1 
-ADC_IN_2
-SWITCH_1
-SWITCH_2

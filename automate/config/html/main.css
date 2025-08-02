@@ -1046,23 +1046,33 @@ input.chkbox {
   top: 20%;
   left: 50%;
   margin-left: -125px;
-  width: 250px;
-  height: 350px;
   padding: 15px; 
   color: #fff;
   z-index: 997; 
 }
 
 #temp__btn {
+  margin-top: 50px;
   position: absolute;
   margin-left: -50px;
   width: 100px;
   height: 60px;
-  bottom: 5px;
+  bottom: 15px;
   left: 50%;
 }
 
-#termometer {
+#temp_therm_grid {
+  display: inline-flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-content: space-around;
+  width: 210px;
+  height: 290px;
+  margin-top: 15px;
+  margin-bottom: 75px;
+}
+
+.thermometer {
   width: 25px;
   background: #38383f;
   height: 240px;
@@ -1070,52 +1080,45 @@ input.chkbox {
   border: 9px solid #2a2a2e;
   border-radius: 20px;
   z-index: 1;
-  margin-bottom: 50px;
 }
-#termometer:before, #termometer:after {
+.thermometer:after {
   position: absolute;
   content: "";
   border-radius: 50%;
-}
-#termometer:after {
   transform: translateX(-50%);
-  width: 50px;
-  height: 50px;
-  background-color: #3dcadf;
-  bottom: -41px;
+  width: 45px;
+  height: 45px;
+  background-color: #f17a65;
+  bottom: -40px;
   border: 9px solid #2a2a2e;
   z-index: -3;
   left: 50%;
 }
-#termometer #temperature {
-  bottom: 0;
-  background: linear-gradient(#f17a65, #3dcadf) no-repeat bottom;
+.thermometer .temperature {
+  height: 0px;
+  bottom: 0px;
+  position: absolute;
+  background: linear-gradient(#fd0a0a, #f17a65) no-repeat bottom;
   width: 100%;
   border-radius: 20px;
   background-size: 100% 240px;
   transition: all 0.2s ease-in-out;
 }
-#termometer #temperature, #termometer #temperature:before, #termometer #temperature:after {
+.thermometer .temperature:before {
   position: absolute;
-}
-#termometer #temperature:before {
-  content: attr(data-value);
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
   z-index: 2;
   padding: 5px 10px;
   border-radius: 5px;
-  font-size: 1em;
+  font-size: 1.25em;
   line-height: 1;
-  transform: translateY(50%);
-  left: calc(100% + 1em / 1.5);
-  top: calc(-1em + 5px - 5px * 2);
+  transform: translate(-50%, 50%);
+  background: var(--main-color);
+  opacity: 90%;
+  color: white;
 }
-#termometer #temperature:after {
-  content: "";
-  border-top: 0.45em solid transparent;
-  border-bottom: 0.45em solid transparent;
-  border-right: 0.66em solid rgba(0, 0, 0, 0.7);
-  left: 100%;
-  top: calc(-1em / 2.5);
+.thermometer #thermo__1:before {
+  content: attr(data-value);
+}
+.thermometer #thermo__2:before {
+  content: attr(data-value);
 }

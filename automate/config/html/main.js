@@ -377,10 +377,10 @@ async function showTempHumidity(){
   // create window
   let tempprompt = document.createElement("div"); 
   tempprompt.id= _winid;
-  // default layout
+  // top window text
   let temptext = document.createElement("div");
-  temptext.innerHTML = '---';
-  temptext.id = 'temp__text';
+  temptext.innerHTML = 'Temperature/Humidity';
+  temptext.id = 'temp_top_text';
   tempprompt.appendChild(temptext);
   // cancel button
   let tempcancelb = document.createElement("button");
@@ -388,28 +388,44 @@ async function showTempHumidity(){
   tempcancelb.className ="button"; 
   tempcancelb.id = "temp__btn";
   tempcancelb.type="button"; 
-  tempprompt.appendChild(tempcancelb); 
-  // thermometer
-  let termometer = document.createElement("div"); 
-  termometer.id = "termometer";
-  let temperature = document.createElement("div"); 
-  temperature.id = "temperature";
-  termometer.appendChild(temperature); 
-  tempprompt.appendChild(termometer); 
+  tempprompt.appendChild(tempcancelb);
+  // thermometer container
+  let tempcon = document.createElement("div");
+  tempcon.id = 'temp_therm_grid';
+  // temperature thermometer 
+  let tmeter = document.createElement("div"); 
+  tmeter.className = "thermometer";
+  let tdisplay = document.createElement("div"); 
+  tdisplay.className = "temperature";
+  tdisplay.id = "thermo__1";
+  tmeter.appendChild(tdisplay); 
+  tempcon.appendChild(tmeter); 
+  // humidity thermometer 
+  let hmeter = document.createElement("div"); 
+  hmeter.className = "thermometer";
+  let hdisplay = document.createElement("div"); 
+  hdisplay.className = "temperature";
+  hdisplay.id = "thermo__2";
+  hmeter.appendChild(hdisplay);
+  tempcon.appendChild(hmeter); 
+  // add thermo container to window
+  tempprompt.appendChild(tempcon); 
   // add window to DOM
   document.body.appendChild(tempprompt);
   // call API for data
   sendCmd('main','localcmd','roomth').then((data) => { // GET request
     const resp = data.replace(/(\r\n|\n|\r)/gm, "");
-    let _elem = document.getElementById('temp__text');
-    if (_elem) {
-      _elem.innerHTML = resp;
-      const resp_arr = resp.split("~");
-      setThermometer(resp_arr[0]);
+    const resp_arr = resp.split("~");
+    if (resp_arr.length == 2) {
+      if (!(isNaN(resp_arr[0]))&&(!(isNaN(resp_arr[1])))) {
+        setThermometer(resp_arr[0],resp_arr[1]);
+      }
+    } else {
+      setErrorThermo();
     }
   });
   // button actions
-  new Promise(function(resolve, reject) {
+  new Promise(function() {
     tempprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
       if (e.target.tagName !== 'BUTTON') { return; } // nothing to do - user clicked somewhere else
       tempprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
@@ -418,12 +434,49 @@ async function showTempHumidity(){
   });  
 }
 
-function setThermometer(tvalue) {
-  const minTemp = 30;
+function setThermometer(tvalue,hvalue) {
+  // limits
+  const minTemp = 25;
 	const maxTemp = 100;
-  let window = document.getElementById("temperature");
-	window.style.height = (tvalue - minTemp) / (maxTemp - minTemp) * 100 + "%";
-	window.dataset.value = tvalue + "°F";
+  const minHumidity = 5;
+	const maxHumitidy = 100;
+  // set temperature
+  let temp = document.getElementById("thermo__1");
+  let humd = document.getElementById("thermo__2");
+  if (temp) {
+    if (tvalue >= maxTemp) {
+      tvalue = maxTemp;
+    }
+    if (tvalue <= minTemp) {
+      tvalue = minTemp;
+    }
+    temp.style.height = (tvalue - minTemp) / (maxTemp - minTemp) * 100 + "%";
+    temp.dataset.value = tvalue + "°F";
+  }
+  // set humidity
+  if (humd) {
+    if (hvalue >= maxHumitidy) {
+      hvalue = maxHumitidy;
+    }
+    if (hvalue <= minHumidity) {
+      hvalue = minHumidity;
+    }
+    humd.style.height = (hvalue - minHumidity) / (maxHumitidy - minHumidity) * 100 + "%";
+    humd.dataset.value = hvalue + "%";
+  }
+}
+
+function setErrorThermo() {
+  let temp = document.getElementById("thermo__1");
+  let humd = document.getElementById("thermo__2");
+  if (temp) {
+    temp.style.height = "0%";
+    temp.dataset.value = "N/A";
+  }
+  if (humd) {
+    humd.style.height = "0%";
+    humd.dataset.value = "N/A";
+  }
 }
 
 async function showPiWiFiPrompt(){

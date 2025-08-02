@@ -17,9 +17,6 @@ echo " Welcome to ProOS"
 echo " by Ben Provenzano III"
 echo "*"
 
-## Disable Hardware Offload
-ethtool --offload eth0 rx off tx off sg off tso off gso off gro off sg off rxvlan off txvlan off
-
 ## Temporary Files
 RAMDISK="/var/www/html/ram"
 rm -rf $RAMDISK/locks

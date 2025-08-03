@@ -5,8 +5,8 @@
 ARDUINO_PORT="ttyUSB0"
 
 ## Read Command-Line Arguments
-ARG1=$1
-ARG2=$2
+ARG1="${1}"
+ARG2="${2}"
 
 BLINKLED() {
 ## Blink front-panel LED
@@ -14,7 +14,7 @@ nohup python3 /opt/rpi/blinkled.py >/dev/null 2>&1 &
 }
 
 ZTERM_COM() {
-  local CMD_DATA="$1"
+  local CMD_DATA="${1}"
   /opt/rpi/singleton.sh ZTERM_PROC /usr/bin/ztermcom $CMD_DATA
 }
 
@@ -33,12 +33,36 @@ COAX_MODE() {
   ZTERM_COM "02003" 
 }
 
+function DECODE_COM_RESP(){
+  ## read character position
+  local RESP_CMD="${1}"
+  TTY_RAW="$(ZTERM_COM $RESP_CMD)"
+  ## extract response data
+  DELIM="|"
+  TMP_STR="${TTY_RAW#*$DELIM}"
+  TTY_OUT="${TMP_STR%$DELIM*}"
+  ## process by response length
+  TTY_CHR_CNT="${#TTY_OUT}"
+  case "$TTY_CHR_CNT" in
+  ## single-byte response
+  "1")
+    TTY_CHR="${TTY_OUT:0:1}"
+    echo "$TTY_CHR"
+    ;;
+  ## 
+  *)
+    ## invalid response
+    echo "X"
+    ;;
+  esac
+}
+
 case "$ARG1" in
 
 boot)
 ## Start amplifier communication
 ln -sf /dev/$ARDUINO_PORT /dev/zterm-tty
-ZTERM_COM "i"
+ZTERM_COM i
 ## Bluetooth audio
 systemctl start hciuart
 systemctl start bluetooth
@@ -141,6 +165,19 @@ exit
 ampon-optb)
 ## Power On (Optical #B Input)
 ZTERM_COM "01004" 
+BLINKLED
+exit
+;;
+
+amptogglepwr)
+## Toggle Power
+if  [ "$(DECODE_COM_RESP '01005')" == "1" ]; then
+  ## is online
+  ZTERM_COM "01002" ## Power Off
+else
+  ## if offline
+  ZTERM_COM "01001" ## Power On (Last Input)
+fi
 BLINKLED
 exit
 ;;

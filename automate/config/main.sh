@@ -36,7 +36,7 @@ function CALLAPI(){
   echo "$RESPOUT"
 }
 
-function LOCAL_CMD(){
+function BRXMIT(){
   local TTY_CMD="${1}"
   case "$TTY_CMD" in
   ## RF Power Controller (under dresser)
@@ -333,14 +333,14 @@ function LIGHTS_OFF(){
   ## Window Lamp
   LRXMIT "rfc1off"
   ## Dresser Lamp
-  LOCAL_CMD "brlamp1off"
+  BRXMIT "brlamp1off"
 }
 
 function LIGHTS_ON(){
   ## Window Lamp
   LRXMIT "rfc1on"
   ## Dresser Lamp
-  LOCAL_CMD "brlamp1on"
+  BRXMIT "brlamp1on"
 }
 
 ########################
@@ -382,29 +382,29 @@ exit
 
 bron)
 ## Dresser Lamp
-LOCAL_CMD "brlamp1on"
+BRXMIT "brlamp1on"
 ## RetroPi 
-LOCAL_CMD "retropion"
+BRXMIT "retropion"
 ## Retro Macs
-LOCAL_CMD "brmacson"
+BRXMIT "brmacson"
 ## Bedroom Audio
 CALLAPI "$BRPI_IP" "ampstateon" ""
 ## Bedroom TV & PC
-LOCAL_CMD "brtvon"
+BRXMIT "brtvon"
 exit
 ;;
 
 broff)
 ## Dresser Lamp
-LOCAL_CMD "brlamp1off"
+BRXMIT "brlamp1off"
 ## RetroPi 
-LOCAL_CMD "retropioff"
+BRXMIT "retropioff"
 ## Retro Macs
-LOCAL_CMD "brmacsoff"
+BRXMIT "brmacsoff"
 ## Bedroom Audio
 CALLAPI "$BRPI_IP" "ampstateoff" ""
 ## Bedroom TV
-LOCAL_CMD "brtvoff"
+BRXMIT "brtvoff"
 ## Sleep PC
 CALLAPI "$BRPC_IP" "sleep" ""
 exit
@@ -436,15 +436,21 @@ LRXMIT "hifioff"
 exit
 ;;
 
-## Forward Command to Local COM Port
-localcmd)
-LOCAL_CMD "$SECOND_ARG"
+## Forward Command to Bedroom Xmit
+brxmit)
+BRXMIT "$SECOND_ARG"
 exit
 ;;
 
 ## Forward Command to Living Room Xmit
 lrxmit)
 LRXMIT "$SECOND_ARG"
+exit
+;;
+
+## Forward Command to Bedroom Pi
+brpi)
+CALLAPI "$BRPI_IP" "$SECOND_ARG" ""
 exit
 ;;
 
@@ -455,7 +461,7 @@ CALLAPI "$BRPI_IP" "ampon-coax" ""
 ## Relax Sounds on Bedroom Pi
 CALLAPI "$BRPI_IP" "relax" "$SECOND_ARG"
 ## Turn Off TV
-LOCAL_CMD "brtvoff"
+BRXMIT "brtvoff"
 ## Send Sleep Command
 CALLAPI "$BRPC_IP" "sleep" ""
 exit
@@ -464,12 +470,6 @@ exit
 ## Stop Relax Sounds 
 stop-br)
 CALLAPI "$BRPI_IP" "stoprelax" ""
-exit
-;;
-
-## Forward Command to Bedroom Pi
-brpi)
-CALLAPI "$BRPI_IP" "$SECOND_ARG" ""
 exit
 ;;
 
@@ -568,8 +568,8 @@ exit
 ###############################
 
 *)
-  ## command not matched above, pass argument to ESP32-Xmit
-  LRXMIT "$FIRST_ARG" 
+  ## command not matched above
+  echo "invalid command!"
   exit
 ;;
 esac

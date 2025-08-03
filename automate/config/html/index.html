@@ -159,8 +159,8 @@
             <span class="button__text"><i class="fad fa-lightbulb"></i> Lights</span>
           </button>  
           <div class="dd-content dd-button" id="lightmenu">
-            <a onclick="sendCmd('main','lightson','')"><i class="fad fa-toggle-on"></i> All On</a>
-            <a onclick="sendCmd('main','lightsoff','')"><i class="fad fa-toggle-off"></i> All Off</a>
+            <a onclick="sendCmd('main','lrxmit','lightson')"><i class="fad fa-toggle-on"></i> All On</a>
+            <a onclick="sendCmd('main','lrxmit','lightsoff')"><i class="fad fa-toggle-off"></i> All Off</a>
           </div>
         </div>
         <!---->
@@ -205,8 +205,8 @@
               <span class="button__text"><i class="fad fa-lamp-floor"></i> Window</span>
             </button>  
             <div class="dd-content dd-button" id="winlight-menu">
-              <a onclick="sendCmd('main','rfc1on','')"><i class="fad fa-toggle-on"></i> On</a>
-              <a onclick="sendCmd('main','rfc1off','')"><i class="fad fa-toggle-off"></i> Off</a>
+              <a onclick="sendCmd('main','lrxmit','rfc1on')"><i class="fad fa-toggle-on"></i> On</a>
+              <a onclick="sendCmd('main','lrxmit','rfc1off')"><i class="fad fa-toggle-off"></i> Off</a>
             </div>
           </div>      
         <!--END HIFI GRID-->
@@ -231,7 +231,7 @@
         <!---->
         <p class="parstd"></p>
         <!---->
-        <button type="button" class="button" onclick="sendCmd('main','dwnc','')">
+        <button type="button" class="button" onclick="sendCmd('main','lrxmit','dwnc')">
             <span class="button__text"><i class="fad fa-volume-down"></i> -5dB</span>
         </button>
         <div class="dropdown">
@@ -241,40 +241,40 @@
           </button>
           <div class="dd-content ind-button" id="hifistate-menu"></div>
         </div>
-        <button type="button" class="button" onclick="sendCmd('main','upc','')">   
+        <button type="button" class="button" onclick="sendCmd('main','lrxmit','upc')">   
             <span class="button__text"><i class="fad fa-volume-up"></i> +5dB</span>
         </button>
         <!---->
         <p class="parstd"></p>
         <!---->
-        <button type="button" class="button" onclick="sendCmd('main','opt','')">
+        <button type="button" class="button" onclick="sendCmd('main','lrxmit','opt')">
           <span class="button__text"><i class="fad fa-wave-square"></i> Optical</span>
         </button>
-        <button type="button" class="button" onclick="sendCmd('main','autodac','')">
+        <button type="button" class="button" onclick="sendCmd('main','lrxmit','autodac')">
           <span class="button__text"><i class="fad fa-waveform"></i> Auto</span>
         </button>
-        <button type="button" class="button" onclick="sendCmd('main','usb','')">
+        <button type="button" class="button" onclick="sendCmd('main','lrxmit','usb')">
           <span class="button__text"><i class="fab fa-usb"></i> USB</span>
         </button>
         <!---->
         <p class="parstd"></p> 
         <!---->
-        <button type="button" class="button" onclick="sendCmd('main','aux','')">
+        <button type="button" class="button" onclick="sendCmd('main','lrxmit','aux')">
           <span class="button__text"><i class="fad fa-wave-sine"></i> Aux</span> 
         </button>
-        <button type="button" class="button" onclick="sendCmd('main','phono','')">
+        <button type="button" class="button" onclick="sendCmd('main','lrxmit','phono')">
           <span class="button__text"><i class="fad fa-turntable"></i> Phono</span>
         </button>
-        <button type="button" class="button" onclick="sendCmd('main','coax','')">   
+        <button type="button" class="button" onclick="sendCmd('main','lrxmit','coax')">   
           <span class="button__text"><i class="fab fa-apple"></i> AirPlay</span>
         </button>   
         <!---->
         <p class="parstd"></p>
         <!---->
-        <button type="button" class="button" onclick="sendCmd('main','togglehpf','')">
+        <button type="button" class="button" onclick="sendCmd('main','lrxmit','togglehpf')">
           <span class="button__text"> Bass Filter</span>
         </button>
-        <button type="button" class="button" onclick="sendCmd('main','vlimit','')">
+        <button type="button" class="button" onclick="sendCmd('main','lrxmit','vlimit')">
           <span class="button__text"><i class="fad fa-volume-off"></i> vLimiter</span>
         </button>
         <button type="button" class="button" id="subwooferbtn" onclick="subModeToggle()">
@@ -303,7 +303,7 @@
           </div>
         </div>
         <div class="dropdown">
-          <button type="button" class="button" onclick="showPowerMenu('localcmd','brlamp1')">
+          <button type="button" class="button" onclick="showPowerMenu('brxmit','brlamp1')">
             <span class="button__text" id="brlamp1-text"><i class="fad fa-lamp-desk"></i> Dresser</span>
             <span class="button__text" id="brlamp1-spinner"></span>
           </button>
@@ -325,7 +325,7 @@
         <p class="parstd"></p> 
         <!---->
         <div class="dropdown">
-          <button type="button" class="button" onclick="showPowerMenu('localcmd','brtv')">
+          <button type="button" class="button" onclick="showPowerMenu('brxmit','brtv')">
             <span class="button__text" id="brtv-text"><i class="fad fa-tv-retro"></i> TV</span>
             <span class="button__text" id="brtv-spinner"></span>
           </button>
@@ -339,7 +339,7 @@
           <div class="dd-content ind-button" id="ampstate-menu"></div>
         </div>
         <div class="dropdown">
-          <button type="button" class="button" onclick="showPowerMenu('localcmd','brpc')">
+          <button type="button" class="button" onclick="showPowerMenu('brxmit','brpc')">
             <span class="button__text" id="brpc-text"><i class="fad fa-mouse"></i> PC</span>
             <span class="button__text" id="brpc-spinner"></span>
           </button>
@@ -349,7 +349,7 @@
         <p class="parstd"></p> 
         <!---->
         <div class="dropdown">
-          <button type="button" class="button" onclick="showPowerMenu('localcmd','brmacs')">
+          <button type="button" class="button" onclick="showPowerMenu('brxmit','brmacs')">
             <span class="button__text" id="brmacs-text"><i class="fad fa-computer-classic"></i> Macs</span>
             <span class="button__text" id="brmacs-spinner"></span>
           </button>
@@ -363,7 +363,7 @@
           <div class="dd-content ind-button" id="brinpmenu"></div>
         </div>
         <div class="dropdown">
-          <button type="button" class="button" onclick="showPowerMenu('localcmd','retropi')">
+          <button type="button" class="button" onclick="showPowerMenu('brxmit','retropi')">
             <span class="button__text" id="retropi-text"><i class="fad fa-gamepad"></i> RetroPi</span>
             <span class="button__text" id="retropi-spinner"></span>
           </button>

@@ -443,7 +443,7 @@ async function showTempHumidity(){
 }
 
 function getTemperatureData() {
-  sendCmd('main','localcmd','roomth').then((data) => { // send request
+  sendCmd('main','brxmit','roomth').then((data) => { // send request
     const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // read response
     const resp_arr = resp.split("~");
     if (resp_arr.length == 2) {
@@ -838,13 +838,13 @@ function relaxSend(_cmd) {
 function sendVol(_cmd) {
   // volume mode
   if (ctlCommand == 'lr' ){
-    sendCmd('main',_cmd,''); // living room system 
-  }
-  if (ctlCommand == 'br' ){
-    setAmpVolume(_cmd); // bedroom system
+    sendCmd('main','lrxmit',_cmd); // living room system 
   }
   if (ctlCommand == 'subs' ){
-    sendCmd('main','sub'+_cmd,''); // living room subwoofers
+    sendCmd('main','lrxmit','sub'+_cmd); // living room subwoofers
+  }  
+  if (ctlCommand == 'br' ){
+    setAmpVolume(_cmd); // bedroom system
   }
 }
 

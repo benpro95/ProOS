@@ -990,17 +990,6 @@ input.chkbox {
 /*
  *  Spinner Style
  */
- 
-.menu-sprn-grid {
- display: flex;
- justify-content: center;
- align-items: center; 
-}
-
-.menu-spinner {
-  width: 30px;
-  height: 30px;
-}
 
 .btn-spinner {
   width: 50px;
@@ -1011,7 +1000,14 @@ input.chkbox {
   left: 50%;
 }
 
-.btn-spinner, .menu-spinner {
+.right-nav-spinner {
+  width: 30px;
+  height: 30px;
+  margin-left: -27px;
+  margin-top: 12px;
+}
+
+.btn-spinner, .right-nav-spinner {
   position: absolute;
   border-radius: 50%;
   display: inline-block;

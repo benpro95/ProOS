@@ -1489,12 +1489,12 @@ function showStatusMenu() {
     _elem.style.display = 'none';
     // stop spinner animation
     statIcon.style.visibility = 'visible';
-    statSpinner.classList.remove('menu-spinner');
+    statSpinner.classList.remove('right-nav-spinner');
   } else {
     hideDropdowns(false);
     // start spinner animation
     statIcon.style.visibility = 'hidden';
-    statSpinner.classList.add('menu-spinner');
+    statSpinner.classList.add('right-nav-spinner');
     // show menu
     _elem.style.display = 'block';
     sendCmd('main','status','').then((data) => { // GET request
@@ -1502,7 +1502,7 @@ function showStatusMenu() {
       drawMenu(data.split("\n"),_menu);
       // stop spinner animation
       //statIcon.style.visibility = 'visible';
-      //statSpinner.classList.remove('menu-spinner');
+      //statSpinner.classList.remove('right-nav-spinner');
     });
   }   
 }

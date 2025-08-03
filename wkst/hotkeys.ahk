@@ -4,19 +4,19 @@
 ^!Tab::Return
 
 F1::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data var=&arg=mainoff&action=main https://automate.home/exec.php, , hide
+Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=mainoff&var=&action=main https://automate.home/exec.php, , hide
 return
 
 ^F1::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data var=&arg=alloff&action=main https://automate.home/exec.php, , hide
+Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=alloff&var=&action=main https://automate.home/exec.php, , hide
 return
 
 F2::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data var=&arg=mainon&action=main https://automate.home/exec.php, , hide
+Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=mainon&var=&action=main https://automate.home/exec.php, , hide
 return
 
 ^F2::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data var=&arg=allon&action=main https://automate.home/exec.php, , hide
+Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=allon&var=&action=main https://automate.home/exec.php, , hide
 return
 
 F3::
@@ -46,11 +46,11 @@ return
 F11::Volume_Mute
 
 !F11::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data var=&arg=mute&action=main https://automate.home/exec.php, , hide
+Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lrxmit&var=mute&action=main https://automate.home/exec.php, , hide
 return
 
 ^F11::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data var=&arg=pwrhifi&action=main https://automate.home/exec.php, , hide
+Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lrxmit&var=hifitoggle&action=main https://automate.home/exec.php, , hide
 return
 
 ;; Volume Down #########
@@ -58,11 +58,11 @@ return
 F12::Volume_Down
 
 !F12::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data var=&arg=dwn&action=main https://automate.home/exec.php, , hide
+Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lrxmit&var=dwn&action=main https://automate.home/exec.php, , hide
 return
 
 ^F12::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data var=&arg=dwnc&action=main https://automate.home/exec.php, , hide
+Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lrxmit&var=dwnc&action=main https://automate.home/exec.php, , hide
 return
 
 ;; Volume Up ###########
@@ -70,11 +70,11 @@ return
 Insert::Volume_Up
 
 !Insert::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data var=&arg=up&action=main https://automate.home/exec.php, , hide
+Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lrxmit&var=up&action=main https://automate.home/exec.php, , hide
 return
 
 ^Insert::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data var=&arg=upc&action=main https://automate.home/exec.php, , hide
+Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lrxmit&var=upc&action=main https://automate.home/exec.php, , hide
 return
 
 

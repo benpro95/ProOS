@@ -987,20 +987,38 @@ input.chkbox {
   }
 }
 
+/*
+ *  Spinner Style
+ */
+ 
+.menu-sprn-grid {
+ display: flex;
+ justify-content: center;
+ align-items: center; 
+}
+
+.menu-spinner {
+  width: 30px;
+  height: 30px;
+}
+
 .btn-spinner {
   width: 50px;
   height: 50px;
+  margin-left: -25px;
+  margin-top: -25px;
+  top: 50%;
+  left: 50%;
+}
+
+.btn-spinner, .menu-spinner {
+  position: absolute;
   border-radius: 50%;
   display: inline-block;
   border-top: 3px solid #FFF;
   border-right: 3px solid transparent;
   box-sizing: border-box;
   animation: rotation 1s linear infinite;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-left: -25px;
-  margin-top: -25px;
 }
 
 @keyframes rotation {
@@ -1011,6 +1029,10 @@ input.chkbox {
     transform: rotate(360deg);
   }
 }
+
+/*
+ *  Volume Popup
+ */
 
 #vol-popup{
   background-color: black;

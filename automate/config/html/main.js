@@ -167,12 +167,10 @@ function GoToHomePage() {
   }
 }
 
+// open URL in new tab
 function GoToExtPage(_path) {
   let url = "https://"+_path;   
-  if (!(url == null || url == "" || url == "about:blank")) {
-    // open URL in new tab
-    window.open(url, "_blank");
-  }
+  window.open(url, "_blank");
 }
 
 function GotoSubURL(_path) {
@@ -1476,20 +1474,35 @@ function showPowerMenu(target,menu) {
   }
 }
 
+
+    
+
+
 //// Dynamic Menus ////
 
 function showStatusMenu() {
   const _menu = 'statsmenu';
+  let statIcon = document.getElementById('navstats-icon');
+  let statSpinner = document.getElementById('navstats-spinner');
   let _elem = document.getElementById(_menu);
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
+    // stop spinner animation
+    statIcon.style.visibility = 'visible';
+    statSpinner.classList.remove('menu-spinner');
   } else {
     hideDropdowns(false);
+    // start spinner animation
+    statIcon.style.visibility = 'hidden';
+    statSpinner.classList.add('menu-spinner');
     // show menu
     _elem.style.display = 'block';
     sendCmd('main','status','').then((data) => { // GET request
       // draw menu items
       drawMenu(data.split("\n"),_menu);
+      // stop spinner animation
+      //statIcon.style.visibility = 'visible';
+      //statSpinner.classList.remove('menu-spinner');
     });
   }   
 }

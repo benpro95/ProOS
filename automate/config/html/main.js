@@ -1474,12 +1474,6 @@ function showPowerMenu(target,menu) {
   }
 }
 
-
-    
-
-
-//// Dynamic Menus ////
-
 function showStatusMenu() {
   const _menu = 'statsmenu';
   let statIcon = document.getElementById('navstats-icon');
@@ -1501,11 +1495,13 @@ function showStatusMenu() {
       // draw menu items
       drawMenu(data.split("\n"),_menu);
       // stop spinner animation
-      //statIcon.style.visibility = 'visible';
-      //statSpinner.classList.remove('right-nav-spinner');
+      statIcon.style.visibility = 'visible';
+      statSpinner.classList.remove('right-nav-spinner');
     });
   }   
 }
+
+//// Dynamic Menus ////
 
 function showDynMenu(_menu) {
   let _elem = document.getElementById(_menu);

@@ -1,13 +1,13 @@
 #!/bin/bash
 ###########################################################
-## Main Home Automation Script by Ben Provenzano III v31 ##
+## Main Home Automation Script by Ben Provenzano III v33 ##
 ###########################################################
 
 DELIM="|"
 RAMDISK="/var/www/html/ram"
 LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
-MAX_PING_WAIT="0.5" ## Max Ping Timeout (s)
+MAX_PING_WAIT="0.4" ## Max Ping Timeout (s)
 LOCAL_DOMAIN="home" ## Local DNS Domain
 LRXMIT_IP="10.177.1.12" ## LEDwall
 DESK_IP="10.177.1.14" ## Desktop
@@ -34,6 +34,35 @@ function CALLAPI(){
   TMPSTR="${APIRESP#*$DELIM}"
   RESPOUT="${TMPSTR%$DELIM*}"
   echo "$RESPOUT"
+}
+
+function LOCAL_PING(){
+  local LOCAL_PING_ADR="${1}"
+  if ping -4 -A -c 1 -i "$MAX_PING_WAIT" -W "$MAX_PING_WAIT" "$LOCAL_PING_ADR" > /dev/null 2> /dev/null
+  then
+    echo "1" ## Online
+  else
+    echo "0" ## Offline
+  fi
+}
+
+function LOCALCOM(){
+  local ZTERM_CMD="${1}"
+  /usr/bin/singleton ZTERM_PROC /usr/bin/ztermcom $ZTERM_CMD
+}
+
+function LED_PRESET(){
+  local LED_PRESET_CMD="${1}"
+  /opt/system/leds "$LED_PRESET_CMD"
+}
+
+function WAKE_BRPC() {
+  if [[ "$(LOCAL_PING $BRPC_IP)" == "1" ]]
+  then
+    echo "bedroom PC already online."
+  else
+    wakeonlan "$BRPC_MAC"
+  fi
 }
 
 function BRXMIT(){
@@ -123,16 +152,6 @@ function BRXMIT(){
   esac
 }
 
-function LOCAL_PING(){
-  local LOCAL_PING_ADR="${1}"
-  if ping -4 -A -c 1 -i "$MAX_PING_WAIT" -W "$MAX_PING_WAIT" "$LOCAL_PING_ADR" > /dev/null 2> /dev/null
-  then
-    echo "1" ## Online
-  else
-    echo "0" ## Offline
-  fi
-}
-
 function LOCALCOM_RESP(){
   ## read character position
   local RESP_CMD="${1}"
@@ -174,25 +193,6 @@ function LOCALCOM_RESP(){
       echo "X"
       ;;
     esac
-  fi
-}
-
-function LOCALCOM(){
-  local ZTERM_CMD="${1}"
-  /usr/bin/singleton ZTERM_PROC /usr/bin/ztermcom $ZTERM_CMD
-}
-
-function LED_PRESET(){
-  local LED_PRESET_CMD="${1}"
-  /opt/system/leds "$LED_PRESET_CMD"
-}
-
-function WAKE_BRPC() {
-  if [[ "$(LOCAL_PING $BRPC_IP)" == "1" ]]
-  then
-    echo "bedroom PC already online."
-  else
-    wakeonlan "$BRPC_MAC"
   fi
 }
 

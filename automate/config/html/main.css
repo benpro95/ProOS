@@ -1119,6 +1119,7 @@ input.chkbox {
   transition: all 0.2s ease-in-out;
 }
 .thermometer .temperature:before {
+  min-width: 40px;
   position: absolute;
   z-index: 2;
   padding: 5px 10px;

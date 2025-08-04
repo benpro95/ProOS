@@ -7,18 +7,20 @@ let ctlCommand;
 let selectedVM = "";
 let dynMenuActive = 0;
 let resizeState = false;
+const BKM_INACTIVE = 0;
+const BKM_OPEN_MODE = 1;
+const BKM_EDIT_MODE = 2;
 let bookmarkState = 0;
 let serverCmdData;
 let socket = null;
 let fileData = [];
-let cmdOutput = [];
 var timeStamp;
 let sysModel;
 
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "10.3";
+let siteVersion = "10.31";
 
 //////////////////////
 
@@ -33,7 +35,7 @@ window.addEventListener("DOMContentLoaded", () => {
 // runs on-each mouse click
 function handleClicks(event) {
   // disable click events when in bookmark edit mode
-  if (bookmarkState === 2) {
+  if (bookmarkState === BKM_EDIT_MODE) {
     if (event.target.className !== "editFav__win") {
       event.stopPropagation(); // disable clicks
     }
@@ -389,6 +391,7 @@ async function showTempHumidity(){
   let tdisplay = document.createElement("div"); 
   tdisplay.className = "temperature";
   tdisplay.id = "thermo__1";
+  tdisplay.dataset.value = "--°";
   tmeter.appendChild(tdisplay); 
   tempcon.appendChild(tmeter); 
   // humidity thermometer 
@@ -397,6 +400,7 @@ async function showTempHumidity(){
   let hdisplay = document.createElement("div"); 
   hdisplay.className = "temperature";
   hdisplay.id = "thermo__2";
+  hdisplay.dataset.value = "--%";
   hmeter.appendChild(hdisplay);
   tempcon.appendChild(hmeter); 
   // add thermo container to window
@@ -466,25 +470,19 @@ function setThermometer(tvalue,hvalue) {
   let temp = document.getElementById("thermo__1");
   let humd = document.getElementById("thermo__2");
   if (temp) {
-    if (tvalue >= maxTemp) {
-      tvalue = maxTemp;
-    }
-    if (tvalue <= minTemp) {
-      tvalue = minTemp;
-    }
-    temp.style.height = (tvalue - minTemp) / (maxTemp - minTemp) * 100 + "%";
     temp.dataset.value = tvalue + "°F";
+    let _tvalue = tvalue;
+    if (tvalue >= maxTemp) { _tvalue = maxTemp; }
+    if (tvalue <= minTemp) { _tvalue = minTemp; }
+    temp.style.height = (_tvalue - minTemp) / (maxTemp - minTemp) * 100 + "%";
   }
   // set humidity
   if (humd) {
-    if (hvalue >= maxHumitidy) {
-      hvalue = maxHumitidy;
-    }
-    if (hvalue <= minHumidity) {
-      hvalue = minHumidity;
-    }
-    humd.style.height = (hvalue - minHumidity) / (maxHumitidy - minHumidity) * 100 + "%";
     humd.dataset.value = hvalue + "%";
+    let _hvalue = hvalue;
+    if (hvalue >= maxHumitidy) { _hvalue = maxHumitidy; }
+    if (hvalue <= minHumidity) { _hvalue = minHumidity; }
+    humd.style.height = (_hvalue - minHumidity) / (maxHumitidy - minHumidity) * 100 + "%";
   }
 }
 
@@ -493,11 +491,11 @@ function setErrorThermo() {
   let humd = document.getElementById("thermo__2");
   if (temp) {
     temp.style.height = "0%";
-    temp.dataset.value = "---";
+    temp.dataset.value = "--°";
   }
   if (humd) {
     humd.style.height = "0%";
-    humd.dataset.value = "---";
+    humd.dataset.value = "--%";
   }
 }
 
@@ -978,12 +976,12 @@ function hideBookmarks() {
     elem.classList.remove("bookmark-editmode");
   }
   // reset bookmarks state flag 
-  bookmarkState = 0;
+  bookmarkState = BKM_INACTIVE;
 }
 
 function showBookmarks() {
   // hide menu if clicked while open
-  if (bookmarkState != 0) {
+  if (bookmarkState !== BKM_INACTIVE) {
     hideDropdowns(true);
     return;
   }
@@ -992,12 +990,12 @@ function showBookmarks() {
   // show add / edit buttons
   classDisplay("bookmark-buttons","block");
   // link open mode
-  bookmarkState = 1;
+  bookmarkState = BKM_OPEN_MODE;
 }
 
 function editBookmark() {
   // hide menu if clicked while open
-  if (bookmarkState == 2) {
+  if (bookmarkState === BKM_EDIT_MODE) {
     hideDropdowns(true);
     return;
   }
@@ -1048,7 +1046,7 @@ function enableEditAddMode() {
   if (elem) { // change color of menu
     elem.classList.add("bookmark-editmode");
   } 
-  bookmarkState = 2;
+  bookmarkState = BKM_EDIT_MODE;
   closeBookmarkPrompt();
 }
 
@@ -1058,13 +1056,13 @@ function clickBookmark(id) {
   const url = Object.values(elem.url).join("");
   const name = elem.innerText;
   if (elem) { 
-    if (bookmarkState == 1) {
+    if (bookmarkState === BKM_OPEN_MODE) {
       if (!(url == null || url == "" || url == "about:blank")) {
         // open URL in new tab
         window.open(url, "_blank");
       }
     }
-    if (bookmarkState == 2) {
+    if (bookmarkState === BKM_EDIT_MODE) {
       // edit bookmark item
       closeBookmarkPrompt();
       elem.classList.add("dd-selected"); // highlight selected item

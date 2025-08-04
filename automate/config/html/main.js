@@ -447,56 +447,40 @@ async function showTempHumidity(){
 }
 
 function getTemperatureData() {
-  sendCmd('main','brxmit','roomth').then((data) => { // send request
-    const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // read response
-    const resp_arr = resp.split("~");
-    if (resp_arr.length == 2) {
-      const temp = resp_arr[0];
-      const hum = resp_arr[1];
-      setThermometer(temp,hum); // set thermometers
-    } else {
-      setErrorThermo();
-    }
-  });
-}
-
-function setThermometer(tvalue,hvalue) {
   // thermometer limits
   const minTemp = 25;
-	const maxTemp = 100;
+  const maxTemp = 100;
   const minHumidity = 5;
-	const maxHumitidy = 100;
-  // set temperature
-  let temp = document.getElementById("thermo__1");
-  let humd = document.getElementById("thermo__2");
-  if (temp) {
-    temp.dataset.value = tvalue + "°F";
-    let _tvalue = tvalue;
-    if (tvalue >= maxTemp) { _tvalue = maxTemp; }
-    if (tvalue <= minTemp) { _tvalue = minTemp; }
-    temp.style.height = (_tvalue - minTemp) / (maxTemp - minTemp) * 100 + "%";
-  }
-  // set humidity
-  if (humd) {
-    humd.dataset.value = hvalue + "%";
-    let _hvalue = hvalue;
-    if (hvalue >= maxHumitidy) { _hvalue = maxHumitidy; }
-    if (hvalue <= minHumidity) { _hvalue = minHumidity; }
-    humd.style.height = (_hvalue - minHumidity) / (maxHumitidy - minHumidity) * 100 + "%";
-  }
-}
-
-function setErrorThermo() {
-  let temp = document.getElementById("thermo__1");
-  let humd = document.getElementById("thermo__2");
-  if (temp) {
-    temp.style.height = "0%";
-    temp.dataset.value = "--°";
-  }
-  if (humd) {
-    humd.style.height = "0%";
-    humd.dataset.value = "--%";
-  }
+  const maxHumitidy = 100;
+  // send request
+  sendCmd('main','brxmit','roomth').then((data) => {
+    const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // read response
+    const resp_arr = resp.split("~");
+    let temp_elm = document.getElementById("thermo__1");
+    let humd_elm = document.getElementById("thermo__2");
+    if (temp_elm && humd_elm) {
+      if (resp_arr.length == 2) {
+        let tvalue = resp_arr[0];
+        let hvalue = resp_arr[1];
+        // set temperature
+        temp_elm.dataset.value = tvalue + "°F";
+        if (tvalue >= maxTemp) { tvalue = maxTemp; }
+        if (tvalue <= minTemp) { tvalue = minTemp; }
+        temp_elm.style.height = (tvalue - minTemp) / (maxTemp - minTemp) * 100 + "%";
+        // set humidity
+        humd_elm.dataset.value = hvalue + "%";
+        if (hvalue >= maxHumitidy) { hvalue = maxHumitidy; }
+        if (hvalue <= minHumidity) { hvalue = minHumidity; }
+        humd_elm.style.height = (hvalue - minHumidity) / (maxHumitidy - minHumidity) * 100 + "%";
+      } else {
+        // error response
+        temp_elm.style.height = "0%";
+        temp_elm.dataset.value = "--";
+        humd_elm.style.height = "0%";
+        humd_elm.dataset.value = "--";
+      }
+    }
+  });
 }
 
 async function showPiWiFiPrompt(){

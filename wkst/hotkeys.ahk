@@ -20,15 +20,15 @@ Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=allon&var=&action
 return
 
 F3::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data var=&arg=shuffle&action=leds https://automate.home/exec.php, , hide
+Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=shuffle&var=&action=leds https://automate.home/exec.php, , hide
 return
 
 !F3::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data var=&arg=pause&action=leds https://automate.home/exec.php, , hide
+Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=pause&var=&action=leds https://automate.home/exec.php, , hide
 return
 
 ^F3::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data var=&arg=stop&action=leds https://automate.home/exec.php, , hide
+Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=stop&var=&action=leds https://automate.home/exec.php, , hide
 return
 
 ;; Monitor Control ################

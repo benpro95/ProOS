@@ -54,17 +54,22 @@ function handleClicks(event) {
         event.target.classList.contains('chkbox'))) { // checkbox click
     hideDropdowns(true); // hide all dropdown menus
   }
-  if (event.target.id('lrinputs-btn') ||
-      event.target.id('brinpmenu-btn')) {
-    insertBtmPadding();
+  // insert extra padding 
+  if (event.target.classList.contains('btm-padding')) {
+    let _elem = document.getElementById('insert-btm-padding');
+    _elem.style.display = 'block';
   }
 }
 
 // hide all dropdowns //
 function hideDropdowns(eraseDynMenus) {
   classDisplay("dd-content","none");
+  // hide bookmark menus
   hideBookmarks();
-  removeBtmPadding();
+  // remove extra bottom padding
+  let _elem = document.getElementById('insert-btm-padding');
+  _elem.style.display = 'none';
+  // remove dynamic menus
   if (eraseDynMenus === true) {
     removeDynMenus();
   }
@@ -945,16 +950,6 @@ function showMenu(_menu) {
     hideDropdowns(true);
     _elem.style.display = 'block';
   }
-}
-
-function insertBtmPadding() {
-  let _elem = document.getElementById('insert-btm-padding');
-  _elem.style.display = 'block';
-}
-
-function removeBtmPadding() {
-  let _elem = document.getElementById('insert-btm-padding');
-  _elem.style.display = 'none';
 }
 
 //// Bookmarks Menu ////

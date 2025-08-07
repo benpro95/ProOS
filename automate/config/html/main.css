@@ -58,6 +58,10 @@ body {
 }
 
 .pg-bottom {
+  padding-bottom: 50px; 
+}
+
+.pg-insert {
   padding-bottom: 500px; 
 }
 

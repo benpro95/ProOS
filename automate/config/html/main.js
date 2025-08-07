@@ -54,6 +54,10 @@ function handleClicks(event) {
         event.target.classList.contains('chkbox'))) { // checkbox click
     hideDropdowns(true); // hide all dropdown menus
   }
+  if (event.target.id('lrinputs-btn') ||
+      event.target.id('brinpmenu-btn')) {
+    insertBtmPadding();
+  }
 }
 
 // hide all dropdowns //
@@ -1341,10 +1345,8 @@ function showAmpInput() {
   let _elem = document.getElementById("brinpmenu");
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
-    removeBtmPadding();
   } else {
     hideDropdowns(false);
-    insertBtmPadding();
     // start spinner animation
     let btnText = document.getElementById('ampinp-text');
     let btnSpinner = document.getElementById('ampinp-spinner');

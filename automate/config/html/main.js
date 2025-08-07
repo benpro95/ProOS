@@ -20,7 +20,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "10.4";
+let siteVersion = "10.42";
 
 //////////////////////
 
@@ -37,7 +37,8 @@ function handleClicks(event) {
   // disable click events when in bookmark edit mode
   if (bookmarkState === BKM_EDIT_MODE) {
     if (event.target.className !== "editFav__win") {
-      event.stopPropagation(); // disable clicks
+       // disable all clicks outside of window
+      event.stopPropagation();
     }
     return;
   }
@@ -55,19 +56,61 @@ function handleClicks(event) {
   }
 }
 
+// hide all dropdowns //
 function hideDropdowns(eraseDynMenus) {
-  // hide all dropdown menus
   classDisplay("dd-content","none");
-  // hide bookmark menus
   hideBookmarks();
-  // erase dynamic menu elements
+  removeBtmPadding();
   if (eraseDynMenus === true) {
     removeDynMenus();
   }
 }
 
+// show / hide multiple classes
+function classDisplay(_elem, _state) {
+  let _itr;
+  let _class = document.getElementsByClassName(_elem);
+  for (_itr = 0; _itr < _class.length; _itr++) {
+    _class[_itr].style.display = _state;
+  }
+}
+
+function checkElemIsVisibleByID(id){
+  let _elmvis = false;
+  let _elem = document.getElementById(id);
+  if (_elem) {
+    var _style = window.getComputedStyle(_elem)
+    if (_style.display !== 'none') {
+      _elmvis = true;
+    }
+  }
+  return _elmvis;
+}
+
+// open URL in new tab
+function GoToExtPage(_path) {
+  let url = "https://"+_path;   
+  window.open(url, "_blank");
+}
+
 function mapNumber(num, inMin, inMax, outMin, outMax) {
   return (num - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+}
+
+// back to home page 
+function GoToHomePage() {
+  if (sysModel === serverSite) {
+    hidePages();
+    loadPage();
+  } else {
+    window.location = 'https://'+serverSite+'.home';   
+  }
+}
+
+function hidePages() {
+  classDisplay('pi-grid','none'); 
+  classDisplay('ledpi-grid','none'); 
+  classDisplay('server-grid','none');
 }
 
 // runs on page load
@@ -130,54 +173,6 @@ function setTheme(newTheme) {
   let body = document.getElementsByTagName("html")[0];
   body.style.setProperty('--main-color', newTheme);
   localStorage.setItem("main-color", newTheme);
-}
-
-function hidePages() {
-  classDisplay('pi-grid','none'); 
-  classDisplay('ledpi-grid','none'); 
-  classDisplay('server-grid','none');
-}
-
-// show / hide multiple classes
-function classDisplay(_elem, _state) {
-  let _itr;
-  let _class = document.getElementsByClassName(_elem);
-  for (_itr = 0; _itr < _class.length; _itr++) {
-    _class[_itr].style.display = _state;
-  }
-}
-
-function checkElemIsVisibleByID(id){
-  let _elmvis = false;
-  let _elem = document.getElementById(id);
-  if (_elem) {
-    var _style = window.getComputedStyle(_elem)
-    if (_style.display !== 'none') {
-      _elmvis = true;
-    }
-  }
-  return _elmvis;
-}
-
-// back to home page 
-function GoToHomePage() {
-  if (sysModel === serverSite) {
-    hidePages();
-    loadPage();
-  } else {
-    window.location = 'https://'+serverSite+'.home';   
-  }
-}
-
-// open URL in new tab
-function GoToExtPage(_path) {
-  let url = "https://"+_path;   
-  window.open(url, "_blank");
-}
-
-function GotoSubURL(_path) {
-  closePopup();
-  window.location = location.protocol+"//"+location.hostname+"/"+_path;
 }
 
 /// stars animation ///
@@ -459,6 +454,7 @@ function getTemperatureData() {
     let temp_elm = document.getElementById("thermo__1");
     let humd_elm = document.getElementById("thermo__2");
     if (temp_elm && humd_elm) {
+      // validate response
       if (resp_arr.length == 2) {
         let tvalue = resp_arr[0];
         let hvalue = resp_arr[1];
@@ -947,6 +943,16 @@ function showMenu(_menu) {
   }
 }
 
+function insertBtmPadding() {
+  let _elem = document.getElementById('insert-btm-padding');
+  _elem.style.display = 'block';
+}
+
+function removeBtmPadding() {
+  let _elem = document.getElementById('insert-btm-padding');
+  _elem.style.display = 'none';
+}
+
 //// Bookmarks Menu ////
 
 function hideBookmarks() {
@@ -1335,8 +1341,10 @@ function showAmpInput() {
   let _elem = document.getElementById("brinpmenu");
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
+    removeBtmPadding();
   } else {
     hideDropdowns(false);
+    insertBtmPadding();
     // start spinner animation
     let btnText = document.getElementById('ampinp-text');
     let btnSpinner = document.getElementById('ampinp-spinner');
@@ -1824,30 +1832,23 @@ function openLogWindow() {
   loadLog('sysout');
 }
 
+// show camera form window
 function openCamWindow() {
   closePopup();
-  // show camera form window
   document.getElementById("camForm").style.display = "block";
   document.getElementById("camImage").src = "/cam1";
 }
 
+function goToContextRoot(_path) {
+  closePopup();
+  window.location = location.protocol+"//"+location.hostname+"/"+_path;
+}
+
+// close all popup windows
 function closePopup() {
-  // close all popup windows
   document.getElementById("logForm").style.display = "none";
   document.getElementById("camForm").style.display = "none";
   document.getElementById("camImage").src = "";
   clearPendingCmd();
   closeServerOptions();
-}
-
-function closeSendbox() {
-  // close all popup windows
-  document.getElementById("sendForm").style.display = "none";
-  clearPendingCmd();
-}
-
-function openSendWindow() {
-  // open send text window
-  closeSendbox();
-  document.getElementById("sendForm").style.display = "block";
 }

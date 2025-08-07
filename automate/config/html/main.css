@@ -53,8 +53,12 @@ body {
 	line-height: 0;
 }
 
+#insert-btm-padding {
+  display: none;
+}
+
 .pg-bottom {
-  padding-bottom: 300px; 
+  padding-bottom: 500px; 
 }
 
 .led-grid {
@@ -1136,29 +1140,4 @@ input.chkbox {
 }
 .thermometer #thermo__2:before {
   content: attr(data-value);
-}
-
-/* HTML: <div class="loader"></div> */
-.circle-loader {
-  width: 60px;
-  aspect-ratio: 1;
-  border: 15px solid #ddd;
-  border-radius: 50%;
-  position: relative;
-  transform: rotate(45deg);
-}
-.loader::before {
-  content: "";
-  position: absolute;
-  inset: -15px;
-  border-radius: 50%;
-  border: 15px solid #514b82;
-  animation: l18 2s infinite linear;
-}
-@keyframes l18 {
-    0%   {clip-path:polygon(50% 50%,0 0,0    0,0    0   ,0    0   ,0    0   )}
-    25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0   ,100% 0   ,100% 0   )}
-    50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
-    75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0    100%,0    100%)}
-    100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0    100%,0    0   )}
 }

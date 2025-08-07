@@ -53,16 +53,8 @@ body {
 	line-height: 0;
 }
 
-#insert-btm-padding {
-  display: none;
-}
-
 .pg-bottom {
   padding-bottom: 50px; 
-}
-
-.pg-insert {
-  padding-bottom: 500px; 
 }
 
 .led-grid {

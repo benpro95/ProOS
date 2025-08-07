@@ -54,11 +54,6 @@ function handleClicks(event) {
         event.target.classList.contains('chkbox'))) { // checkbox click
     hideDropdowns(true); // hide all dropdown menus
   }
-  // insert extra padding 
-  if (event.target.classList.contains('btm-padding')) {
-    let _elem = document.getElementById('insert-btm-padding');
-    _elem.style.display = 'block';
-  }
 }
 
 // hide all dropdowns //
@@ -66,9 +61,6 @@ function hideDropdowns(eraseDynMenus) {
   classDisplay("dd-content","none");
   // hide bookmark menus
   hideBookmarks();
-  // remove extra bottom padding
-  let _elem = document.getElementById('insert-btm-padding');
-  _elem.style.display = 'none';
   // remove dynamic menus
   if (eraseDynMenus === true) {
     removeDynMenus();
@@ -942,14 +934,21 @@ function ctlsMenu(_mode) {
 }
 
 // toggle dropdown menu's
-function showMenu(_menu) {
+function showMenu(_menu,_scrolltobtm) {
   let _elem = document.getElementById(_menu);
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
   } else {
     hideDropdowns(true);
     _elem.style.display = 'block';
+    if (_scrolltobtm === true) {
+      scrollToBottom();
+    }
   }
+}
+
+function scrollToBottom() {
+  window.scrollTo(0,document.body.scrollHeight);
 }
 
 //// Bookmarks Menu ////
@@ -1396,12 +1395,12 @@ function showAmpInput() {
       btnText.style.visibility = 'visible';
       btnSpinner.classList.remove('btn-spinner');
       // draw menu items
-      drawMenu(_menudata.split("\n"),"brinpmenu");
+      drawMenu(_menudata.split("\n"),"brinpmenu",true);
     });
   }
 }
 
-function showPowerMenu(target,menu) {
+function showPowerMenu(target,menu,tobtm) {
   let _elem = document.getElementById(menu + '-menu');
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
@@ -1456,7 +1455,7 @@ function showPowerMenu(target,menu) {
       btnText.style.visibility = 'visible';
       btnSpinner.classList.remove('btn-spinner');
       // draw menu items
-      drawMenu(_menudata.split("\n"),menu + '-menu');
+      drawMenu(_menudata.split("\n"),menu + '-menu',tobtm);
     });
   }
 }
@@ -1480,7 +1479,7 @@ function showStatusMenu() {
     _elem.style.display = 'block';
     sendCmd('main','status','').then((data) => { // GET request
       // draw menu items
-      drawMenu(data.split("\n"),_menu);
+      drawMenu(data.split("\n"),_menu,false);
       // stop spinner animation
       statIcon.style.visibility = 'visible';
       statSpinner.classList.remove('right-nav-spinner');
@@ -1490,36 +1489,34 @@ function showStatusMenu() {
 
 //// Dynamic Menus ////
 
-function showDynMenu(_menu) {
-  let _elem = document.getElementById(_menu);
+function showDynMenu(menu,tobtm) {
+  let _elem = document.getElementById(menu);
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
   } else {
     hideDropdowns(false);
-     _elem.style.display = 'block';   
-    // read menu data from file
-    readMenuData(_menu);
-  }
-}
-
-function readMenuData(menu) {
-  // build URL / append data
-  const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+menu+"&action=read";
-  menuDataGET(url).then((data) => { // wait for response
-    drawMenu(data,menu);
-  });  
-  function menuDataGET(url) {
-    return fetch(url, {
+     _elem.style.display = 'block';
+    // build URL / append data
+    const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+menu+"&action=read";
+    menuDataGET(url).then((data) => { // wait for response
+      drawMenu(data,menu,tobtm);
+    });  
+    async function menuDataGET(url) {
+      const response = await fetch(url, {
         method: "GET"
-      }).then(response => response.json().then(obj => obj).catch(err => {
-        console.log("readMenuData: " + err)
+      });
+      try {
+        const obj = await response.json();
+        return obj;
+      } catch (err) {
+        console.log("readMenuData: " + err);
       }
-    ));
+    }
   }
 }
 
 // draws each menu item
-function drawMenu(data,menu) {
+function drawMenu(data,menu,tobtm) {
   // remove any current dynamic menus
   removeDynMenus();
   if (!(data === null || data === "")) {
@@ -1544,6 +1541,10 @@ function drawMenu(data,menu) {
     }
     // store menu name at end of array
     fileData.push(menu);
+    // scroll to bottom of page
+    if (tobtm === true) {
+      scrollToBottom();
+    }
   } else {
     console.log("drawMenu: no data");
   }

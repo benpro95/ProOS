@@ -11,7 +11,7 @@
 
 // local libraries
 #include "NeoTimer.h"
-#include "DHTStable.h"
+#include "DHT_NonBlocking.h"
 
 // general constants
 const uint8_t debounceDelay = 75; // in ms
@@ -59,13 +59,11 @@ const uint8_t maxFwrdWait = 650; // max wait in (ms) for external serial respons
 Neotimer maxFwrdRead = Neotimer();
 
 // DHT humidity-temperature sensor
-DHTStable DHT;
-float dhtTemp = 0;
+#define DHT_SENSOR_TYPE DHT_TYPE_22
+DHT_nonblocking dht_sensor( PWR_IO_2, DHT_SENSOR_TYPE );
+bool dhtAvailable = false;
 float dhtHumidity = 0;
-bool dhtReadingOk = false;
-Neotimer dhtLockoutTimer = Neotimer();
-const uint16_t dhtDeadTime = 2500; // sensor dead-time in (ms)
-bool dhtLockout = false;
+float dhtTemp = 0;
 
 ///////////////////////////////////////
 
@@ -103,8 +101,8 @@ void internalFunctions(uint16_t command) {
     }
   }
   if (command == 5) {
-    // read rooms temperature & humidity
-    readTempHumidity();
+    // rooms temperature & humidity
+    writeTempHumidity();
   }
 }
 
@@ -136,37 +134,12 @@ void powerPulse(int _powerPin) {
   digitalWrite(_powerPin, LOW);
 }
 
-void readTempHumidity(){
-  if (dhtLockout == false) {
-    dhtTemp = 0;
-    dhtHumidity = 0;
-    dhtReadingOk = false;
-    // start lockout timer
-    dhtLockoutTimer.set(dhtDeadTime);
-    dhtLockoutTimer.start();
-    dhtLockout = true;
-    // verify sensor is functioning
-    int _chk = DHT.read22(PWR_IO_2);
-    switch (_chk)
-    {
-    case DHTLIB_OK:
         // take a new sensor reading
-        dhtTemp = ((DHT.getTemperature() * 9) + 3) / 5 + 32; // convert C -> F
-        dhtHumidity = DHT.getHumidity();
-        dhtReadingOk = true;
-        break;
-    case DHTLIB_ERROR_CHECKSUM:
-        Serial.print("DHT INVALID CHECKSUM!");
-        break;
-    case DHTLIB_ERROR_TIMEOUT:
-        Serial.print("DHT TIMEOUT ERROR!");
-        break;
-    default:
-        Serial.print("DHT UNKNOWN ERROR!");
-        break;
-    }
-  }
-  if (dhtReadingOk == true) {
+        //dhtTemp = ((DHT.getTemperature() * 9) + 3) / 5 + 32; // convert C -> F
+        //dhtHumidity = DHT.getHumidity();
+
+void writeTempHumidity(){
+  if (dhtAvailable == true) {
     // convert floats to characters
     char _temp[8], _humi[8];
     dtostrf(dhtTemp, 3, 1, _temp);
@@ -177,6 +150,37 @@ void readTempHumidity(){
     // error response
     sprintf(serialMessageOut ,"X");
   }
+}
+
+
+void readTempHumidity(){
+  float temperature;
+  float humidity;
+  /* Measure temperature and humidity.  If the functions returns
+     true, then a measurement is available. */
+  if( measureDHT( &temperature, &humidity ) == true )
+  {
+     dhtTemp = temperature;
+     dhtHumidity = humidity;
+     dhtAvailable = true;
+  } else {
+    dhtAvailable = false;
+  }
+}
+
+static bool measureDHT( float *temperature, float *humidity )
+{
+  static unsigned long measure_ts = millis();
+  /* Measure every 10-seconds. */
+  if( millis( ) - measure_ts > 10000ul )
+  {
+    if( dht_sensor.measure( temperature, humidity ) == true )
+    {
+      measure_ts = millis( );
+      return( true );
+    }
+  }
+  return( false );
 }
 
 /// initialization routines ///
@@ -211,8 +215,6 @@ void initGPIO() {
 void initTimers() {
   maxFwrdRead.reset();
   maxFwrdRead.stop();
-  dhtLockoutTimer.reset();
-  dhtLockoutTimer.stop();
 }
 
 void initSerial() {
@@ -227,20 +229,12 @@ void initSerial() {
 void loop() {
   serialProcess();
   readDigitalInputs();
-  dhtLock();
 }
 
 void readDigitalInputs() {
   readPowerButton_1();
   readPowerButton_2();
-}
-
-void dhtLock() {
-  if (dhtLockoutTimer.done()) {
-    dhtLockoutTimer.reset();
-    dhtLockoutTimer.stop();
-    dhtLockout = false;
-  }
+  readTempHumidity();
 }
 
 void readPowerButton_1() {

@@ -1,7 +1,7 @@
 /*
  * Ben Provenzano III
  * -----------------
- * v3.3 - 07/27/2025
+ * v3.4 - 08/08/2025
  * Automate Hub #1
  * -----------------
  */
@@ -20,9 +20,16 @@ const char nullTrm = '\0';
 // power control I/O
 #define PWR_TRIG_1 9 // TRIGGER TIP
 #define PWR_SENS_1 2 // SENSE RING
-#define PWR_IO_2   8 // GREEN TIP (RING 5v)
 #define PWR_IO_3   7 // YELLOW TIP (RING 5v)
 #define PWR_IO_4   4 // WHITE TIP (RING 5v)
+
+// DHT humidity-temperature sensor
+#define DHT_SENSOR_TYPE DHT_TYPE_22
+static const int PWR_IO_2 = 8; // GREEN TIP (RING 5v)
+DHT_nonblocking dht_sensor(PWR_IO_2, DHT_SENSOR_TYPE);
+bool dhtError = true;
+float dhtHumidity = 0;
+float dhtTemp = 0;
 
 // analog inputs
 #define ADC_IN_1  A0 // RED TIP
@@ -57,13 +64,6 @@ bool serialReading = 0;
 bool serialMsgEnd = 0;
 const uint8_t maxFwrdWait = 650; // max wait in (ms) for external serial response
 Neotimer maxFwrdRead = Neotimer();
-
-// DHT humidity-temperature sensor
-#define DHT_SENSOR_TYPE DHT_TYPE_22
-DHT_nonblocking dht_sensor( PWR_IO_2, DHT_SENSOR_TYPE );
-bool dhtAvailable = false;
-float dhtHumidity = 0;
-float dhtTemp = 0;
 
 ///////////////////////////////////////
 
@@ -134,12 +134,8 @@ void powerPulse(int _powerPin) {
   digitalWrite(_powerPin, LOW);
 }
 
-        // take a new sensor reading
-        //dhtTemp = ((DHT.getTemperature() * 9) + 3) / 5 + 32; // convert C -> F
-        //dhtHumidity = DHT.getHumidity();
-
-void writeTempHumidity(){
-  if (dhtAvailable == true) {
+void writeTempHumidity() {
+  if (dhtError == false) {
     // convert floats to characters
     char _temp[8], _humi[8];
     dtostrf(dhtTemp, 3, 1, _temp);
@@ -147,40 +143,33 @@ void writeTempHumidity(){
     // concat arrays then write to output buffer
     sprintf(serialMessageOut ,"%s~%s" ,_temp ,_humi);
   } else {
-    // error response
     sprintf(serialMessageOut ,"X");
   }
 }
 
-
-void readTempHumidity(){
-  float temperature;
-  float humidity;
-  /* Measure temperature and humidity.  If the functions returns
-     true, then a measurement is available. */
-  if( measureDHT( &temperature, &humidity ) == true )
-  {
-     dhtTemp = temperature;
-     dhtHumidity = humidity;
-     dhtAvailable = true;
-  } else {
-    dhtAvailable = false;
+void readTempHumidity() {
+  /* Measure temperature and humidity. */
+  float temperature, humidity;
+  if(measureDHT(&temperature, &humidity) == true) {
+    dhtTemp = ((temperature * 9) + 3) / 5 + 32; // convert C -> F
+    dhtHumidity = humidity;
   }
 }
 
-static bool measureDHT( float *temperature, float *humidity )
-{
+static bool measureDHT(float *temperature, float *humidity) {
   static unsigned long measure_ts = millis();
   /* Measure every 10-seconds. */
-  if( millis( ) - measure_ts > 10000ul )
+  if(millis() - measure_ts > 10000ul)
   {
-    if( dht_sensor.measure( temperature, humidity ) == true )
-    {
-      measure_ts = millis( );
-      return( true );
+    if(dht_sensor.measure( temperature, humidity ) == true) {
+      measure_ts = millis();
+      dhtError = false;
+      return(true);
+    } else {
+      dhtError = true;
     }
   }
-  return( false );
+  return(false);
 }
 
 /// initialization routines ///

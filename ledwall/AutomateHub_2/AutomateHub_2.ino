@@ -7,13 +7,11 @@
  */
 
 #include <IRremote.hpp> // v3+
-#include <RCSwitch.h>
 
 const char nullTrm = '\0';
 
 // GPIO resources
 #define PC_TRIG_PIN 4
-#define RF_TX_PIN   3
 #define IR_OUT_PIN  2
 #define NO_LED_FEEDBACK_CODE 
 
@@ -40,9 +38,6 @@ const uint16_t IR_Preamp_A3 = 0x6CD2;
 const uint16_t IR_1021DAC_A1 = 0x2B5C;
 const uint16_t IR_Subamp_A1 = 0x4;
 
-// RF transmission
-RCSwitch mySwitch = RCSwitch();
-
 void setup() {
   Serial.begin(serialBaudRate); 
   // GPIO initialization
@@ -53,11 +48,6 @@ void setup() {
   // controller software serial
   serialMessageOut[0] = '\0';
   Serial.begin(serialBaudRate);
-  // RF initialization
-  mySwitch.enableTransmit(RF_TX_PIN);
-  mySwitch.setProtocol(1);
-  mySwitch.setPulseLength(315);
-  mySwitch.setRepeatTransmit(5);
   // IR initalization
   IrSender.begin(IR_OUT_PIN);
   IrSender.enableIROut(38); // 38-KHz Infrared
@@ -256,16 +246,6 @@ void remoteFunctions(uint8_t _register, uint16_t _ctldata) {
   }
   // process register
   switch (_ctldata) {
-  case 1:
-  // window light on
-    mySwitch.send(834511, 24);
-    writeSerialMessage(1);
-    break;
-  case 2:
-    // window light off
-    mySwitch.send(834512, 24);
-    writeSerialMessage(1);  
-    break;
   case 10:
     // toggle PC on/off
     digitalWrite(PC_TRIG_PIN, HIGH);

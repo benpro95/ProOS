@@ -12,6 +12,7 @@ unifi/firmware
 mgmt/keys
 pve/vmbkps
 pve/photos
+*wifi_creds.py*
 *auto.creds*
 *sasl_passwd*
 *authorized_keys*

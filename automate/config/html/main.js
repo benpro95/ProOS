@@ -463,12 +463,13 @@ function getTemperatureData() {
 }
 
 function retryGetTempData(temp_elm,humd_elm) {
-  console.log("re-trying DHT refresh...");
+  console.log("re-trying DHT data refresh...");
   sendCmd('main','brxmit','roomth').then((data) => {
     const resp = data.replace(/(\r\n|\n|\r)/gm, "");
+    // extract numerics
     const resp_arr = resp.split("~");
+    // validate response
     if (resp_arr.length == 2) {
-      // valid response
       pushTempDataToThermos(resp_arr,temp_elm,humd_elm);
     } else {
       pushTempErrorThermos(temp_elm,humd_elm);
@@ -506,6 +507,10 @@ function pushTempDataToThermos(resp_arr,temp_elm,humd_elm) {
 }
 
 function pushTempErrorThermos(temp_elm,humd_elm) {
+  // verify elements exist
+  if (!(temp_elm && humd_elm)) {
+    return;
+  }
   temp_elm.style.height = "0%";
   temp_elm.dataset.value = "--";
   humd_elm.style.height = "0%";

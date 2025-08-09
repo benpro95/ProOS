@@ -26,10 +26,10 @@ const char nullTrm = '\0';
 // DHT humidity-temperature sensor
 #define DHT_SENSOR_TYPE DHT_TYPE_22
 static const int PWR_IO_2 = 8; // GREEN TIP (RING 5v)
-DHT_nonblocking dht_sensor(PWR_IO_2, DHT_SENSOR_TYPE);
-bool dhtError = true;
-float dhtHumidity = 0;
-float dhtTemp = 0;
+DHT_nonblocking DHT_SENSOR(PWR_IO_2, DHT_SENSOR_TYPE);
+float dhtHumidity = 0.0;
+float dhtTemp = 0.0;
+bool dhtState = false;
 
 // analog inputs
 #define ADC_IN_1  A0 // RED TIP
@@ -135,7 +135,7 @@ void powerPulse(int _powerPin) {
 }
 
 void writeTempHumidity() {
-  if (dhtError == false) {
+  if (dhtState == true) {
     // convert floats to characters
     char _temp[8], _humi[8];
     dtostrf(dhtTemp, 3, 1, _temp);
@@ -148,7 +148,6 @@ void writeTempHumidity() {
 }
 
 void readTempHumidity() {
-  /* Measure temperature and humidity. */
   float temperature, humidity;
   if(measureDHT(&temperature, &humidity) == true) {
     dhtTemp = ((temperature * 9) + 3) / 5 + 32; // convert C -> F
@@ -158,15 +157,15 @@ void readTempHumidity() {
 
 static bool measureDHT(float *temperature, float *humidity) {
   static unsigned long measure_ts = millis();
-  /* Measure every 10-seconds. */
-  if(millis() - measure_ts > 10000ul)
+  /* Measure every 8-seconds. */
+  if(millis() - measure_ts > 8000ul) 
   {
-    if(dht_sensor.measure( temperature, humidity ) == true) {
+    if(DHT_SENSOR.measure(temperature, humidity) == true) {
       measure_ts = millis();
-      dhtError = false;
+      dhtState = true;
       return(true);
     } else {
-      dhtError = true;
+      dhtState = false;
     }
   }
   return(false);

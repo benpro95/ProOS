@@ -20,7 +20,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "10.42";
+let siteVersion = "10.4";
 
 //////////////////////
 
@@ -339,7 +339,7 @@ async function aboutPrompt(){
   let currentDate = new Date();
   let currentYear = currentDate.getFullYear();
   let aboutdets2 = document.createElement("div"); 
-  aboutdets2.innerHTML = "Version: " + siteVersion + " (" + currentYear + ")";
+  aboutdets2.innerHTML = "v" + siteVersion + " (" + currentYear + ")";
   aboutdets2.className = "about__text";
   aboutprompt.appendChild(aboutdets2);
   // author details
@@ -363,6 +363,8 @@ async function aboutPrompt(){
     });
   });   
 }
+
+/// Temperature & Humidity ///
 
 async function showTempHumidity(){
   const _winid = 'temp__prompt';
@@ -443,44 +445,76 @@ async function showTempHumidity(){
 }
 
 function getTemperatureData() {
+  sendCmd('main','brxmit','roomth').then((data) => {
+    const resp = data.replace(/(\r\n|\n|\r)/gm, "");
+    const resp_arr = resp.split("~");
+    let temp_elm = document.getElementById("thermo__1");
+    let humd_elm = document.getElementById("thermo__2");
+    if (resp_arr.length == 2) {
+      // valid response
+      pushTempDataToThermos(resp_arr,temp_elm,humd_elm);
+    } else {
+      // retry request
+      setTimeout(function(){
+        retryGetTempData(temp_elm,humd_elm);
+      }, 500); // in ms
+    }
+  });
+}
+
+function retryGetTempData(temp_elm,humd_elm) {
+  console.log("re-trying DHT refresh...");
+  sendCmd('main','brxmit','roomth').then((data) => {
+    const resp = data.replace(/(\r\n|\n|\r)/gm, "");
+    const resp_arr = resp.split("~");
+    if (resp_arr.length == 2) {
+      // valid response
+      pushTempDataToThermos(resp_arr,temp_elm,humd_elm);
+    } else {
+      pushTempErrorThermos(temp_elm,humd_elm);
+    }
+  });
+}
+
+function pushTempDataToThermos(resp_arr,temp_elm,humd_elm) {
   // thermometer limits
   const minTemp = 25;
   const maxTemp = 100;
   const minHumidity = 5;
   const maxHumitidy = 100;
-  // send request
-  sendCmd('main','brxmit','roomth').then((data) => {
-    const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // read response
-    const resp_arr = resp.split("~");
-    let temp_elm = document.getElementById("thermo__1");
-    let humd_elm = document.getElementById("thermo__2");
-    if (temp_elm && humd_elm) {
-      // validate response
-      if (resp_arr.length == 2) {
-        let tvalue = resp_arr[0];
-        let hvalue = resp_arr[1];
-        // set temperature
-        temp_elm.dataset.value = tvalue + "°F";
-        if (tvalue >= maxTemp) { tvalue = maxTemp; }
-        if (tvalue <= minTemp) { tvalue = minTemp; }
-        temp_elm.style.height = (tvalue - minTemp) / (maxTemp - minTemp) * 100 + "%";
-        // set humidity
-        humd_elm.dataset.value = hvalue + "%";
-        if (hvalue >= maxHumitidy) { hvalue = maxHumitidy; }
-        if (hvalue <= minHumidity) { hvalue = minHumidity; }
-        humd_elm.style.height = (hvalue - minHumidity) / (maxHumitidy - minHumidity) * 100 + "%";
-      } else {
-        // error response
-        temp_elm.style.height = "0%";
-        temp_elm.dataset.value = "--";
-        humd_elm.style.height = "0%";
-        humd_elm.dataset.value = "--";
-      }
-    }
-  });
+  // verify elements exist
+  if (!(temp_elm && humd_elm)) {
+    return;
+  }
+  // validate response
+  if (resp_arr.length == 2) {
+    let tvalue = resp_arr[0];
+    let hvalue = resp_arr[1];
+    // set temperature
+    temp_elm.dataset.value = tvalue + "°F";
+    if (tvalue >= maxTemp) { tvalue = maxTemp; }
+    if (tvalue <= minTemp) { tvalue = minTemp; }
+    temp_elm.style.height = (tvalue - minTemp) / (maxTemp - minTemp) * 100 + "%";
+    // set humidity
+    humd_elm.dataset.value = hvalue + "%";
+    if (hvalue >= maxHumitidy) { hvalue = maxHumitidy; }
+    if (hvalue <= minHumidity) { hvalue = minHumidity; }
+    humd_elm.style.height = (hvalue - minHumidity) / (maxHumitidy - minHumidity) * 100 + "%";
+  } else {
+    pushTempErrorThermos(temp_elm,humd_elm);
+  }
 }
 
-async function showPiWiFiPrompt(){
+function pushTempErrorThermos(temp_elm,humd_elm) {
+  temp_elm.style.height = "0%";
+  temp_elm.dataset.value = "--";
+  humd_elm.style.height = "0%";
+  humd_elm.dataset.value = "--";
+}
+
+/// END - Temperature & Humidity ///
+
+async function showPiWiFiPrompt() {
   const winid = "pinet__prompt";
   // only allow one-instance of the window
   if (document.getElementById(winid)) {

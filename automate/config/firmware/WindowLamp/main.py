@@ -54,8 +54,6 @@ def webServer(socket):
             else:
                 led1.value(1)
                 response = sendResponse(0);
-        
-            
             
         # Send the HTTP response and close the connection
         conn.send('HTTP/1.0 200 OK\r\nContent-type: text/plain\r\n\r\n')
@@ -84,6 +82,19 @@ def waitForConnection():
         print("No connection found rebooting!")
         time.sleep(1)
         machine.reset() # Reboot
+        
+## LED #1 toggle button        
+blue_btn = machine.Pin(3, machine.Pin.IN, machine.Pin.PULL_UP)
+blue_last = time.ticks_ms()
+        
+def button_handler(pin):
+    global blue_last, blue_btn
+    if pin is blue_btn:
+        if time.ticks_diff(time.ticks_ms(), blue_last) > 500:
+            led1.toggle()
+            blue_last = time.ticks_ms()      
+
+blue_btn.irq(trigger = machine.Pin.IRQ_RISING, handler = button_handler)
 
 # LED #1 pin
 led1 = Pin(21, Pin.OUT)
@@ -117,7 +128,6 @@ retrys = 0
 ## Entry point
 while True:
     if wlan.isconnected():
-        retrys = 0
         webServer(socket)
     else:
         waitForConnection()

@@ -9,23 +9,25 @@ LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
 MAX_PING_WAIT="0.4" ## Max Ping Timeout (s)
 LOCAL_DOMAIN="home" ## Local DNS Domain
-LRXMIT_IP="10.177.1.12" ## LEDwall
-DESK_IP="10.177.1.14" ## Desktop
-BRPI_IP="10.177.1.15" ## Bedroom Pi
-BRPC_IP="10.177.1.17" ## Bedroom PC IP
+NET_IP="10.177.1" ## Local Network
+PICOLAMP1_IP="$NET_IP.183" ## Pi Pico Window Lamp
+LRXMIT_IP="$NET_IP.12" ## LEDwall
+DESK_IP="$NET_IP.14" ## Desktop
+BRPI_IP="$NET_IP.15" ## Bedroom Pi
+BRPC_IP="$NET_IP.17" ## Bedroom PC IP
 BRPC_MAC="90:2e:16:46:86:43" ## Bedroom PC MAC
  
 ## Curl Command Line Arguments
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 10 --retry 1 --retry-delay 1 --no-keepalive"
 
 function CALLAPI(){
+  ## PHP API call
   local TARGET="${1}"
   local API_ARG1="${2}"
   local API_ARG2="${3}"
   if [[ "$API_ARG1" == "" ]]; then
     return
   fi
-  ## ProOS home automation Pi
   DATA="var=$API_ARG2&arg=$API_ARG1&action=main"
   SERVER="http://$TARGET:80/exec.php"
   ## API GET request wait then read response
@@ -34,6 +36,28 @@ function CALLAPI(){
   TMPSTR="${APIRESP#*$DELIM}"
   RESPOUT="${TMPSTR%$DELIM*}"
   echo "$RESPOUT"
+}
+
+function CALLPICO(){
+  ## Pi Pico HTTP API call
+  local PICO_IP="${1}"
+  local PICO_ARG1="${2}"
+  if [[ "$PICO_ARG1" == "" ]]; then
+    return
+  fi
+  SERVER="http://$PICO_IP:80/api/$PICO_ARG1"
+  ## API GET request wait then read response
+  DELIM="|"
+  APIRESP="$(/usr/bin/curl $CURLARGS $SERVER)"
+  TMPSTR="${APIRESP#*$DELIM}"
+  RESPOUT="${TMPSTR%$DELIM*}"
+  echo "$RESPOUT"
+}
+
+function WINLAMP1() {
+  ## Window Lamp #1 
+  local WL_ARG="${1}"
+  CALLPICO "$PICOLAMP1_IP" "$WL_ARG"
 }
 
 function LOCAL_PING(){
@@ -331,14 +355,14 @@ esac
 
 function LIGHTS_OFF(){
   ## Window Lamp
-  LRXMIT "rfc1off"
+  WINLAMP1 "led1off"
   ## Dresser Lamp
   BRXMIT "brlamp1off"
 }
 
 function LIGHTS_ON(){
   ## Window Lamp
-  LRXMIT "rfc1on"
+  WINLAMP1 "led1on"
   ## Dresser Lamp
   BRXMIT "brlamp1on"
 }
@@ -355,7 +379,7 @@ case "$FIRST_ARG" in
 
 mainon)
 ## Window Lamp
-LRXMIT "rfc1on"
+WINLAMP1 "led1on"
 exit
 ;;
 
@@ -414,7 +438,7 @@ exit
 
 lron)
 ## Window Lamp
-LRXMIT "rfc1on"
+WINLAMP1 "led1on"
 ## LEDwalls
 LED_PRESET "abstract"
 ## PC Power On
@@ -426,7 +450,7 @@ exit
 
 lroff)
 ## Window Lamp
-LRXMIT "rfc1off"
+WINLAMP1 "led1off"
 ## Blank LEDwalls
 /opt/system/leds stop
 ## PC Power Off
@@ -436,21 +460,27 @@ LRXMIT "hifioff"
 exit
 ;;
 
-## Forward Command to Bedroom Xmit
+## Forward to Bedroom Xmit
 brxmit)
 BRXMIT "$SECOND_ARG"
 exit
 ;;
 
-## Forward Command to Living Room Xmit
+## Forward to Living Room Xmit
 lrxmit)
 LRXMIT "$SECOND_ARG"
 exit
 ;;
 
-## Forward Command to Bedroom Pi
+## Forward to Bedroom Amplifer Pi
 brpi)
 CALLAPI "$BRPI_IP" "$SECOND_ARG" ""
+exit
+;;
+
+## Forward to Window Lamp Pi
+winlamp1)
+WINLAMP1 "$SECOND_ARG"
 exit
 ;;
 

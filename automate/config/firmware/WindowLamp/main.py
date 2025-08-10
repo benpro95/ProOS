@@ -43,21 +43,21 @@ led0.value(0)
 def get_macaddr(request):
     return sendReponse(mac)
 
-@server.route("/api/led1on", methods=["GET"])
+@server.route("/api/wl_led1on", methods=["GET"])
 def get_led1on(request):
     led0.value(1)
     print("turning LED #1 on")
     led1.value(0)
     return sendReponse(1)
 
-@server.route("/api/led1off", methods=["GET"])
+@server.route("/api/wl_led1off", methods=["GET"])
 def get_led1off(request):
     led0.value(1)
     print("turning LED #1 off")
     led1.value(1)
     return sendReponse(0)
 
-@server.route("/api/led1", methods=["GET"])
+@server.route("/api/wl_led1", methods=["GET"])
 def get_led1(request):
     print("LED #1 status")
     led0.value(1)
@@ -66,7 +66,7 @@ def get_led1(request):
     else:
         return sendReponse(0)
 
-@server.route("/api/led1toggle", methods=["GET"])
+@server.route("/api/wl_led1toggle", methods=["GET"])
 def get_led1toggle(request):
     print("toggling LED #1 power")
     led0.value(1)

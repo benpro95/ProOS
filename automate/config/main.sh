@@ -9,16 +9,15 @@ LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
 MAX_PING_WAIT="0.4" ## Max Ping Timeout (s)
 LOCAL_DOMAIN="home" ## Local DNS Domain
-NET_IP="10.177.1" ## Local Network
-PICOLAMP1_IP="$NET_IP.183" ## Pi Pico Window Lamp
-LRXMIT_IP="$NET_IP.12" ## LEDwall
-DESK_IP="$NET_IP.14" ## Desktop
-BRPI_IP="$NET_IP.15" ## Bedroom Pi
-BRPC_IP="$NET_IP.17" ## Bedroom PC IP
+PICOLAMP1_IP="10.177.1.18" ## Window Lamp
+LRXMIT_IP="10.177.1.12" ## LEDwall Pi
+DESK_IP="10.177.1.14" ## Desktop PC
+BRPI_IP="10.177.1.15" ## Bedroom Pi
+BRPC_IP="10.177.1.17" ## Bedroom PC
 BRPC_MAC="90:2e:16:46:86:43" ## Bedroom PC MAC
  
 ## Curl Command Line Arguments
-CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 10 --retry 1 --retry-delay 1 --no-keepalive"
+CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 3 --retry 1 --retry-delay 1 --no-keepalive"
 
 function CALLAPI(){
   ## PHP API call
@@ -52,12 +51,6 @@ function CALLPICO(){
   TMPSTR="${APIRESP#*$DELIM}"
   RESPOUT="${TMPSTR%$DELIM*}"
   echo "$RESPOUT"
-}
-
-function WINLAMP1() {
-  ## Window Lamp #1 
-  local WL_ARG="${1}"
-  CALLPICO "$PICOLAMP1_IP" "$WL_ARG"
 }
 
 function LOCAL_PING(){
@@ -340,13 +333,6 @@ case "$CMD_IN" in
   "subdwn")
     CALLAPI "$LRXMIT_IP" "extcom" "02124"
     ;;
-  ### Window Lamp ###
-  "rfc1on")
-    CALLAPI "$LRXMIT_IP" "extcom" "02001"
-    ;;
-  "rfc1off")
-    CALLAPI "$LRXMIT_IP" "extcom" "02002"
-    ;;
 *)
   echo "invalid Xmit command!"
   ;;
@@ -355,14 +341,14 @@ esac
 
 function LIGHTS_OFF(){
   ## Window Lamp
-  WINLAMP1 "led1off"
+  CALLPICO "$PICOLAMP1_IP" "wl_led1off"
   ## Dresser Lamp
   BRXMIT "brlamp1off"
 }
 
 function LIGHTS_ON(){
   ## Window Lamp
-  WINLAMP1 "led1on"
+  CALLPICO "$PICOLAMP1_IP" "wl_led1on"
   ## Dresser Lamp
   BRXMIT "brlamp1on"
 }
@@ -379,7 +365,7 @@ case "$FIRST_ARG" in
 
 mainon)
 ## Window Lamp
-WINLAMP1 "led1on"
+CALLPICO "$PICOLAMP1_IP" "wl_led1on"
 exit
 ;;
 
@@ -438,7 +424,7 @@ exit
 
 lron)
 ## Window Lamp
-WINLAMP1 "led1on"
+CALLPICO "$PICOLAMP1_IP" "wl_led1on"
 ## LEDwalls
 LED_PRESET "abstract"
 ## PC Power On
@@ -450,7 +436,7 @@ exit
 
 lroff)
 ## Window Lamp
-WINLAMP1 "led1off"
+CALLPICO "$PICOLAMP1_IP" "wl_led1off"
 ## Blank LEDwalls
 /opt/system/leds stop
 ## PC Power Off
@@ -479,8 +465,8 @@ exit
 ;;
 
 ## Forward to Window Lamp Pi
-winlamp1)
-WINLAMP1 "$SECOND_ARG"
+wlpi)
+CALLPICO "$PICOLAMP1_IP" "$SECOND_ARG"
 exit
 ;;
 

@@ -1,0 +1,22 @@
+# ~/.profile: executed by Bourne-compatible login shells.
+
+## Command Aliases
+alias rpi='/opt/system/init'
+alias leds='/opt/system/leds'
+alias main='/opt/system/main'
+alias xmit='/opt/system/main'
+
+# You may uncomment the following lines if you want `ls' to be colorized:
+export LS_OPTIONS='--color=auto'
+eval "`dircolors`"
+alias ls='ls $LS_OPTIONS'
+alias ll='ls $LS_OPTIONS -l'
+alias l='ls $LS_OPTIONS -lA'
+
+mesg n || true
+
+######## Custom login scripts below ###########
+
+neofetch
+echo "SearXNG Container"
+echo " "

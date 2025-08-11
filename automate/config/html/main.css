@@ -1137,3 +1137,52 @@ input.chkbox {
 .thermometer #thermo__2:before {
   content: attr(data-value);
 }
+
+.loading_bar {
+  width: 25px;
+  background: #38383f;
+  height: 240px;
+  position: relative;
+  border: 9px solid #2a2a2e;
+  border-radius: 20px;
+  z-index: 1;
+}
+.loading_bar:after {
+  position: absolute;
+  content: "";
+  border-radius: 50%;
+  transform: translateX(-50%);
+  width: 45px;
+  height: 45px;
+  background-color: rgb(101, 157, 241);
+  bottom: -40px;
+  border: 9px solid #2a2a2e;
+  z-index: -3;
+  left: 50%;
+}
+.loading_bar .bar_outer {
+  height: 0px;
+  bottom: 0px;
+  position: absolute;
+  background: linear-gradient(#e83535, rgb(101, 157, 241)) no-repeat bottom;
+  width: 100%;
+  border-radius: 20px;
+  background-size: 100% 240px;
+  transition: all 0.2s ease-in-out;
+}
+.loading_bar .bar_outer:before {
+  min-width: 40px;
+  position: absolute;
+  z-index: 2;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 1.25em;
+  line-height: 1;
+  transform: translate(-50%, 50%);
+  background: var(--main-color);
+  opacity: 85%;
+  color: white;
+}
+.loading_bar #vol_loadbar_1:before {
+  content: attr(data-value);
+}

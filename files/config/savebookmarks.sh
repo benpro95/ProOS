@@ -2,7 +2,7 @@
 ## Save bookmarks file from RAM disk hourly
 
 echo "(savebookmarks) started."
-DS_PATH="/mnt/data/Documents"
+DS_PATH="/mnt/.regions/Documents"
 
 if [ -f /mnt/ramdisk/bookmarks.txt ]; then
   echo "saving bookmarks to disk..."

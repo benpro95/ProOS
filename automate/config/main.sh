@@ -7,7 +7,7 @@ DELIM="|"
 RAMDISK="/var/www/html/ram"
 LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
-MAX_PING_WAIT="0.4" ## Max Ping Timeout (s)
+MAX_PING_WAIT="0.5" ## Max Ping Timeout (s)
 LOCAL_DOMAIN="home" ## Local DNS Domain
 PICOLAMP1_IP="10.177.1.18" ## Window Lamp
 LRXMIT_IP="10.177.1.12" ## LEDwall Pi
@@ -430,7 +430,7 @@ LED_PRESET "abstract"
 ## PC Power On
 LRXMIT "wkststateon"
 ## Main Room Audio
-LRXMIT "hifion"
+LRXMIT "hifistateon"
 exit
 ;;
 
@@ -442,7 +442,7 @@ CALLPICO "$PICOLAMP1_IP" "wl_led1off"
 ## PC Power Off
 LRXMIT "wkststateoff"
 ## Main Room Audio
-LRXMIT "hifioff"
+LRXMIT "hifistateoff"
 exit
 ;;
 
@@ -476,10 +476,10 @@ relax)
 CALLAPI "$BRPI_IP" "ampon-coax" ""
 ## Relax Sounds on Bedroom Pi
 CALLAPI "$BRPI_IP" "relax" "$SECOND_ARG"
-## Turn Off TV
-BRXMIT "brtvoff"
 ## Send Sleep Command
 CALLAPI "$BRPC_IP" "sleep" ""
+## Turn Off TV
+BRXMIT "brtvoff"
 exit
 ;;
 

@@ -8,7 +8,6 @@ rpi/RetroPie-Setup
 automate/config/html/img/wifi.png
 automate/config/html/wifi.js
 automate/config/html/fonts
-search/config/searxng
 unifi/firmware
 mgmt/keys
 pve/vmbkps

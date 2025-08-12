@@ -879,18 +879,23 @@ async function setAmpVolume(_state) {
 
 function showVolumePopup(vol) {
   let elem = document.getElementById('vol-popup');
+  let vol_text = document.getElementById('vol-text');
+  let vol_bar = document.getElementById('vol-bar1');
+  // set volume pop-up text
   if (vol == 0) {
-    elem.innerHTML = "Mute";
+    vol_text.innerHTML = "Mute";
   } else {
-    elem.innerHTML = vol + "%";
+    vol_text.innerHTML = vol + "%";
   }
-  // check window is not already visible 
-  if (elem.checkVisibility({visibilityProperty: true}) === false) {
-    elem.style.visibility = "visible";
+  // set volume progress bar
+  vol_bar.style.width = vol + "%";
+  // make window visible
+  if (elem.style.display !== 'block') {
+    elem.style.display = "block";
     setTimeout(function(){
-      // hide after 2.5 seconds
-      elem.style.visibility = "hidden";
-    }, 2500);
+      // hide after 3 seconds
+      elem.style.display = "none";
+    }, 3000);
   }
 }
 

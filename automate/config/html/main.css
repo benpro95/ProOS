@@ -1051,11 +1051,12 @@ input.chkbox {
   text-decoration: none;
   font-size: 50px;
   color: color-mix(in srgb, var(--main-color) 40%, white);
+  margin-bottom: 10px;
 }
 
-.loading_bar {
+.progress_grid {
   margin-top: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 15px;
   background: #38383f;
   position: relative;
   height: 30px;
@@ -1064,7 +1065,7 @@ input.chkbox {
   border-radius: 20px;
   z-index: 1;
 }
-.loading_bar .bar_progress {
+.progress_grid .bar_progress {
   left: 0px;
   width: 30%;
   height: 100%;

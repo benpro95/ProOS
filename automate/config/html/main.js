@@ -868,44 +868,57 @@ function sendVol(_cmd) {
 
 async function setAmpVolume(_state) {
   sendCmd('main','brpi','vol'+_state).then((data) => { // GET request
-    const maxAmpData = 192;
-    let ampVol = Number(data.replace(/(\r\n|\n|\r)/gm, "")); // remove newlines, convert to number
-    if (!(isNaN(ampVol))) {
+    let vol = -1;
+    const maxAmpLevel = 192;
+    let amp_data = data.replace(/(\r\n|\n|\r)/gm, "");
+    if (!(amp_data == "" || amp_data == null)) {
       // re-map volume data to 0-100%, show volume pop-up
-      showVolumePopup(Math.round(mapNumber(ampVol,0,maxAmpData,0,100))); 
+      vol = Math.round(mapNumber(Number(amp_data), 0 , maxAmpLevel, 0, 100));
     }
+    showVolumePopup(vol); 
   });
 }
 
 function showVolumePopup(vol) {
   let elem = document.getElementById('vol-popup');
   let vol_text = document.getElementById('vol-text');
-  let vol_bar = document.getElementById('vol-bar1');
+  let vol_bar = document.getElementById('vol-bar');
+  let vol_cont = document.getElementById('vol-grid');
+  vol_cont.style.display = "none";
   // set volume pop-up text
-  if (vol == 0) {
-    vol_text.innerHTML = "Mute";
+  switch(vol) {
+    case -1:
+      vol_text.innerHTML = "---"
+      break;
+    case 0:
+      vol_text.innerHTML = "Mute";
+      break;     
+    default:
+      vol_text.innerHTML = vol + "%";
+      // show volume bar
+      vol_bar.style.width = vol + "%";
+      vol_cont.style.display = "block";
+  }
+  // allow only one window
+  if (elem.style.display === 'block') { 
+    return; 
   } else {
-    vol_text.innerHTML = vol + "%";
-  }
-  // set volume progress bar
-  vol_bar.style.width = vol + "%";
-  // make window visible
-  if (elem.style.display !== 'block') {
+    // make window visible
     elem.style.display = "block";
-    setTimeout(function(){
-      // hide after 3 seconds
-      elem.style.display = "none";
-    }, 3000);
   }
+  // hide after 3 seconds
+  setTimeout(function(){
+    elem.style.display = "none";
+  }, 3000);
 }
 
-function roomOnOff(action){
-   if (ctlCommand == 'lr'){
+function roomOnOff(action) {
+  if (ctlCommand == 'lr') {
     // living room
     sendCmd('main','lr' + action,'');
     return;
   }
-  if (ctlCommand == 'br'){
+  if (ctlCommand == 'br') {
     // bedroom
     sendCmd('main','br' + action,'');
     return;
@@ -914,11 +927,11 @@ function roomOnOff(action){
 
 function subModeToggle() {
   // toggle subwoofer mode
-  if (ctlCommand == 'subs' ){
+  if (ctlCommand == 'subs') {
     ctlsMenu('lr');
     return;
   }
-  if (ctlCommand != 'subs'){
+  if (ctlCommand != 'subs') {
     ctlsMenu('subs');
     return;
   } 

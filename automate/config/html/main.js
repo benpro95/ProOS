@@ -20,7 +20,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "10.4";
+let siteVersion = "10.5.2";
 
 //////////////////////
 
@@ -328,7 +328,8 @@ async function aboutPrompt(){
   aboutprompt.id= _winid;
   // title
   let abouttext = document.createElement("div");
-  abouttext.innerHTML = sysModel + " Controller";
+  abouttext.className = "about__title";
+  abouttext.innerHTML = sysModel;
   aboutprompt.appendChild(abouttext); 
   // logo
   let img = document.createElement("img");
@@ -339,20 +340,21 @@ async function aboutPrompt(){
   let currentDate = new Date();
   let currentYear = currentDate.getFullYear();
   let aboutdets2 = document.createElement("div"); 
-  aboutdets2.innerHTML = "v" + siteVersion + " (" + currentYear + ")";
+  aboutdets2.innerHTML = "Version " + siteVersion;
   aboutdets2.className = "about__text";
   aboutprompt.appendChild(aboutdets2);
   // author details
   let aboutdets1 = document.createElement("div"); 
-  aboutdets1.innerHTML = "by Ben Provenzano III";
+  aboutdets1.innerHTML = currentYear + " © Ben Provenzano III";
   aboutdets1.className = "about__text";
   aboutprompt.appendChild(aboutdets1); 
   // cancel button
   let aboutcancelb = document.createElement("button");
-  aboutcancelb.innerHTML = "Close";
-  aboutcancelb.className ="button"; 
+  aboutcancelb.type = "button"; 
+  aboutcancelb.classList.add("button");
+  aboutcancelb.classList.add("fas");
+  aboutcancelb.classList.add("fa-times");
   aboutcancelb.id = "about__btn";
-  aboutcancelb.type="button"; 
   aboutprompt.appendChild(aboutcancelb); //append cancel-button
   document.body.appendChild(aboutprompt); //append the password-prompt so it gets visible
   new Promise(function(resolve, reject) {

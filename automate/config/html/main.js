@@ -56,11 +56,25 @@ function handleClicks(event) {
   }
 }
 
-// hide all dropdowns //
 function hideDropdowns(eraseDynMenus) {
+  // hide all dropdown menus
   classDisplay("dd-content","none");
-  // hide bookmark menus
-  hideBookmarks();
+  // close bookmark window
+  closeBookmarkPrompt();
+  // hide bookmark edit/add buttons
+  classDisplay("bookmark-buttons","none");
+  // disable bookmark edit mode
+  const elem = document.getElementById("bookmarks");
+  if (elem) {
+    elem.classList.remove("bookmark-editmode");
+  }
+  // remove bookmark search button
+  const search = document.getElementById("bookmark__search");
+  if (search) {
+    search.remove();
+  }
+  // reset bookmarks flag 
+  bookmarkState = BKM_INACTIVE;
   // remove dynamic menus
   if (eraseDynMenus === true) {
     removeDynMenus();
@@ -1012,32 +1026,33 @@ function scrollToBottom() {
 
 //// Bookmarks Menu ////
 
-function hideBookmarks() {
-  // close edit / add window
-  closeBookmarkPrompt();
-  // hide bookmark edit/add buttons
-  classDisplay("bookmark-buttons","none");
-  // reset color of menu
-  const elem = document.getElementById("bookmarks");
-  if (elem) {
-    elem.classList.remove("bookmark-editmode");
-  }
-  // reset bookmarks state flag 
-  bookmarkState = BKM_INACTIVE;
-}
-
 function showBookmarks() {
   // hide menu if clicked while open
   if (bookmarkState !== BKM_INACTIVE) {
     hideDropdowns(true);
     return;
   }
-  // draw menu
+  // draw bookmarks
   showDynMenu('bookmarks');
   // show add / edit buttons
   classDisplay("bookmark-buttons","block");
   // link open mode
   bookmarkState = BKM_OPEN_MODE;
+}
+
+function showBookmarkSearch() {
+  const elem = document.getElementById("bookmarks");
+  if (elem) { 
+    let searchBox = document.createElement("input"); 
+    searchBox.type = "text";
+    searchBox.value = "";
+    searchBox.placeholder = "Search...";
+    searchBox.autocorrect = "off";
+    searchBox.autocapitalize = "none"; 
+    searchBox.id = "bookmark__search";
+    searchBox.classList.add('bookmarked__item');
+    elem.appendChild(searchBox);
+  }
 }
 
 function editBookmark() {
@@ -1558,6 +1573,9 @@ function showDynMenu(menu,tobtm) {
     // build URL / append data
     const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+menu+"&action=read";
     menuDataGET(url).then((data) => { // wait for response
+      if (menu === 'bookmarks') {
+        showBookmarkSearch();
+      }
       drawMenu(data,menu,tobtm);
     });  
     async function menuDataGET(url) {

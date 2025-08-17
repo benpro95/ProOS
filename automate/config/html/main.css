@@ -465,8 +465,8 @@ input.chkbox {
 
 #bookmarks {
   overflow-x: hidden;
-  overflow-y: scroll;
-  height: 90vh;
+  max-height: 95vh;
+  height: auto;
 }
 
 #bookmarks::-webkit-scrollbar-track {
@@ -484,8 +484,10 @@ input.chkbox {
 }
 
 #bookmark__sbox {
-  width: 100%;
-  height: 100%;
+  margin-bottom: 5px;
+  margin-left: 18px;
+  width: auto;
+  height: 40px;
 }
 
 /*

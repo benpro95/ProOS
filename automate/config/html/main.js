@@ -47,7 +47,6 @@ function handleClicks(event) {
         event.target.classList.contains('button__text') || // button text click
         event.target.classList.contains('nohide__click') || // button text click
         event.target.classList.contains('bookmarked__item') || // bookmark menu click
-        event.target.classList.contains('bookmark__search') || // bookmark search click
         event.target.classList.contains('fas') || // solid icon clicks
         event.target.classList.contains('fad') || // duotone icon clicks
         event.target.classList.contains('fab') || // brand icon clicks
@@ -1043,48 +1042,69 @@ function showBookmarks() {
 
 function showBookmarkSearch() {
   const elem = document.getElementById("bookmarks");
-  if (elem) { 
+  if (elem) {
+    // draw text input box
     let searchBox = document.createElement("input"); 
-    searchBox.value = "";
     searchBox.type = "text";
-    searchBox.placeholder = "Search...";
     searchBox.autocorrect = "off";
     searchBox.autocapitalize = "none"; 
+    searchBox.placeholder = "Type here...";
     searchBox.classList.add('nohide__click');
     searchBox.id = 'bookmark__sbox';
-    let searchMenu = document.createElement('a');
-    searchMenu.id = "bookmark__search";
-    searchMenu.appendChild(searchBox);
-    elem.appendChild(searchMenu);
+    // draw menu container 
+    let searchMenuItem = document.createElement('a');
+    searchMenuItem.id = "bookmark__search";
+    searchMenuItem.classList.add('nohide__click');
+    // draw search icon
+    let searchIcon = document.createElement("div");
+    searchIcon.id = "bookmark__search_icon";
+    showBookmarkSearchIcon(searchIcon);
+    // add objects to window
+    searchMenuItem.appendChild(searchIcon);
+    searchMenuItem.appendChild(searchBox);
+    elem.appendChild(searchMenuItem);
+    // focus keyboard on search text box
     searchBox.focus();
     new Promise(function() {
       // add input listener
-      searchMenu.addEventListener('input', function searchInputListener(e) {
+      searchMenuItem.addEventListener('input', function searchInputListener(e) {
         filterBookmarkItems(searchBox.value);
         // cleanup listener
         if (e.target.tagName !== 'INPUT') { return; }
-        searchMenu.removeEventListener('click', searchInputListener); 
+        searchMenuItem.removeEventListener('click', searchInputListener); 
       });
     });
   }
 }
 
+function showBookmarkSearchIcon(searchIcon) {
+  searchIcon.className = "";
+  searchIcon.classList.add("fad");
+  searchIcon.classList.add("fa-search");
+}
+
+function showCancelSearchIcon(searchIcon) {
+  searchIcon.className = "";
+  searchIcon.classList.add("fad");
+  searchIcon.classList.add("fa-times");
+}
+
 function filterBookmarkItems(termIn) {
-  const bookmarks = document.getElementById("bookmarks");
-  if (!bookmarks) {
-    return;
-  }
+  showCancelSearchIcon(document.getElementById("bookmark__search_icon"));
   const searchTerm = termIn.toLowerCase();
-  [...bookmarks.getElementsByClassName('bookmarked__item')].forEach(elem => {
-    if (elem) {
-      const bookmarkText = elem.textContent.toLowerCase();
-      if (bookmarkText.includes(searchTerm)) {
-        elem.style.display = 'list-item';
-      } else {
-        elem.style.display = 'none';
+  const bookmarks = document.getElementById("bookmarks");
+  if (bookmarks) {
+    [...bookmarks.getElementsByClassName('bookmarked__item')].forEach(elem => {
+      if (elem) {
+        const bookmarkText = elem.textContent.toLowerCase();
+        if (bookmarkText.includes(searchTerm)) {
+          elem.style.display = 'list-item';
+        } else {
+          elem.style.display = 'none';
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 function removeBookmarkSearch() {

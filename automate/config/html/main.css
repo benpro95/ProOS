@@ -484,18 +484,17 @@ input.chkbox {
 }
 
 #bookmark__search {
-  height: 60px;
-}
-
-#bookmark__search_txt {
-  margin-left: 18px;
-  height: auto;
-  width: auto;
+  display: inline-flex;
+  width: min-content;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
 }
 
 #bookmark__search_icon {
   text-align: center;
-  width: 25px;
+  margin-right: 16px;
 }
 
 /*

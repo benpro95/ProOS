@@ -1048,9 +1048,9 @@ function showBookmarkSearch() {
     searchBox.type = "text";
     searchBox.autocorrect = "off";
     searchBox.autocapitalize = "none"; 
-    searchBox.placeholder = "Type here...";
+    searchBox.placeholder = "Search here...";
     searchBox.classList.add('nohide__click');
-    searchBox.id = 'bookmark__sbox';
+    searchBox.id = 'bookmark__search_txt';
     // draw menu container 
     let searchMenuItem = document.createElement('a');
     searchMenuItem.id = "bookmark__search";
@@ -1067,31 +1067,34 @@ function showBookmarkSearch() {
     searchBox.focus();
     new Promise(function() {
       // add input listener
-      searchMenuItem.addEventListener('input', function searchInputListener(e) {
+      searchMenuItem.addEventListener('input', function searchInputListener(a) {
         filterBookmarkItems(searchBox.value);
         // cleanup listener
-        if (e.target.tagName !== 'INPUT') { return; }
+        if (a.target.tagName !== 'INPUT') { return; }
         searchMenuItem.removeEventListener('click', searchInputListener); 
+      });
+      // search icon button listener
+      searchMenuItem.addEventListener('click', function handleSearchButtonClick(b) {
+        // reset search
+        filterBookmarkItems("");
+        searchBox.value = "";
+        searchBox.focus();
+        // cleanup listener
+        if (b.target.tagName !== 'BUTTON') { return; }
+        searchMenuItem.removeEventListener('click', handleSearchButtonClick);
       });
     });
   }
 }
 
-function showBookmarkSearchIcon(searchIcon) {
-  searchIcon.className = "";
-  searchIcon.classList.add("fad");
-  searchIcon.classList.add("fa-search");
-}
-
-function showCancelSearchIcon(searchIcon) {
-  searchIcon.className = "";
-  searchIcon.classList.add("fad");
-  searchIcon.classList.add("fa-times");
-}
-
 function filterBookmarkItems(termIn) {
-  showCancelSearchIcon(document.getElementById("bookmark__search_icon"));
   const searchTerm = termIn.toLowerCase();
+  const searchIcon = document.getElementById("bookmark__search_icon")
+  if (searchTerm === "") {
+    showBookmarkSearchIcon(searchIcon);
+  } else {
+    showCancelSearchIcon(searchIcon);
+  }
   const bookmarks = document.getElementById("bookmarks");
   if (bookmarks) {
     [...bookmarks.getElementsByClassName('bookmarked__item')].forEach(elem => {
@@ -1107,13 +1110,25 @@ function filterBookmarkItems(termIn) {
   }
 }
 
+function showBookmarkSearchIcon(searchIcon) {
+  searchIcon.className = "";
+  searchIcon.classList.add("fad");
+  searchIcon.classList.add("fa-search");
+}
+
+function showCancelSearchIcon(searchIcon) {
+  searchIcon.className = "";
+  searchIcon.classList.add("fas");
+  searchIcon.classList.add("fa-times");
+}
+
 function removeBookmarkSearch() {
   const search = document.getElementById("bookmark__search");
-  const search_txt = document.getElementById("bookmark__sbox");
-  if (search && search_txt) {
-    search.remove();
-    search_txt.remove();
-  }
+  const search_txt = document.getElementById("bookmark__search_txt");
+  const search_icon = document.getElementById("bookmark__search_icon")
+  if (search_icon) { search_icon.remove(); }
+  if (search_txt) { search_txt.remove(); }
+  if (search) { search.remove(); }
 }
 
 function editBookmark() {

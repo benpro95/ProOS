@@ -483,11 +483,19 @@ input.chkbox {
   width: 5px;
 }
 
-#bookmark__sbox {
-  margin-bottom: 5px;
+#bookmark__search {
+  height: 60px;
+}
+
+#bookmark__search_txt {
   margin-left: 18px;
+  height: auto;
   width: auto;
-  height: 40px;
+}
+
+#bookmark__search_icon {
+  text-align: center;
+  width: 25px;
 }
 
 /*

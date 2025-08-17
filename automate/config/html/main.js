@@ -49,7 +49,6 @@ function handleClicks(event) {
         event.target.classList.contains('fas') || // solid icon clicks
         event.target.classList.contains('fad') || // duotone icon clicks
         event.target.classList.contains('fab') || // brand icon clicks
-        event.target.classList.contains('am-spinner') || // spinner clicks
         event.target.classList.contains('dropbtn') || // dropdown button click
         event.target.classList.contains('chkbox'))) { // checkbox click
     hideDropdowns(true); // hide all dropdown menus
@@ -371,7 +370,7 @@ async function aboutPrompt(){
   aboutcancelb.id = "about__btn";
   aboutprompt.appendChild(aboutcancelb); //append cancel-button
   document.body.appendChild(aboutprompt); //append the password-prompt so it gets visible
-  new Promise(function(resolve, reject) {
+  new Promise(function() {
     aboutprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
       if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
       aboutprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
@@ -594,7 +593,7 @@ async function piWiFiPrompt(_winid){
   // focus on SSID text box
   pinetssidbox.focus();
   // control logic
-  return new Promise(function(resolve, reject) {
+  return new Promise(function(resolve) {
   	function cancelWiFi(){
   		pinetssidbox.value = "";
   		pinetpassbox.value = "";
@@ -669,7 +668,7 @@ async function wifiPrompt(){
   wificancelb.id = "wifipmt__btn";
   wifiprompt.appendChild(wificancelb);
   document.body.appendChild(wifiprompt);
-  new Promise(function(resolve, reject) {
+  new Promise(function() {
       wifiprompt.addEventListener('click', function handleButtonClicks(e) {
         if (e.target.tagName !== 'BUTTON') { return; }
           wifiprompt.removeEventListener('click', handleButtonClicks);
@@ -784,7 +783,7 @@ async function colorPrompt(){
   // append the password-prompt so it is visible
   document.body.appendChild(colorprompt); 
   let _colorval;
-  new Promise(function(resolve, reject) {
+  new Promise(function() {
       colorinput.addEventListener('input', function () {
         _colorval = colorinput.value; // save color values
       });
@@ -1044,14 +1043,21 @@ function showBookmarkSearch() {
   const elem = document.getElementById("bookmarks");
   if (elem) { 
     let searchBox = document.createElement("input"); 
-    searchBox.type = "text";
     searchBox.value = "";
+    searchBox.type = "text";
     searchBox.placeholder = "Search...";
     searchBox.autocorrect = "off";
     searchBox.autocapitalize = "none"; 
     searchBox.id = "bookmark__search";
     searchBox.classList.add('bookmarked__item');
-    elem.appendChild(searchBox);
+    let boxMenuItem = document.createElement('a');
+    boxMenuItem.appendChild(searchBox);
+    elem.appendChild(boxMenuItem);
+    new Promise(function() {
+      elem.addEventListener('input', function () {
+        console.log(searchBox.value);
+      });
+    });
   }
 }
 
@@ -1221,7 +1227,7 @@ async function drawBookmarkPrompt(add,url,name,elem){
   // display window on page
   document.body.appendChild(editFavPrompt);
   // handle button actions
-  new Promise(function(resolve, reject) {
+  new Promise(function() {
     editFavPrompt.addEventListener('click', function handleButtonClicks(e) { 
     if (e.target.tagName !== 'BUTTON') { return; }
       // move up button action

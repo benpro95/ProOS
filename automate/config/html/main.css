@@ -465,7 +465,7 @@ input.chkbox {
 
 #bookmarks {
   overflow-x: hidden;
-  max-height: 95vh;
+  max-height: 75vh;
   height: auto;
 }
 
@@ -490,6 +490,20 @@ input.chkbox {
   flex-direction: row;
   justify-content: space-evenly;
   align-items: center;
+  margin: 0;
+}
+
+#bookmark__search_txt {
+  color: white;
+  background-color: color-mix(in srgb, var(--main-color) 40%, black);
+  border: 3px solid black;
+}
+#bookmark__search_txt::placeholder {
+  color: rgb(193, 193, 193);
+}
+#bookmark__search_txt:focus {
+  outline: 3px solid color-mix(in srgb, var(--main-color) 50%, white);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--main-color) 50%, white);
 }
 
 #bookmark__search_icon {

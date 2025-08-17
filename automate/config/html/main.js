@@ -45,7 +45,9 @@ function handleClicks(event) {
   // don't hide menus when clicking these elements
   if (!(event.target.classList.contains('button') || // button click
         event.target.classList.contains('button__text') || // button text click
+        event.target.classList.contains('nohide__click') || // button text click
         event.target.classList.contains('bookmarked__item') || // bookmark menu click
+        event.target.classList.contains('bookmark__search') || // bookmark search click
         event.target.classList.contains('fas') || // solid icon clicks
         event.target.classList.contains('fad') || // duotone icon clicks
         event.target.classList.contains('fab') || // brand icon clicks
@@ -67,11 +69,8 @@ function hideDropdowns(eraseDynMenus) {
   if (elem) {
     elem.classList.remove("bookmark-editmode");
   }
-  // remove bookmark search button
-  const search = document.getElementById("bookmark__search");
-  if (search) {
-    search.remove();
-  }
+    // remove bookmark search menu
+  removeBookmarkSearch();
   // reset bookmarks flag 
   bookmarkState = BKM_INACTIVE;
   // remove dynamic menus
@@ -784,8 +783,11 @@ async function colorPrompt(){
   document.body.appendChild(colorprompt); 
   let _colorval;
   new Promise(function() {
-      colorinput.addEventListener('input', function () {
+      colorinput.addEventListener('input', function colorEventListener() {
         _colorval = colorinput.value; // save color values
+        // cleanup listener
+        if (e.target.tagName !== 'INPUT') { return; }
+        colorinput.removeEventListener('click', colorEventListener); 
       });
       colorprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
         if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
@@ -1048,16 +1050,45 @@ function showBookmarkSearch() {
     searchBox.placeholder = "Search...";
     searchBox.autocorrect = "off";
     searchBox.autocapitalize = "none"; 
-    searchBox.id = "bookmark__search";
-    searchBox.classList.add('bookmarked__item');
-    let boxMenuItem = document.createElement('a');
-    boxMenuItem.appendChild(searchBox);
-    elem.appendChild(boxMenuItem);
+    searchBox.classList.add('nohide__click');
+    searchBox.id = 'bookmark__sbox';
+    let searchMenu = document.createElement('a');
+    searchMenu.id = "bookmark__search";
+    searchMenu.appendChild(searchBox);
+    elem.appendChild(searchMenu);
+    searchBox.focus();
     new Promise(function() {
-      elem.addEventListener('input', function () {
-        console.log(searchBox.value);
+      // add input listener
+      searchMenu.addEventListener('input', function searchInputListener(e) {
+        filterBookmarkItems(searchBox.value);
+        // cleanup listener
+        if (e.target.tagName !== 'INPUT') { return; }
+        searchMenu.removeEventListener('click', searchInputListener); 
       });
     });
+  }
+}
+
+function filterBookmarkItems(termIn) {
+  const searchTerm = termIn.toLowerCase();
+  [...document.getElementsByClassName('bookmarked__item')].forEach(elem => {
+    if (elem) {
+      const bookmarkText = elem.textContent.toLowerCase();
+      if (bookmarkText.includes(searchTerm)) {
+        elem.style.display = 'list-item';
+      } else {
+        elem.style.display = 'none';
+      }
+    }
+  });
+}
+
+function removeBookmarkSearch() {
+  const search = document.getElementById("bookmark__search");
+  const search_txt = document.getElementById("bookmark__sbox");
+  if (search && search_txt) {
+    search.remove();
+    search_txt.remove();
   }
 }
 
@@ -1104,6 +1135,7 @@ function addBookmark() {
   });
   // highlight selected item
   _elm.classList.add("dd-selected");
+  // insert item below 
   navElement.insertBefore(_elm,navElement.firstChild);
   // add new window
   drawBookmarkPrompt(true,null,null,_elm);
@@ -1113,7 +1145,9 @@ function enableEditAddMode() {
   const elem = document.getElementById("bookmarks");
   if (elem) { // change color of menu
     elem.classList.add("bookmark-editmode");
-  } 
+  }
+  // remove 
+  removeBookmarkSearch();
   bookmarkState = BKM_EDIT_MODE;
   closeBookmarkPrompt();
 }
@@ -1380,7 +1414,7 @@ function saveBookmarks() {
       // build output file
       _file += url + "|bkmrk|" + name + "\n";
     }
-  })
+  });
   // transmit file
   savePOST('bookmarks',[_file]);
 }

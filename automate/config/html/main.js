@@ -1070,8 +1070,12 @@ function showBookmarkSearch() {
 }
 
 function filterBookmarkItems(termIn) {
+  const bookmarks = document.getElementById("bookmarks");
+  if (!bookmarks) {
+    return;
+  }
   const searchTerm = termIn.toLowerCase();
-  [...document.getElementsByClassName('bookmarked__item')].forEach(elem => {
+  [...bookmarks.getElementsByClassName('bookmarked__item')].forEach(elem => {
     if (elem) {
       const bookmarkText = elem.textContent.toLowerCase();
       if (bookmarkText.includes(searchTerm)) {
@@ -1406,8 +1410,12 @@ function shiftMenuDown(elem) {
 
 function saveBookmarks() {
   let _file = "";
+  const bookmarks = document.getElementById("bookmarks");
+  if (!bookmarks) {
+    return;
+  }
   // loop through edited bookmarks
-  [...document.getElementsByClassName('bookmarked__item')].forEach(elem => {
+  [...bookmarks.getElementsByClassName('bookmarked__item')].forEach(elem => {
     if (elem) {
       const url = Object.values(elem.url).join("");
       const name = elem.innerText;

@@ -20,7 +20,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "10.5.2";
+let siteVersion = "10.5.3";
 
 //////////////////////
 
@@ -45,12 +45,11 @@ function handleClicks(event) {
   // don't hide menus when clicking these elements
   if (!(event.target.classList.contains('button') || // button click
         event.target.classList.contains('button__text') || // button text click
-        event.target.classList.contains('nohide__click') || // button text click
+        event.target.classList.contains('nohide__click') || // no-hide click class
         event.target.classList.contains('bookmarked__item') || // bookmark menu click
         event.target.classList.contains('fas') || // solid icon clicks
         event.target.classList.contains('fad') || // duotone icon clicks
         event.target.classList.contains('fab') || // brand icon clicks
-        event.target.classList.contains('dropbtn') || // dropdown button click
         event.target.classList.contains('chkbox'))) { // checkbox click
     hideDropdowns(true); // hide all dropdown menus
   }
@@ -59,18 +58,14 @@ function handleClicks(event) {
 function hideDropdowns(eraseDynMenus) {
   // hide all dropdown menus
   classDisplay("dd-content","none");
-  // close bookmark window
-  closeBookmarkPrompt();
-  // hide bookmark edit/add buttons
+  // hide / reset bookmarks menu
   classDisplay("bookmark-buttons","none");
-  // disable bookmark edit mode
   const elem = document.getElementById("bookmarks");
   if (elem) {
     elem.classList.remove("bookmark-editmode");
   }
-    // remove bookmark search menu
   removeBookmarkSearch();
-  // reset bookmarks flag 
+  closeBookmarkPrompt();
   bookmarkState = BKM_INACTIVE;
   // remove dynamic menus
   if (eraseDynMenus === true) {
@@ -108,6 +103,28 @@ function GoToExtPage(_path) {
 function mapNumber(num, inMin, inMax, outMin, outMax) {
   return (num - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 }
+
+function detectOS() {
+	let userAgent = window.navigator.userAgent,
+		platform = window.navigator.platform,
+		macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+		windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
+		iosPlatforms = ['iPhone', 'iPad', 'iPod'],
+		os = null;
+	if (macosPlatforms.indexOf(platform) !== -1) {
+		os = 'MacOS';
+	} else if (iosPlatforms.indexOf(platform) !== -1) {
+		os = 'iOS';
+	} else if (windowsPlatforms.indexOf(platform) !== -1) {
+		os = 'Windows';
+	} else if (/Android/.test(userAgent)) {
+		os = 'Android';
+	} else if (!os && /Linux/.test(platform)) {
+		os = 'Linux';
+	}
+	return os;
+}
+
 
 // back to home page 
 function GoToHomePage() {
@@ -162,22 +179,21 @@ function loadPage() {
 
 function enableAnimatedStars() {
   const avalRAM = navigator.deviceMemory;
-  const iOS = /^(iPhone|iPad|iPod)/.test(navigator.platform);
-  if (iOS === false) {
-    if (avalRAM >= 2) { // GT 2GB of RAM 
-      setTimeout(function() {
-        // start stars animation 
-        starsAnimation(true);
-        // pause stars animation on window resize
-        window.addEventListener("resize", function() {
-          resizeEvent(); // on window resize
-        });
-      }, resizeTimeout);
-    } else {
-      console.log('stars disabled < 2GB RAM');
-    }
+  const deviceOS = detectOS();
+  if (deviceOS === 'Windows' || 
+      deviceOS === 'MacOS' || 
+      deviceOS === 'Android' && 
+      avalRAM >= 2 ) { // more than 2GB of RAM 
+        setTimeout(function() {
+          // start stars animation 
+          starsAnimation(true);
+          // pause stars animation on window resize
+          window.addEventListener("resize", function() {
+            resizeEvent(); // on window resize
+          });
+        }, resizeTimeout);
   } else {
-    console.log('stars disabled on iOS');
+    console.log('stars disabled on iOS and Linux or less than 2GB of RAM');
   }
 }
 

@@ -96,7 +96,7 @@ function checkElemIsVisibleByID(id){
 
 // open URL in new tab
 function GoToExtPage(_path) {
-  let url = "https://"+_path;   
+  let url = "https://" + _path;   
   window.open(url, "_blank");
 }
 

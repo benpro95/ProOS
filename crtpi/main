@@ -1,0 +1,19 @@
+#!/bin/bash
+
+## Read Command-Line Arguments
+ARG1=$1
+ARG2=$2
+
+case "$1" in
+
+boot)
+exit
+;;
+	    
+*)
+  if [ "$ARG1" == "" ]; then
+    echo "Enter valid command."
+  fi
+  exit
+  ;;
+esac

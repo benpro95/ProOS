@@ -23,6 +23,11 @@ body {
   height: 100%;
 }
 
+.fa {
+  border: none;
+  outline: none;
+}
+
 /*
  *  Main scrollbar style
  */

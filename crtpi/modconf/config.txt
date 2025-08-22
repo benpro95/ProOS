@@ -32,6 +32,8 @@ dtparam=audio=on
 #-------Composite Video Output-------
 hdmi_ignore_hotplug=1
 sdtv_mode=2
+sdtv_aspect=1
+enable_tvout=1
 
 #-------Hardware interfaces-------
 dtparam=i2c_arm=off

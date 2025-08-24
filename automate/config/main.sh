@@ -1,6 +1,6 @@
 #!/bin/bash
 ###########################################################
-## Main Home Automation Script by Ben Provenzano III v33 ##
+## Main Home Automation Script by Ben Provenzano III v35 ##
 ###########################################################
 
 DELIM="|"
@@ -339,20 +339,6 @@ case "$CMD_IN" in
 esac
 }
 
-function LIGHTS_OFF(){
-  ## Window Lamp
-  CALLPICO "$PICOLAMP1_IP" "wl_led1off"
-  ## Dresser Lamp
-  BRXMIT "brlamp1off"
-}
-
-function LIGHTS_ON(){
-  ## Window Lamp
-  CALLPICO "$PICOLAMP1_IP" "wl_led1on"
-  ## Dresser Lamp
-  BRXMIT "brlamp1on"
-}
-
 ########################
 
 ## Read command line arguments
@@ -361,28 +347,21 @@ SECOND_ARG="${2//$'\n'/}"
 
 case "$FIRST_ARG" in
 
-## Desktop Keyboard F1,F2 ##
-
-mainon)
-## Window Lamp
-CALLPICO "$PICOLAMP1_IP" "wl_led1on"
-exit
-;;
-
-mainoff)
-LIGHTS_OFF
-exit
-;;
-
 ## All Lights ##
 
 lightson)
-LIGHTS_ON
+## Window Lamp
+CALLPICO "$PICOLAMP1_IP" "wl_led1on"
+## Dresser Lamp
+BRXMIT "brlamp1on"
 exit
 ;;
 
 lightsoff)
-LIGHTS_OFF
+## Window Lamp
+CALLPICO "$PICOLAMP1_IP" "wl_led1off"
+## Dresser Lamp
+BRXMIT "brlamp1off"
 ## Blank LEDwalls
 /opt/system/leds stop
 exit
@@ -420,7 +399,7 @@ CALLAPI "$BRPC_IP" "sleep" ""
 exit
 ;;
 
-## Living Room Power ##
+## Living Room ##
 
 lron)
 ## Window Lamp
@@ -443,6 +422,20 @@ CALLPICO "$PICOLAMP1_IP" "wl_led1off"
 LRXMIT "wkststateoff"
 ## Main Room Audio
 LRXMIT "hifistateoff"
+exit
+;;
+
+lrlightson)
+## Window Lamp
+CALLPICO "$PICOLAMP1_IP" "wl_led1on"
+exit
+;;
+
+lrlightsoff)
+## Window Lamp
+CALLPICO "$PICOLAMP1_IP" "wl_led1off"
+## Blank LEDwalls
+/opt/system/leds stop
 exit
 ;;
 

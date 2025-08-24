@@ -4,19 +4,19 @@
 ^!Tab::Return
 
 F1::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=mainoff&var=&action=main https://automate.home/exec.php, , hide
+Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lrlightsoff&var=&action=main https://automate.home/exec.php, , hide
 return
 
 ^F1::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=alloff&var=&action=main https://automate.home/exec.php, , hide
+Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lroff&var=&action=main https://automate.home/exec.php, , hide
 return
 
 F2::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=mainon&var=&action=main https://automate.home/exec.php, , hide
+Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lrlightson&var=&action=main https://automate.home/exec.php, , hide
 return
 
 ^F2::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=allon&var=&action=main https://automate.home/exec.php, , hide
+Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lron&var=&action=main https://automate.home/exec.php, , hide
 return
 
 F3::
@@ -31,14 +31,20 @@ return
 Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=stop&var=&action=leds https://automate.home/exec.php, , hide
 return
 
+;; Mouse Control ################
+
+F4::
+Run, PowerShell.exe -ExecutionPolicy Bypass -File "C:\Program Files\Automate\mouse_acc.ps1"
+return
+
 ;; Monitor Control ################
 
 ^F5::
-Run, "C:\Program Files\Automate\p2p-off.bat", , hide
+Run, "C:\Program Files\Automate\p2p-off.bat"
 return
 
 !F5::
-Run, "C:\Program Files\Automate\p2p-on.bat", , hide
+Run, "C:\Program Files\Automate\p2p-on.bat"
 return
 
 ;; Mute ################

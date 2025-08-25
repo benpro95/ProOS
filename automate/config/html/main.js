@@ -20,7 +20,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "10.5.3";
+let siteVersion = "10.5.4";
 
 //////////////////////
 
@@ -372,7 +372,7 @@ async function aboutPrompt(){
   aboutprompt.appendChild(aboutdets2);
   // author details
   let aboutdets1 = document.createElement("div"); 
-  aboutdets1.innerHTML = currentYear + " © Ben Provenzano III";
+  aboutdets1.innerHTML = currentYear + " - Ben Provenzano III";
   aboutdets1.className = "about__text";
   aboutprompt.appendChild(aboutdets1); 
   // cancel button

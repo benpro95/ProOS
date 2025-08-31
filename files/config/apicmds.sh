@@ -308,10 +308,8 @@ then
           else
             echo "syncing 'Data' share to $POOL drive..."
             rsync $CHECKSUM -aP \
-            --exclude="Games/" --exclude="Software/**HD.img" \
-            --exclude="Software/**VM.7z" --exclude="Software/**VM.zip" \
-            --exclude="Software/**HD.7z" --exclude="Software/**HD.zip" \
-            --exclude="Software/**.adi" --exclude="Software/**.vmdk" \
+            --exclude="**HD.img" --exclude="**HD.7z" --exclude="**HD.zip" \
+            --exclude="**VM.7z" --exclude="**VM.zip" --exclude="Consoles/" \
             /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
           fi
           #### Regions Share ####

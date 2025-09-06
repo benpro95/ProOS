@@ -32,19 +32,19 @@ body {
  *  Main scrollbar style
  */
 
-.scroll-bar::-webkit-scrollbar-track
+.scroll-bar-style::-webkit-scrollbar-track
 {
   background-color: #000;
   border-radius: 6px;
 }
 
-.scroll-bar::-webkit-scrollbar-thumb
+.scroll-bar-style::-webkit-scrollbar-thumb
 {
   background-color: color-mix(in srgb, var(--main-color) 70%, white);
   border-radius: 6px;  
 }
 
-.scroll-bar::-webkit-scrollbar
+.scroll-bar-style::-webkit-scrollbar
 {
   width: 6px;
 }

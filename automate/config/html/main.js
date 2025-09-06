@@ -6,11 +6,11 @@ let ctlMode;
 let ctlCommand;
 let selectedVM = "";
 let dynMenuActive = 0;
-let resizeState = false;
+let bookmarkState = 0;
 const BKM_INACTIVE = 0;
 const BKM_OPEN_MODE = 1;
 const BKM_EDIT_MODE = 2;
-let bookmarkState = 0;
+let resizeState = false;
 let serverCmdData;
 let socket = null;
 let fileData = [];
@@ -20,7 +20,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "10.5.4";
+let siteVersion = "10.5.6";
 
 //////////////////////
 
@@ -104,28 +104,6 @@ function mapNumber(num, inMin, inMax, outMin, outMax) {
   return (num - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 }
 
-function detectOS() {
-	let userAgent = window.navigator.userAgent,
-		platform = window.navigator.platform,
-		macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
-		windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
-		iosPlatforms = ['iPhone', 'iPad', 'iPod'],
-		os = null;
-	if (macosPlatforms.indexOf(platform) !== -1) {
-		os = 'MacOS';
-	} else if (iosPlatforms.indexOf(platform) !== -1) {
-		os = 'iOS';
-	} else if (windowsPlatforms.indexOf(platform) !== -1) {
-		os = 'Windows';
-	} else if (/Android/.test(userAgent)) {
-		os = 'Android';
-	} else if (!os && /Linux/.test(platform)) {
-		os = 'Linux';
-	}
-	return os;
-}
-
-
 // back to home page 
 function GoToHomePage() {
   if (sysModel === serverSite) {
@@ -177,23 +155,45 @@ function loadPage() {
   enableAnimatedStars();
 }
 
+function detectOS() {
+	let userAgent = window.navigator.userAgent,
+		platform = window.navigator.platform,
+		macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+		windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
+		iosPlatforms = ['iPhone', 'iPad', 'iPod'],
+		os = null;
+	if (macosPlatforms.indexOf(platform) !== -1) {
+		os = 'MacOS';
+	} else if (iosPlatforms.indexOf(platform) !== -1) {
+		os = 'iOS';
+	} else if (windowsPlatforms.indexOf(platform) !== -1) {
+		os = 'Windows';
+	} else if (/Android/.test(userAgent)) {
+		os = 'Android';
+	} else if (!os && /Linux/.test(platform)) {
+		os = 'Linux';
+	}
+	return os;
+}
+
 function enableAnimatedStars() {
   const avalRAM = navigator.deviceMemory;
-  const deviceOS = detectOS();
-  if (deviceOS === 'Windows' || 
-      deviceOS === 'MacOS' || 
-      deviceOS === 'Android' && 
-      avalRAM >= 2 ) { // more than 2GB of RAM 
-        setTimeout(function() {
-          // start stars animation 
-          starsAnimation(true);
-          // pause stars animation on window resize
-          window.addEventListener("resize", function() {
-            resizeEvent(); // on window resize
-          });
-        }, resizeTimeout);
+  if (avalRAM >= 2 ) { // more than 2GB of RAM
+    const deviceOS = detectOS();
+    if (deviceOS === 'Windows' || deviceOS === 'MacOS') {
+      setTimeout(function() {
+        // start stars animation 
+        starsAnimation(true);
+        // pause stars animation on window resize
+        window.addEventListener("resize", function() {
+          resizeEvent(); // on window resize
+        });
+      }, resizeTimeout);
+    } else {
+      console.log('stars disabled on iOS and Linux');
+    }
   } else {
-    console.log('stars disabled on iOS and Linux or less than 2GB of RAM');
+    console.log('stars disabled, less than 2GB of RAM');
   }
 }
 

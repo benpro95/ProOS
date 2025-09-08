@@ -2,6 +2,13 @@
 ### AutoConfig - for Bedroom Lenovo ThinkCentre PC
 ### by Ben Provenzano III
 
+## Add Google Chrome Source
+if [ ! -e /etc/apt/sources.list.d/google-chrome.list ]; then
+  echo "Adding Google Chrome Repo..."
+  curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg
+  echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list
+fi
+
 ## Update Sources
 apt-get --yes update
 
@@ -9,7 +16,7 @@ apt-get --yes update
 apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates htop \
  apt-transport-https wget unzip gnupg rsync curl screen ethtool libdbus-1-dev \
  libdbus-glib-1-dev locales gnupg scrub binutils avahi-daemon kodi autofs \
- cifs-utils playerctl triggerhappy
+ cifs-utils playerctl triggerhappy google-chrome-stable
 
 ## SSH Configuration
 cp -f /tmp/config/sshd_config /etc/ssh/

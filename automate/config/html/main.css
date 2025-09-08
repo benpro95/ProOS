@@ -23,11 +23,6 @@ body {
   height: 100%;
 }
 
-.fa {
-  border: none;
-  outline: none;
-}
-
 /*
  *  Main scrollbar style
  */
@@ -50,7 +45,8 @@ body {
 }
 
 .parstd {
-	border: 0px;
+	border: none;
+  outline: none;
 	margin-bottom: 1px;
 	margin-top: 1px;
 	margin-left: 0px;
@@ -195,8 +191,8 @@ input.chkbox {
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  border: 0;
-  padding: 0;
+  border: none;
+  outline: none;
   margin-bottom: 5px;
   margin-top: 5px;
   margin-left: 5px;
@@ -234,7 +230,7 @@ input.chkbox {
 }
 
 .button_dark {
-  background-color: color-mix(in srgb, var(--main-color),#0000 70%); /* % of transparency */  
+  background-color: color-mix(in srgb, var(--main-color),#0000 70%); 
 }
 
 .button_alert {
@@ -267,6 +263,8 @@ input.chkbox {
 }
 
 .topnav {
+  border: none;
+  outline: none;
   margin: 5px;
   cursor: pointer;
   line-height: 2.65;
@@ -275,6 +273,8 @@ input.chkbox {
 }
 
 .topnav a {
+  border: none;
+  outline: none;
   float: left;
   padding: 0px 12px;
   padding-top: 4px;
@@ -489,8 +489,8 @@ input.chkbox {
 }
 
 #bookmark__search {
+  width: 100%;
   display: inline-flex;
-  width: min-content;
   flex-wrap: nowrap;
   flex-direction: row;
   justify-content: space-evenly;
@@ -499,6 +499,7 @@ input.chkbox {
 }
 
 #bookmark__search_txt {
+  width: 100%;
   color: white;
   background-color: color-mix(in srgb, var(--main-color) 40%, black);
   border: 3px solid black;

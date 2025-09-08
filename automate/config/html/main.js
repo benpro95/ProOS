@@ -20,7 +20,7 @@ let sysModel;
 // global constants
 let resizeTimeout = 800; // in ms
 let serverSite = "Automate";
-let siteVersion = "10.5.6";
+let siteVersion = "10.5.7";
 
 //////////////////////
 
@@ -2026,3 +2026,4 @@ function closePopup() {
   clearPendingCmd();
   closeServerOptions();
 }
+

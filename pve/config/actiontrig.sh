@@ -19,7 +19,7 @@ function EXIT_ROUTINE {
 }
 
 ## Lock file
-if [ -e /tmp/actiontrig.lock ]; then
+if [ -e "/tmp/actiontrig.lock" ]; then
   echo "process locked! exiting. (pve.home)"
   exit
 fi
@@ -31,10 +31,10 @@ if [ ! -e $LOGFILE ]; then
 fi
 
 ### IMPORT ZFS ########################################   
-if [ -e $TRIGGERS_DIR/attach_bkps.txt ]; then
+if [ -e "$TRIGGERS_DIR/attach_bkps.txt" ]; then
   echo " "
-  touch /tmp/actiontrig.lock
-  rm -f $TRIGGERS_DIR/attach_bkps.txt
+  touch "/tmp/actiontrig.lock"
+  rm -f "$TRIGGERS_DIR/attach_bkps.txt"
   if [ ! -e $TRIGGERS_DIR/pwd.txt ]; then
 	echo "password file not found, exiting."
 	EXIT_ROUTINE
@@ -70,10 +70,10 @@ if [ -e $TRIGGERS_DIR/attach_bkps.txt ]; then
 fi
 
 ### EXPORT ZFS ########################################
-if [ -e $TRIGGERS_DIR/detach_bkps.txt ]; then
+if [ -e "$TRIGGERS_DIR/detach_bkps.txt" ]; then
   echo " "
-  touch /tmp/actiontrig.lock	
-  rm -f $TRIGGERS_DIR/detach_bkps.txt
+  touch "/tmp/actiontrig.lock"	
+  rm -f "$TRIGGERS_DIR/detach_bkps.txt"
   if [ ! -e $TRIGGERS_DIR/drives.txt ]; then
 	echo "drives file not found, exiting."
 	EXIT_ROUTINE
@@ -103,9 +103,9 @@ if [ -e $TRIGGERS_DIR/detach_bkps.txt ]; then
   EXIT_ROUTINE
 fi
 ## Toggle Proxmox Web Interface
-if [ -e $TRIGGERS_DIR/pve_webui_toggle.txt ]; then
+if [ -e "$TRIGGERS_DIR/pve_webui_toggle.txt" ]; then
   echo " "
-  rm -f $TRIGGERS_DIR/pve_webui_toggle.txt
+  rm -f "$TRIGGERS_DIR/pve_webui_toggle.txt"
   SYSDSTAT="$(systemctl is-active pveproxy.service)"
   if [ "${SYSDSTAT}" == "active" ]; then
     echo "Proxmox web interface running, stopping service..."
@@ -117,74 +117,92 @@ if [ -e $TRIGGERS_DIR/pve_webui_toggle.txt ]; then
   EXIT_ROUTINE  
 fi
 ## List ZFS Snapshots
-if [ -e $TRIGGERS_DIR/pve_listsnaps.txt ]; then
+if [ -e "$TRIGGERS_DIR/pve_listsnaps.txt" ]; then
   echo " "
-  touch /tmp/actiontrig.lock
-  rm -f $TRIGGERS_DIR/pve_listsnaps.txt
+  touch "/tmp/actiontrig.lock"
+  rm -f "$TRIGGERS_DIR/pve_listsnaps.txt"
   echo "Snapshots on ZFS pool (tank/datastore):"
   zfs list -t snapshot tank/datastore | grep -o '^\S*'
   EXIT_ROUTINE  
 fi
 ### START VMs #########################################
 #######################################################
-if [ -e $TRIGGERS_DIR/startxana.txt ]; then
+if [ -e "$TRIGGERS_DIR/startxana.txt" ]; then
   echo " "
-  touch /tmp/actiontrig.lock
-  rm -f $TRIGGERS_DIR/startxana.txt
+  touch "/tmp/actiontrig.lock"
+  rm -f "$TRIGGERS_DIR/startxana.txt"
   echo "starting xana VM..."
   qm start 105
   EXIT_ROUTINE
 fi
-if [ -e $TRIGGERS_DIR/stopxana.txt ]; then
+if [ -e "$TRIGGERS_DIR/stopxana.txt" ]; then
   echo " "
-  touch /tmp/actiontrig.lock	
-  rm -f $TRIGGERS_DIR/stopxana.txt
+  touch "/tmp/actiontrig.lock"	
+  rm -f "$TRIGGERS_DIR/stopxana.txt"
   echo "shutting down xana VM..."
   qm stop 105
   EXIT_ROUTINE
 fi
-if [ -e $TRIGGERS_DIR/restorexana.txt ]; then
+if [ -e "$TRIGGERS_DIR/restorexana.txt" ]; then
   echo " "
-  touch /tmp/actiontrig.lock	
-  rm -f $TRIGGERS_DIR/restorexana.txt
+  touch "/tmp/actiontrig.lock"	
+  rm -f "$TRIGGERS_DIR/restorexana.txt"
   echo "restoring xana VM..."
   qmrestore /var/lib/vz/dump/vzdump-qemu-105-latest.vma.zst \
     105 -force -storage scratch
   EXIT_ROUTINE
 fi
 #######################################################
-if [ -e $TRIGGERS_DIR/startunifi.txt ]; then
+if [ -e "$TRIGGERS_DIR/startunifi.txt" ]; then
   echo " "
-  touch /tmp/actiontrig.lock
-  rm -f $TRIGGERS_DIR/startunifi.txt
+  touch "/tmp/actiontrig.lock"
+  rm -f "$TRIGGERS_DIR/startunifi.txt"
   echo "starting unifi AP LXC..."
   pct start 107
   chmod 777 $LOGFILE
   EXIT_ROUTINE
 fi
-if [ -e $TRIGGERS_DIR/stopunifi.txt ]; then
+if [ -e "$TRIGGERS_DIR/stopunifi.txt" ]; then
   echo " "
-  touch /tmp/actiontrig.lock  
-  rm -f $TRIGGERS_DIR/stopunifi.txt
+  touch "/tmp/actiontrig.lock" 
+  rm -f "$TRIGGERS_DIR/stopunifi.txt"
   echo "shutting down unifi AP LXC..."
   pct stop 107
   EXIT_ROUTINE
 fi
-### Write Server Log ##################################   
-if [ -e $TRIGGERS_DIR/syslog.txt ]; then
+
+#######################################################
+if [ -e "$TRIGGERS_DIR/startlegacy.txt" ]; then
   echo " "
-  touch /tmp/actiontrig.lock	
-  rm -f $TRIGGERS_DIR/syslog.txt
+  touch "/tmp/actiontrig.lock"
+  rm -f "$TRIGGERS_DIR/startlegacy.txt"
+  echo "starting legacy AFP/SMB server..."
+  pct start 103
+  chmod 777 $LOGFILE
+  EXIT_ROUTINE
+fi
+if [ -e "$TRIGGERS_DIR/stoplegacy.txt" ]; then
+  echo " "
+  touch "/tmp/actiontrig.lock" 
+  rm -f "$TRIGGERS_DIR/stoplegacy.txt"
+  echo "shutting down legacy AFP/SMB server..."
+  pct stop 103
+  EXIT_ROUTINE
+fi
+### Write Server Log ##################################   
+if [ -e "$TRIGGERS_DIR/syslog.txt" ]; then
+  echo " "
+  touch "/tmp/actiontrig.lock"	
+  rm -f "$TRIGGERS_DIR/syslog.txt"
   /usr/bin/sys-check
   EXIT_ROUTINE
 fi
-
   ###### Server VM Backup Script ######################
-if [ -e $TRIGGERS_DIR/pve_vmsbkp.txt ]; then
+if [ -e "$TRIGGERS_DIR/pve_vmsbkp.txt" ]; then
   VM_CONFS="/mnt/datastore/data/ProOS"
   echo " "
-  touch /tmp/actiontrig.lock  
-  rm -f $TRIGGERS_DIR/pve_vmsbkp.txt
+  touch "/tmp/actiontrig.lock"
+  rm -f "$TRIGGERS_DIR/pve_vmsbkp.txt"
   ### Container Backups
   echo ""
   echo "Backing-up Files LXC 101..."
@@ -196,21 +214,28 @@ if [ -e $TRIGGERS_DIR/pve_vmsbkp.txt ]; then
   echo ""
   echo "Backing-up Mgmt LXC 102..."
   vzdump 102 --mode snapshot --compress zstd --node pve --storage local \
-   --maxfiles 1 --remove 1 --exclude-path /mnt/ProOS
+   --maxfiles 1 --remove 1 --exclude-path /mnt
   cp -v /etc/pve/lxc/102.conf $VM_CONFS/mgmt/lxc.conf
   chmod 777 $VM_CONFS/mgmt/lxc.conf
   ###  
   echo ""
+  echo "Backing-up Legacy LXC 103..."
+  vzdump 103 --mode snapshot --compress zstd --node pve --storage local \
+   --maxfiles 1 --remove 1 --exclude-path /mnt
+  cp -v /etc/pve/lxc/103.conf $VM_CONFS/legacy/lxc.conf
+  chmod 777 $VM_CONFS/legacy/lxc.conf
+  ###  
+  echo ""
   echo "Backing-up Plex LXC 104..."
   vzdump 104 --mode snapshot --compress zstd --node pve --storage local \
-   --maxfiles 1 --remove 1 --exclude-path /mnt/transcoding
+   --maxfiles 1 --remove 1 --exclude-path /mnt
   cp -v /etc/pve/lxc/104.conf $VM_CONFS/plex/lxc.conf
   chmod 777 $VM_CONFS/plex/lxc.conf
   ###
   echo ""
   echo "Backing-up Automate LXC 106..."
   vzdump 106 --mode snapshot --compress zstd --node pve --storage local \
-   --maxfiles 1 --remove 1 --exclude-path /var/www/html
+   --maxfiles 1 --remove 1 --exclude-path /var/www/html --exclude-path /mnt
   cp -v /etc/pve/lxc/106.conf $VM_CONFS/automate/lxc.conf
   chmod 777 $VM_CONFS/automate/lxc.conf
   ###

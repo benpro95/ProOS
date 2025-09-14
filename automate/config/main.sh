@@ -518,14 +518,12 @@ fi
 SERVERARG="$SECOND_ARG"
 ## start / stop legacy services
 if [ "$SERVERARG" == "startlegacy" ]; then
-  echo "Starting legacy services..." &>> $LOGFILE
+  echo "starting mach_legacy Wi-Fi AP..." &>> $LOGFILE
   CALLAPI "$BRPI_IP" "apd-on" ""
-  exit
 fi
 if [ "$SERVERARG" == "stoplegacy" ]; then
-  echo "Stopping legacy services..." &>> $LOGFILE
+  echo "stopping mach_legacy Wi-Fi AP..." &>> $LOGFILE
   CALLAPI "$BRPI_IP" "apd-off" ""
-  exit
 fi
 ## write trigger file
 echo " " 

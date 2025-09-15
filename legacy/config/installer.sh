@@ -1,6 +1,5 @@
 #!/bin/bash
 ### ONLY RUN ON THE SERVER!!
-### AutoConfig - ProOS for Files Container
 ### by Ben Provenzano III
 ###
 
@@ -15,10 +14,22 @@ apt-get --yes update
 
 ## Install packages
 apt-get install -y --no-upgrade --ignore-missing unzip wget \
- rsync curl screen scrub ethtool aptitude sudo samba sshpass \
- libdbus-1-dev libdbus-glib-1-dev bc git locales mailutils \
- neofetch apt-transport-https nmap bpytop binutils iperf3 cron \
- cron-daemon-common fuse gocryptfs inotify-tools avahi-daemon htop
+  rsync curl screen scrub ethtool aptitude sudo samba sshpass \
+  libdbus-1-dev libdbus-glib-1-dev bc git locales mailutils \
+  apt-transport-https nmap bpytop binutils iperf3 cron \
+  cron-daemon-common autofs cifs-utils avahi-daemon htop
+
+## AutoFS Configuration
+cp -f /tmp/config/auto.master /etc/
+chmod 644 /etc/auto.master
+chown root:root /etc/auto.master
+cp -f /tmp/config/auto.map /etc/
+chmod 644 /etc/auto.map
+chown root:root /etc/auto.map
+cp -f /tmp/config/auto.creds /etc/
+chmod 400 /etc/auto.creds
+chown root:root /etc/auto.creds
+mkdir -p /mnt/smb
 
 ## Ben user configuration
 SHRUSER1="ben"
@@ -82,11 +93,8 @@ chown root:root /etc/netatalk/afp.conf
 ## Reload Services
 systemctl daemon-reload
 
-## Enable Services
-systemctl enable smbd nmbd avahi-daemon netatalk
-
-## Restart Services
-systemctl restart smbd nmbd avahi-daemon netatalk
+## Disable Auto-Starting Services
+systemctl disable smbd nmbd avahi-daemon netatalk atalkd
 
 ## Set Locale
 if [ ! -e /etc/locales.generated ]; then
@@ -123,11 +131,6 @@ cp /tmp/config/sysctl.conf /etc
 chmod 644 /etc/sysctl.conf
 chown root:root /etc/sysctl.conf
 
-## Logrotate Fix for LXCs
-cp /tmp/config/logrotate.service /lib/systemd/system/
-chmod 644 /lib/systemd/system/logrotate.service
-chown root:root /lib/systemd/system/logrotate.service
-
 ## Startup Configuration
 cp /tmp/config/rc-local.service /etc/systemd/system/
 chmod 644 /etc/systemd/system/rc-local.service
@@ -136,11 +139,6 @@ cp /tmp/config/rc.local /etc/
 chmod 755 /etc/rc.local
 chown root:root /etc/rc.local
 systemctl enable rc-local
-
-## Supress Slice Log Entries
-cp /tmp/config/ignore-session-slice.conf /etc/rsyslog.d/
-chmod 644 /etc/rsyslog.d/ignore-session-slice.conf
-chown root:root /etc/rsyslog.d/ignore-session-slice.conf
 
 ## Clean-up
 rm -r /tmp/config/

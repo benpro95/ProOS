@@ -170,14 +170,13 @@ if [ -e "$TRIGGERS_DIR/stopunifi.txt" ]; then
   pct stop 107
   EXIT_ROUTINE
 fi
-
 #######################################################
 if [ -e "$TRIGGERS_DIR/startlegacy.txt" ]; then
   echo " "
   touch "/tmp/actiontrig.lock"
   rm -f "$TRIGGERS_DIR/startlegacy.txt"
   echo "starting legacy AFP/SMB server..."
-  pct start 103
+  qm start 103
   chmod 777 $LOGFILE
   EXIT_ROUTINE
 fi
@@ -186,7 +185,7 @@ if [ -e "$TRIGGERS_DIR/stoplegacy.txt" ]; then
   touch "/tmp/actiontrig.lock" 
   rm -f "$TRIGGERS_DIR/stoplegacy.txt"
   echo "shutting down legacy AFP/SMB server..."
-  pct stop 103
+  qm stop 103
   EXIT_ROUTINE
 fi
 ### Write Server Log ##################################   
@@ -217,14 +216,7 @@ if [ -e "$TRIGGERS_DIR/pve_vmsbkp.txt" ]; then
    --maxfiles 1 --remove 1 --exclude-path /mnt
   cp -v /etc/pve/lxc/102.conf $VM_CONFS/mgmt/lxc.conf
   chmod 777 $VM_CONFS/mgmt/lxc.conf
-  ###  
-  echo ""
-  echo "Backing-up Legacy LXC 103..."
-  vzdump 103 --mode snapshot --compress zstd --node pve --storage local \
-   --maxfiles 1 --remove 1 --exclude-path /mnt
-  cp -v /etc/pve/lxc/103.conf $VM_CONFS/legacy/lxc.conf
-  chmod 777 $VM_CONFS/legacy/lxc.conf
-  ###  
+  ### 
   echo ""
   echo "Backing-up Plex LXC 104..."
   vzdump 104 --mode snapshot --compress zstd --node pve --storage local \
@@ -253,6 +245,13 @@ if [ -e "$TRIGGERS_DIR/pve_vmsbkp.txt" ]; then
   cp -v /etc/pve/qemu-server/100.conf $VM_CONFS/pve/vmbkps/vzdump-qemu-100.conf
   chmod 777 $VM_CONFS/pve/vmbkps/vzdump-qemu-100.conf
   ###
+  echo ""
+  echo "Backing-up Legacy KVM 103..."
+  vzdump 103 --mode snapshot --compress zstd --node pve --storage local \
+   --maxfiles 1 --remove 1 --exclude-path /mnt
+  cp -v /etc/pve/qemu-server/103.conf $VM_CONFS/legacy/qemu.conf
+  chmod 777 $VM_CONFS/legacy/qemu.conf
+  ###  
   echo ""
   echo "Backing-up Xana KVM 105..."
   echo "Only configuration is backed up."

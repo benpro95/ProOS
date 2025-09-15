@@ -18,6 +18,7 @@ pve/photos
 *authorized_keys*
 *openapd.mac*
 *Thumbs.db*
+*.tar.xz*
 *.deb*
 *.pem*
 *.crt*

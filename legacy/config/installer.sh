@@ -4,7 +4,13 @@
 ### by Ben Provenzano III
 ###
 
-## Update Sources
+## Samba / AppleTalk password
+SHRPASS="ben1995"
+
+## Set working directory
+cd /tmp/config
+
+## Update sources
 apt-get --yes update
 
 ## Install packages
@@ -13,17 +19,6 @@ apt-get install -y --no-upgrade --ignore-missing unzip wget \
  libdbus-1-dev libdbus-glib-1-dev bc git locales mailutils \
  neofetch apt-transport-https nmap bpytop binutils iperf3 cron \
  cron-daemon-common fuse gocryptfs inotify-tools avahi-daemon htop
-
-## AppleTalk packages
-apt-get install -y --no-upgrade --ignore-missing cracklib-runtime \
- dbus-user-session dconf-gsettings-backend dconf-service libtracker-sparql-3.0-0 \
- glib-networking glib-networking-common glib-networking-services \
- gsettings-desktop-schemas libcrack2 libdconf1 libevent-2.1-7 libjson-glib-1.0-0 \
- libjson-glib-1.0-common libproxy1v5 libsoup-3.0-0 libsoup-3.0-common libstemmer0d
-apt-get install -y /tmp/config/netatalk_3.2.2.deb
-
-## Samba / AppleTalk password
-SHRPASS="ben1995"
 
 ## Ben user configuration
 SHRUSER1="ben"
@@ -57,7 +52,29 @@ cp -f /tmp/config/smb.conf /etc/samba/
 chmod 644 /etc/samba/smb.conf
 chown root:root /etc/samba/smb.conf
 
-## AppleTalk configuration
+## AFP support packages
+if [ ! -e "/usr/lib/systemd/system/netatalk.service" ]; then
+  ## install dependencies
+  apt-get install --assume-yes --no-install-recommends bison ca-certificates \
+    cmark-gfm cracklib-runtime file flex gcc libacl1-dev libavahi-client-dev \
+    libcrack2-dev libcups2-dev libdb-dev libdbus-1-dev libevent-dev libgcrypt20-dev \
+    libglib2.0-dev libiniparser-dev libkrb5-dev libldap2-dev libmariadb-dev \
+    libpam0g-dev libsqlite3-dev libtalloc-dev libtirpc-dev libtracker-sparql-3.0-dev \
+    libwrap0-dev meson ninja-build quota systemtap-sdt-dev tcpd tracker tracker-miner-fs valgrind
+  ## download source code
+  tar -xvf ./netatalk-4.3.2.tar.xz
+  cd netatalk-4.3.2
+  ## compile from source
+  meson setup build -Dbuildtype=release -Dwith-appletalk=true -Dwith-cups-pap-backend=true \
+    -Dwith-dbus-sysconf-path=/usr/share/dbus-1/system.d -Dwith-init-hooks=false \
+    -Dwith-init-style=debian-sysv,systemd -Dwith-pkgconfdir-path=/etc/netatalk \
+    -Dwith-tests=true -Dwith-testsuite=true
+  meson test -C build
+  meson install -C build
+  cd -
+fi
+
+## AFP configuration
 cp -f /tmp/config/afp.conf /etc/netatalk/
 chmod 644 /etc/netatalk/afp.conf 
 chown root:root /etc/netatalk/afp.conf

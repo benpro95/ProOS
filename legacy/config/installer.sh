@@ -84,6 +84,7 @@ if [ ! -e "/usr/lib/systemd/system/netatalk.service" ]; then
   meson install -C build
   cd -
 fi
+mkdir -p /opt/afpdb
 
 ## AFP configuration
 cp -f /tmp/config/afp.conf /etc/netatalk/

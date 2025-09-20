@@ -95,7 +95,7 @@ chown root:root /etc/netatalk/afp.conf
 systemctl daemon-reload
 
 ## Disable Auto-Starting Services
-systemctl disable smbd nmbd avahi-daemon netatalk atalkd
+systemctl disable smbd nmbd avahi-daemon netatalk atalkd autofs
 
 ## Set Locale
 if [ ! -e /etc/locales.generated ]; then

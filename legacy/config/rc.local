@@ -17,15 +17,19 @@ echo " Welcome to ProOS"
 echo " by Ben Provenzano III"
 echo "*"
 
-sleep 30
+## Mount SMB Shares
+sleep 15
+systemctl start autofs
+
 ## Start SMB Server
+sleep 15
 systemctl start smbd 
 systemctl start nmbd 
 
 ## Start AppleTalk Server
 systemctl start avahi-daemon 
 systemctl start atalkd
-sleep 10
+sleep 15
 systemctl start netatalk
 
 exit 0

@@ -39,12 +39,8 @@ return
 
 ;; Monitor Control ################
 
-^F5::
-Run, "C:\Program Files\Automate\p2p-off.bat"
-return
-
 !F5::
-Run, "C:\Program Files\Automate\p2p-on.bat"
+Run, "C:\Program Files\Automate\p2p_toggle.bat"
 return
 
 ;; Mute ################

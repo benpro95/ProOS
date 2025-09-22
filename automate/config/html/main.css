@@ -83,22 +83,18 @@ body {
 }
 
 .svropt__main {
-  caret-color: transparent;
   display: none;
 }
 
 .svropt__regions {
-  caret-color: transparent;
   display: none;
 }
 
 .svropt__backup {
-  caret-color: transparent;
   display: none;
 }
 
 .dynamic-menus {
-  caret-color: transparent;
   display: block;
 }
 
@@ -177,7 +173,6 @@ input.chkbox {
 }
 
 .banner__text {
-  caret-color: transparent;
   display: none;
   margin-top: 6px;
   text-align: left;
@@ -185,7 +180,6 @@ input.chkbox {
 }
 
 .button {
-  caret-color: transparent;
   transition: all 0.2s;
   width: 150px;
   user-select: none;
@@ -238,7 +232,6 @@ input.chkbox {
 }
 
 .button__text {
-  caret-color: transparent;
   line-height: 4.0; /* normal button width */
   -webkit-user-select: none;
   user-select: none;
@@ -251,7 +244,6 @@ input.chkbox {
 }
 
 .button__textsmall {
-  caret-color: transparent;
   line-height: 3.8; /* small button height */
   font-size: 20px;
   -webkit-user-select: none;
@@ -282,7 +274,6 @@ input.chkbox {
   text-align: center;
   color: #fff; /* nav font color */
   text-shadow: 1px 1px 1px #000;
-  caret-color: transparent;
 }
 
 .topnav a:hover {
@@ -405,7 +396,6 @@ input.chkbox {
 .dd-content a {
   -webkit-user-select: none;
   user-select: none;
-  caret-color: transparent;
   text-decoration: none;
   color: #fff;
   padding: 12px 16px;

@@ -23,12 +23,6 @@ echo "Starting $MODNAME configuration..."
 ## Copy Boot Config
 mount -o remount,rw /boot/firmware
 cp -fv $BIN/modconf/config.txt /boot/firmware/
-## Access Point Config
-cp -fv $BIN/modconf/apd.conf /boot/firmware/
-## Disable Wi-Fi on Boot
-touch /boot/firmware/disable.wifi
-## Open Access Point Mode with MAC Filtering
-touch /boot/firmware/apd-open.mode
 mount -o remount,ro /boot/firmware
 
 ## ALSA Configuration

@@ -510,20 +510,11 @@ exit
 
 ## Server Controls
 server)
-if [[ "${SECOND_ARG}" == "" ]]
+SERVERARG="$SECOND_ARG"
+if [[ "${SERVERARG}" == "" ]]
 then
   echo "server argument cannot be empty!"
   exit
-fi
-SERVERARG="$SECOND_ARG"
-## start / stop legacy services
-if [ "$SERVERARG" == "startlegacy" ]; then
-  echo "starting mach_legacy Wi-Fi AP..." &>> $LOGFILE
-  CALLAPI "$BRPI_IP" "apd-on" ""
-fi
-if [ "$SERVERARG" == "stoplegacy" ]; then
-  echo "stopping mach_legacy Wi-Fi AP..." &>> $LOGFILE
-  CALLAPI "$BRPI_IP" "apd-off" ""
 fi
 ## write trigger file
 echo " " 

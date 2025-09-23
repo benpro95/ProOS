@@ -72,14 +72,12 @@ systemctl start bluealsa-aplay
 systemctl start rpi-airplay
 BLINKLED
 ## SMB file share client
-sleep 10
 systemctl start autofs
 exit
 ;;
 
 serialmon)
-/opt/rpi/arduino-cli monitor -p /dev/$ARDUINO_PORT \
-  -b arduino:avr:uno --config 9600
+/opt/rpi/arduino-cli monitor -p /dev/$ARDUINO_PORT -b arduino:avr:uno --config 9600
 exit
 ;;
 
@@ -197,20 +195,6 @@ exit
 volstate)
 ## Volume State
 ZTERM_COM "01007"
-exit
-;;
-
-apd-on)
-BLINKLED
-## enable access point mode
-nohup /etc/netmode.sh apd >/dev/null 2>&1 &
-exit
-;;
-
-apd-off)
-BLINKLED
-## disable access point mode
-nohup /etc/netmode.sh client >/dev/null 2>&1 &
 exit
 ;;
 

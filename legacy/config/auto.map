@@ -1,3 +1,3 @@
-Downloads   -fstype=cifs,noperm,dir_mode=0777,file_mode=0777,uid=1001,gid=1015,forcegid,forceuid,rw,credentials=/etc/auto.creds ://10.177.1.4/Downloads
-Media       -fstype=cifs,noperm,dir_mode=0755,file_mode=0755,uid=1001,gid=1015,forcegid,forceuid,ro,credentials=/etc/auto.creds ://10.177.1.4/Media
-Data        -fstype=cifs,noperm,dir_mode=0755,file_mode=0755,uid=1001,gid=1015,forcegid,forceuid,ro,credentials=/etc/auto.creds ://10.177.1.4/Data
+Downloads   -fstype=cifs,noperm,dir_mode=0777,file_mode=0777,uid=1001,gid=1015,forcegid,forceuid,rw,credentials=/etc/auto.creds ://files.home/Downloads
+Media       -fstype=cifs,noperm,dir_mode=0755,file_mode=0755,uid=1001,gid=1015,forcegid,forceuid,ro,credentials=/etc/auto.creds ://files.home/Media
+Data        -fstype=cifs,noperm,dir_mode=0755,file_mode=0755,uid=1001,gid=1015,forcegid,forceuid,ro,credentials=/etc/auto.creds ://files.home/Data

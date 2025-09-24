@@ -1,7 +1,7 @@
 #!/bin/bash
-###########################################################
-## Main Home Automation Script by Ben Provenzano III v35 ##
-###########################################################
+#######################################################
+## Main Home Automation Script by Ben Provenzano III ##
+#######################################################
 
 DELIM="|"
 RAMDISK="/var/www/html/ram"
@@ -9,11 +9,11 @@ LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
 MAX_PING_WAIT="0.5" ## Max Ping Timeout (s)
 LOCAL_DOMAIN="home" ## Local DNS Domain
-PICOLAMP1_IP="10.177.1.18" ## Window Lamp
-LRXMIT_IP="10.177.1.12" ## LEDwall Pi
-DESK_IP="10.177.1.14" ## Desktop PC
-BRPI_IP="10.177.1.15" ## Bedroom Pi
-BRPC_IP="10.177.1.17" ## Bedroom PC
+PICOLAMP1_IP="192.168.1.18" ## Window Lamp
+LRXMIT_IP="192.168.1.12" ## LEDwall Pi
+DESK_IP="192.168.1.14" ## Desktop PC
+BRPI_IP="192.168.1.15" ## Bedroom Pi
+BRPC_IP="192.168.1.17" ## Bedroom PC
 BRPC_MAC="90:2e:16:46:86:43" ## Bedroom PC MAC
  
 ## Curl Command Line Arguments

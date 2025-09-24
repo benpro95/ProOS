@@ -263,7 +263,7 @@ PRGM_INIT(){
   ## Check For Proxmox Configuration
   if [ -e $ROOTDIR/$MODULE/qemu.conf ] || \
      [ -e $ROOTDIR/$MODULE/lxc.conf ] || \
-     [ -e $ROOTDIR/$MODULE/pc.conf ] ; then
+     [ -e $ROOTDIR/$MODULE/pc.conf ]; then
     INTMODE="nonpi"
   else 
     INTMODE="pi"
@@ -275,13 +275,8 @@ PRGM_INIT(){
     ssh-add $KEYS/$MODULE.rsa 2>/dev/null
     ## Set hostname
     HOST="$MODULE$DOMAIN"
-    ## Translate hostname to IP
-    if [ "$MODULE" == "pve" ]; then
-      HOST="10.177.1.8" 
-      NOHOSTCHK="yes"
-    fi 
-    if [ "$MODULE" == "files" ]; then
-      HOST="10.177.1.4"
+    if [ "$MODULE" == "pve" ] || \
+       [ "$MODULE" == "files" ]; then
       NOHOSTCHK="yes"
     fi
     if [ "$CMD" == "sync" ]; then

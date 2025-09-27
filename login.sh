@@ -49,7 +49,11 @@ SSH_LOGIN(){
     HOSTCHK
   fi
   ## Login to SSH Pi/Server
-  ssh -t -o $SSH_ARGS root@$HOST
+  if [ "$MODULE" == "router" ]; then
+    ssh -t -o $SSH_ARGS admin@$HOST
+  else
+    ssh -t -o $SSH_ARGS root@$HOST
+  fi
 }
 
 EXTRA_ARGS(){
@@ -80,8 +84,7 @@ login rmtmp
 exit
 fi
 ### Exit if matches this hosts
-if [ "$MODULE" == "router" ] || \
-   [ "$MODULE" == "logon" ] || \
+if [ "$MODULE" == "logon" ] || \
    [ "$MODULE" == "login" ] || \
    [ "$MODULE" == ".ssh" ] || \
    [ "$MODULE" == "rpi" ] || \
@@ -263,7 +266,8 @@ PRGM_INIT(){
   ## Check For Proxmox Configuration
   if [ -e $ROOTDIR/$MODULE/qemu.conf ] || \
      [ -e $ROOTDIR/$MODULE/lxc.conf ] || \
-     [ -e $ROOTDIR/$MODULE/pc.conf ]; then
+     [ -e $ROOTDIR/$MODULE/pc.conf ] || \
+     [ "$MODULE" == "router" ]; then
     INTMODE="nonpi"
   else 
     INTMODE="pi"
@@ -271,6 +275,12 @@ PRGM_INIT(){
   ## Start SSH Agent
   eval `ssh-agent -s`
   if [ "$INTMODE" == "nonpi" ]; then
+    if [ "$MODULE" == "router" ]; then
+      if [ "$CMD" != "" ]; then
+        echo "Router login cannot have contain arguments!"
+        EXIT_PRGM
+      fi
+    fi
     ## Server Configuration ##
     ssh-add $KEYS/$MODULE.rsa 2>/dev/null
     ## Set hostname

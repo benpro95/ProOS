@@ -9,9 +9,9 @@ apt-get --yes update
 
 ## Install Packages
 apt-get install -y --no-upgrade --ignore-missing unzip wget \
- rsync curl screen scrub ethtool aptitude sudo samba sshpass \
+ rsync curl screen scrub ethtool aptitude sudo sshpass htop \
  libdbus-1-dev libdbus-glib-1-dev bc git locales neofetch \
- apt-transport-https nmap bpytop binutils iperf3 htop
+ apt-transport-https nmap bpytop binutils iperf3 
 
 ## Set Locale
 if [ ! -e /etc/locales.generated ]; then
@@ -19,7 +19,7 @@ if [ ! -e /etc/locales.generated ]; then
   touch /etc/locales.generated
 fi
 
-## Create 'ben' user
+## Create ben user
 useradd -m ben
 usermod -s /bin/bash ben
 

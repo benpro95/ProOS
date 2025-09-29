@@ -23,6 +23,10 @@ body {
   height: 100%;
 }
 
+input[type="checkbox"] {
+  accent-color: var(--main-color); 
+}
+
 /*
  *  Main scrollbar style
  */

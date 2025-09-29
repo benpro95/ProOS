@@ -1530,30 +1530,30 @@ function showAmpInput() {
       let _menudata = "";
       // apple TV input 
       _menubtn = "cmd";
-      _title = "Optical I"  
+      _title = "PC Mode"  
       _cmd = "opt-a";
       _indtype = 'blkind';
       if (resp == '2'){
         _indtype = 'grnind';
       }
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
+      // coaxial input
+      _menubtn = "cmd";
+      _title = "Bluetooth"  
+      _cmd = "coaxial";  
+      _indtype = 'blkind';
+      if (resp == '3'){ 
+        _indtype = 'grnind';
+      }      
+      _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // aux optical input
       _menubtn = "cmd";
-      _title = "Optical II"  
+      _title = "Optical"  
       _cmd = "opt-b";
       _indtype = 'blkind';
       if (resp == '1'){
         _indtype = 'grnind';
       } 
-      _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
-      // coaxial input
-      _menubtn = "cmd";
-      _title = "Coaxial"  
-      _cmd = "coaxial";  
-      _indtype = 'blkind';
-      if (resp == '3'){ 
-        _indtype = 'grnind';
-      }
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // aux analog input
       _menubtn = "cmd";

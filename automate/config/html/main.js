@@ -7,9 +7,6 @@ let ctlCommand;
 let selectedVM = "";
 let dynMenuActive = 0;
 let bookmarkState = 0;
-const BKM_INACTIVE = 0;
-const BKM_OPEN_MODE = 1;
-const BKM_EDIT_MODE = 2;
 let resizeState = false;
 let serverCmdData;
 let socket = null;
@@ -18,9 +15,12 @@ var timeStamp;
 let sysModel;
 
 // global constants
-let resizeTimeout = 800; // in ms
-let serverSite = "Automate";
-let siteVersion = "10.5.7";
+const BKM_INACTIVE = 0;
+const BKM_OPEN_MODE = 1;
+const BKM_EDIT_MODE = 2;
+const resizeTimeout = 750; // in ms
+const serverSite = "Automate";
+const siteVersion = "10.5.8";
 
 //////////////////////
 

@@ -254,8 +254,7 @@ if [ -e "$TRIGGERS_DIR/pve_vmsbkp.txt" ]; then
   ###  
   echo ""
   echo "Backing-up Xana KVM 105..."
-  echo "Only configuration is backed up."
-  #vzdump 105 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1
+  vzdump 105 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1
   cp -v /etc/pve/qemu-server/105.conf $VM_CONFS/xana/qemu.conf
   chmod 777 $VM_CONFS/xana/qemu.conf
   ###

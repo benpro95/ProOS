@@ -285,8 +285,7 @@ PRGM_INIT(){
     ssh-add $KEYS/$MODULE.rsa 2>/dev/null
     ## Set hostname
     HOST="$MODULE$DOMAIN"
-    if [ "$MODULE" == "pve" ] || \
-       [ "$MODULE" == "files" ]; then
+    if [ "$MODULE" == "pve" ]; then
       NOHOSTCHK="yes"
     fi
     if [ "$CMD" == "sync" ]; then

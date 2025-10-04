@@ -1,5 +1,5 @@
 127.0.0.1 localhost.localdomain localhost
-10.177.1.8 pve pvelocalhost
+192.168.1.8 pve pvelocalhost
 
 # The following lines are desirable for IPv6 capable hosts
 

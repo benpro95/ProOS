@@ -17,7 +17,10 @@ echo " Welcome to ProOS"
 echo " by Ben Provenzano III"
 echo "*"
 
-## Temporary Files
+## allow non-root user to ping hosts
+echo "0 65535" > /proc/sys/net/ipv4/ping_group_range
+
+## temporary files
 RAMDISK="/var/www/html/ram"
 rm -rf $RAMDISK/locks
 mkdir -p $RAMDISK/locks
@@ -25,16 +28,16 @@ chmod 777 $RAMDISK/locks
 touch $RAMDISK/sysout.txt
 chmod 777 $RAMDISK/sysout.txt
 
-## Menu Files
+## menu files
 cp -v /opt/system/*menu.txt /var/www/html/ram/
 chmod -R 777 /var/www/html/ram/*menu.txt
 chown -R www-data:www-data /var/www/html/ram/*menu.txt
 
-## Xmit COMS
+## Xmit communication
 ln -sf /dev/USB-Xmit0 /dev/zterm-tty
 /usr/bin/ztermcom i
 
-## Light Web Server
+## web server
 systemctl restart lighttpd
 
 exit 0

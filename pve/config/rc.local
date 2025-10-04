@@ -53,9 +53,9 @@ echo "ondemand" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 #echo "performance" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 
 ## Disable Web UI
-sleep 15
-systemctl stop spiceproxy
-systemctl stop pveproxy
+#sleep 15
+#systemctl stop spiceproxy
+#systemctl stop pveproxy
 
 echo "*"
 echo " Welcome to ProOS Server!"

@@ -113,13 +113,16 @@ chown root:root /usr/bin/ztermcom
 
 ## Light Web Server
 apt-get install -y --no-upgrade lighttpd php-cgi php php-common
-cp -f /tmp/config/lighttpd.conf /etc/lighttpd
+cp -f /tmp/config/lighttpd.conf /etc/lighttpd/
 chmod 644 /etc/lighttpd/lighttpd.conf
 chown root:root /etc/lighttpd/lighttpd.conf
-cp -f /tmp/config/ssl_cert.pem /etc/lighttpd
+cp -f /tmp/config/lighttpd.service /lib/systemd/system/
+chmod 644 /lib/systemd/system/lighttpd.service 
+chown root:root /lib/systemd/system/lighttpd.service 
+cp -f /tmp/config/ssl_cert.pem /etc/lighttpd/
 chmod 644 /etc/lighttpd/ssl_cert.pem
 chown root:root /etc/lighttpd/ssl_cert.pem
-cp -f /tmp/config/root_ca.crt /etc/lighttpd
+cp -f /tmp/config/root_ca.crt /etc/lighttpd/
 chmod 644 /etc/lighttpd/root_ca.crt
 chown root:root /etc/lighttpd/root_ca.crt
 lighttpd-enable-mod fastcgi fastcgi-php

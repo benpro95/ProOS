@@ -1,0 +1,6 @@
+[Match]
+MACAddress=e4:3d:1a:23:be:97
+Type=ether
+
+[Link]
+Name=nic3

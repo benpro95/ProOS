@@ -11,6 +11,9 @@
 #
 # By default this script does nothing.
 
+## Allow non-root user to ping hosts
+echo "0 65535" > /proc/sys/net/ipv4/ping_group_range
+
 echo "*"
 echo " Welcome to ProOS"
 echo " by Ben Provenzano III"

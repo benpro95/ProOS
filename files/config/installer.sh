@@ -188,10 +188,13 @@ chown root:root /opt/drives.txt
 cp -f /opt/drives.txt /mnt/ramdisk/
 chmod 777 /mnt/ramdisk/drives.txt
 
-## Reload services
+## Disable Start on Boot
+systemctl disable nmbd smbd
+
+## Reload Services
 systemctl daemon-reload
 
-## Restart services
+## Restart Services
 systemctl restart file-monitor
 systemctl restart cron
 systemctl restart rsyslog

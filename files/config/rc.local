@@ -30,4 +30,7 @@ systemctl start file-monitor
 ## Crontab
 systemctl start cron
 
+## SAMBA Server
+systemctl start smbd
+
 exit 0

@@ -108,10 +108,10 @@ if [ -e "$TRIGGERS_DIR/pve_webui_toggle.txt" ]; then
   rm -f "$TRIGGERS_DIR/pve_webui_toggle.txt"
   SYSDSTAT="$(systemctl is-active pveproxy.service)"
   if [ "${SYSDSTAT}" == "active" ]; then
-    echo "Proxmox web interface running, stopping service..."
+    echo "PVE web interface running, stopping service..."
     systemctl stop pveproxy.service 
   else 
-    echo "Proxmox web interface not running, starting service..." 
+    echo "PVE web interface not running, starting service..." 
     systemctl start pveproxy.service
   fi
   EXIT_ROUTINE  
@@ -148,7 +148,7 @@ if [ -e "$TRIGGERS_DIR/restorexana.txt" ]; then
   touch "/tmp/actiontrig.lock"	
   rm -f "$TRIGGERS_DIR/restorexana.txt"
   echo "restoring xana VM..."
-  qmrestore /var/lib/vz/dump/vzdump-qemu-105-latest.vma.zst \
+  qmrestore /opt/xana-restore-image.vma.zst \
     105 -force -storage scratch
   EXIT_ROUTINE
 fi
@@ -227,7 +227,7 @@ if [ -e "$TRIGGERS_DIR/pve_vmsbkp.txt" ]; then
   echo ""
   echo "Backing-up Automate LXC 106..."
   vzdump 106 --mode snapshot --compress zstd --node pve --storage local \
-   --maxfiles 1 --remove 1 --exclude-path /var/www/html --exclude-path /mnt
+   --maxfiles 1 --remove 1 --exclude-path /mnt --exclude-path /var/www/html
   cp -v /etc/pve/lxc/106.conf $VM_CONFS/automate/lxc.conf
   chmod 777 $VM_CONFS/automate/lxc.conf
   ###
@@ -241,20 +241,22 @@ if [ -e "$TRIGGERS_DIR/pve_vmsbkp.txt" ]; then
   ###
   echo ""
   echo "Backing-up Router KVM 100..."
-  vzdump 100 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1
+  vzdump 100 --mode snapshot --compress zstd --node pve --storage local \
+    --maxfiles 1 --remove 1 --exclude-path /mnt
   cp -v /etc/pve/qemu-server/100.conf $VM_CONFS/pve/vmbkps/vzdump-qemu-100.conf
   chmod 777 $VM_CONFS/pve/vmbkps/vzdump-qemu-100.conf
   ###
   echo ""
   echo "Backing-up Legacy KVM 103..."
   vzdump 103 --mode snapshot --compress zstd --node pve --storage local \
-   --maxfiles 1 --remove 1 --exclude-path /mnt
+    --maxfiles 1 --remove 1 --exclude-path /mnt
   cp -v /etc/pve/qemu-server/103.conf $VM_CONFS/legacy/qemu.conf
   chmod 777 $VM_CONFS/legacy/qemu.conf
   ###  
   echo ""
   echo "Backing-up Xana KVM 105..."
-  vzdump 105 --mode snapshot --compress zstd --node pve --storage local --maxfiles 1 --remove 1
+  vzdump 105 --mode snapshot --compress zstd --node pve --storage local \
+    --maxfiles 1 --remove 1 --exclude-path /mnt
   cp -v /etc/pve/qemu-server/105.conf $VM_CONFS/xana/qemu.conf
   chmod 777 $VM_CONFS/xana/qemu.conf
   ###
@@ -262,9 +264,11 @@ if [ -e "$TRIGGERS_DIR/pve_vmsbkp.txt" ]; then
   ###
   echo ""
   echo "Copying VM's to Datastore..."
-  chmod -R 777 /var/lib/vz/dump/vzdump-*
-  rsync --progress -a --exclude="*qemu-105*" \
-   /var/lib/vz/dump/vzdump-* /mnt/datastore/data/ProOS/pve/vmbkps/
+  rsync --progress -a /var/lib/vz/dump/vzdump-* /mnt/datastore/data/ProOS/pve/vmbkps/
+  chmod -R 777 /mnt/datastore/data/ProOS/pve/vmbkps/*.vma.zst
+  chmod -R 777 /mnt/datastore/data/ProOS/pve/vmbkps/*.tar.zst
+  chmod -R 777 /mnt/datastore/data/ProOS/pve/vmbkps/*.conf
+  chmod -R 777 /mnt/datastore/data/ProOS/pve/vmbkps/*.log
   echo "Backup Complete."
   EXIT_ROUTINE
 fi

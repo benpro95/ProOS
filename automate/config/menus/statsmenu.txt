@@ -3,5 +3,6 @@ files.home|Files|ping
 plex.home|Plex|ping
 brpi.home|BrPi|ping
 unifi.home|UniFi|ping
+legacy.home|Legacy|ping
 ledstrip.home|LEDstrip|ping
 ledwall.home|LEDwall|ping

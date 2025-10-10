@@ -8,7 +8,7 @@ ExecStartPre=/lib/apcupsd/prestart
 ExecStart=/sbin/apcupsd
 Type=forking
 KillMode=process
-PIDFile=/var/run/apcupsd.pid
+PIDFile=/run/apcupsd.pid
 
 [Install]
 WantedBy=multi-user.target

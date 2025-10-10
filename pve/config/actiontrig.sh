@@ -106,13 +106,13 @@ fi
 if [ -e "$TRIGGERS_DIR/pve_webui_toggle.txt" ]; then
   echo " "
   rm -f "$TRIGGERS_DIR/pve_webui_toggle.txt"
-  SYSDSTAT="$(systemctl is-active pveproxy.service)"
+  SYSDSTAT="$(systemctl is-active pveproxy)"
   if [ "${SYSDSTAT}" == "active" ]; then
     echo "PVE web interface running, stopping service..."
-    systemctl stop pveproxy.service 
+    systemctl stop pveproxy 
   else 
     echo "PVE web interface not running, starting service..." 
-    systemctl start pveproxy.service
+    systemctl start pveproxy
   fi
   EXIT_ROUTINE  
 fi

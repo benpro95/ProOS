@@ -5,29 +5,19 @@
 ###
 
 ## PVE No-Subscription Enterprise Sources
-if [ ! -e /etc/apt/sources.list.d/pve-enterprise.list ]; then
-  echo ""
-  echo "Installing PVE enterprise source file..."
-  cp -f /tmp/config/pve-enterprise.list /etc/apt/sources.list.d/
-  chmod 644 /etc/apt/sources.list.d/pve-enterprise.list
-  chown root:root /etc/apt/sources.list.d/pve-enterprise.list
-  echo "PVE debian version set to current release."
-  echo "Make sure this is correct before updating!"
-  echo "Source File: /etc/apt/sources.list.d/pve-enterprise.list"
-  cat /etc/apt/sources.list.d/pve-enterprise.list
-  echo ""
-  echo "" 
-else
-  echo "PVE enterprise sources already added."
-fi
+cp -f /tmp/config/pve-enterprise.sources /etc/apt/sources.list.d/
+chmod 644 /etc/apt/sources.list.d/pve-enterprise.sources
+chown root:root /etc/apt/sources.list.d/pve-enterprise.sources
+rm -f /etc/apt/sources.list.d/pve-enterprise.list.dpkg-dist
+rm -f /etc/apt/sources.list.d/pve-enterprise.list
 
 ## Update Sources
 apt-get --yes update
 
 ## Support Packages
 apt-get install -y --no-upgrade --ignore-missing rsync cron zip screen \
- libsasl2-modules postfix ethtool htop apt-transport-https lm-sensors intel-microcode \
- zfs-auto-snapshot smartmontools hddtemp apcupsd chrony mailutils ipmitool
+ libsasl2-modules intel-microcode postfix ethtool htop apt-transport-https \
+ lm-sensors zfs-auto-snapshot smartmontools apcupsd chrony mailutils
 
 ## Ethernet Interface Pinning
 cp -fvR /tmp/config/50-pve-*.link /usr/local/lib/systemd/network/
@@ -140,7 +130,6 @@ chmod 644 /etc/smartd.conf
 chown root:root /etc/smartd.conf
 
 ## Sensors Configuration
-touch /etc/hddtemp.db
 cp -f /tmp/config/sensors3.conf /etc/
 chmod 644 /etc/sensors3.conf
 chown root:root /etc/sensors3.conf
@@ -151,12 +140,13 @@ chmod 644 /etc/systemd/journald.conf
 chown root:root /etc/systemd/journald.conf
 
 ## Mail Configuration
-cp -f /tmp/config/main.cf /etc/postfix/
+cp -f /tmp/config/postfix.cf /etc/postfix/main.cf
 chown root:root /etc/postfix/main.cf
 chmod 644 /etc/postfix/main.cf
 cp -f /tmp/config/sasl_passwd /etc/postfix/
 chmod 600 /etc/postfix/sasl_passwd
 postmap hash:/etc/postfix/sasl_passwd
+postconf compatibility_level=3.6
 postfix reload
 
 ## Network Bug Fix 'https://forum.proxmox.com/threads/invalid-arp-responses-cause-network-problems.118128/'
@@ -213,28 +203,20 @@ chown root:root /etc/cron.d/zfsutils-linux
 rm -f /etc/cron.d/zfsutils-linux.dpkg-dist
 rm -f /etc/cron.d/rsnapshot
 
-## Disable PVE Replication Service
-systemctl stop pvesr.timer
-systemctl disable pvesr.timer
+## Disable Replication Service
 systemctl mask pvesr.timer
-rm -f /lib/systemd/system/pvesr.timer
 
-## Disable Sleep
+## Disable Sleep Mode
 systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
 
 ## Reload Daemons
 systemctl daemon-reload
 
-## Enable Services
-systemctl enable rc-local
-systemctl enable actiontrig.timer
-systemctl enable smartmontools
+## Start Services on Boot
+systemctl enable rc-local smartmontools apcupsd actiontrig.timer
 
 ## Restart Services
-systemctl restart apcupsd
-systemctl restart actiontrig.timer
-systemctl restart smartmontools
-systemctl restart cron
+systemctl restart cron smartmontools apcupsd actiontrig.timer
 
 ## Clean-up
 apt-get --yes autoremove

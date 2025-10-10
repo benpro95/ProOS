@@ -52,14 +52,13 @@ chmod -R 777 /mnt/ramdisk
 echo "ondemand" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 #echo "performance" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 
-## Disable Web UI
-#sleep 15
-#systemctl stop spiceproxy
-#systemctl stop pveproxy
-
 echo "*"
 echo " Welcome to ProOS Server!"
 echo " by Ben Provenzano III"
 echo "*"
+
+## Disable Web Interface on Boot
+sleep 15
+systemctl stop spiceproxy pveproxy
 
 exit 0

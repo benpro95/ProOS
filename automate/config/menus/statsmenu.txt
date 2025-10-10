@@ -2,6 +2,7 @@ aptcam.home|Aptcam|ping
 files.home|Files|ping
 plex.home|Plex|ping
 brpi.home|BrPi|ping
+xana.home|Xana|ping
 unifi.home|UniFi|ping
 legacy.home|Legacy|ping
 ledstrip.home|LEDstrip|ping

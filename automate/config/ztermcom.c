@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
 // parse first command line argument
   for (int i = 0; i < argc; i++) {
     if (argc != 2) {
-      printf("Z-Terminal Xmit v2.1\n");
+      printf("Z-Terminal Xmit v3\n");
       printf("Invalid # of arguments!\n");
       return 1; 
     }
@@ -144,12 +144,12 @@ int main(int argc, char *argv[]) {
   // set the baud rate 
   cfsetospeed(&tty, B9600); // baud rate out
   cfsetispeed(&tty, B9600); // baud rate in
-  tty.c_cflag &= ~PARENB;  // disable parity bit
-  tty.c_cflag &= ~CSTOPB;  // set one stop bit
-  tty.c_cflag &= ~CSIZE;   // clear data size bits
-  tty.c_cflag |= CS8;      // set 8 data bits
-  tty.c_cflag &= ~CRTSCTS; // disable hardware flow control
-  tty.c_cflag &= ~HUPCL;   // disable DST & RST (prevent system reset on UNO)
+  tty.c_cflag &= ~PARENB;   // disable parity bit
+  tty.c_cflag &= ~CSTOPB;   // set one stop bit
+  tty.c_cflag &= ~CSIZE;    // clear data size bits
+  tty.c_cflag |= CS8;       // set 8 data bits
+  tty.c_cflag &= ~CRTSCTS;  // disable hardware flow control
+  tty.c_cflag &= ~HUPCL;    // disable DST & RST (prevent system reset on UNO)
   // apply the serial settings
   if (tcsetattr(serial_port, TCSANOW, &tty) != 0) {
     perror("Error applying serial port settings");

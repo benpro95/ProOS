@@ -1,7 +1,7 @@
 /*
  * Ben Provenzano III
  * -----------------
- * v3.4 - 08/08/2025
+ * 10/10/2025
  * Automate Hub #1
  * -----------------
  */
@@ -62,7 +62,7 @@ uint16_t serialCurPos = 0;
 bool serialFwrdMode = 0;
 bool serialReading = 0;
 bool serialMsgEnd = 0;
-const uint8_t maxFwrdWait = 650; // max wait in (ms) for external serial response
+const uint16_t maxFwrdWait = 500; // max wait in (ms) for external serial response
 Neotimer maxFwrdRead = Neotimer();
 
 ///////////////////////////////////////
@@ -265,6 +265,22 @@ void readPowerButton_2() {
   powerButton_2Last = reading;
 }
 
+//// RS-232 logic ////
+
+void flushSerialBuffers() {
+  serialMessageOut[0] = nullTrm;
+  serialMessageIn[0] = nullTrm;
+  serialReading = 0;
+  serialCurPos = 0;
+  serialMsgEnd = 0;
+}
+
+void disableFwrdMode() {
+  serialFwrdMode = 0;
+  maxFwrdRead.reset();
+  maxFwrdRead.stop();
+}
+
 void serialProcess() {
   // read main serial port
   if (serialFwrdMode == 0) {
@@ -286,6 +302,7 @@ void serialProcess() {
     // listen to external serial port when in forwarding mode
     if (serialMsgEnd == 0) {
       if (ExtSerial.available()) {
+        delay(10); // needed for reliable data forwarding
         readSerialData(ExtSerial.read(), respDelimiter, respDelimiter);
       }
     } else {
@@ -296,7 +313,8 @@ void serialProcess() {
   }  
   // external serial reponse timeout
   if (maxFwrdRead.done()) {
-    Serial.print("*EXT-232 MAX WAIT EXCEEDED!*\n");     
+    Serial.print("*EXT-232 MAX WAIT EXCEEDED!*\n");
+    flushSerialBuffers();
     disableFwrdMode();
   }  
 }
@@ -350,15 +368,7 @@ void writeSerialData(bool InOut) {
   Serial.print(respDelimiter);
   Serial.print('\n');
   digitalWrite(LED_BUILTIN, LOW);
-  // reset output buffer
-  serialMessageOut[0] = nullTrm;
-}
-
-void disableFwrdMode() {
-  maxFwrdRead.reset();
-  maxFwrdRead.stop();
-  serialFwrdMode = 0;
-  serialMsgEnd = 0;
+  flushSerialBuffers();
 }
 
 // decode serial message

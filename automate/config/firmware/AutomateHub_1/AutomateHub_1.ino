@@ -62,6 +62,7 @@ uint16_t serialCurPos = 0;
 bool serialFwrdMode = 0;
 bool serialReading = 0;
 bool serialMsgEnd = 0;
+const uint16_t serialStartEndDelay = 25; // delay in (ms) between start and stop of serial read
 const uint16_t maxFwrdWait = 500; // max wait in (ms) for external serial response
 Neotimer maxFwrdRead = Neotimer();
 
@@ -270,8 +271,6 @@ void readPowerButton_2() {
 void flushSerialBuffers() {
   serialMessageOut[0] = nullTrm;
   serialMessageIn[0] = nullTrm;
-  serialReading = 0;
-  serialCurPos = 0;
   serialMsgEnd = 0;
 }
 
@@ -292,30 +291,30 @@ void serialProcess() {
       // process serial data
       decodeMessage();
       // send response to main serial
-      if (serialFwrdMode == 0) {
-        writeSerialData(0); // write serial out buffer
-      }
-      serialMsgEnd = 0;
+      if (serialFwrdMode == 0) { writeSerialData(0); }
+      flushSerialBuffers();
     }
-  } 
+  }
+  // forwarding mode enabled
   if (serialFwrdMode == 1) {
     // listen to external serial port when in forwarding mode
     if (serialMsgEnd == 0) {
       if (ExtSerial.available()) {
-        delay(10); // needed for reliable data forwarding
         readSerialData(ExtSerial.read(), respDelimiter, respDelimiter);
       }
     } else {
       // forward external serial reponse to main serial
       writeSerialData(1); // write serial in buffer
       disableFwrdMode();
+      flushSerialBuffers();
     }
   }  
   // external serial reponse timeout
   if (maxFwrdRead.done()) {
     Serial.print("*EXT-232 MAX WAIT EXCEEDED!*\n");
-    flushSerialBuffers();
+    Serial.flush();
     disableFwrdMode();
+    flushSerialBuffers();
   }  
 }
 
@@ -328,6 +327,7 @@ void readSerialData(char rc, char startInd ,char endInd) {
       serialReading = 0;
       serialCurPos = 0;
       serialMsgEnd = 1;
+      delay(serialStartEndDelay);
     } else {
       // store characters in buffer
       if (rc != startInd) {
@@ -342,6 +342,7 @@ void readSerialData(char rc, char startInd ,char endInd) {
   } else {
     // start reading
     if (rc == startInd) {
+      delay(serialStartEndDelay);
       serialReading = 1;
       serialCurPos = 0;
       serialMsgEnd = 0;
@@ -367,8 +368,8 @@ void writeSerialData(bool InOut) {
   }
   Serial.print(respDelimiter);
   Serial.print('\n');
+  Serial.flush();
   digitalWrite(LED_BUILTIN, LOW);
-  flushSerialBuffers();
 }
 
 // decode serial message
@@ -440,6 +441,7 @@ void decodeMessage() {
     processCmdData(_cmd2pos + 1);
   } else {
     Serial.print("*INVALID PREFIX!*");
+    Serial.flush();
   }
 }
 
@@ -463,6 +465,7 @@ void processCmdData(uint8_t messageStart) {
   // validate control code length
   if (_numcnt != _cmdlen) {
     Serial.print("*INVALID LENGTH!*");
+    Serial.flush();
     return;
   }
   // extract register select
@@ -527,6 +530,7 @@ void routeMessage(bool origin, uint8_t reg, uint16_t ctldata) {
     }
     ExtSerial.print(serialDataEnd);
     ExtSerial.print('\n');
+    Serial.flush();
     // listen for external serial reponse
     serialFwrdMode = 1;
     maxFwrdRead.set(maxFwrdWait);

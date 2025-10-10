@@ -18,6 +18,7 @@ const char nullTrm = '\0'; // null terminator
 
 // serial resources
 #define serialBaudRate 9600
+const uint16_t serialStartEndDelay = 25; // delay in (ms) between start and stop of serial read
 const uint8_t maxMessage = 32;
 const uint8_t cmdRegLen = 2; // register length (99***)
 const uint8_t cmdDatLen = 3; // data length (**999)
@@ -488,6 +489,7 @@ void processSerialData(char rc, char startInd ,char endInd) {
       serialReading = 0;
       serialCurPos = 0;
       serialMsgEnd = 1;
+      delay(serialStartEndDelay);
     } else {
       // store characters in buffer
       if (rc != startInd) {
@@ -502,6 +504,7 @@ void processSerialData(char rc, char startInd ,char endInd) {
   } else {
     // start reading
     if (rc == startInd) {
+      delay(serialStartEndDelay);
       serialReading = 1;
       serialCurPos = 0;
       serialMsgEnd = 0;

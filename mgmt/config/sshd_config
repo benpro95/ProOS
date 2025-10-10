@@ -52,10 +52,6 @@ PasswordAuthentication no
 GSSAPIAuthentication no
 #GSSAPICleanupCredentials yes
 
-## Enable Older Encryption Algorithms
-HostKeyAlgorithms +ssh-rsa
-PubkeyAcceptedKeyTypes +ssh-rsa
-
 X11Forwarding yes
 X11DisplayOffset 10
 PrintMotd no

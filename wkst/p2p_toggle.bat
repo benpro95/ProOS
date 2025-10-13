@@ -1,10 +1,10 @@
 @ECHO OFF
 IF EXIST "C:\temp\p2p-on.state" (
-    ECHO *** Switching to DisplayPort ***
-    START /MIN "DELL_DDM" "C:\Program Files\Dell\Dell Display Manager 2\DDM.exe" /console start /writeactiveinput DP /writesubinput USB-C /writepxp off
+    ECHO *** Switching to Single Input ***
+    START /MIN "DELL_DDM" "C:\Program Files\Dell\Dell Display Manager 2\DDM.exe" /console start /writepxp off
     DEL "C:\temp\p2p-on.state"
 ) ELSE (
-    ECHO *** Switching to DisplayPort / USB-C P2P ***
+    ECHO *** Switching to DisplayPort - USB-C P2P ***
     START /MIN "DELL_DDM" "C:\Program Files\Dell\Dell Display Manager 2\DDM.exe" /console start /writeactiveinput DP /writesubinput USB-C /writepxp pbp-2h-fill
     ECHO ON > "C:\temp\p2p-on.state"
 )

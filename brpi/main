@@ -140,29 +140,30 @@ exit
 ;;
 
 ampstateon)
-## Power On (Last Input)
-ZTERM_COM "01001" 
+## Power On to Optical #B Input
+ZTERM_COM "01004"
 BLINKLED
 exit
 ;;
 
 ampstateoff)
 ## Power Off
-ZTERM_COM "01002" 
+ZTERM_COM "01002"
+systemctl stop rpi-relaxloop
+BLINKLED
+exit
+;;
+
+ampon-lastin)
+## Power On to Last Input
+ZTERM_COM "01001"
 BLINKLED
 exit
 ;;
 
 ampon-coax)
 ## Power On (Coaxial Input)
-ZTERM_COM "01003" 
-BLINKLED
-exit
-;;
-
-ampon-optb)
-## Power On (Optical #B Input)
-ZTERM_COM "01004" 
+ZTERM_COM "01003"
 BLINKLED
 exit
 ;;

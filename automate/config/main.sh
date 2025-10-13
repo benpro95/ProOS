@@ -40,11 +40,11 @@ function CALLAPI(){
 function CALLPICO(){
   ## Pi Pico HTTP API call
   local PICO_IP="${1}"
-  local PICO_ARG1="${2}"
-  if [[ "$PICO_ARG1" == "" ]]; then
+  local PICO_ARG="${2}"
+  if [[ "$PICO_ARG" == "" ]]; then
     return
   fi
-  SERVER="http://$PICO_IP:80/api/$PICO_ARG1"
+  SERVER="http://$PICO_IP:80/api/$PICO_ARG"
   ## API GET request wait then read response
   DELIM="|"
   APIRESP="$(/usr/bin/curl $CURLARGS $SERVER)"

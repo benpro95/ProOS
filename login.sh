@@ -128,9 +128,13 @@ fi
 POST_DEPLOY_MENU(){
   echo "'d' to re-deploy"    
   echo "'u' to update packages"
-  echo "'x' to reboot system"
   if [ "$INTMODE" == "pi" ]; then
     echo "'r' to reboot in read/only mode"
+  else
+    echo "'r' to reboot system"
+  fi
+  if [ "$INTMODE" == "pi" ]; then
+    echo "'x' to reboot pi"
   fi
   echo "'s' for a shell on $HOST"    
   echo "press (any) other key to exit"
@@ -141,16 +145,22 @@ POST_DEPLOY_MENU(){
     SSH_LOGIN
     EXIT_PRGM
   fi
+  if [[ $REPLY =~ ^[Rr]$ ]]
+  then
+    if [ "$INTMODE" == "pi" ]; then
+      ssh -t -o $SSH_ARGS root@$HOST "/opt/rpi/init ro"
+      EXIT_PRGM
+    else
+      echo "Rebooting $HOST..."
+      ssh -t -o $SSH_ARGS root@$HOST "reboot"
+      EXIT_PRGM
+    fi
+  fi
   if [[ $REPLY =~ ^[Xx]$ ]]
   then
-    echo "Rebooting $HOST..."
-    ssh -t -o $SSH_ARGS root@$HOST "reboot"
-    EXIT_PRGM
-  fi
-  if [ "$INTMODE" == "pi" ]; then
-    if [[ $REPLY =~ ^[Rr]$ ]]
-    then
-      ssh -t -o $SSH_ARGS root@$HOST "/opt/rpi/init ro"
+    if [ "$INTMODE" == "pi" ]; then
+      echo "Rebooting $HOST..."
+      ssh -t -o $SSH_ARGS root@$HOST "reboot"
       EXIT_PRGM
     fi
   fi

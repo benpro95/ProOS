@@ -6,6 +6,7 @@
 TRIGGERS_DIR="/mnt/ramdisk"
 LOG_FILE="$TRIGGERS_DIR/sysout.txt"
 LOCK_FILE="/mnt/ramdisk/locks/actiontrig.lock"
+WRITE_TRL=""
 
 ## Check for lock file
 if [ -e "$LOCK_FILE" ]; then
@@ -13,7 +14,7 @@ if [ -e "$LOCK_FILE" ]; then
   exit
 fi
 
-## Log file
+## Create log file
 if [ ! -e "$LOG_FILE" ]; then
   touch "$LOG_FILE"
   chmod 777 "$LOG_FILE"
@@ -21,8 +22,6 @@ fi
 
 ## Create lock file
 touch "$LOCK_FILE"
-
-echo " "
 
 ### IMPORT ZFS ########################################   
 if [ -e "$TRIGGERS_DIR/attach_bkps.txt" ]; then
@@ -54,6 +53,7 @@ if [ -e "$TRIGGERS_DIR/attach_bkps.txt" ]; then
   if [ -e "$TRIGGERS_DIR/pwd.txt" ]; then
     shred -n 2 -z -u "$TRIGGERS_DIR/pwd.txt"
   fi
+  WRITE_TRL="yes"
 fi
 
 ### EXPORT ZFS ########################################
@@ -82,6 +82,7 @@ if [ -e "$TRIGGERS_DIR/detach_bkps.txt" ]; then
   zfs unload-key -a
   zpool status
   zfs list
+  WRITE_TRL="yes"
 fi
 
 ## Toggle Proxmox Web Interface
@@ -95,12 +96,14 @@ if [ -e "$TRIGGERS_DIR/pve_webui_toggle.txt" ]; then
     echo "PVE web interface not running, starting service..." 
     systemctl start pveproxy
   fi
+  WRITE_TRL="yes"
 fi
 ## List ZFS Snapshots
 if [ -e "$TRIGGERS_DIR/pve_listsnaps.txt" ]; then
   rm -f "$TRIGGERS_DIR/pve_listsnaps.txt"
   echo "Snapshots on ZFS pool (tank/datastore):"
   zfs list -t snapshot tank/datastore | grep -o '^\S*'
+  WRITE_TRL="yes"
 fi
 ### START VMs #########################################
 #######################################################
@@ -108,51 +111,52 @@ if [ -e "$TRIGGERS_DIR/startxana.txt" ]; then
   rm -f "$TRIGGERS_DIR/startxana.txt"
   echo "starting xana..."
   qm start 105
-  echo "started xana."
+  WRITE_TRL="yes"
 fi
 if [ -e "$TRIGGERS_DIR/stopxana.txt" ]; then
   rm -f "$TRIGGERS_DIR/stopxana.txt"
   echo "shutting down xana..."
   qm stop 105
-  echo "stopped xana."
+  WRITE_TRL="yes"
 fi
 if [ -e "$TRIGGERS_DIR/restorexana.txt" ]; then
   rm -f "$TRIGGERS_DIR/restorexana.txt"
   echo "restoring xana..."
   qmrestore /opt/xana-restore-image.vma.zst \
     105 -force -storage scratch
-  echo "restored xana."
+  WRITE_TRL="yes"
 fi
 #######################################################
 if [ -e "$TRIGGERS_DIR/startunifi.txt" ]; then
   rm -f "$TRIGGERS_DIR/startunifi.txt"
   echo "starting unifi..."
   pct start 107
-  echo "started unifi."
+  WRITE_TRL="yes"
 fi
 if [ -e "$TRIGGERS_DIR/stopunifi.txt" ]; then
   rm -f "$TRIGGERS_DIR/stopunifi.txt"
   echo "shutting down unifi..."
   pct stop 107
-  echo "stopped unifi."
+  WRITE_TRL="yes"
 fi
 #######################################################
 if [ -e "$TRIGGERS_DIR/startlegacy.txt" ]; then
   rm -f "$TRIGGERS_DIR/startlegacy.txt"
   echo "starting legacy..."
   qm start 103
-  echo "started legacy."
+  WRITE_TRL="yes"
 fi
 if [ -e "$TRIGGERS_DIR/stoplegacy.txt" ]; then
   rm -f "$TRIGGERS_DIR/stoplegacy.txt"
   echo "shutting down legacy..."
   qm stop 103
-  echo "stopped legacy."
+  WRITE_TRL="yes"
 fi
 ### Write Server Log ##################################   
 if [ -e "$TRIGGERS_DIR/syslog.txt" ]; then
   rm -f "$TRIGGERS_DIR/syslog.txt"
   /usr/bin/sys-check
+  WRITE_TRL="yes"
 fi
   ###### Server VM Backup Script ######################
 if [ -e "$TRIGGERS_DIR/pve_vmsbkp.txt" ]; then
@@ -226,15 +230,19 @@ if [ -e "$TRIGGERS_DIR/pve_vmsbkp.txt" ]; then
   chmod -R 777 /mnt/datastore/data/ProOS/pve/vmbkps/*.conf
   chmod -R 777 /mnt/datastore/data/ProOS/pve/vmbkps/*.log
   echo "Backup Complete."
+  WRITE_TRL="yes"
 fi
 
-echo " "
-TRAILER=$(date)
-TRAILER+=" ("
-TRAILER+=$(hostname)
-TRAILER+=")"
-echo "$TRAILER"
-chmod 777 $LOG_FILE
+if [ "$WRITE_TRL" == "yes" ]; then
+  echo " "
+  TRAILER=$(date)
+  TRAILER+=" ("
+  TRAILER+=$(hostname)
+  TRAILER+=")"
+  echo "$TRAILER"
+  chmod 777 $LOG_FILE
+fi
+
 rm -f "$LOCK_FILE"
 exit
 

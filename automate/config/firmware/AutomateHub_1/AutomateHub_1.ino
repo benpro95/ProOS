@@ -44,6 +44,9 @@ uint32_t powerButton_1Millis;
 bool powerButton_2Last = 0;
 bool powerButton_2State = 0;
 uint32_t powerButton_2Millis;
+bool powerButton_3Last = 1;
+bool powerButton_3State = 1;
+uint32_t powerButton_3Millis;
 
 // serial resources
 #define serialBaudRate 9600
@@ -223,6 +226,7 @@ void loop() {
 void readDigitalInputs() {
   readPowerButton_1();
   readPowerButton_2();
+  readPowerButton_3();
   readTempHumidity();
 }
 
@@ -264,6 +268,26 @@ void readPowerButton_2() {
     }
   }
   powerButton_2Last = reading;
+}
+
+void readPowerButton_3() {
+  // read pin state
+  bool reading = digitalRead(PWR_IO_4);
+  // switch changed
+  if (reading != powerButton_3Last) {
+    // reset the debouncing timer
+    powerButton_3Millis = millis();
+  }
+  if ((millis() - powerButton_3Millis) > debounceDelay) {
+    if (reading != powerButton_3State) {
+      powerButton_3State = reading;
+      // input button was pressed
+      if (powerButton_3State == 0) { 
+        routeMessage(1,10,10); // toggle retropi
+      }
+    }
+  }
+  powerButton_3Last = reading;
 }
 
 //// RS-232 logic ////

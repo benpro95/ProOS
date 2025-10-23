@@ -379,7 +379,7 @@ async function aboutPrompt(){
   let aboutcancelb = document.createElement("button");
   aboutcancelb.type = "button"; 
   aboutcancelb.classList.add("button");
-  aboutcancelb.innerHTML = "Dismiss";
+  aboutcancelb.innerHTML = "Close";
   aboutcancelb.id = "about__btn";
   aboutprompt.appendChild(aboutcancelb); //append cancel-button
   document.body.appendChild(aboutprompt); //append the password-prompt so it gets visible

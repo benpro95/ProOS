@@ -503,7 +503,7 @@ if [ "$SECOND_ARG" != "" ]; then
   if [[ "$LINKTITLE" != "" ]] && [[ "$LINKTITLE" != "\n" ]]; then
     echo "$LINKTITLE"
   else
-    echo "Error!"
+    echo "Site lookup error!"
   fi
 fi
 exit

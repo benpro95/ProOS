@@ -20,7 +20,7 @@ apt-get --yes update
 ## Install Packages
 apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates bpytop \
  apt-transport-https wget unzip gnupg rsync curl screen parallel libdbus-1-dev \
- ethtool libdbus-glib-1-dev locales aptitude sudo gnupg scrub binutils \
+ ethtool libdbus-glib-1-dev locales aptitude sudo gnupg scrub binutils nmap \
  avahi-daemon ffmpeg pip npm python3-ament-xmllint etherwake wakeonlan
 
 ## Remove Packages

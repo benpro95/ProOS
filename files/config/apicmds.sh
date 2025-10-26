@@ -7,6 +7,7 @@ CMD="$1"
 RAMDISK="$2"
 LOGFILE="$3"
 STATUSFILE="/mnt/extbkps/status.txt"
+NET_RANGE="192.168.1.0"
 
 CURBKPDTES=()
 function SAVEBKPDATES () {
@@ -212,7 +213,6 @@ fi
 
 ## END REGIONS ##
 
-## Copy To Media
 if [[ $CMD == "scratchcopy" ]]
 then
   if [ -e "/mnt/media/Downloads" ]; then
@@ -224,6 +224,7 @@ then
   fi
   exit
 fi
+
 if [[ $CMD == "git_push" ]]
 then
   TIMESTMP=$(date '+%Y-%m-%d %H:%M')
@@ -247,14 +248,6 @@ then
   truncate -s 0 $LOGFILE
   neofetch --ascii_distro debian | \
     sed 's/\x1B[@A-Z\\\]^_]\|\x1B\[[0-9:;<=>?]*[-!"#$%&'"'"'()*+,.\/]*[][\\@A-Z^_`a-z{|}~]//g' 
-  exit
-fi
-
-if [[ $CMD == "netscan" ]]
-then
-  echo "** network scan **"
-  ##nmap --unprivileged -v --open -PT 192.168.1.0/24
-  nmap --unprivileged -v --open -sn 192.168.1.0/24
   exit
 fi
 

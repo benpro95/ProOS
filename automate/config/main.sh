@@ -516,7 +516,13 @@ then
   echo "server argument cannot be empty!"
   exit
 fi
-## write trigger file
+## Network Scanner
+if [[ "${SERVERARG}" == "netscan" ]]
+then
+  echo "** network scan **"
+  nmap -v --open -sn $NET_RANGE/24
+  exit
+fi
 echo " " 
 echo "$SERVERARG sent." &>> $LOGFILE
 touch $RAMDISK/$SERVERARG.txt

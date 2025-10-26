@@ -122,7 +122,7 @@ cp /tmp/config/fuse.conf /etc/fuse.conf
 chmod 644 /etc/fuse.conf
 chown root:root /etc/fuse.conf
 
-## Quiet Login 
+## Quiet Login
 touch /root/.hushlogin
 chmod 644 /root/.hushlogin
 chown root:root /root/.hushlogin
@@ -147,7 +147,7 @@ cp /tmp/config/rc-local.service /etc/systemd/system/
 chmod 644 /etc/systemd/system/rc-local.service
 chown root:root /etc/systemd/system/rc-local.service
 cp /tmp/config/rc.local /etc/
-chmod 755 /etc/rc.local
+chmod +x /etc/rc.local
 chown root:root /etc/rc.local
 systemctl enable rc-local
 
@@ -168,7 +168,7 @@ chown root:root /etc/rsyslog.d/ignore-session-slice.conf
 
 ## Camera Cleanup Script
 cp /tmp/config/camcleanup.sh /usr/bin/camcleanup
-chmod 755 /usr/bin/camcleanup
+chmod +x /usr/bin/camcleanup
 chown root:root /usr/bin/camcleanup
 
 ## Samba Configuration

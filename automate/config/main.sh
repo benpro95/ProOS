@@ -9,13 +9,14 @@ LOCKFOLDER="$RAMDISK/locks"
 LOGFILE="$RAMDISK/sysout.txt"
 MAX_PING_WAIT="0.5" ## Max Ping Timeout (s)
 LOCAL_DOMAIN="home" ## Local DNS Domain
+NET_RANGE="192.168.1.0" ## Network IP Range
 PICOLAMP1_IP="192.168.1.18" ## Window Lamp
 LRXMIT_IP="192.168.1.12" ## LEDwall Pi
 DESK_IP="192.168.1.14" ## Desktop PC
 BRPI_IP="192.168.1.15" ## Bedroom Pi
 BRPC_IP="192.168.1.17" ## Bedroom PC
 BRPC_MAC="90:2e:16:46:86:43" ## Bedroom PC MAC
- 
+
 ## Curl Command Line Arguments
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 3 --retry 1 --retry-delay 1 --no-keepalive"
 
@@ -520,7 +521,7 @@ fi
 if [[ "${SERVERARG}" == "netscan" ]]
 then
   echo "** network scan **"
-  nmap -v --open -sn $NET_RANGE/24
+  nmap -v --open -sn $NET_RANGE/24 &>> $LOGFILE
   exit
 fi
 echo " " 

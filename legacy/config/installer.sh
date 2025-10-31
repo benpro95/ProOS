@@ -40,6 +40,10 @@ ${SHRPASS}
 ${SHRPASS}
 EOD
 smbpasswd -a -s ${SHRUSER1} << EOD
+DUMMY
+DUMMY
+EOD
+smbpasswd -a -s ${SHRUSER1} << EOD
 ${SHRPASS}
 ${SHRPASS}
 EOD
@@ -51,6 +55,10 @@ useradd "$SHRUSER2" --password='' --shell=/bin/false
 passwd ${SHRUSER2} << EOD
 ${SHRPASS}
 ${SHRPASS}
+EOD
+smbpasswd -a -s ${SHRUSER2} << EOD
+DUMMY
+DUMMY
 EOD
 smbpasswd -a -s ${SHRUSER2} << EOD
 ${SHRPASS}

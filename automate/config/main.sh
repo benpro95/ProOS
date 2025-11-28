@@ -67,11 +67,13 @@ function LOCAL_PING(){
 function LOCALCOM(){
   local ZTERM_CMD="${1}"
   /usr/bin/singleton ZTERM_PROC /usr/bin/ztermcom $ZTERM_CMD
+  sleep 0.1
 }
 
 function LED_PRESET(){
   local LED_PRESET_CMD="${1}"
   /opt/system/leds "$LED_PRESET_CMD"
+  sleep 0.1
 }
 
 function WAKE_BRPC() {
@@ -509,7 +511,7 @@ fi
 exit
 ;;
 
-## Server Controls
+## Server Functions
 server)
 SERVERARG="$SECOND_ARG"
 if [[ "${SERVERARG}" == "" ]]
@@ -526,6 +528,7 @@ then
 fi
 echo " " 
 echo "$SERVERARG sent." &>> $LOGFILE
+## Write Trigger File
 touch $RAMDISK/$SERVERARG.txt
 exit
 ;;

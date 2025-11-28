@@ -9,6 +9,7 @@ LOGFILE="$3"
 STATUSFILE="/mnt/extbkps/status.txt"
 NET_RANGE="192.168.1.0"
 
+## Store backup dates in array
 CURBKPDTES=()
 function SAVEBKPDATES () {
   local _POOL="$1"
@@ -16,6 +17,20 @@ function SAVEBKPDATES () {
   local _LASTSYNC=$(date -r /mnt/extbkps/$_POOL/LastSynced.txt '+%F %r')
   local _CURBKPLNE=$(echo "$_POOL|$_LASTSYNC" | sed -e 's/ /_/g')
   CURBKPDTES+=( $_CURBKPLNE )
+}
+
+## Backup running indicator LED
+function BKP_LED_ON () {
+  LEDWALL_LED "whtledon"
+}
+function BKP_LED_OFF () {
+  LEDWALL_LED "whtledoff"
+}
+function LEDWALL_LED () {
+  local _APICMD="$1"
+  /usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 30 \
+  --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive \
+  --url "http://ledwall.home/exec.php?var=&arg=$_APICMD&action=main" > /dev/null 2>&1 &
 }
 
 ### Only run if specific user
@@ -213,18 +228,6 @@ fi
 
 ## END REGIONS ##
 
-if [[ $CMD == "scratchcopy" ]]
-then
-  if [ -e "/mnt/media/Downloads" ]; then
-  	rsync -aPv --exclude='*humbs.db' --exclude='*esktop.ini' \
-  	--exclude='.*' --exclude='$RECYCLE.BIN' \
-  	/mnt/scratch/downloads/* /mnt/media/Downloads/
-  else
-    echo "folder not found."  
-  fi
-  exit
-fi
-
 if [[ $CMD == "git_push" ]]
 then
   TIMESTMP=$(date '+%Y-%m-%d %H:%M')
@@ -277,9 +280,7 @@ then
   echo "****************** starting backup **********************"
   echo " "
   ## Turn on LED
-  /usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 5 \
-  --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive \
-  --url "http://ledwall.home/exec.php?var=&arg=whtledon&action=main" > /dev/null 2>&1 &
+  BKP_LED_ON
   ## Read Backup Drive Names
   readarray -t ZFSPOOLS < $RAMDISK/drives.txt
   #######################
@@ -411,9 +412,7 @@ then
   ## Wait for drives to detach
   echo "wait $WAIT_TIME second(s) for drives to detach."
   ## Turn off LED
-  /usr/bin/curl --silent --fail --ipv4 --no-buffer --max-time 30 \
-  --retry 3 --retry-all-errors --retry-delay 1 --no-keepalive \
-  --url "http://ledwall.home/exec.php?var=&arg=whtledoff&action=main" > /dev/null 2>&1 &
+  BKP_LED_OFF
   echo "****************** backup complete **********************"
   exit
 fi

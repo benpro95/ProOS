@@ -283,7 +283,6 @@ then
   ## Read Backup Drive Names
   readarray -t ZFSPOOLS < $RAMDISK/drives.txt
   #######################
-  #######################
   ## RSYNC ##############
   for _POOL in "${ZFSPOOLS[@]}"; do
     ## Remove Invalid Characters
@@ -292,11 +291,11 @@ then
       ## USB Flash Drives
       if [[ ${POOL::3} == "usb" ]]; then
         #################################
-        if [ ! -e /mnt/extbkps/$POOL/Data ]; then
+        if [ ! -e "/mnt/extbkps/$POOL/Data" ]; then
           echo "flash drive not connected $POOL"
         else
           #### Data Share ####
-          if [ ! -e /mnt/data/ProOS ]; then
+          if [ ! -e "/mnt/data/ProOS" ]; then
             echo "Data' share not found!"
           else
             echo "syncing 'Data' share to $POOL drive..."
@@ -306,7 +305,7 @@ then
             /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
           fi
           #### Regions Share ####
-          if [ ! -e $REGDATA/SFTP ]; then
+          if [ ! -e "$REGDATA/SFTP" ]; then
             echo "'Regions' share not found!"
           else
             echo "syncing 'Regions' share to $POOL drive..."
@@ -315,16 +314,16 @@ then
           fi
           ##### END BACKUP #####
           SAVEBKPDATES "$POOL"
-        fi  
+        fi
       fi
       ## Hard Drives
       if [[ ${POOL::3} == "hdd" ]]; then
         #################################
-        if [ ! -e /mnt/extbkps/$POOL/Data ]; then
+        if [ ! -e "/mnt/extbkps/$POOL/Data" ]; then
           echo "hard drive not connected $POOL"
         else      
           #### Data Share ####
-          if [ ! -e /mnt/data/ProOS ]; then
+          if [ ! -e "/mnt/data/ProOS" ]; then
             echo "Data' share not found!"
           else
             echo "syncing 'Data' share to $POOL drive..."
@@ -332,7 +331,7 @@ then
             /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
           fi
           #### Regions Share ####
-          if [ ! -e $REGDATA/SFTP ]; then
+          if [ ! -e "$REGDATA/SFTP" ]; then
             echo "'Regions' share not found!"
           else
             echo "syncing 'Regions' share to $POOL drive..."
@@ -340,7 +339,7 @@ then
             $REGDATA/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
           fi
           #### Media Share ####
-          if [ ! -e /mnt/media/Music ]; then
+          if [ ! -e "/mnt/media/Music" ]; then
             echo "'Media' share not found!"
           else
             echo "syncing 'Media' share to $POOL drive..."

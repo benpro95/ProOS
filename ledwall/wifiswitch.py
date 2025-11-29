@@ -1,7 +1,8 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
 # Ben Provenzano III
 # uses BCM pin numbering
+# when front panel button is held down for +2 seconds lights are turned off, 
+# when held +6 seconds network is toggled between wifi client and wifi access point modes.
 
 use_button=13
 

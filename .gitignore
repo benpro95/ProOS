@@ -25,4 +25,5 @@ pve/photos
 *.key*
 *.rsa*
 *.pub*
+*.ppk*
 .ssh

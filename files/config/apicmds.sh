@@ -7,7 +7,6 @@ CMD="$1"
 RAMDISK="$2"
 LOGFILE="$3"
 STATUSFILE="/mnt/extbkps/status.txt"
-NET_RANGE="192.168.1.0"
 
 ## Store backup dates in array
 CURBKPDTES=()
@@ -39,8 +38,7 @@ if [ "$USER" != "ben" ]; then
   exit
 fi
 
-if [[ $CMD == "last_backup_dates" ]]
-then
+if [[ $CMD == "last_backup_dates" ]]; then
   echo " " 
   echo "last backup dates: "
   readarray -t LSTBKPARR < "$STATUSFILE"
@@ -57,7 +55,7 @@ REGMNTS="/mnt/regmnts"
 ## Regions Data Folder
 REGDATA="/mnt/.regions"
 
-PATHMOUNTED() { findmnt --target "$1" >/dev/null;} 
+PATHMOUNTED() { findmnt --target "$1" >/dev/null; } 
 
 function UMNT_FUSEFS () {
   VOLNME="$1"
@@ -240,12 +238,6 @@ then
   exit
 fi
 
-if [[ $CMD == "lastlog" ]]
-then
-  lastlog 
-  exit
-fi
-
 if [[ $CMD == "clearlog" ]]
 then
   truncate -s 0 $LOGFILE
@@ -258,12 +250,10 @@ fi
 if [[ $CMD == "backupstd" || $CMD == "backupchk" ]]
 then
   ## Standard or Checksum RSYNC
-  if [[ $CMD == "backupstd" ]]
-  then
+  if [[ $CMD == "backupstd" ]]; then
     CHECKSUM=""
   fi
-  if [[ $CMD == "backupchk" ]]
-  then
+  if [[ $CMD == "backupchk" ]]; then
     echo "checksum compare option selected, this backup will take awhile!"
     CHECKSUM="--checksum"
   fi

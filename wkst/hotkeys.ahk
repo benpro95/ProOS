@@ -33,13 +33,13 @@ return
 
 ;; Mouse Control ################
 
-F4::
+F5::
 Run, PowerShell.exe -ExecutionPolicy Bypass -File "C:\Program Files\Automate\mouse_acc.ps1"
 return
 
 ;; Monitor Control ################
 
-!F5::
+^F5::
 Run, "C:\Program Files\Automate\p2p_toggle.bat"
 return
 

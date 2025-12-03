@@ -288,6 +288,7 @@ input.chkbox {
 
 /* Add styles to the form container */
 .textBoxContainer {
+  border-radius: 15px;
   height: 100%;
   width: 100%;
   padding-bottom: 103px; /* buttons position */
@@ -499,9 +500,11 @@ input.chkbox {
   background-color: color-mix(in srgb, var(--main-color) 40%, black);
   border: 3px solid black;
 }
+
 #bookmark__search_txt::placeholder {
   color: rgb(193, 193, 193);
 }
+
 #bookmark__search_txt:focus {
   outline: 3px solid color-mix(in srgb, var(--main-color) 50%, white);
   box-shadow: 0 0 15px color-mix(in srgb, var(--main-color) 50%, white);
@@ -517,6 +520,7 @@ input.chkbox {
  */
 
 #pass__prompt_win {
+  border-radius: 15px;
   background-color: black;
   border: 1px solid white;
   position: fixed;
@@ -553,6 +557,7 @@ input.chkbox {
  */
 
 #pinet__prompt {
+  border-radius: 15px;
   background-color: black;
   border: 1px solid white;
   position: fixed;
@@ -590,6 +595,7 @@ input.chkbox {
  */
 
 #wifi__prompt {
+  border-radius: 15px;
   background-color: black;
   border: 1px solid white;
   text-align: center;
@@ -628,6 +634,7 @@ input.chkbox {
  */
 
 #editFav__prompt {
+  border-radius: 15px;
   background-color: black;
   border: 1px solid white;
   text-align: center;
@@ -678,6 +685,7 @@ input.chkbox {
  */
 
 #about__prompt {
+  border-radius: 15px;
   background-color: black;
   border: 1px solid white;
   text-align: center;
@@ -719,6 +727,7 @@ input.chkbox {
  */
 
 .svropt__prompt {
+  border-radius: 15px;
   display: none;
   overflow-y: visible;
   background-color: black;
@@ -768,6 +777,7 @@ input.chkbox {
  */
 
 #color__prompt {
+  border-radius: 15px;
   background-color: black;
   border: 1px solid white;
   position: fixed;
@@ -1060,6 +1070,7 @@ input.chkbox {
  */
 
 #vol-popup {
+  border-radius: 15px;
   background-color: black;
   border: 1px solid white;
   position: fixed;
@@ -1094,6 +1105,7 @@ input.chkbox {
   border-radius: 20px;
   z-index: 1;
 }
+
 .progress_grid .bar_progress {
   left: 0px;
   width: 30%;

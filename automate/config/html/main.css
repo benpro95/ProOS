@@ -197,7 +197,7 @@ input.chkbox {
   text-align: center;
   color: #fff; /* buttons font color */
   text-shadow: 1px 1px 1px #000;
-  border-radius: 12px;
+  border-radius: 15px;
   background-color: color-mix(in srgb, var(--main-color),#0000 40%); /* % of transparency */  
   background-image: linear-gradient(to top left,
                                     rgba(0, 0, 0, .2),
@@ -266,6 +266,7 @@ input.chkbox {
   line-height: 2.65;
   overflow: hidden;
   background-color: #2d353d; /* nav background color */
+  border-radius: 15px;
 }
 
 .topnav a {
@@ -1108,6 +1109,7 @@ input.chkbox {
  */
 
  #temp__prompt {
+  border-radius: 15px;
   background-color: black;
   border: 1px solid white;
   margin-left: -125px;

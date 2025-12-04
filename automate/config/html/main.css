@@ -33,14 +33,16 @@ input[type="checkbox"] {
 
 .scroll-bar-style::-webkit-scrollbar-track
 {
+  margin-top: 3px;
+  margin-bottom: 3px;
   background-color: #000;
-  border-radius: 6px;
+  border-radius: 5px;
 }
 
 .scroll-bar-style::-webkit-scrollbar-thumb
 {
   background-color: color-mix(in srgb, var(--main-color) 70%, white);
-  border-radius: 6px;  
+  border-radius: 5px;  
 }
 
 .scroll-bar-style::-webkit-scrollbar
@@ -138,44 +140,6 @@ input.chkbox {
   padding-left: 7px;
 }
 
-.popup {
-  bottom: 5px;
-  display: none;
-  position: fixed;
-  right: 5px;
-  border: 6px solid #1f252a; /* popup window border color */
-  z-index: 99;
-}
-
-.log-popup {
-  width: 75%; /* log window width */
-  height: 95%; /* log window height */
-  min-height: 95%;
-}
-
-.msg-popup {
-  width: 60%; /* message window width */
-  height: 60%; /* message window height */
-  min-height: 60%;
-}
-
-/* adjust elements when screen width is LT 900px */
-@media screen and (max-width: 900px) {
-  .column-right {
-    padding-left: 0px;
-  }
-  .grid {
-    flex-direction: column;
-    align-items: center;
-  }
-  .msg-popup {
-    width: 80%; /* message window width */
-  }
-  .log-popup {
-    width: 95%; /* log window width */  
-  }
-}
-
 .banner__text {
   display: none;
   margin-top: 6px;
@@ -206,6 +170,7 @@ input.chkbox {
   box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
               inset -2px -2px 3px rgba(0, 0, 0, .6);         
 }
+
 .button:hover {
   background-color: var(--main-color);
   background-image: linear-gradient(to top left,
@@ -215,6 +180,7 @@ input.chkbox {
   box-shadow: inset 4px 4px 6px rgba(255, 255, 255, .6),
               inset -4px -4px 6px rgba(0, 0, 0, .6);
 }
+
 .button:active {
   box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
               inset 2px 2px 3px rgba(0, 0, 0, .6);
@@ -282,26 +248,68 @@ input.chkbox {
 }
 
 .topnav a:hover {
-  background-color: #000;
+  background-color: color-mix(in srgb, var(--main-color) 70%, black);
   color: white;
+}
+
+/* server window */
+.popup { 
+  border-radius: 15px;
+  bottom: 5px;
+  display: none;
+  position: fixed;
+  right: 5px;
+  border: 8px solid #1f252a; /* popup window border color */
+  z-index: 99;
+}
+
+.log-popup {
+  width: 75%; /* log window width */
+  height: 95%; /* log window height */
+  min-height: 95%;
+}
+
+.msg-popup {
+  width: 60%; /* message window width */
+  height: 60%; /* message window height */
+  min-height: 60%;
+}
+
+/* adjust elements when screen width is LT 900px */
+@media screen and (max-width: 900px) {
+  .column-right {
+    padding-left: 0px;
+  }
+  .grid {
+    flex-direction: column;
+    align-items: center;
+  }
+  .msg-popup {
+    width: 80%; /* message window width */
+  }
+  .log-popup {
+    width: 95%; /* log window width */  
+  }
 }
 
 /* Add styles to the form container */
 .textBoxContainer {
-  border-radius: 15px;
+  background-color: #1f252a;
+  overflow: hidden;
   height: 100%;
   width: 100%;
-  padding-bottom: 103px; /* buttons position */
-  background-color: #2d353d; /* popup window frame color */
+  padding-bottom: 93px; /* buttons position */
 }
 
 /* Full-width textarea */
 .textBoxContainer textarea {
+  border-radius: 7px;
   height: 100%;
   width: 100%;
   color: #fff; /* textbox font color */
   background: #000; /* textbox background color */
   resize: none;
+  border: 0px;
   font-kerning: none;
   font-family: monospace,system-ui; /* log window font */
   font-size: 15px; /* page default font size */
@@ -356,6 +364,7 @@ input.chkbox {
 }
 
 .nav_dd_left {
+  padding-left: 5px;
   position: absolute;
   display: block;
   z-index: 999;
@@ -381,6 +390,7 @@ input.chkbox {
 .dd-menu {
   position: fixed;
   min-width: 125px;
+  border-radius: 5px;
 }
 
 /* dropdown menu on buttons */
@@ -471,6 +481,8 @@ input.chkbox {
 }
 
 #bookmarks::-webkit-scrollbar-track {
+  margin-top: 3px;
+  margin-bottom: 3px;
   background-color: #2d353d;
   border-radius: 5px;
 }
@@ -822,6 +834,7 @@ input.chkbox {
  */
 
 #camForm {
+  border-radius: 15px;
   bottom: 5px;
   right: 5px;
   width: auto;
@@ -833,6 +846,7 @@ input.chkbox {
 }
 
 #camDiv {
+  border-radius: 15px;
   background-color: #2d353d; /* popup window frame color */
   overflow: hidden;
   width: 100%;  
@@ -841,6 +855,7 @@ input.chkbox {
 }
 
 #camImage {
+  border-radius: 15px;
   width: 90vw;
   height: auto;
   max-height: 80vh;

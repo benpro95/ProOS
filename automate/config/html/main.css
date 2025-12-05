@@ -253,13 +253,16 @@ input.chkbox {
 }
 
 /* server window */
-.popup { 
+
+.popup {
   border-radius: 15px;
   bottom: 5px;
   display: none;
   position: fixed;
   right: 5px;
-  border: 8px solid #1f252a; /* popup window border color */
+  border: 8px solid #202223; /* popup window border color */
+  outline: 1px solid #fff;
+  outline-offset: 0px;
   z-index: 99;
 }
 
@@ -267,12 +270,6 @@ input.chkbox {
   width: 75%; /* log window width */
   height: 95%; /* log window height */
   min-height: 95%;
-}
-
-.msg-popup {
-  width: 60%; /* message window width */
-  height: 60%; /* message window height */
-  min-height: 60%;
 }
 
 /* adjust elements when screen width is LT 900px */
@@ -284,9 +281,6 @@ input.chkbox {
     flex-direction: column;
     align-items: center;
   }
-  .msg-popup {
-    width: 80%; /* message window width */
-  }
   .log-popup {
     width: 95%; /* log window width */  
   }
@@ -294,11 +288,11 @@ input.chkbox {
 
 /* Add styles to the form container */
 .textBoxContainer {
-  background-color: #1f252a;
+  background-color: #202223; /* popup window button container color */
   overflow: hidden;
   height: 100%;
   width: 100%;
-  padding-bottom: 93px; /* buttons position */
+  padding-bottom: 87px;
 }
 
 /* Full-width textarea */
@@ -309,10 +303,11 @@ input.chkbox {
   color: #fff; /* textbox font color */
   background: #000; /* textbox background color */
   resize: none;
-  border: 0px;
   font-kerning: none;
   font-family: monospace,system-ui; /* log window font */
   font-size: 15px; /* page default font size */
+  margin-bottom: 5px;
+  border: 0px;
 }
 
 /* When the textarea gets focus, do something */
@@ -322,15 +317,16 @@ input.chkbox {
 }
 
 .button_left_txtwin {
-  height: 80px;
-  width: 80px;
+  margin: 0px;
+  height: 75px;
+  width: 75px;
 }
 
 .button_right_txtwin {
-  position: absolute;
-  height: 80px;
+  margin: 0px;
+  height: 75px;
   width: 120px;
-  right: 5px;
+  float: right;
 }
 
 /* log window top menu */

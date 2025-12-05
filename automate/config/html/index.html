@@ -553,22 +553,22 @@
 </div>
 
 <div class="log-popup popup" id="logForm">
-  <form class="textBoxContainer">
+  <div class="textBoxContainer">
     <textarea readonly class="scroll-bar-style" id="logTextBox" spellcheck="false" placeholder="" required="">
-    </textarea>  
+    </textarea>
     <button type="button" class="button button_left_txtwin" onclick="closePopup()">
-          <span class="button__textsmall"><i class="fas fa-times"></i></span>
-    </button>       
+      <span class="button__textsmall"><i class="fas fa-times"></i></span>
+    </button>
     <button type="button" class="button button_left_txtwin" onclick="openServerOptions()">
-          <span class="button__textsmall"><i class="fad fa-sliders-h"></i></span>
+      <span class="button__textsmall"><i class="fad fa-sliders-h"></i></span>
     </button>           
     <button type="button" class="button button_left_txtwin" onclick="loadLog('sysout')">
-          <span class="button__textsmall"><i class="fad fa-sync-alt"></i></span>
+      <span class="button__textsmall"><i class="fad fa-sync-alt"></i></span>
     </button>
     <button type="button" class="button button_right_txtwin" id="sendButton" onclick="serverSend()">
-          <span class="button__textsmall"><i class="fad fa-upload"></i></span>
-    </button>
-  </form> 
+      <span class="button__textsmall"><i class="fad fa-upload"></i></span>
+    </button>  
+  </div> 
 </div>
 
 <div id="camForm">

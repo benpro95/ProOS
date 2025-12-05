@@ -290,16 +290,16 @@ input.chkbox {
 }
 
 /* Add styles to the form container */
-.textBoxContainer {
+.log-popup-ctn {
+  padding-bottom: 85px;
   background-color: #202223;
   overflow: hidden;
   height: 100%;
   width: 100%;
-  padding-bottom: 85px;
 }
 
 /* Full-width textarea */
-.textBoxContainer textarea {
+.log-popup-ctn textarea {
   border-radius: 7px;
   margin-bottom: 3px;
   height: 100%;
@@ -314,7 +314,7 @@ input.chkbox {
 }
 
 /* When the textarea gets focus, do something */
-.textBoxContainer textarea:focus {
+.log-popup-ctn textarea:focus {
   background: #000; /* textbox selected background color */
   outline: none;
 }

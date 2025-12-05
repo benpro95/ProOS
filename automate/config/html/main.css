@@ -189,6 +189,7 @@ input.chkbox {
 .submode_btn {
   background-color: color-mix(in srgb, #8d2a2a,#0000 30%);
 }
+
 .submode_btn:hover {
   background-color: #8d2a2a;
 }
@@ -232,7 +233,7 @@ input.chkbox {
   line-height: 2.65;
   overflow: hidden;
   background-color: #2d353d; /* nav background color */
-  border-radius: 15px;
+  border-radius: 25px;
 }
 
 .topnav a {

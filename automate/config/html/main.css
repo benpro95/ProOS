@@ -230,16 +230,17 @@ input.chkbox {
   outline: none;
   margin: 5px;
   cursor: pointer;
-  line-height: 2.65;
+  line-height: 2.5;
   overflow: hidden;
   background-color: #2d353d; /* nav background color */
   border-radius: 25px;
+  opacity: 75%;
 }
 
 .topnav a {
+  float: left;
   border: none;
   outline: none;
-  float: left;
   padding: 0px 12px;
   padding-top: 4px;
   text-decoration: none;
@@ -257,12 +258,13 @@ input.chkbox {
 
 .popup {
   border-radius: 15px;
-  bottom: 5px;
   display: none;
-  position: fixed;
-  right: 5px;
+  position: fixed; /* Fixes the element relative to the viewport */
+  bottom: 10px;
+  left: 50%; /* Positions the left edge at the horizontal center */
+  transform: translateX(-50%); /* Adjusts for the element's width to truly center it */
   border: 8px solid #202223;
-  outline: 1px solid #fff;
+  outline: 1px solid #a2a5a9;
   outline-offset: 0px;
   z-index: 99;
 }

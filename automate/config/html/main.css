@@ -260,7 +260,7 @@ input.chkbox {
   display: none;
   position: fixed;
   right: 5px;
-  border: 8px solid #202223; /* popup window border color */
+  border: 8px solid #202223;
   outline: 1px solid #fff;
   outline-offset: 0px;
   z-index: 99;
@@ -288,16 +288,17 @@ input.chkbox {
 
 /* Add styles to the form container */
 .textBoxContainer {
-  background-color: #202223; /* popup window button container color */
+  background-color: #202223;
   overflow: hidden;
   height: 100%;
   width: 100%;
-  padding-bottom: 87px;
+  padding-bottom: 85px;
 }
 
 /* Full-width textarea */
 .textBoxContainer textarea {
   border-radius: 7px;
+  margin-bottom: 3px;
   height: 100%;
   width: 100%;
   color: #fff; /* textbox font color */
@@ -306,7 +307,6 @@ input.chkbox {
   font-kerning: none;
   font-family: monospace,system-ui; /* log window font */
   font-size: 15px; /* page default font size */
-  margin-bottom: 5px;
   border: 0px;
 }
 
@@ -317,37 +317,54 @@ input.chkbox {
 }
 
 .button_left_txtwin {
+  background-color: var(--main-color);
   margin: 0px;
   height: 75px;
   width: 75px;
 }
 
 .button_right_txtwin {
+  background-color: var(--main-color);
   margin: 0px;
   height: 75px;
   width: 120px;
   float: right;
 }
 
-/* log window top menu */
-.scrollmenu {
-  cursor: pointer;
-  background-color: #2d353d;
+/*
+ *  Camera Window Style
+ */
+
+#camForm {
+  width: 90vw;
+  height: auto;
+}
+
+#camDiv {
+  background-color: #202223;
   overflow: hidden;
-  white-space: nowrap;
+  resize: none;
 }
 
-.scrollmenu a {
-  display: inline-block;
-  color: white;
-  text-align: left;
-  padding: 14px;
-  text-decoration: none;
+#camImage {
+  width: 100%;
+  height: auto;
+  max-height: 80vh;
+  aspect-ratio: 16 / 9;
+  margin-bottom: 3px;
+  border-radius: 7px;
+  overflow: clip;
 }
 
-/* menu hover over color*/
-.scrollmenu a:hover {
-  background-color: #000;
+#camButtonLeft {
+  background-color: var(--main-color);
+  margin: 0px;
+}  
+
+#camButtonRight {
+  background-color: var(--main-color);
+  float: right;
+  margin: 0px;
 }
 
 /*
@@ -379,24 +396,26 @@ input.chkbox {
 }
 
 .dd-selected {
-  background-color: #000;
+  border-radius: 5px;
+  background-color: color-mix(in srgb, var(--main-color) 80%, black);
 }
 
 /* dropdown menu on window */
 .dd-menu {
   position: fixed;
   min-width: 125px;
-  border-radius: 5px;
 }
 
 /* dropdown menu on buttons */
 .dd-button { 
   position: absolute;
   min-width: 130px;
+  border-radius: 5px;
 }
 
 /* dropdown menu content */
 .dd-content {
+  border-radius: 5px;
   cursor: pointer;
   display: none;
   background-color: #4d5b69;
@@ -413,11 +432,12 @@ input.chkbox {
   padding: 12px 16px;
   text-align: left;
   display: block;
-  &:not(.no_select):hover {
-    /* apply hover effect here */
-    background-color: #1c1e20;
-    color: #e8e5e5;
-  }   
+}
+
+.dd-content a:hover {
+  border-radius: 5px;
+  background-color: #1c1e20;
+  color: #e8e5e5;
 }
 
 /* Status Menu */
@@ -823,53 +843,6 @@ input.chkbox {
 #color__box::-webkit-color-swatch {
   border: solid 1px #000; /*change color of the swatch border here*/
   border-radius: 0px;
-}
-
-/*
- *  Camera Window Style
- */
-
-#camForm {
-  border-radius: 15px;
-  bottom: 5px;
-  right: 5px;
-  width: auto;
-  height: auto;
-  display: none;
-  position: fixed;
-  border: 6px solid #1f252a; /* popup window border color */
-  z-index: 99;
-}
-
-#camDiv {
-  border-radius: 15px;
-  background-color: #2d353d; /* popup window frame color */
-  overflow: hidden;
-  width: 100%;  
-  height: 100%;   
-  resize: none;
-}
-
-#camImage {
-  border-radius: 15px;
-  width: 90vw;
-  height: auto;
-  max-height: 80vh;
-  aspect-ratio: 16 / 9;
-  margin-bottom: 80px;
-  overflow: clip;
-}
-
-#camButtonLeft {
-  position: absolute;
-  left: 0px;
-  bottom: 0px;
-}  
-
-#camButtonRight {
-  position: absolute;
-  bottom: 0px;
-  right: 5px;
 }
 
 /*

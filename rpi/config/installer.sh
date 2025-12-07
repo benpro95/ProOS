@@ -77,7 +77,10 @@ apt-get $APTARGS locales console-setup aptitude libnss-mdns libnss3-tools usbuti
  build-essential autoconf make libtool binutils i2c-tools cmake yasm minicom rclone unzip \
  cryptsetup cryptsetup-bin texi2html socat nmap autoconf gnucobol4 avrdude arduino \
  automake cifs-utils neofetch fuse nodejs apt-utils sqlite3 shairport-sync \
- bluetooth pi-bluetooth bluez bluez-tools bluez-alsa-utils libbluetooth3
+ bluetooth pi-bluetooth bluez bluez-tools bluez-alsa-utils libbluetooth3 \
+ samba samba-common-bin samba-libs alsa-base alsa-utils mpg321 lame sox \
+ libupnp6 libexpat1 libexpat1 libimage-exiftool-perl xmltoman \
+ libjson-glib-1.0-0 libao-common xxd 
 
 ## AV Codecs Support
 apt-get $APTARGS gstreamer1.0-plugins-base ffmpeg gstreamer1.0-plugins-good \
@@ -118,13 +121,6 @@ mkdir -p /var/www/html
 chmod -R 777 /var/www/html
 chown -R www-data:www-data /var/www/html
 
-## USB File Service
-apt-get $APTARGS samba samba-common-bin samba-libs 
-
-## Audio Support
-apt-get $APTARGS alsa-base alsa-utils mpg321 lame sox libupnp6 libexpat1 libexpat1 \
- libimage-exiftool-perl xmltoman libjson-glib-1.0-0 libao-common xxd 
-
 ## Camera Motion Server
 apt-get $APTARGS motion libmicrohttpd12t64
 groupadd motion
@@ -150,7 +146,7 @@ apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp udhcpd usbmuxd
   libudisks2-0 dnsmasq wolfram-engine libssl-doc libatasmart4 libavahi-glib1 rng-tools rng-tools-debian \
   piwiz plymouth plymouth-label plymouth-themes pulseaudio pulseaudio-utils pavucontrol pipewire pipewire-bin \
   tracker-extract tracker-miner-fs cloud-guest-utils cloud-init rpi-cloud-init-mods rpi-connect-lite rpi-swap \
-  rpi-systemd-config  systemd-zram-generator
+  rpi-systemd-config systemd-zram-generator apparmor
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
 rm -rf /etc/cron.*
@@ -507,13 +503,17 @@ if [ ! -e "/etc/rpi-conf.done" ]; then
    NetworkManager ModemManager systemd-journald hostapd motion
   systemctl enable ssh avahi-daemon proinit rpi-cleanup.timer \
    systemd-timesyncd systemd-time-wait-sync NetworkManager ModemManager \
-   NetworkManager-wait-online NetworkManager-dispatcher   
+   NetworkManager-wait-online NetworkManager-dispatcher
   ## Disabled on startup
-  systemctl disable apt-daily-upgrade.timer apt-daily.timer e2scrub_all.timer 
-  systemctl disable apt-daily-upgrade.service apt-daily.service e2scrub_all.service \
-    hostapd keyboard-setup sysstat lighttpd wifiswitch motion serial-getty@ttyS0.service \
-    serial-getty@ttyAMA0.service sysstat-summary.timer man-db.service man-db.timer rpi-netdetect \
-    hciuart bluetooth bthelper@hci0 bluealsa usbplug nmbd smbd samba-ad-dc autofs
+  systemctl stop triggerhappy.socket
+  systemctl disable apt-daily-upgrade.timer apt-daily.timer e2scrub_all.timer \
+   sysstat-summary.timer triggerhappy.socket man-db.timer
+  systemctl disable apt-daily-upgrade.service apt-daily.service \
+   e2scrub_all.service e2scrub_reap.service hostapd keyboard-setup sysstat \
+   lighttpd wifiswitch motion serial-getty@ttyS0.service man-db.service \
+   serial-getty@ttyAMA0.service winbind hciuart bluetooth bthelper@hci0 \
+   bluealsa-aplay usbplug nmbd smbd samba-ad-dc autofs triggerhappy \
+   sshswitch nfs-blkmap
   echo "Initial setup (phase II) complete."
   touch /etc/rpi-conf.done
 else
@@ -566,7 +566,6 @@ chown -R root:root /opt/rpi
 
 ## Remove First Boot Wizard
 systemctl stop userconfig
-systemctl disable userconfig
 systemctl mask userconfig
 userdel -f -r rpi-first-boot-wizard
 rm -f /etc/sudoers.d/010_wiz-nopasswd
@@ -582,6 +581,8 @@ rm -f /opt/rpi/pythproc
 rm -f /etc/dnsmasq.conf
 rm -f /opt/rpi/effects/pythproc
 rm -f /etc/preinit
+apt autoclean
+apt clean
 
 ## Clean systemd logs
 journalctl --flush --rotate

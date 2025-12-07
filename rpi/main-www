@@ -21,7 +21,8 @@ fi
 ## Wi-Fi setup API
 if [ "$1" == "confwpa" ]; then
   ## Decode base64
-  WPADATA=$(echo "$2" | base64 --decode)
+  BASE64_IN=$(echo "$2" | sed "s|-|+|g" | sed "s|_|/|g" | sed "s|@|=|g")
+  WPADATA=$(openssl enc -base64 -d <<< "$BASE64_IN")
   rm -f /tmp/wifidata
   echo -e "$WPADATA" > /tmp/wifidata
   ## Copy configuration to boot partition

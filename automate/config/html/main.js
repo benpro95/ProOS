@@ -620,7 +620,7 @@ async function piWiFiPrompt(_winid){
 	        pinettext1.innerHTML = "enter password!";
 	      } else {
 	      	// concat and convert to base64
-	        let _wifidata = btoa(pinetssidbox.value + "|$|" + pinetpassbox.value);
+          let _wifidata = base64URLSafeEncode(pinetssidbox.value + "|$|" + pinetpassbox.value);
 	        resolve(_wifidata);
 	        cancelWiFi();
 	      }

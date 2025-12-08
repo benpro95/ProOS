@@ -1,6 +1,5 @@
 #!/bin/sh
-## System Configuration Script v6.0
-## Bedroom Pi
+## Bedroom Pi Configuration Script
 
 # Import Host name
 HOSTNAME=`cat /opt/rpi/config/hostname`
@@ -9,15 +8,11 @@ BIN=/opt/rpi
 # Import Brand name
 MODNAME=`cat $BIN/modconf/brand.txt`
 
-if [ ! -e /opt/rpi/init ]; then
-echo "Core components missing or corrupted."
-echo "Exiting..."
-sleep 1
-exit
-else
-echo "Components integrity verified."
+if [ ! -e "/opt/rpi/init" ]; then
+  echo "Core components missing or corrupted."
+  echo "Exiting..."
+  exit
 fi
-
 echo "Starting $MODNAME configuration..."
 
 ## Copy Boot Config

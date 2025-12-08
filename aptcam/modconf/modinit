@@ -1,6 +1,5 @@
 #!/bin/bash
-## Cameras Pi Configuration Setup Script v6.0
-##
+## AptCam Configuration Script
 
 # Import Host name
 HOSTNAME=`cat /opt/rpi/config/hostname`
@@ -9,15 +8,11 @@ BIN=/opt/rpi
 # Import Module Name
 MODNAME=`cat $BIN/modconf/brand.txt`
 
-if [ ! -e /opt/rpi/init ]; then
-echo "Core components missing or corrupted."
-echo "Exiting..."
-sleep 1
-exit
-else
-echo "Components integrity verified."
+if [ ! -e "/opt/rpi/init" ]; then
+  echo "Core components missing or corrupted."
+  echo "Exiting..."
+  exit
 fi
-
 echo "Starting $MODNAME configuration..."
 
 ## Copy Boot Config
@@ -27,7 +22,7 @@ mount -o remount,ro /boot/firmware
 
 ## Google Drive Support
 rm -f /root/.config/rclone/rclone.conf
-if [ ! -e /media/usb0/rclone/rclone.conf ]; then
+if [ ! -e "/media/usb0/rclone/rclone.conf" ]; then
   echo "API key not found on flash drive, running setup..."
   echo "Create new remote named 'gsync' and attach to Google Drive"
   rclone config

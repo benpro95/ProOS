@@ -1,5 +1,5 @@
 #!/bin/bash
-## Pi Configuration Script v7.0
+## LEDstrip Configuration Script
 
 # Import Host name
 HOSTNAME=`cat /opt/rpi/config/hostname`
@@ -8,15 +8,18 @@ BIN=/opt/rpi
 # Import Brand name
 MODNAME=`cat $BIN/modconf/brand.txt`
 
-if [ ! -e /opt/rpi/init ]; then
-echo "Core components missing or corrupted."
-echo "Exiting..."
-sleep 1
-exit
-else
-echo "Components integrity verified."
+if [ ! -e "/opt/rpi/init" ]; then
+  echo "Core components missing or corrupted."
+  echo "Exiting..."
+  exit
 fi
 echo "Starting $MODNAME configuration..."
+
+## Copy Boot Config
+mount -o remount,rw /boot/firmware
+cp -fv $BIN/modconf/cmdline.txt /boot/firmware/
+cp -fv $BIN/modconf/config.txt /boot/firmware/
+mount -o remount,ro /boot/firmware
 
 ## Set LED Type
 rm -f /opt/rpi/ledtype.txt
@@ -29,17 +32,5 @@ ln -sf /opt/rpi/leds /usr/bin/leds
 cp -v /opt/rpi/device.js /var/www/html/
 chmod -R 777 /var/www/html/device.js
 chown -R www-data:www-data /var/www/html/device.js
-
-## Copy Boot Config
-OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
-if [ "${OSVER}" = "bookworm" ]; then
-  mount -o remount,rw /boot/firmware
-  cp -f $BIN/modconf/config.txt /boot/firmware/
-  mount -o remount,ro /boot/firmware
-else
-  mount -o remount,rw /boot
-  cp -f $BIN/modconf/config.txt /boot/
-  mount -o remount,ro /boot
-fi
 
 exit

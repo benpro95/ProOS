@@ -1,5 +1,5 @@
 #!/bin/bash
-## Raspberry Pi ProOS Server Setup Script v13
+## Raspberry Pi ProOS Server Setup Script v13 
 ## run this 1st, then module installer
 
 # Core Path
@@ -20,14 +20,14 @@ if [ ! -e "/opt/rpi/init" ]; then
 else
   echo "Core components integrity verified."
 fi
-if [ ! -e "/boot/config.txt" ]; then
+if [ ! -e "/boot/firmware/config.txt" ]; then
   echo "Not running on a Pi !!"
   exit
 else
   echo "Raspberry Pi detected."
 fi
 OSVER="$(sed -n 's|^VERSION=".*(\(.*\))"|\1|p' /etc/os-release)"
-if [ "${OSVER}" = "trixie" ] || [ "${OSVER}" = "bullseye" ]; then
+if [ "${OSVER}" = "trixie" ]; then
   echo "Debian ${OSVER} detected."
 else
   echo "Unsupported OS version ${OSVER} detected."
@@ -395,6 +395,8 @@ chmod 644 /etc/udev/rules.d/99-bluetooth-udev.rules
 cp -f $BIN/btinput.conf /etc/bluetooth/input.conf
 chmod 644 /etc/bluetooth/input.conf
 chown root:root /etc/bluetooth/input.conf
+## Disable Bluetooth Soft-Block
+rfkill unblock bluetooth
 
 ## Remove unused udev network rules
 rm -f /etc/udev/rules.d/70-persistent-net.rules
@@ -551,6 +553,7 @@ chown -R root:root /opt/rpi
 
 ## Remove Installer Files
 rm -rf /opt/rpi/config
+rm -rf /opt/rpi/pkgs
 apt autoclean
 apt clean
 

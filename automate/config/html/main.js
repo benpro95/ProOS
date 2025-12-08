@@ -20,7 +20,7 @@ const BKM_OPEN_MODE = 1;
 const BKM_EDIT_MODE = 2;
 const resizeTimeout = 750; // in ms
 const serverSite = "Automate";
-const siteVersion = "3.6.1";
+const siteVersion = "3.16.2";
 
 //////////////////////
 

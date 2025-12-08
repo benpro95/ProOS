@@ -91,11 +91,11 @@ apt-get $APTARGS libgtk2.0-dev libbluetooth-dev libpng-dev libdaemon-dev libpopt
  libjpeg-dev libgstreamer1.0-dev libupnp-dev libx264-dev libswscale-dev libavformat-dev \
  libjasper-dev libavfilter-dev libavdevice-dev libavc1394-dev libusb-1.0-0-dev libplist-dev \
  libjack-jackd2-dev portaudio19-dev libffi-dev libass-dev libfreetype6-dev libsdl1.2-dev \
- libglib2.0-dev libavutil-dev uuid-dev libsndfile1-dev libpulse-dev libavahi-client-dev \
+ libglib2.0-dev libavutil-dev uuid-dev libsndfile1-dev libavahi-client-dev libtiff-dev \
  libtheora-dev libssl-dev libx11-dev libxml2-dev libxslt1-dev zlib1g-dev libdbus-1-dev \
  libva-dev libvdpau-dev libvorbis-dev libxext-dev libxfixes-dev libdbus-glib-1-dev \
  libsoxr-dev libao-dev libreadline-dev libsoup2.4-dev libgcrypt-dev libconfig-dev \
- libjson-glib-dev libsodium-dev libtiff-dev
+ libjson-glib-dev libsodium-dev
 
 ## Install X11
 apt-get $APTARGS xserver-xorg xorg x11-common x11-common xserver-xorg-input-evdev \
@@ -125,25 +125,18 @@ useradd motion -g motion --shell /bin/false
 groupmod -g 1005 motion
 usermod -u 1005 motion
 
-## v5.0 Random Number Generator
+## Random Number Generator
 apt-get $APTARGS rng-tools5
 
-## Install Replacement Logger
-apt-get $APTARGS busybox-syslogd
-echo "Run command 'logread' to check system logs"
-dpkg --purge rsyslog
-rm -f /var/log/messages
-rm -f /var/log/syslog
-
-## Remove Packages 
+## Remove Unused Packages 
 apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp udhcpd usbmuxd pmount usbmount \
  cups cups-client cups-common cups-core-drivers cups-daemon cups-filters cups-filters-core-drivers \
  cups-ipp-utils cups-ppdc cups-server-common upower exim4 exim4-base exim4-config exim4-daemon-light \
  libudisks2-0 dnsmasq wolfram-engine libssl-doc libatasmart4 libavahi-glib1 rng-tools rng-tools-debian \
- piwiz plymouth plymouth-label plymouth-themes pulseaudio pulseaudio-utils pavucontrol pipewire pipewire-bin \
- tracker-extract tracker-miner-fs cloud-guest-utils cloud-init rpi-cloud-init-mods rpi-connect-lite rpi-swap \
+ plymouth plymouth-label plymouth-themes pulseaudio pulseaudio-utils pavucontrol pipewire pipewire-bin \
+ tracker-extract tracker-miner-fs cloud-guest-utils cloud-init rpi-cloud-init-mods rpi-connect-lite \
  iptables-persistent bridge-utils ntfs-3g lxlock xscreensaver xscreensaver-data gvfs gvfs-backends \
- rpi-systemd-config systemd-zram-generator apparmor
+ rpi-systemd-config rpi-swap systemd-zram-generator apparmor busybox-syslogd piwiz mesa-vulkan-drivers
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
 rm -rf /etc/cron.*
@@ -171,9 +164,6 @@ echo "Installing system configuration."
 ## Boot partition read-write
 mount -o remount,rw /boot/firmware
 
-## SSH will be enabled by systemd, do not use this file
-rm -f /boot/ssh
-rm -f /boot/firmware/ssh
 ## Delete flags, return to default
 rm -f /boot/firmware/disable.wifi
 rm -f /boot/firmware/apd.enable
@@ -221,13 +211,11 @@ chown pi:pi /home/pi/.bashrc
 passwd -d root
 
 ## System Configuration
-cp -f /etc/sysctl.conf /etc/sysconf.bak
 cp -f $BIN/sysctl.conf /etc
 chmod 644 /etc/sysctl.conf
 chown root:root /etc/sysctl.conf
 
 ## Journal Configuration
-cp -f /etc/systemd/journald.conf /etc/systemd/journald.bak
 cp -f $BIN/journald.conf /etc/systemd/
 chmod 644 /etc/systemd/journald.conf
 chown root:root /etc/systemd/journald.conf

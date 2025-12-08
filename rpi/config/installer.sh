@@ -70,17 +70,16 @@ chsh -s /bin/bash pi
 apt-get -y update --allow-releaseinfo-change
 
 ## Essential Packages
-apt-get $APTARGS locales console-setup aptitude libnss-mdns libnss3-tools usbutils \
- zsync libpq5 htop lsb-release avahi-daemon avahi-utils hostapd dnsmasq-base pkg-config \
- wget bc uuid-runtime iptables jq rsync screen parallel sudo sed nano curl wireless-regdb \
- wireless-tools overlayroot iw wpasupplicant dirmngr autofs triggerhappy default-jre-headless \
+apt-get $APTARGS locales console-setup aptitude libnss-mdns libnss3-tools usbutils xmltoman \
+ zsync libpq5 htop lsb-release avahi-daemon avahi-utils hostapd dnsmasq-base pkg-config xxd \
+ wget bc uuid-runtime iptables jq rsync screen parallel sudo nano curl wireless-regdb autofs \
+ wireless-tools overlayroot iw wpasupplicant dirmngr triggerhappy default-jre-headless sed \
  build-essential autoconf make libtool binutils i2c-tools cmake yasm minicom rclone unzip \
- cryptsetup cryptsetup-bin texi2html socat nmap autoconf gnucobol4 avrdude arduino \
- automake cifs-utils neofetch fuse nodejs apt-utils sqlite3 shairport-sync \
- bluetooth pi-bluetooth bluez bluez-tools bluez-alsa-utils libbluetooth3 \
- samba samba-common-bin samba-libs alsa-base alsa-utils mpg321 lame sox \
- libupnp6 libexpat1 libexpat1 libimage-exiftool-perl xmltoman \
- libjson-glib-1.0-0 libao-common xxd 
+ cryptsetup cryptsetup-bin texi2html nmap autoconf gnucobol4 avrdude arduino libao-common \
+ automake cifs-utils neofetch fuse nodejs apt-utils sqlite3 shairport-sync socat libexpat1 \
+ bluetooth pi-bluetooth bluez bluez-tools bluez-alsa-utils libbluetooth3 mpg321 lame sox \
+ samba samba-common-bin samba-libs libupnp6 libimage-exiftool-perl libjson-glib-1.0-0 \
+ alsa-base alsa-utils
 
 ## AV Codecs Support
 apt-get $APTARGS gstreamer1.0-plugins-base ffmpeg gstreamer1.0-plugins-good \
@@ -88,15 +87,15 @@ apt-get $APTARGS gstreamer1.0-plugins-base ffmpeg gstreamer1.0-plugins-good \
  libgstreamer-plugins-base1.0-0 gstreamer1.0-alsa v4l-utils
 
 ## Development Support
-apt-get $APTARGS libgtk2.0-dev libbluetooth-dev libpng-dev libtiff-dev \
- libjasper-dev libavfilter-dev libavdevice-dev libavc1394-dev libusb-1.0-0-dev \
- libjack-jackd2-dev portaudio19-dev libffi-dev libass-dev libfreetype6-dev libsdl1.2-dev \
- libtheora-dev libssl-dev libx11-dev libxml2-dev libxslt1-dev zlib1g-dev libdbus-1-dev \
- libva-dev libvdpau-dev libvorbis-dev libxext-dev libxfixes-dev libdbus-glib-1-dev libpopt-dev \
+apt-get $APTARGS libgtk2.0-dev libbluetooth-dev libpng-dev libdaemon-dev libpopt-dev \
  libjpeg-dev libgstreamer1.0-dev libupnp-dev libx264-dev libswscale-dev libavformat-dev \
+ libjasper-dev libavfilter-dev libavdevice-dev libavc1394-dev libusb-1.0-0-dev libplist-dev \
+ libjack-jackd2-dev portaudio19-dev libffi-dev libass-dev libfreetype6-dev libsdl1.2-dev \
  libglib2.0-dev libavutil-dev uuid-dev libsndfile1-dev libpulse-dev libavahi-client-dev \
+ libtheora-dev libssl-dev libx11-dev libxml2-dev libxslt1-dev zlib1g-dev libdbus-1-dev \
+ libva-dev libvdpau-dev libvorbis-dev libxext-dev libxfixes-dev libdbus-glib-1-dev \
  libsoxr-dev libao-dev libreadline-dev libsoup2.4-dev libgcrypt-dev libconfig-dev \
- libjson-glib-dev libplist-dev libsodium-dev libdaemon-dev
+ libjson-glib-dev libsodium-dev libtiff-dev
 
 ## Install X11
 apt-get $APTARGS xserver-xorg xorg x11-common x11-common xserver-xorg-input-evdev \
@@ -104,8 +103,6 @@ apt-get $APTARGS xserver-xorg xorg x11-common x11-common xserver-xorg-input-evde
  lxde-common lxsession pcmanfm lxterminal xfce4-panel xfce4-whiskermenu-plugin
 
 ## Disable Swap
-dphys-swapfile swapoff
-dphys-swapfile uninstall
 update-rc.d dphys-swapfile remove
 apt-get -y remove --purge dphys-swapfile
 
@@ -140,13 +137,13 @@ rm -f /var/log/syslog
 
 ## Remove Packages 
 apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp udhcpd usbmuxd pmount usbmount \
-  cups cups-client cups-common cups-core-drivers cups-daemon cups-filters cups-filters-core-drivers \
-  cups-ipp-utils cups-ppdc cups-server-common upower exim4 exim4-base exim4-config exim4-daemon-light \
-  iptables-persistent bridge-utils ntfs-3g lxlock xscreensaver xscreensaver-data gvfs gvfs-backends \
-  libudisks2-0 dnsmasq wolfram-engine libssl-doc libatasmart4 libavahi-glib1 rng-tools rng-tools-debian \
-  piwiz plymouth plymouth-label plymouth-themes pulseaudio pulseaudio-utils pavucontrol pipewire pipewire-bin \
-  tracker-extract tracker-miner-fs cloud-guest-utils cloud-init rpi-cloud-init-mods rpi-connect-lite rpi-swap \
-  rpi-systemd-config systemd-zram-generator apparmor
+ cups cups-client cups-common cups-core-drivers cups-daemon cups-filters cups-filters-core-drivers \
+ cups-ipp-utils cups-ppdc cups-server-common upower exim4 exim4-base exim4-config exim4-daemon-light \
+ libudisks2-0 dnsmasq wolfram-engine libssl-doc libatasmart4 libavahi-glib1 rng-tools rng-tools-debian \
+ piwiz plymouth plymouth-label plymouth-themes pulseaudio pulseaudio-utils pavucontrol pipewire pipewire-bin \
+ tracker-extract tracker-miner-fs cloud-guest-utils cloud-init rpi-cloud-init-mods rpi-connect-lite rpi-swap \
+ iptables-persistent bridge-utils ntfs-3g lxlock xscreensaver xscreensaver-data gvfs gvfs-backends \
+ rpi-systemd-config systemd-zram-generator apparmor
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
 rm -rf /etc/cron.*
@@ -564,23 +561,8 @@ chown -R pi:pi /var/log/Xorg.0.log /var/log/Xorg.0.log.old /home/pi/.xsession-er
 chmod -R 755 /opt/rpi
 chown -R root:root /opt/rpi
 
-## Remove First Boot Wizard
-systemctl stop userconfig
-systemctl mask userconfig
-userdel -f -r rpi-first-boot-wizard
-rm -f /etc/sudoers.d/010_wiz-nopasswd
-rm -f /etc/xdg/autostart/tracker-miner-fs-3.desktop
-rm -f /etc/ssh/sshd_config.d/rename_user.conf
-rm -f /etc/xdg/autostart/piwiz.desktop
-rm -f /var/lib/userconf-pi/autologin
-
 ## Remove Installer Files
 rm -rf /opt/rpi/config
-rm -rf /opt/rpi/nodeopc
-rm -f /opt/rpi/pythproc
-rm -f /etc/dnsmasq.conf
-rm -f /opt/rpi/effects/pythproc
-rm -f /etc/preinit
 apt autoclean
 apt clean
 

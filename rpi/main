@@ -22,9 +22,6 @@ echo actpwr | tee /sys/class/leds/led0/trigger &>/dev/null
 #/opt/rpi/init resetbt
 ## Disable HDMI (saves 30mA of power draw)
 #tvservice -o
-## Auto Hotspot
-# (runs every 5min)	
-systemctl start rpi-netdetect.timer
 exit
 ;;
 

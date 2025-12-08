@@ -10,7 +10,7 @@ iptables -t nat -F
 iptables -t nat -X
 ## Allow port forwarding
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE  
-if [ -e /sys/class/net/wlan0 ] ; then
+if [ -e "/sys/class/net/wlan0" ] ; then
   ## Delete Existing Connections
   nmcli con down RPiWiFi
   nmcli con delete RPiWiFi
@@ -31,12 +31,12 @@ sleep 2.5
 CLIENT_MODE(){
 ## Stop Networking
 STOP_NET
-if [ -e /boot/firmware/disable.wifi ]; then
+if [ -e "/boot/firmware/disable.wifi" ]; then
   echo "Wi-Fi Client Mode Disabled."
 else
-  if [ -e /sys/class/net/wlan0 ] ; then
+  if [ -e "/sys/class/net/wlan0" ] ; then
     ## Read Wi-Fi Configuration
-    if [ -e /boot/firmware/wpa.conf ]; then
+    if [ -e "/boot/firmware/wpa.conf" ]; then
       WPADATA=`cat /boot/firmware/wpa.conf`
       DELIM="|$|"
       WPA_SSID=${WPADATA%"$DELIM"*}
@@ -44,8 +44,7 @@ else
       nmcli con add con-name RPiWiFi ifname wlan0 type wifi ssid "$WPA_SSID"
       nmcli con modify RPiWiFi wifi-sec.key-mgmt wpa-psk
       nmcli con modify RPiWiFi wifi-sec.psk "$WPA_PWD"
-      nmcli con modify RPiWiFi connection.autoconnect yes
-      nmcli con down RPiWiFi
+      nmcli con modify RPiWiFi connection.autoconnect no
       nmcli con up RPiWiFi
     else
       echo "No WiFi Configuration Found, Switching to Access Point..."
@@ -61,9 +60,9 @@ fi
 APD_MODE(){
 ## Stop Networking
 STOP_NET
-if [ -e /sys/class/net/wlan0 ] ; then
+if [ -e "/sys/class/net/wlan0" ] ; then
   ## Read Custom Hotspot Configuration 
-  if [ -e /boot/firmware/apd.conf ]; then
+  if [ -e "/boot/firmware/apd.conf" ]; then
     APDDATA=`cat /boot/firmware/apd.conf`
     DELIM="|$|"
     APD_SSID=${APDDATA%"$DELIM"*}
@@ -106,7 +105,6 @@ if [ -e /sys/class/net/wlan0 ] ; then
     nmcli con modify RPiHotspot wifi-sec.psk "$APD_PWD"
     nmcli con modify RPiHotspot wifi-sec.pmf 1
   fi
-  nmcli con down RPiHotspot
   nmcli con up RPiHotspot
 else
   echo "No Wi-Fi Hardware Found"
@@ -120,7 +118,7 @@ SERVER=$(/sbin/ip route | awk '/default/ { print $3 }')
 date
 echo "Gateway IP $SERVER"
 ########
-if [ ! -e /sys/class/net/wlan0 ] ; then
+if [ ! -e "/sys/class/net/wlan0" ] ; then
   echo "wlan0 not found, network check has been disabled."
   echo " "
   exit
@@ -149,9 +147,8 @@ case "$1" in
 ##############################################
 
 boot)
-sleep 10
 ## REQUIRED TO START NETWORKING!!
-if [ ! -e /boot/firmware/apd.enable ]; then
+if [ ! -e "/boot/firmware/apd.enable" ]; then
   echo "Client network mode"
   CLIENT_MODE
 else
@@ -195,7 +192,7 @@ exit
 
 
         *)
-        echo "RPi Network Startup v3"
+        echo "RPi Network Startup v4"
 	      echo "by Ben Provenzano III"
 	      echo " "
 	      echo "Enter Valid Arguments."

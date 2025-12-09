@@ -17,7 +17,6 @@ echo "Starting $MODNAME configuration..."
 
 ## Copy Boot Config
 mount -o remount,rw /boot/firmware
-cp -fv $BIN/modconf/cmdline.txt /boot/firmware/
 cp -fv $BIN/modconf/config.txt /boot/firmware/
 mount -o remount,ro /boot/firmware
 

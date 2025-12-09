@@ -44,7 +44,7 @@ else
       nmcli con add con-name RPiWiFi ifname wlan0 type wifi ssid "$WPA_SSID"
       nmcli con modify RPiWiFi wifi-sec.key-mgmt wpa-psk
       nmcli con modify RPiWiFi wifi-sec.psk "$WPA_PWD"
-      nmcli con modify RPiWiFi connection.autoconnect no
+      nmcli con modify RPiWiFi connection.autoconnect yes
       nmcli con up RPiWiFi
     else
       echo "No WiFi Configuration Found, Switching to Access Point..."

@@ -23,34 +23,11 @@ body {
   height: 100%;
 }
 
-input[type="checkbox"] {
-  accent-color: var(--main-color); 
-}
-
 /*
- *  Main scrollbar style
+ *  Page Body Style
  */
 
-.scroll-bar-style::-webkit-scrollbar-track
-{
-  margin-top: 3px;
-  margin-bottom: 3px;
-  background-color: #000;
-  border-radius: 5px;
-}
-
-.scroll-bar-style::-webkit-scrollbar-thumb
-{
-  background-color: color-mix(in srgb, var(--main-color) 70%, white);
-  border-radius: 5px;  
-}
-
-.scroll-bar-style::-webkit-scrollbar
-{
-  width: 6px;
-}
-
-.parstd {
+ .parstd {
 	border: none;
   outline: none;
 	margin-bottom: 1px;
@@ -104,13 +81,6 @@ input[type="checkbox"] {
   display: block;
 }
 
-input.chkbox {
-  margin-left: 16px;
-  float: right;
-  width: 22px;
-  height: 22px;
-}
-
 .leftjfy {
   float: left;
   margin-right: 8px;
@@ -146,6 +116,48 @@ input.chkbox {
   text-align: left;
   font-size: 20px;
 }
+
+/*
+ *  Scrollbar Style
+ */
+
+.scroll-bar-style::-webkit-scrollbar-track
+{
+  margin-top: 3px;
+  margin-bottom: 3px;
+  background-color: #000;
+  border-radius: 5px;
+}
+
+.scroll-bar-style::-webkit-scrollbar-thumb
+{
+  background-color: color-mix(in srgb, var(--main-color) 70%, white);
+  border-radius: 5px;  
+}
+
+.scroll-bar-style::-webkit-scrollbar
+{
+  width: 6px;
+}
+
+/*
+ *  Checkbox Style
+ */
+
+ input[type="checkbox"] {
+  accent-color: var(--main-color); 
+}
+
+input.chkbox {
+  margin-left: 16px;
+  float: right;
+  width: 22px;
+  height: 22px;
+}
+
+/*
+ *  Button Styles
+ */
 
 .button {
   transition: all 0.2s;
@@ -225,6 +237,10 @@ input.chkbox {
   width: 312px; /* large button width */
 }
 
+/*
+ *  Top Navigation Bar
+ */
+
 .topnav {
   border: none;
   outline: none;
@@ -254,7 +270,9 @@ input.chkbox {
   color: white;
 }
 
-/* server window */
+/*
+ *  Console Log Window
+ */
 
 .popup {
   border-radius: 15px;
@@ -426,7 +444,7 @@ input.chkbox {
   z-index: 999;
 }
 
-/* Links inside the dropdown */
+/* links inside the dropdown */
 .dd-content a {
   -webkit-user-select: none;
   user-select: none;
@@ -483,7 +501,9 @@ input.chkbox {
   margin: 8px;
 }
 
-/* Bookmarks Menu */
+/*
+ *  Bookmarks Style
+ */
 
 .bookmark-buttons {
   display: none;
@@ -557,7 +577,7 @@ input.chkbox {
   position: fixed;
   top: 30%;
   left: 10%;
-  width: 350px;  
+  width: 350px;
   height: auto;
   padding: 16px; 
   color: #fff;
@@ -565,6 +585,7 @@ input.chkbox {
 }
 
 #pass__textbox {
+  border-radius: 15px;
   margin: 15px;
   width: 285px; 
   padding: 5px; 
@@ -602,14 +623,16 @@ input.chkbox {
 }
 
 #pinet__ssidbox {
+  border-radius: 15px;
   margin: 15px;
-  width: 285px; 
+  width: 280px; 
   padding: 5px; 
 }
 
 #pinet__passbox {
+  border-radius: 15px;
   margin: 15px;
-  width: 285px; 
+  width: 280px; 
   padding: 5px; 
   padding-bottom: 10px; 
 }
@@ -686,10 +709,11 @@ input.chkbox {
   margin-left: 5px;
   margin-right: 5px;
   height: 50px;
-  width: 150px;
+  width: 160px;
 }
 
 .editFav__textbox {
+  border-radius: 15px;
   margin-bottom: 10px;
   padding-right: 5px;  
   padding-left: 5px;    
@@ -1148,6 +1172,7 @@ input.chkbox {
   border-radius: 20px;
   z-index: 1;
 }
+
 .thermometer:after {
   position: absolute;
   content: "";
@@ -1161,6 +1186,7 @@ input.chkbox {
   z-index: -3;
   left: 50%;
 }
+
 .thermometer .temperature {
   height: 0px;
   bottom: 0px;
@@ -1171,6 +1197,7 @@ input.chkbox {
   background-size: 100% 240px;
   transition: all 0.2s ease-in-out;
 }
+
 .thermometer .temperature:before {
   min-width: 40px;
   position: absolute;
@@ -1184,9 +1211,11 @@ input.chkbox {
   opacity: 85%;
   color: white;
 }
+
 .thermometer #thermo__1:before {
   content: attr(data-value);
 }
+
 .thermometer #thermo__2:before {
   content: attr(data-value);
 }

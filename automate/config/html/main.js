@@ -20,7 +20,6 @@ const BKM_OPEN_MODE = 1;
 const BKM_EDIT_MODE = 2;
 const resizeTimeout = 750; // in ms
 const serverSite = "Automate";
-const siteVersion = "3.8.3";
 
 //////////////////////
 
@@ -363,15 +362,10 @@ async function aboutPrompt(){
   img.src = "img/automate.png";
   img.id = "about__img";
   aboutprompt.appendChild(img);
-  // version details
-  let currentDate = new Date();
-  let currentYear = currentDate.getFullYear();
-  let aboutdets2 = document.createElement("div"); 
-  aboutdets2.innerHTML = "Version " + siteVersion;
-  aboutdets2.className = "about__text";
-  aboutprompt.appendChild(aboutdets2);
   // author details
-  let aboutdets1 = document.createElement("div"); 
+  let aboutdets1 = document.createElement("div");
+  let currentDate = new Date();
+  let currentYear = currentDate.getFullYear();  
   aboutdets1.innerHTML = currentYear + " - Ben Provenzano III";
   aboutdets1.className = "about__text";
   aboutprompt.appendChild(aboutdets1); 

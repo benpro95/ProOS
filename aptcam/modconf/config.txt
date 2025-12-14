@@ -13,6 +13,9 @@ disable_fw_kms_setup=1
 #-------GPU memory-------
 gpu_mem=128
 
+#-------GPU 3D acceleration-------
+dtoverlay=vc4-kms-v3d
+
 #-------Max CPU Speed-------
 arm_freq=1000
 arm_freq_max=1000

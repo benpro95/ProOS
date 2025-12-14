@@ -1,6 +1,6 @@
 #!/bin/bash
 ###########################################################
-#### Camera Video Copy Script by Ben Provenzano III v3 ####
+#### Camera Video Copy Script by Ben Provenzano III v4 ####
 ###########################################################
 
 ## 4MB file chunk copy timeout in seconds
@@ -54,9 +54,9 @@ function COPYFILE {
 }
 
 ## Read camera name (1st arg)
-CAM_NAME=$1
+CAM_NAME="$1"
 ## Read file name (2nd arg)
-FILE_NAME=$2
+FILE_NAME="$2"
 
 ## Folder paths
 SERVER_PATH="/mnt/smb/Cameras"
@@ -95,8 +95,8 @@ if [ ! -e $SERVER_PATH/$CAM_NAME ]; then
   SERVER="na"	
   echo "Server not connected, $(date)" >> $LOGFILE
 else
-  sourcefile="$FILE_NAME.mp4"
-  destfile="$SERVER_PATH/$CAM_NAME/$(basename $FILE_NAME.mp4)"
+  sourcefile="$FILE_NAME"
+  destfile="$SERVER_PATH/$CAM_NAME/$(basename $FILE_NAME)"
   if [ -e "$sourcefile" ]; then
     COPYFILE
   fi
@@ -109,8 +109,8 @@ then
   if [ ! -e "$DEST_PATH" ]; then
     mkdir -p "$DEST_PATH"
   fi
-  sourcefile="$FILE_NAME.mp4"
-  destfile="$DEST_PATH/$(basename $FILE_NAME.mp4)"
+  sourcefile="$FILE_NAME"
+  destfile="$DEST_PATH/$(basename $FILE_NAME)"
   if [ -e "$sourcefile" ]; then
     COPYFILE
   fi  
@@ -131,8 +131,8 @@ if [ "$FLASHDRV" = "yes" ]; then
 	if [ ! -e "$DEST_PATH" ]; then
 	  mkdir -p "$DEST_PATH"
 	fi
-	sourcefile="$FILE_NAME.mp4"
-	destfile="$DEST_PATH/$(basename $FILE_NAME.mp4)"
+	sourcefile="$FILE_NAME"
+	destfile="$DEST_PATH/$(basename $FILE_NAME)"
     if [ -e "$sourcefile" ]; then
       COPYFILE
     fi
@@ -140,5 +140,5 @@ if [ "$FLASHDRV" = "yes" ]; then
 fi 
 
 ## Delete video from RAM Disk
-rm -f "$FILE_NAME.mp4"
+rm -f "$FILE_NAME"
 exit

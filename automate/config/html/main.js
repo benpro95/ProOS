@@ -345,10 +345,6 @@ function closeServerOptions(){
 /// END- text popup window ///
 
 async function aboutPrompt(){
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  let curDate = new Date();
-  let curYear = curDate.getFullYear();
-  let curMonth = months[curDate.getMonth()];
   const _winid = 'about__prompt';
   // only allow one-instance of the window
   if (document.getElementById(_winid)) {
@@ -371,8 +367,12 @@ async function aboutPrompt(){
   aboutdets2.innerHTML = "by Ben Provenzano III";
   aboutdets2.className = "about__text";
   aboutprompt.appendChild(aboutdets2);
-  let aboutdets1 = document.createElement("div"); 
-  aboutdets1.innerHTML = curMonth + " " + curYear + " Release";
+  let aboutdets1 = document.createElement("div");
+  const curDate = new Date();
+  const curYear = curDate.getFullYear();
+  const curMonth = curDate.getMonth() + 1; 
+  const curQtr = Math.ceil(curMonth / 3); // round up to the nearest integer
+  aboutdets1.innerHTML = curYear + '.' + curQtr + " Release";
   aboutdets1.className = "about__text";
   aboutprompt.appendChild(aboutdets1); 
   // cancel button

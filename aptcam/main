@@ -120,28 +120,26 @@ mount -t tmpfs -o size=284m ramdisk /mnt/ramdisk
 ## Attach flash drive
 mkdir -p /media/usb0
 mount /dev/sda1 /media/usb0
-sleep 15
+sleep 5
 ## Attach server SMB share
 if ping -c 1 files.home > /dev/null 2> /dev/null
 then
-  systemctl start autofs
-  sleep 5.75
+  systemctl restart autofs
+  sleep 5
 fi
 ## Google Drive
-if [ ! -e /media/usb0/rclone ]; then
+if [ ! -e "/media/usb0/rclone" ]; then
   echo "flash drive not connected, not starting rclone."
 else
-  systemctl start rpi-rclone
-  sleep 5.75
+  systemctl restart rpi-rclone
+  sleep 5
 fi
 ## Motion Server
-systemctl start rpi-motion.service
+systemctl restart rpi-motion.service
 ## Cameras Cleanup Timer
-systemctl start rpi-camcleanup.timer
+systemctl restart rpi-camcleanup.timer
 ## Automatic Infrared LED
-systemctl start rpi-ldr.service
-## Disable HDMI (saves 30mA)
-/usr/bin/tvservice -o
+systemctl restart rpi-ldr.service
 exit
 ;;
 

@@ -79,7 +79,7 @@ apt-get $APTARGS locales console-setup aptitude libnss-mdns libnss3-tools usbuti
  automake cifs-utils neofetch fuse nodejs apt-utils sqlite3 shairport-sync socat libexpat1 \
  bluetooth pi-bluetooth bluez bluez-tools bluez-alsa-utils libbluetooth3 mpg321 lame sox \
  samba samba-common-bin samba-libs libupnp6 libimage-exiftool-perl libjson-glib-1.0-0 \
- alsa-base alsa-utils
+ alsa-base alsa-utils mpv
 
 ## AV Codecs Support
 apt-get $APTARGS gstreamer1.0-plugins-base ffmpeg gstreamer1.0-plugins-good \
@@ -147,7 +147,8 @@ apt-get autoclean -y
 apt-get clean -y
 
 ## Delete custom services
-rm -fr /etc/systemd/system/rpi-*
+rm -fvr /etc/systemd/system/rpi-*
+rm -fv /etc/systemd/system/usbplug.service
 
 ## Reset LED configuration
 rm -f /opt/rpi/remotes/leds
@@ -495,12 +496,11 @@ if [ ! -e "/etc/rpi-conf.done" ]; then
   systemctl stop triggerhappy.socket
   systemctl disable apt-daily-upgrade.timer apt-daily.timer e2scrub_all.timer \
    sysstat-summary.timer triggerhappy.socket man-db.timer
-  systemctl disable apt-daily-upgrade.service apt-daily.service \
+  systemctl disable apt-daily-upgrade.service apt-daily.service autofs \
    e2scrub_all.service e2scrub_reap.service hostapd keyboard-setup sysstat \
    lighttpd wifiswitch motion serial-getty@ttyS0.service man-db.service \
    serial-getty@ttyAMA0.service winbind hciuart bluetooth bthelper@hci0 \
-   bluealsa-aplay usbplug nmbd smbd samba-ad-dc autofs triggerhappy \
-   sshswitch nfs-blkmap
+   bluealsa-aplay nmbd smbd samba-ad-dc triggerhappy sshswitch nfs-blkmap
   echo "Initial setup (phase II) complete."
   touch /etc/rpi-conf.done
 else

@@ -82,7 +82,14 @@ exit
 ;;
 
 relax)
-COAX_MODE
+## turn on amp and set input
+if  [ "$(DECODE_COM_RESP '01005')" == "1" ]; then
+  ## amp is online (set to coax input)
+  COAX_MODE
+else
+  ## amp if offline (power on then set to coax input)
+  ZTERM_COM "01003"
+fi
 systemctl stop rpi-relaxloop
 systemctl set-environment rpi_relaxmode="$ARG2"
 systemctl start rpi-relaxloop
@@ -139,6 +146,13 @@ BLINKLED
 exit
 ;;
 
+ampon-lastin)
+## Power On to Last Input
+ZTERM_COM "01001"
+BLINKLED
+exit
+;;
+
 ampstateon)
 ## Power On to Optical #B Input
 ZTERM_COM "01004"
@@ -150,20 +164,6 @@ ampstateoff)
 ## Power Off
 ZTERM_COM "01002"
 systemctl stop rpi-relaxloop
-BLINKLED
-exit
-;;
-
-ampon-lastin)
-## Power On to Last Input
-ZTERM_COM "01001"
-BLINKLED
-exit
-;;
-
-ampon-coax)
-## Power On (Coaxial Input)
-ZTERM_COM "01003"
 BLINKLED
 exit
 ;;

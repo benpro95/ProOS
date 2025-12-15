@@ -468,8 +468,6 @@ exit
 
 ## Sleep Sounds
 relax)
-## Bedroom Audio (Coaxial Mode)
-CALLAPI "$BRPI_IP" "ampon-coax" ""
 ## Relax Sounds on Bedroom Pi
 CALLAPI "$BRPI_IP" "relax" "$SECOND_ARG"
 ## Send Sleep Command

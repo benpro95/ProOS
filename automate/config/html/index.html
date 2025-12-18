@@ -437,21 +437,21 @@
       </button>
     </div>
     <div class="svropt__backup">
-      <button type="button" class="button svropt_button" onclick="serverAction('pve_vmsbkp')">
-        <span class="button__text"></i> VMs/LXCs</span>
-      </button>
-      <button type="button" class="button svropt_button" onclick="serverAction('files-backupstd')">
-        <span class="button__text"></i> Standard</span>
-      </button>                 
-      <button type="button" class="button svropt_button" onclick="serverAction('files-backupchk')">
-        <span class="button__text"></i> Checksum</span>
-      </button>
       <button type="button" class="button svropt_button" onclick="serverAction('files-last_backup_dates')">
         <span class="button__text"><i class="fad fa-history"></i> History</span>
-      </button>    
+      </button>              
+      <button type="button" class="button svropt_button" onclick="serverAction('files-backupchk')">
+        <span class="button__text"></i> Checksum</span>
+      </button> 
+      <button type="button" class="button svropt_button" onclick="serverAction('pve_vmsbkp')">
+        <span class="button__text"></i> VMs/LXCs</span>
+      </button>     
       <button type="button" class="button svropt_button" onclick="getPassword('pwd')">
         <span class="button__text"><i class="fad fa-lock-open"></i> Unlock</span>
-      </button>           
+      </button>      
+      <button type="button" class="button svropt_button" onclick="serverAction('files-backupstd')">
+        <span class="button__text"></i> Standard</span>
+      </button>       
       <button type="button" class="button svropt_button" onclick="serverAction('detach_bkps')">
         <span class="button__text"><i class="fad fa-eject"></i> Eject</span>
       </button>

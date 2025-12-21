@@ -4,40 +4,46 @@
 ###
 
 ## DNS domain name
-#DOMAIN=".local"
-#DOMAIN=".home"
-DOMAIN=""
+DOMAIN=".home"
 ## Modules folder
 ROOTDIR="/mnt/ProOS"
 ## SSH keys folder
-KEYS="/mnt/ProOS/mgmt/keys"
+KEYS="$ROOTDIR/mgmt/keys"
 ## Work folder
 WORKDIR="/opt/deploy"
 ## Read arguments
 MODULE=$1
 CMD=$2
 HOST=$3
-## Global variables
-INTMODE=""
-NOHOSTCHK=""
+## Global constants
+SSH_PORT="22"
+SPACER="*********************"
 SSH_ARGS="ServerAliveInterval=5 -o ServerAliveCountMax=5"
+UPDATE_CMDS="apt update; apt upgrade; apt autoremove"
+## Global variables
+HOST_STATUS="offline"
+INTMODE=""
 
 UPDATE_ALL_SVRS(){
   ## Find Server Names
-  mapfile -d $'\n' UPD_TARGETS < <( find $ROOTDIR -type f \( -name "lxc.conf" -o -name "qemu.conf" \) -printf '%P\n' | sed 's#/[^/]*$##' | sort -u )
+  mapfile -d $'\n' UPD_TARGETS < <( find ${ROOTDIR} -type f \( -name "lxc.conf" -o -name "qemu.conf" \) -printf '%P\n' | sed 's#/[^/]*$##' | sort -u )
   for TARGET in "${UPD_TARGETS[@]}"
   do
+    echo " "
     ## Remove Newline(s)
     SVR_NAME=$(echo "$TARGET" | sed 's/[[:space:]]//g' )
-    ## Setup SSH Key ##
-    echo " "
-    echo "**** Connecting to $SVR_NAME ****"
-    eval `ssh-agent -s`
-    ssh-add $KEYS/$SVR_NAME.rsa 2>/dev/null
-    ## Update Sequentially
-    echo "**** Running APT $SVR_NAME ****"
-    ssh -t -o $SSH_ARGS root@$SVR_NAME 'apt update; apt upgrade'
-    echo " "
+    ## Test connection
+    echo "$SPACER Connecting to $SVR_NAME $SPACER"
+    HOST="$SVR_NAME$DOMAIN"
+    HOSTCHK "no"
+    if [ "$HOST_STATUS" == "online" ]; then
+      ## Setup SSH Key ##
+      eval `ssh-agent -s`
+      ssh-add $KEYS/$SVR_NAME.rsa 2>/dev/null
+      ## Update Sequentially
+      echo "$SPACER Running APT on $SVR_NAME $SPACER"
+      ssh -t -o $SSH_ARGS root@$SVR_NAME "${UPDATE_CMDS}"
+    fi
   done
   EXIT_PRGM
 }
@@ -52,22 +58,26 @@ EXIT_PRGM(){
 
 ## Ping check
 HOSTCHK(){
-  echo "Attempting connection..."
-  if ping -c 2 $HOST &> /dev/null
-  then
-    echo "Connection established."
+  EXIT="$1"
+  echo "Testing connection..."
+  if nc -zv -w 2 "$HOST" "$SSH_PORT" &> /dev/null; then
+    echo "$HOST's SSH port open, connecting..."
+    HOST_STATUS="online"
   else
-    echo "Host $HOST is down, exiting..."
-    EXIT_PRGM
+    HOST_STATUS="offline"
+    if [ "$EXIT" == "yes" ]; then
+      echo "$HOST's SSH port is unreachable, exiting..."
+      EXIT_PRGM
+    else
+      echo "$HOST's SSH port is unreachable, skipping."
+    fi
   fi
 }
 
 ## Shell Login
 SSH_LOGIN(){
-  if [ "$NOHOSTCHK" == "" ]; then
-    ## Exit if host down
-    HOSTCHK
-  fi
+  ## Exit if host down
+  HOSTCHK "yes"
   ## Login to SSH Pi/Server
   if [ "$MODULE" == "router" ]; then
     ssh -t -o $SSH_ARGS admin@$HOST
@@ -220,7 +230,7 @@ POST_DEPLOY_MENU(){
 
 ## Raspberry Pi Configurator ##
 DEPLOY_PI(){
-  HOSTCHK
+  HOSTCHK "yes"
   echo ""
   STRIN=$(ssh -t -o $SSH_ARGS root@$HOST "df -h")
   if [[ "$STRIN" == *"overlay"* ]]; then
@@ -327,9 +337,6 @@ PRGM_INIT(){
     ssh-add $KEYS/$MODULE.rsa 2>/dev/null
     ## Set hostname
     HOST="$MODULE$DOMAIN"
-    if [ "$MODULE" == "pve" ]; then
-      NOHOSTCHK="yes"
-    fi
     if [ "$CMD" == "sync" ]; then
       DEPLOY_SERVER
     fi

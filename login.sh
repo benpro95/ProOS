@@ -22,6 +22,26 @@ INTMODE=""
 NOHOSTCHK=""
 SSH_ARGS="ServerAliveInterval=5 -o ServerAliveCountMax=5"
 
+UPDATE_ALL_SVRS(){
+  ## Find Server Names
+  mapfile -d $'\n' UPD_TARGETS < <( find $ROOTDIR -type f \( -name "lxc.conf" -o -name "qemu.conf" \) -printf '%P\n' | sed 's#/[^/]*$##' | sort -u )
+  for TARGET in "${UPD_TARGETS[@]}"
+  do
+    ## Remove Newline(s)
+    SVR_NAME=$(echo "$TARGET" | sed 's/[[:space:]]//g' )
+    ## Setup SSH Key ##
+    echo " "
+    echo "**** Connecting to $SVR_NAME ****"
+    eval `ssh-agent -s`
+    ssh-add $KEYS/$SVR_NAME.rsa 2>/dev/null
+    ## Update Sequentially
+    echo "**** Running APT $SVR_NAME ****"
+    ssh -t -o $SSH_ARGS root@$SVR_NAME 'apt update; apt upgrade'
+    echo " "
+  done
+  EXIT_PRGM
+}
+
 EXIT_PRGM(){
   ## Discard Keys
   ssh-add -D
@@ -66,6 +86,9 @@ by Ben Provenzano III
 Logon to ProOS Pi / Server
 login "Hostname"
 
+Update Servers
+login update_pve
+
 Sync ProOS (quick run config script) Pi / Server
 login "Hostname" sync
 
@@ -83,6 +106,7 @@ login rmtmp
 \n'
 exit
 fi
+
 ### Exit if matches this hosts
 if [ "$MODULE" == "logon" ] || \
    [ "$MODULE" == "login" ] || \
@@ -93,6 +117,7 @@ if [ "$MODULE" == "logon" ] || \
 echo "Hostname not allowed."
 exit
 fi
+
 if [ "$MODULE" == "cmds" ]; then
 printf \
 '* Linux Command Reference
@@ -112,6 +137,12 @@ qemu-img convert -f raw -O qcow2 /dev/rpool/proxmox/vm-100-disk-0 file.qcow2
 \n'
 exit
 fi
+
+if [ "$MODULE" == "update_pve" ]; then
+## Update Proxmox LXCs/VMs/Host
+UPDATE_ALL_SVRS
+fi
+
 ### Remove temp files argument
 if [ "$MODULE" == "rmtmp" ]; then
 echo "deleting temporary files..."
@@ -121,6 +152,7 @@ if [ -e $WORKDIR ]; then
 else
   rm -rfv /tmp/protmp.*
 fi
+
 exit
 fi
 }
@@ -274,9 +306,9 @@ PRGM_INIT(){
   ## Process Initial Arguments
   EXTRA_ARGS
   ## Check For Proxmox Configuration
-  if [ -e $ROOTDIR/$MODULE/qemu.conf ] || \
-     [ -e $ROOTDIR/$MODULE/lxc.conf ] || \
-     [ -e $ROOTDIR/$MODULE/pc.conf ] || \
+  if [ -e "$ROOTDIR/$MODULE/qemu.conf" ] || \
+     [ -e "$ROOTDIR/$MODULE/lxc.conf" ] || \
+     [ -e "$ROOTDIR/$MODULE/pc.conf" ] || \
      [ "$MODULE" == "router" ]; then
     INTMODE="nonpi"
   else 

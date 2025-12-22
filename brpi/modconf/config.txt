@@ -1,4 +1,4 @@
-## Created by Ben Provenzano III for HiFi Pi
+## Created by Ben Provenzano III for Bedroom Pi
 
 # Automatically load overlays for detected DSI displays
 display_auto_detect=0

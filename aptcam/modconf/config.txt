@@ -13,13 +13,6 @@ disable_fw_kms_setup=1
 #-------GPU memory-------
 gpu_mem=128
 
-#-------GPU 3D acceleration-------
-dtoverlay=vc4-kms-v3d
-
-#-------Max CPU Speed-------
-arm_freq=1000
-arm_freq_max=1000
-
 #-------Max USB Current-------
 max_usb_current=1
 
@@ -42,7 +35,7 @@ dtparam=pwr_led_trigger=default-on
 dtparam=pwr_led_activelow=off
 
 #------Reboot when exceeds-----
-temp_limit=75
+temp_limit=85
 
 #------Camera------
 start_x=1

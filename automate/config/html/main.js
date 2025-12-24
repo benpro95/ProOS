@@ -295,7 +295,6 @@ async function serverSend() {
   }
   sendBtnAlert("off");
   serverCmdData = null;
-  closeServerOptions();
 }
 
 function sendBtnAlert(state) {

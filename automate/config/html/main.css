@@ -27,7 +27,7 @@ body {
  *  Page Body Style
  */
 
- .parstd {
+.parstd {
 	border: none;
   outline: none;
 	margin-bottom: 1px;
@@ -144,7 +144,7 @@ body {
  *  Checkbox Style
  */
 
- input[type="checkbox"] {
+input[type="checkbox"] {
   accent-color: var(--main-color); 
 }
 
@@ -574,9 +574,11 @@ input.chkbox {
   border-radius: 15px;
   background-color: black;
   border: 1px solid white;
-  position: fixed;
-  top: 30%;
-  left: 10%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
   width: 350px;
   height: auto;
   padding: 16px; 
@@ -612,9 +614,11 @@ input.chkbox {
   border-radius: 15px;
   background-color: black;
   border: 1px solid white;
-  position: fixed;
-  top: 30%;
-  left: 10%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
   width: 350px;  
   height: auto;
   padding: 16px; 
@@ -654,9 +658,11 @@ input.chkbox {
   border: 1px solid white;
   text-align: center;
   text-decoration: none;
-  position: fixed;
-  top: 25%;
-  left: 15%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
   width: auto;  
   height: auto;
   padding: 16px; 
@@ -748,8 +754,8 @@ input.chkbox {
   position: absolute;
   top: 50%;
   left: 50%;
-  margin-left: -130px;
-  margin-top: -180px;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
   width: 260px;
   height: 340px;
   padding: 15px; 
@@ -835,9 +841,11 @@ input.chkbox {
   border-radius: 15px;
   background-color: black;
   border: 1px solid white;
-  position: fixed;
-  top: 8%;
-  left: 5%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
   width: 350px;  
   height: auto;
   padding: 16px; 
@@ -878,7 +886,7 @@ input.chkbox {
 
 .star-bg {
   top: 0;
-  left: 0;  
+  left: 0;
   width: 100vw;
   height: 100vh;
   position: fixed;

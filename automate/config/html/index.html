@@ -392,18 +392,18 @@
         </button>  
         <div class="dd-content dd-button" id="unifi-menu">
           <a onclick="GoToExtPage('unifi.home:8443')"><i class="fad fa-link"></i> Open</a>
-          <a onclick="serverAction('startunifi')"><i class="fad fa-play"></i> Start</a>   
+          <a onclick="serverAction('startunifi')"><i class="fad fa-play"></i> Start</a> 
           <a onclick="serverAction('stopunifi')"><i class="fad fa-stop"></i> Stop</a>
         </div>
       </div>
       <div class="dropdown">
-        <button type="button" class="button svropt_button" onclick="showMenu('pve-menu',false)">
-          <span class="button__text"><i class="fad fa-microchip"></i> Proxmox</span>
+        <button type="button" class="button svropt_button" onclick="showMenu('svr-menu',false)">
+          <span class="button__text"><i class="fad fa-microchip"></i> Server</span>
         </button>  
-        <div class="dd-content dd-button" id="pve-menu">
-          <a onclick="GoToExtPage('pve.home:8006')"><i class="fad fa-link"></i> Open Web GUI</a>
-          <a onclick="serverAction('pve_webui_toggle')"></i> Start/Stop GUI</a>
-          <a onclick="serverAction('syslog')"></i> Status Report</a>  
+        <div class="dd-content dd-button" id="svr-menu">
+          <a onclick="GoToExtPage('pve.home:8006')"><i class="fad fa-link"></i> Open PVE-UI</a>
+          <a onclick="serverAction('pve_webui_toggle')"></i> Start/Stop PVE-UI</a>
+          <a onclick="serverAction('syslog')"></i> Status Report</a>
         </div>
       </div>
       <div class="dropdown">

@@ -17,6 +17,7 @@ CMD=$2
 HOST=$3
 ## Global constants
 SSH_PORT="22"
+SSH_TIMEOUT="450ms"
 SPACER="*********************"
 SSH_ARGS="ServerAliveInterval=5 -o ServerAliveCountMax=5"
 UPDATE_CMDS="apt update; apt upgrade; apt autoremove"
@@ -60,7 +61,7 @@ EXIT_PRGM(){
 HOSTCHK(){
   EXIT="$1"
   echo "Testing connection..."
-  if nc -zv -w 2 "$HOST" "$SSH_PORT" &> /dev/null; then
+  if nc -zv -w $SSH_TIMEOUT $HOST $SSH_PORT &> /dev/null; then
     echo "$HOST's SSH port open, connecting..."
     HOST_STATUS="online"
   else
@@ -97,7 +98,7 @@ Logon to ProOS Pi / Server
 login "Hostname"
 
 Update Servers
-login update_pve
+login updatepve
 
 Sync ProOS (quick run config script) Pi / Server
 login "Hostname" sync
@@ -148,7 +149,7 @@ qemu-img convert -f raw -O qcow2 /dev/rpool/proxmox/vm-100-disk-0 file.qcow2
 exit
 fi
 
-if [ "$MODULE" == "update_pve" ]; then
+if [ "$MODULE" == "updatepve" ]; then
 ## Update Proxmox LXCs/VMs/Host
 UPDATE_ALL_SVRS
 fi

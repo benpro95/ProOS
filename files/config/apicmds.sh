@@ -291,8 +291,11 @@ then
           else
             echo "syncing 'Data' share to $POOL drive..."
             rsync $CHECKSUM -aP \
+            --exclude="**USB.img" --exclude="**USB.7z" --exclude="**USB.zip" \
             --exclude="**HD.img" --exclude="**HD.7z" --exclude="**HD.zip" \
-            --exclude="**VM.7z" --exclude="**VM.zip" --exclude="Consoles/" \
+            --exclude="**SD.img" --exclude="**SD.7z" --exclude="**SD.zip" \
+            --exclude="**VM.img" --exclude="**VM.7z" --exclude="**VM.zip" \
+            --exclude="**CDs.zip" --exclude="**CDs.7z" --exclude="Consoles/"
             /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
           fi
           #### Regions Share ####

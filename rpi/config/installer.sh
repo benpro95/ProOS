@@ -102,9 +102,13 @@ apt-get $APTARGS xserver-xorg xorg x11-common x11-common xserver-xorg-input-evde
  xserver-xorg-legacy xvfb libxext6 libxtst6 xprintidle xdotool wmctrl openbox gpicview \
  lxde-common lxsession pcmanfm lxterminal xfce4-panel xfce4-whiskermenu-plugin
 
-## Disable Swap
+## Disable Swap Space
+dphys-swapfile swapoff > /dev/null 2>&1
 update-rc.d dphys-swapfile remove
-apt-get -y remove --purge dphys-swapfile
+if [ -e "/var/swap" ]; then
+  echo "Removing swap file..."
+  rm -fv /var/swap
+fi
 
 ## Python Libraries
 apt-get $APTARGS net-tools python3 python3-pip python3-venv python3-rpi.gpio python3-gpiozero
@@ -136,7 +140,8 @@ apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp udhcpd usbmuxd
  plymouth plymouth-label plymouth-themes pulseaudio pulseaudio-utils pavucontrol pipewire pipewire-bin \
  tracker-extract tracker-miner-fs cloud-guest-utils cloud-init rpi-cloud-init-mods rpi-connect-lite \
  iptables-persistent bridge-utils ntfs-3g lxlock xscreensaver xscreensaver-data gvfs gvfs-backends \
- rpi-systemd-config rpi-swap systemd-zram-generator apparmor busybox-syslogd piwiz mesa-vulkan-drivers
+ rpi-systemd-config rpi-swap systemd-zram-generator apparmor busybox-syslogd piwiz \
+ mesa-vulkan-drivers dphys-swapfile
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
 rm -rf /etc/cron.*

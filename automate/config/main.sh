@@ -496,16 +496,25 @@ exit
 
 ## Lookup Website Title from URL
 sitelookup)
-if [ "$SECOND_ARG" != "" ]; then
-  BASE64_IN=$(echo "$SECOND_ARG" | sed "s|-|+|g" | sed "s|_|/|g" | sed "s|@|=|g")
-  DECODED_URL=$(openssl enc -base64 -d <<< "$BASE64_IN")
-  LINKTITLE=$(curl -s -X GET "$DECODED_URL" | xmllint -html -xpath "//head/title/text()" - 2>/dev/null)
-  if [[ "$LINKTITLE" != "" ]] && [[ "$LINKTITLE" != "\n" ]]; then
-    echo "$LINKTITLE"
-  else
-    echo "Site lookup error!"
-  fi
-fi
+BASE64_IN=$(echo "$SECOND_ARG" | sed "s|-|+|g" | sed "s|_|/|g" | sed "s|@|=|g")
+DECODED_URL=$(openssl enc -base64 -d <<< "$BASE64_IN")
+URL_DOMAIN=$(echo "$DECODED_URL" | awk -F/ '{print $3}')
+case "$URL_DOMAIN" in
+  "www.ups.com" | "ups.com")
+    echo "UPS Tracking"
+    ;;
+  "tools.usps.com")
+    echo "USPS Tracking"
+    ;;
+  *)
+    LINKTITLE=$(curl -s -X GET "$DECODED_URL" | xmllint -html -xpath "//head/title/text()" - 2>/dev/null)
+    if [[ "$LINKTITLE" == "" ]] || [[ "$LINKTITLE" == "\n" ]]; then
+      echo "Site Lookup Error!"
+    else
+      echo "$LINKTITLE"
+    fi
+    ;;
+esac
 exit
 ;;
 

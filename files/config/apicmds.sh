@@ -241,8 +241,7 @@ fi
 if [[ $CMD == "clearlog" ]]
 then
   truncate -s 0 $LOGFILE
-  neofetch --ascii_distro debian | \
-    sed 's/\x1B[@A-Z\\\]^_]\|\x1B\[[0-9:;<=>?]*[-!"#$%&'"'"'()*+,.\/]*[][\\@A-Z^_`a-z{|}~]//g' 
+  neofetch --ascii_distro debian | sed 's/\x1B[@A-Z\\\]^_]\|\x1B\[[0-9:;<=>?]*[-!"#$%&'"'"'()*+,.\/]*[][\\@A-Z^_`a-z{|}~]//g' 
   exit
 fi
 
@@ -291,12 +290,11 @@ then
           else
             echo "syncing 'Data' share to $POOL drive..."
             rsync $CHECKSUM -aP \
-            --exclude="**USB.img" --exclude="**USB.7z" --exclude="**USB.zip" \
-            --exclude="**HD.img" --exclude="**HD.7z" --exclude="**HD.zip" \
-            --exclude="**SD.img" --exclude="**SD.7z" --exclude="**SD.zip" \
-            --exclude="**VM.img" --exclude="**VM.7z" --exclude="**VM.zip" \
-            --exclude="**CDs.zip" --exclude="**CDs.7z" --exclude="Consoles/"
-            /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
+              --exclude="**CDs.zip" --exclude="**CDs.7z" --exclude="Consoles/" \
+              --exclude="**USB.img" --exclude="**USB.7z" --exclude="**USB.zip" \
+              --exclude="**HD.img" --exclude="**HD.7z" --exclude="**HD.zip" \
+              --exclude="**VM.img" --exclude="**VM.7z" --exclude="**VM.zip" \
+              /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
           fi
           #### Regions Share ####
           if [ ! -e "$REGDATA/SFTP" ]; then
@@ -304,7 +302,7 @@ then
           else
             echo "syncing 'Regions' share to $POOL drive..."
             rsync $CHECKSUM -aP --exclude="Archive/ALUTqMiuxVtjfuair7WIgQ/" \
-            $REGDATA/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
+              $REGDATA/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
           fi
           ##### END BACKUP #####
           SAVEBKPDATES "$POOL"
@@ -322,7 +320,7 @@ then
           else
             echo "syncing 'Data' share to $POOL drive..."
             rsync $CHECKSUM -aP \
-            /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
+              /mnt/data/ /mnt/extbkps/$POOL/Data/ -delete --delete-excluded
           fi
           #### Regions Share ####
           if [ ! -e "$REGDATA/SFTP" ]; then
@@ -330,7 +328,7 @@ then
           else
             echo "syncing 'Regions' share to $POOL drive..."
             rsync $CHECKSUM -aP \
-            $REGDATA/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
+              $REGDATA/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
           fi
           #### Media Share ####
           if [ ! -e "/mnt/media/Music" ]; then

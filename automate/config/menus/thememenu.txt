@@ -1,9 +1,11 @@
-#4b0606|thm|Red
-#0d3d23|thm|Green
-#455197|thm|Blue
-#1f2051|thm|Dark Blue
-#233237|thm|Blue Grey
-#133d61|thm|Turquoise
+#e83535|thm|Crimson
+#4b0606|thm|Garnet
+#32cd32|thm|Lime
+#0d3d23|thm|Forest
+#455197|thm|Azure
+#1f2051|thm|Navy
+#233237|thm|Slate
+#9f9da1|thm|Light
 #ff7b00|thm|Orange
 #9933ff|thm|Purple
 #cd1076|thm|Pink

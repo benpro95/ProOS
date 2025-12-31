@@ -4,6 +4,6 @@
 #1f2051|thm|Dark Blue
 #233237|thm|Blue Grey
 #133d61|thm|Turquoise
-#ff6633|thm|Orange
+#ff7b00|thm|Orange
 #9933ff|thm|Purple
 #cd1076|thm|Pink

@@ -5,7 +5,7 @@
 #455197|thm|Azure
 #1f2051|thm|Navy
 #233237|thm|Slate
-#9f9da1|thm|Light
+#8f8d90|thm|Stone
 #ff7b00|thm|Orange
 #9933ff|thm|Purple
 #cd1076|thm|Pink

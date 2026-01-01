@@ -9,7 +9,7 @@
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  font-family: JosefinSans,system-ui;
+  font-family: JosefinSans, system-ui;
   font-size: 24px; /* default font size */
 }
 
@@ -548,7 +548,7 @@ input.chkbox {
 }
 
 #bookmark__search_txt::placeholder {
-  color: rgb(193, 193, 193);
+  color: #c1c1c1;
 }
 
 #bookmark__search_txt:focus {
@@ -1183,7 +1183,7 @@ input.chkbox {
   transform: translateX(-50%);
   width: 45px;
   height: 45px;
-  background-color: rgb(101, 157, 241);
+  background-color: #659df1;
   bottom: -40px;
   border: 9px solid #2a2a2e;
   z-index: -3;
@@ -1194,7 +1194,7 @@ input.chkbox {
   height: 0px;
   bottom: 0px;
   position: absolute;
-  background: linear-gradient(#e83535, rgb(101, 157, 241)) no-repeat bottom;
+  background: linear-gradient(#e83535, #659df1) no-repeat bottom;
   width: 100%;
   border-radius: 20px;
   background-size: 100% 240px;

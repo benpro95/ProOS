@@ -333,14 +333,12 @@ input.chkbox {
 }
 
 .button_left_txtwin {
-  background-color: var(--main-color);
   margin: 0px;
   height: 75px;
   width: 75px;
 }
 
 .button_right_txtwin {
-  background-color: var(--main-color);
   margin: 0px;
   height: 75px;
   width: 120px;

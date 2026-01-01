@@ -131,7 +131,7 @@ body {
 
 .scroll-bar-style::-webkit-scrollbar-thumb
 {
-  background-color: color-mix(in srgb, var(--main-color) 70%, white);
+  background-color: color-mix(in srgb, var(--main-color) 70%, #fff);
   border-radius: 5px;  
 }
 
@@ -174,7 +174,7 @@ input.chkbox {
   color: #fff; /* buttons font color */
   text-shadow: 1px 1px 1px #000;
   border-radius: 15px;
-  background-color: color-mix(in srgb, var(--main-color),#0000 40%); /* % of transparency */  
+  background-color: color-mix(in srgb, var(--main-color), #0000 40%); /* % of transparency */  
   background-image: linear-gradient(to top left,
                                     rgba(0, 0, 0, .2),
                                     rgba(0, 0, 0, .2) 15%,
@@ -184,7 +184,6 @@ input.chkbox {
 }
 
 .button:hover {
-  background-color: var(--main-color);
   background-image: linear-gradient(to top left,
                                     rgba(0, 0, 0, .2),
                                     rgba(0, 0, 0, .2) 25%,
@@ -199,19 +198,15 @@ input.chkbox {
 }
 
 .submode_btn {
-  background-color: color-mix(in srgb, #8d2a2a,#0000 30%);
-}
-
-.submode_btn:hover {
-  background-color: #8d2a2a;
+  background-color: color-mix(in srgb, #8d2a2a, #0000 30%);
 }
 
 .button_dark {
-  background-color: color-mix(in srgb, var(--main-color),#0000 70%); 
+  background-color: color-mix(in srgb, var(--main-color), #0000 70%); 
 }
 
 .button_alert {
-  background-color: color-mix(in srgb, var(--main-color) 80%, white);
+  background-color: color-mix(in srgb, #8d2a2a, #0000 30%);
 }
 
 .button__text {
@@ -266,7 +261,7 @@ input.chkbox {
 }
 
 .topnav a:hover {
-  background-color: color-mix(in srgb, var(--main-color) 70%, black);
+  background-color: color-mix(in srgb, var(--main-color) 70%, #0000);
   color: white;
 }
 
@@ -418,7 +413,7 @@ input.chkbox {
 
 .dd-selected {
   border-radius: 5px;
-  background-color: color-mix(in srgb, var(--main-color) 80%, black);
+  background-color: color-mix(in srgb, var(--main-color) 80%, #0000);
 }
 
 /* dropdown menu on window */
@@ -527,7 +522,7 @@ input.chkbox {
 }
 
 #bookmarks::-webkit-scrollbar-thumb {
-  background-color: color-mix(in srgb, var(--main-color) 70%, white);
+  background-color: color-mix(in srgb, var(--main-color) 70%, #fff);
   border-radius: 5px;
 }
 
@@ -548,7 +543,7 @@ input.chkbox {
 #bookmark__search_txt {
   width: 100%;
   color: white;
-  background-color: color-mix(in srgb, var(--main-color) 40%, black);
+  background-color: color-mix(in srgb, var(--main-color) 40%, #0000);
   border: 3px solid black;
 }
 

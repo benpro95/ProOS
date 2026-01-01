@@ -26,10 +26,9 @@ rm -rf $RAMDISK/locks
 mkdir -p $RAMDISK/locks
 chmod 777 $RAMDISK/locks
 touch $RAMDISK/sysout.txt
-chmod 777 $RAMDISK/sysout.txt
 
 ## menu files
-cp -v /opt/system/*menu.txt /var/www/html/ram/
+cp -r /opt/system/*menu.txt /var/www/html/ram/
 chmod -R 777 /var/www/html/ram/*menu.txt
 chown -R www-data:www-data /var/www/html/ram/*menu.txt
 

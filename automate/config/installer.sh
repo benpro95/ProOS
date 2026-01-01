@@ -30,13 +30,13 @@ apt-get remove -y --purge cron anacron postfix apache2 apache2-data htop
 apt-get install -y --no-upgrade --ignore-missing yui-compressor default-jre-headless
 mkdir -p /usr/lib/jvm/java-8-openjdk-amd64
 ln -sf /usr/lib/jvm/default-java /usr/lib/jvm/java-8-openjdk-amd64/jre
-if [ ! -e /usr/local/bin/uglifyjs ]; then
+if [ ! -e "/usr/local/bin/uglifyjs" ]; then
   ## Minify JS
   npm install uglify-js -g
 fi  
 
 ## Process Monitor
-if [ ! -e /usr/local/bin/htop ]; then
+if [ ! -e "/usr/local/bin/htop" ]; then
   apt-get remove -y htop
   apt-get install -y --no-upgrade --ignore-missing libncursesw5-dev \
    autotools-dev autoconf automake build-essential
@@ -81,7 +81,7 @@ ln -sf /opt/system/main /opt/system/xmit
 ln -sf /opt/system /opt/rpi
 
 ## Copy Menu Layouts to RAM Disk
-if [ ! -e /var/www/html/ram/mainmenu.txt ]; then
+if [ ! -e "/var/www/html/ram/mainmenu.txt" ]; then
   cp -v /opt/system/*menu.txt /var/www/html/ram/
   chmod -R 777 /var/www/html/ram/*menu.txt
   chown -R www-data:www-data /var/www/html/ram/*menu.txt
@@ -93,7 +93,7 @@ chmod 755 /usr/bin/singleton
 chown root:root /usr/bin/singleton
 
 ## Install Arduino Support
-if [ ! -e /usr/bin/arduino-cli ]; then
+if [ ! -e "/usr/bin/arduino-cli" ]; then
   curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/bin sh
   arduino-cli core install arduino:avr
 fi
@@ -200,9 +200,12 @@ chown root:root /root/.hushlogin
 
 ## Clean-up
 systemctl daemon-reload
-rm -rf /etc/systemd/system/relaxloop.service
 rm -rf /tmp/config
 apt-get autoremove -y
 apt-get clean -y
 apt-get autoclean -y
+
+## Run Boot Script
+/etc/rc.local
+
 exit

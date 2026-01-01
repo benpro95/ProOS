@@ -18,7 +18,7 @@ body {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   touch-action: manipulation;
-  background-color: black;
+  background-color: #000;
   min-height: 100%;  
   height: 100%;
 }
@@ -206,7 +206,7 @@ input.chkbox {
 }
 
 .button_alert {
-  background-color: color-mix(in srgb, #8d2a2a, #0000 30%);
+  background-color: color-mix(in srgb, var(--main-color), #fff 30%) !important;
 }
 
 .button__text {
@@ -261,8 +261,8 @@ input.chkbox {
 }
 
 .topnav a:hover {
-  background-color: color-mix(in srgb, var(--main-color) 70%, #0000);
-  color: white;
+  background-color: color-mix(in srgb, var(--main-color), #0000 40%);
+  color: #fff;
 }
 
 /*
@@ -413,7 +413,7 @@ input.chkbox {
 
 .dd-selected {
   border-radius: 5px;
-  background-color: color-mix(in srgb, var(--main-color) 80%, #0000);
+  background-color: var(--main-color);
 }
 
 /* dropdown menu on window */
@@ -542,9 +542,9 @@ input.chkbox {
 
 #bookmark__search_txt {
   width: 100%;
-  color: white;
+  color: #fff;
   background-color: color-mix(in srgb, var(--main-color) 40%, #0000);
-  border: 3px solid black;
+  border: 3px solid #0000;
 }
 
 #bookmark__search_txt::placeholder {
@@ -552,8 +552,8 @@ input.chkbox {
 }
 
 #bookmark__search_txt:focus {
-  outline: 3px solid color-mix(in srgb, var(--main-color) 50%, white);
-  box-shadow: 0 0 15px color-mix(in srgb, var(--main-color) 50%, white);
+  outline: 3px solid color-mix(in srgb, var(--main-color) 50%, #fff);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--main-color) 50%, #fff);
 }
 
 #bookmark__search_icon {
@@ -567,8 +567,8 @@ input.chkbox {
 
 #pass__prompt_win {
   border-radius: 15px;
-  background-color: black;
-  border: 1px solid white;
+  background-color: #000;
+  border: 1px solid #fff;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -607,8 +607,8 @@ input.chkbox {
 
 #pinet__prompt {
   border-radius: 15px;
-  background-color: black;
-  border: 1px solid white;
+  background-color: #000;
+  border: 1px solid #fff;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -649,8 +649,8 @@ input.chkbox {
 
 #wifi__prompt {
   border-radius: 15px;
-  background-color: black;
-  border: 1px solid white;
+  background-color: #000;
+  border: 1px solid #fff;
   text-align: center;
   text-decoration: none;
   position: absolute;
@@ -690,8 +690,8 @@ input.chkbox {
 
 #editFav__prompt {
   border-radius: 15px;
-  background-color: black;
-  border: 1px solid white;
+  background-color: #000;
+  border: 1px solid #fff;
   text-align: center;
   text-decoration: none;
   position: absolute;
@@ -722,7 +722,7 @@ input.chkbox {
   padding-top: 10px;  
   text-align: left;
   font-size: 22px;
-  color: black;
+  color: #0000;
   width: 330px;
   height: auto;
 }
@@ -742,8 +742,8 @@ input.chkbox {
 
 #about__prompt {
   border-radius: 15px;
-  background-color: black;
-  border: 1px solid white;
+  background-color: #000;
+  border: 1px solid #fff;
   text-align: center;
   text-decoration: none;
   position: absolute;
@@ -786,8 +786,8 @@ input.chkbox {
   border-radius: 15px;
   display: none;
   overflow-y: visible;
-  background-color: black;
-  border: 1px solid white;
+  background-color: #000;
+  border: 1px solid #fff;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -808,7 +808,7 @@ input.chkbox {
 }
 
 .svropt__bkp_frame {
-  border: 1px solid white;
+  border: 1px solid #fff;
   color: #fff;
   padding-top: 7px; 
   padding-bottom: 7px; 
@@ -834,8 +834,8 @@ input.chkbox {
 
 #color__prompt {
   border-radius: 15px;
-  background-color: black;
-  border: 1px solid white;
+  background-color: #000;
+  border: 1px solid #fff;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -857,7 +857,7 @@ input.chkbox {
 #color__box {
   position: relative;
   padding: 0;
-  border: 1px solid white;
+  border: 1px solid #fff;
   border-radius: 0px;
   background: none;
   margin-top: 10px;
@@ -1085,8 +1085,8 @@ input.chkbox {
 
 #vol-popup {
   border-radius: 15px;
-  background-color: black;
-  border: 1px solid white;
+  background-color: #000;
+  border: 1px solid #fff;
   position: fixed;
   top: 50px;
   height: auto;
@@ -1104,7 +1104,7 @@ input.chkbox {
   text-align: center;
   text-decoration: none;
   font-size: 50px;
-  color: color-mix(in srgb, var(--main-color) 40%, white);
+  color: color-mix(in srgb, var(--main-color) 40%, #fff);
   margin-bottom: 10px;
 }
 
@@ -1125,7 +1125,7 @@ input.chkbox {
   width: 30%;
   height: 100%;
   position: absolute;
-  background: linear-gradient(0deg, var(--main-color) 30%, color-mix(in srgb, var(--main-color) 70%, white) 100%);
+  background: linear-gradient(0deg, var(--main-color) 30%, color-mix(in srgb, var(--main-color) 70%, #fff) 100%);
   border-radius: 25px;
   transition: all 0.2s ease-in-out;
 }
@@ -1136,8 +1136,8 @@ input.chkbox {
 
  #temp__prompt {
   border-radius: 15px;
-  background-color: black;
-  border: 1px solid white;
+  background-color: #000;
+  border: 1px solid #fff;
   margin-left: -125px;
   text-decoration: none;
   text-align: center;
@@ -1212,7 +1212,7 @@ input.chkbox {
   transform: translate(-50%, 50%);
   background: var(--main-color);
   opacity: 85%;
-  color: white;
+  color: #fff;
 }
 
 .thermometer #thermo__1:before {

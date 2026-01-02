@@ -289,8 +289,7 @@ then
             echo "Data' share not found!"
           else
             echo "syncing 'Data' share to $POOL drive..."
-            rsync $CHECKSUM -aP \
-              --exclude="**CDs.zip" --exclude="**CDs.7z" --exclude="Consoles/" \
+            rsync $CHECKSUM -aP  --exclude="**CDs.zip" --exclude="**CDs.7z" \
               --exclude="**USB.img" --exclude="**USB.7z" --exclude="**USB.zip" \
               --exclude="**HD.img" --exclude="**HD.7z" --exclude="**HD.zip" \
               --exclude="**VM.img" --exclude="**VM.7z" --exclude="**VM.zip" \
@@ -301,7 +300,8 @@ then
             echo "'Regions' share not found!"
           else
             echo "syncing 'Regions' share to $POOL drive..."
-            rsync $CHECKSUM -aP --exclude="Archive/ALUTqMiuxVtjfuair7WIgQ/" \
+            rsync $CHECKSUM -aP \
+              --exclude="Archive/ALUTqMiuxVtjfuair7WIgQ/" --exclude="Games/" \
               $REGDATA/ /mnt/extbkps/$POOL/.Regions/ -delete --delete-excluded
           fi
           ##### END BACKUP #####

@@ -369,11 +369,11 @@ async function aboutPrompt(){
   let aboutdets1 = document.createElement("div");
   const curDate = new Date();
   const curYear = curDate.getFullYear();
-  const curMonth = curDate.getMonth() + 1; 
+  const curMonth = curDate.getMonth() + 1;
   const curQtr = Math.ceil(curMonth / 3); // round up to the nearest integer
   aboutdets1.innerHTML = curYear + '.' + curQtr + " Release";
   aboutdets1.className = "about__text";
-  aboutprompt.appendChild(aboutdets1); 
+  aboutprompt.appendChild(aboutdets1);
   // cancel button
   let aboutcancelb = document.createElement("button");
   aboutcancelb.type = "button"; 
@@ -1257,7 +1257,7 @@ async function drawBookmarkPrompt(add,url,name,elem){
   }
   // window banner text
   let editFavText = document.createElement("div");
-  editFavText.classList.add("editFav__text");
+  editFavText.classList.add("editFav__toptext");
   editFavText.innerHTML = bannerText; 
   // cancel button
   let editFavCancelBtn = document.createElement("button");

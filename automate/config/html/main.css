@@ -174,7 +174,7 @@ input.chkbox {
   color: #fff; /* buttons font color */
   text-shadow: 1px 1px 1px #000;
   border-radius: 15px;
-  background-color: color-mix(in srgb, var(--main-color), #0000 40%); /* % of transparency */  
+  background-color: color-mix(in srgb, var(--main-color), #000 40%); /* % of transparency */  
   background-image: linear-gradient(to top left,
                                     rgba(0, 0, 0, .2),
                                     rgba(0, 0, 0, .2) 15%,
@@ -198,11 +198,11 @@ input.chkbox {
 }
 
 .submode_btn {
-  background-color: color-mix(in srgb, #8d2a2a, #0000 30%);
+  background-color: color-mix(in srgb, #8d2a2a, #000 30%);
 }
 
 .button_dark {
-  background-color: color-mix(in srgb, var(--main-color), #0000 70%); 
+  background-color: color-mix(in srgb, var(--main-color), #000 70%); 
 }
 
 .button_alert {
@@ -261,7 +261,7 @@ input.chkbox {
 }
 
 .topnav a:hover {
-  background-color: color-mix(in srgb, var(--main-color), #0000 40%);
+  background-color: color-mix(in srgb, var(--main-color), #000 40%);
   color: #fff;
 }
 
@@ -541,8 +541,8 @@ input.chkbox {
 #bookmark__search_txt {
   width: 100%;
   color: #fff;
-  background-color: color-mix(in srgb, var(--main-color) 40%, #0000);
-  border: 3px solid #0000;
+  background-color: color-mix(in srgb, var(--main-color) 40%, #000);
+  border: 3px solid #000;
 }
 
 #bookmark__search_txt::placeholder {
@@ -711,6 +711,15 @@ input.chkbox {
   width: 160px;
 }
 
+.editFav__toptext {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
+  margin: auto;
+  color: #fff;
+  font-size: 20px;
+}
+
 .editFav__textbox {
   border-radius: 15px;
   margin-bottom: 10px;
@@ -720,18 +729,9 @@ input.chkbox {
   padding-top: 10px;  
   text-align: left;
   font-size: 22px;
-  color: #0000;
+  color: #000;
   width: 330px;
   height: auto;
-}
-
-.editFav__text {
-  padding-top: 10px;
-  padding-bottom: 10px;
-  text-align: center;
-  margin: auto;
-  color: #fff;
-  font-size: 20px;
 }
 
 /*

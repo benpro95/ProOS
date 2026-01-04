@@ -174,7 +174,7 @@ input.chkbox {
   color: #fff; /* buttons font color */
   text-shadow: 1px 1px 1px #000;
   border-radius: 15px;
-  background-color: color-mix(in srgb, var(--main-color), #000 40%); /* % of transparency */  
+  background-color: color-mix(in srgb, var(--main-color), transparent 40%);
   background-image: linear-gradient(to top left,
                                     rgba(0, 0, 0, .2),
                                     rgba(0, 0, 0, .2) 15%,
@@ -198,15 +198,15 @@ input.chkbox {
 }
 
 .submode_btn {
-  background-color: color-mix(in srgb, #8d2a2a, #000 30%);
+  background-color: color-mix(in srgb, #8d2a2a, transparent 40%);
 }
 
 .button_dark {
-  background-color: color-mix(in srgb, var(--main-color), #000 70%); 
+  background-color: color-mix(in srgb, var(--main-color) 70%, transparent 40%); 
 }
 
 .button_alert {
-  background-color: color-mix(in srgb, var(--main-color), #fff 30%) !important;
+  background-color: color-mix(in srgb, var(--main-color) 30%, transparent 40%) !important;
 }
 
 .button__text {
@@ -550,7 +550,7 @@ input.chkbox {
 }
 
 #bookmark__search_txt:focus {
-  outline: 3px solid color-mix(in srgb, var(--main-color) 50%, #fff);
+  outline: 3px solid color-mix(in srgb, var(--main-color) 40%, #fff);
   box-shadow: 0 0 15px color-mix(in srgb, var(--main-color) 50%, #fff);
 }
 

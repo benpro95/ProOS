@@ -209,7 +209,7 @@ input.chkbox {
   background-color: color-mix(in srgb, #8d2a2a, transparent 40%);
 }
 
-.button_alert {
+.alert_btn {
   background-color: color-mix(in srgb, var(--main-color), #fff 30%) !important;
 }
 

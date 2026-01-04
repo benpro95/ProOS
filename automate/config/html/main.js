@@ -298,7 +298,7 @@ async function serverSend() {
 }
 
 function sendBtnAlert(state) {
-  let _class = "button_alert";
+  let _class = "alert_btn";
   let _elem = "sendButton";
   if (state === 'off') {
     elemToClass('hide',_elem,_class);

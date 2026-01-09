@@ -7,9 +7,10 @@ let ctlCommand;
 let selectedVM = "";
 let dynMenuActive = 0;
 let bookmarkState = 0;
+let volTimer;
 let resizeState = false;
+let fcSocket = null;
 let serverCmdData;
-let socket = null;
 let fileData = [];
 var timeStamp;
 let sysModel;
@@ -819,8 +820,8 @@ function updateColor(_hexin) {
   }
   _host = _proto + location.hostname + ":7890";
   // Connect to a Fadecandy server
-  socket = new WebSocket(_host);
-  socket.onopen = function(event) {
+  fcSocket = new WebSocket(_host);
+  fcSocket.onopen = function(event) {
     color = hexToRgb(_hexin);
     let rounds = 32;
     for (let i = 0; i < rounds; i++) {
@@ -850,11 +851,11 @@ function hexToRgb(hex) {
 function writeFrame(red, green, blue) {
   let leds = 512;
   let packet = new Uint8ClampedArray(4 + leds * 3);
-  if (socket.readyState != 1 /* OPEN */) {
+  if (fcSocket.readyState != 1 /* OPEN */) {
       // The server connection isn't open. Nothing to do.
       return;
   }
-  if (socket.bufferedAmount > packet.length) {
+  if (fcSocket.bufferedAmount > packet.length) {
       // The network is lagging, and we still haven't sent the previous frame.
       // Don't flood the network, it will just make us laggy.
       // If fcserver is running on the same computer, it should always be able
@@ -869,7 +870,7 @@ function writeFrame(red, green, blue) {
       packet[dest++] = green;
       packet[dest++] = blue;
   }
-  socket.send(packet.buffer);
+  fcSocket.send(packet.buffer);
 }
 
 /// END DYNAMIC WINDOWS ///
@@ -899,7 +900,7 @@ function mapNumber(num, inMin, inMax, outMin, outMax) {
   return (num - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 }
 
-async function setAmpVolume(_state) {
+function setAmpVolume(_state) {
   sendCmd('main','brpi','vol'+_state).then((data) => { // GET request
     let display_vol;
     let amp_vol = data.replace(/(\r\n|\n|\r)/gm, '');
@@ -914,37 +915,55 @@ async function setAmpVolume(_state) {
 }
 
 function showVolumePopup(vol) {
-  let elem = document.getElementById('vol-popup');
-  let vol_text = document.getElementById('vol-text');
-  let vol_bar = document.getElementById('vol-bar');
-  let vol_cont = document.getElementById('vol-grid');
-  vol_cont.style.display = "none";
-  // set volume pop-up text
+  let win_name = "vol-popup";
+  let text_name = "vol-text";
+  let grid_name = "vol-grid";
+  let bar_name = "vol-bar";
+  let voltext, volgrid, volbar, volpopwin = document.getElementById(win_name);
+  if (!volpopwin) { // window does not exist
+    // draw window
+    volpopwin = document.createElement("div");
+    volpopwin.id = win_name;
+    // volume text box
+    voltext = document.createElement("div");
+    voltext.id = text_name;
+    volpopwin.appendChild(voltext);
+    // progress bar
+    volgrid = document.createElement("div");
+    volgrid.classList.add("progress_grid");
+    volgrid.id = grid_name;
+    volbar = document.createElement("div");
+    volbar.classList.add("bar_progress");
+    volbar.id = bar_name;
+    volgrid.appendChild(volbar);
+    volpopwin.appendChild(volgrid);
+    // add to page
+    document.body.appendChild(volpopwin);
+  } else {
+    // select elements in existing window
+    volbar = document.getElementById(bar_name);
+    voltext = document.getElementById(text_name);
+  }
+  // set volume display
   switch(vol) {
     case -1:
-      vol_text.innerHTML = "---"
+      voltext.innerHTML = "---";
       break;
     case 0:
-      vol_text.innerHTML = "Mute";
+      voltext.innerHTML = "Mute";
       break;     
     default:
-      vol_text.innerHTML = vol + "%";
-      // show volume bar
-      vol_bar.style.width = vol + "%";
-      vol_cont.style.display = "block";
+      let volstr = vol + "%";
+      voltext.innerHTML = volstr;
+      volbar.style.width = volstr;
   }
-  // allow only one window
-  addClassToElem('remove','vol-popup','fade_out_window');
-  if (elem.style.display === 'block') { 
-    return; 
-  } else {
-    // make window visible
-    elem.style.display = "block";
-  }
-  // hide after 3 seconds
-  setTimeout(function(){
-    addClassToElem('show','vol-popup','fade_out_window');
-  }, 3000);
+  // reset hide window timeout
+  if (volTimer) { clearTimeout(volTimer); }
+  volTimer = setTimeout(() => { // hide window after delay
+    if (volpopwin) { // window exists
+      document.body.removeChild(volpopwin);
+    }
+  }, 3000); // hide delay in (ms)
 }
 
 function roomOnOff(action) {

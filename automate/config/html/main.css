@@ -1098,7 +1098,6 @@ input.chkbox {
   z-index: 998;
   overflow: hidden;
   resize: none;
-  display: none;
 }
 
 #vol-text {
@@ -1121,7 +1120,7 @@ input.chkbox {
   z-index: 1;
 }
 
-.progress_grid .bar_progress {
+.bar_progress {
   left: 0px;
   width: 30%;
   height: 100%;
@@ -1129,20 +1128,6 @@ input.chkbox {
   background: linear-gradient(0deg, var(--main-color) 30%, color-mix(in srgb, var(--main-color) 70%, #fff) 100%);
   border-radius: 25px;
   transition: all 0.2s ease-in-out;
-}
-
-.fade_out_window {
-  animation: fadeOut 2s forwards; /* The 'forwards' ensures it stays hidden */
-}
-
-@keyframes fadeOut {
-  0% {
-      opacity: 1; /* Start fully visible */
-  }
-  100% {
-      opacity: 0; /* End completely transparent */
-      display: none; /* Hide element completely after fade out */
-  }
 }
 
 /*

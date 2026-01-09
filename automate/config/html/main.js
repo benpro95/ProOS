@@ -99,10 +99,6 @@ function GoToExtPage(_path) {
   window.open(url, "_blank");
 }
 
-function mapNumber(num, inMin, inMax, outMin, outMax) {
-  return (num - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
-}
-
 // back to home page 
 function GoToHomePage() {
   if (sysModel === serverSite) {
@@ -224,7 +220,7 @@ function resizeDone() {
     resizeState = false;
     // re-enable stars animation
     starsAnimation(true);
-  }               
+  }
 }
 
 function starsAnimation(_state) {
@@ -235,9 +231,9 @@ function starsAnimation(_state) {
     let _elm = "star-" + _itr;
     let _class = "star-a-" + _itr;
     if (_state === true) {
-      elemToClass('show',_elm,_class);
+      addClassToElem('add',_elm,_class);
     } else {
-      elemToClass('hide',_elm,_class);
+      addClassToElem('remove',_elm,_class);
     }
   }
 }
@@ -301,10 +297,10 @@ function sendBtnAlert(state) {
   let _class = "alert_btn";
   let _elem = "sendButton";
   if (state === 'off') {
-    elemToClass('hide',_elem,_class);
+    addClassToElem('remove',_elem,_class);
   }
   if (state === 'on') {
-    elemToClass('show',_elem,_class);
+    addClassToElem('add',_elem,_class);
   }
 }
 
@@ -884,7 +880,6 @@ function relaxSend(_cmd) {
 
 // volume controls
 function sendVol(_cmd) {
-  // volume mode
   if (ctlCommand == 'lr' ){
     sendCmd('main','lrxmit',_cmd); // living room system 
   }
@@ -896,16 +891,25 @@ function sendVol(_cmd) {
   }
 }
 
+function isNumeric(value) {
+  return /^-?\d+$/.test(value);
+}
+
+function mapNumber(num, inMin, inMax, outMin, outMax) {
+  return (num - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+}
+
 async function setAmpVolume(_state) {
   sendCmd('main','brpi','vol'+_state).then((data) => { // GET request
-    let vol = -1;
-    const maxAmpLevel = 192;
-    let amp_data = data.replace(/(\r\n|\n|\r)/gm, "");
-    if (!(amp_data == "" || amp_data == null)) {
+    let display_vol;
+    let amp_vol = data.replace(/(\r\n|\n|\r)/gm, '');
+    if (isNumeric(amp_vol) == true) {
       // re-map volume data to 0-100%, show volume pop-up
-      vol = Math.round(mapNumber(Number(amp_data), 0 , maxAmpLevel, 0, 100));
+      display_vol = Math.round(mapNumber(Number(amp_vol),0,192,0,100));
+    } else {
+      display_vol = -1; // invalid data
     }
-    showVolumePopup(vol); 
+    showVolumePopup(display_vol); 
   });
 }
 
@@ -930,6 +934,7 @@ function showVolumePopup(vol) {
       vol_cont.style.display = "block";
   }
   // allow only one window
+  addClassToElem('remove','vol-popup','fade_out_window');
   if (elem.style.display === 'block') { 
     return; 
   } else {
@@ -938,7 +943,7 @@ function showVolumePopup(vol) {
   }
   // hide after 3 seconds
   setTimeout(function(){
-    elem.style.display = "none";
+    addClassToElem('show','vol-popup','fade_out_window');
   }, 3000);
 }
 
@@ -968,14 +973,14 @@ function subModeToggle() {
 }
 
 // add / remove a class from a element
-function elemToClass(_action,_elmid,_class) {
+function addClassToElem(_action,_elmid,_class) {
   let _elm = document.getElementById(_elmid);
-  if (_action === 'show') {
+  if (_action === 'show' || _action === 'add') {
     if (!(_elm.classList.contains(_class))) {
       _elm.classList.add(_class);
     }
   }
-  if (_action === 'hide') {
+  if (_action === 'hide' || _action === 'remove') {
     if (_elm.classList.contains(_class)) {
       _elm.classList.remove(_class);
     } 
@@ -984,10 +989,10 @@ function elemToClass(_action,_elmid,_class) {
 
 function subMode(_action) {
   // hide subwoofer mode indicator
-  elemToClass(_action,'voldwnbtn','submode_btn');
-  elemToClass(_action,'volmutebtn','submode_btn');
-  elemToClass(_action,'volupbtn','submode_btn');
-  elemToClass(_action,'subwooferbtn','submode_btn');
+  addClassToElem(_action,'voldwnbtn','submode_btn');
+  addClassToElem(_action,'volmutebtn','submode_btn');
+  addClassToElem(_action,'volupbtn','submode_btn');
+  addClassToElem(_action,'subwooferbtn','submode_btn');
 }
 
 // controls menu actions

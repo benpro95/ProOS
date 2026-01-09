@@ -1131,6 +1131,20 @@ input.chkbox {
   transition: all 0.2s ease-in-out;
 }
 
+.fade_out_window {
+  animation: fadeOut 2s forwards; /* The 'forwards' ensures it stays hidden */
+}
+
+@keyframes fadeOut {
+  0% {
+      opacity: 1; /* Start fully visible */
+  }
+  100% {
+      opacity: 0; /* End completely transparent */
+      display: none; /* Hide element completely after fade out */
+  }
+}
+
 /*
  *  Temperature Prompt Style
  */

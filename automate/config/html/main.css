@@ -432,9 +432,8 @@ input.chkbox {
 
 /* dropdown menu content */
 .dd-content {
-  border-radius: 5px;
-  cursor: pointer;
   display: none;
+  border-radius: 5px;
   background-color: #4d5b69;
   opacity: 0.96;
   z-index: 999;

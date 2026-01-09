@@ -7,9 +7,9 @@ let ctlCommand;
 let selectedVM = "";
 let dynMenuActive = 0;
 let bookmarkState = 0;
-let volTimer;
 let resizeState = false;
 let fcSocket = null;
+let volPopupTimer;
 let serverCmdData;
 let fileData = [];
 var timeStamp;
@@ -903,21 +903,17 @@ function mapNumber(num, inMin, inMax, outMin, outMax) {
 
 function setAmpVolume(_state) {
   sendCmd('main','brpi','vol'+_state).then((data) => { // GET request
-    let amp_off = -1;
-    let display_vol;
     let amp_vol = data.replace(/(\r\n|\n|\r)/gm, '');
     if (isNumeric(amp_vol) == true) {
-      if (amp_vol == amp_off) {
-        // amp if offline
-        display_vol = amp_off;
-      } else {
-        // re-map volume data to 0-100%, show volume pop-up
-        display_vol = Math.round(mapNumber(Number(amp_vol),0,192,0,100));
-      }
+      // re-map volume data to 0-100%, show volume pop-up
+      let display_vol = Math.round(mapNumber(Number(amp_vol),0,192,0,100));
+      showVolumePopup(display_vol); 
     } else {
-      display_vol = -2; // invalid data
+      if (amp_vol == "") {
+        // empty response = power off
+        showVolumePopup(-1);
+      }
     }
-    showVolumePopup(display_vol); 
   });
 }
 
@@ -955,8 +951,6 @@ function showVolumePopup(vol) {
   }
   // set volume display
   switch(vol) {
-    case -2:
-      break;
     case -1:
       volgrid.style.display = "none";
       voltext.innerHTML = "---";
@@ -972,9 +966,9 @@ function showVolumePopup(vol) {
       volbar.style.width = volstr;
   }
   // reset hide window timeout
-  clearTimeout(volTimer);
+  clearTimeout(volPopupTimer);
   // hide window after delay
-  volTimer = setTimeout(() => {
+  volPopupTimer = setTimeout(() => {
     if (volpopwin) { // window exists
       // fade out window
       volpopwin.classList.add('fade-out');

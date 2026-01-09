@@ -970,12 +970,16 @@ function showVolumePopup(vol) {
       // fade out window
       volpopwin.classList.add('fade-out');
       // wait for the transition to end before removing window
-      volpopwin.addEventListener('animationend', function(event) {
-        // remove window
-        document.body.removeChild(volpopwin);
-      });
+      volpopwin.addEventListener('animationend', removeVolumePopup);
     }
   }, 3000); // hide delay in (ms)
+}
+
+function removeVolumePopup() {
+  let volpopwin = document.getElementById("vol-popup");
+  if (volpopwin) { // window exists
+    document.body.removeChild(volpopwin);
+  }
 }
 
 function roomOnOff(action) {

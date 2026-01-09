@@ -20,8 +20,8 @@ BRPC_MAC="90:2e:16:46:86:43" ## Bedroom PC MAC
 ## Curl Command Line Arguments
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 3 --retry 1 --retry-delay 1 --no-keepalive"
 
+## PHP API call
 function CALLAPI(){
-  ## PHP API call
   local TARGET="${1}"
   local API_ARG1="${2}"
   local API_ARG2="${3}"
@@ -38,8 +38,8 @@ function CALLAPI(){
   echo "$RESPOUT"
 }
 
+## Pico HTTP API call
 function CALLPICO(){
-  ## Pi Pico HTTP API call
   local PICO_IP="${1}"
   local PICO_ARG="${2}"
   if [[ "$PICO_ARG" == "" ]]; then

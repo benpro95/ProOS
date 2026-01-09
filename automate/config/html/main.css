@@ -1100,6 +1100,22 @@ input.chkbox {
   resize: none;
 }
 
+.fade-out {
+  -webkit-animation: fadeOut 1s;
+  animation: fadeOut 1s;
+  animation-fill-mode: forwards;
+}
+
+@-webkit-keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 #vol-text {
   text-align: center;
   text-decoration: none;
@@ -1118,6 +1134,7 @@ input.chkbox {
   border: 4px solid #2a2a2e;
   border-radius: 20px;
   z-index: 1;
+  display: none;
 }
 
 .bar_progress {

@@ -471,6 +471,7 @@ async function showTempHumidity(){
 function getTemperatureData() {
   sendCmd('main','brxmit','roomth').then((data) => {
     const resp = data.replace(/(\r\n|\n|\r)/gm, "");
+    // extract numerics
     const resp_arr = resp.split("~");
     let temp_elm = document.getElementById("thermo__1");
     let humd_elm = document.getElementById("thermo__2");
@@ -942,26 +943,37 @@ function showVolumePopup(vol) {
   } else {
     // select elements in existing window
     volbar = document.getElementById(bar_name);
+    volgrid = document.getElementById(grid_name);
     voltext = document.getElementById(text_name);
   }
   // set volume display
   switch(vol) {
     case -1:
+      volgrid.style.display = "none";
       voltext.innerHTML = "---";
       break;
     case 0:
+      volgrid.style.display = "none";
       voltext.innerHTML = "Mute";
       break;     
     default:
+      volgrid.style.display = "block";
       let volstr = vol + "%";
       voltext.innerHTML = volstr;
       volbar.style.width = volstr;
   }
   // reset hide window timeout
-  if (volTimer) { clearTimeout(volTimer); }
-  volTimer = setTimeout(() => { // hide window after delay
+  clearTimeout(volTimer);
+  // hide window after delay
+  volTimer = setTimeout(() => {
     if (volpopwin) { // window exists
-      document.body.removeChild(volpopwin);
+      // fade out window
+      volpopwin.classList.add('fade-out');
+      // wait for the transition to end before removing window
+      volpopwin.addEventListener('animationend', function(event) {
+        // remove window
+        document.body.removeChild(volpopwin);
+      });
     }
   }, 3000); // hide delay in (ms)
 }

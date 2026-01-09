@@ -903,13 +903,19 @@ function mapNumber(num, inMin, inMax, outMin, outMax) {
 
 function setAmpVolume(_state) {
   sendCmd('main','brpi','vol'+_state).then((data) => { // GET request
+    let amp_off = -1;
     let display_vol;
     let amp_vol = data.replace(/(\r\n|\n|\r)/gm, '');
     if (isNumeric(amp_vol) == true) {
-      // re-map volume data to 0-100%, show volume pop-up
-      display_vol = Math.round(mapNumber(Number(amp_vol),0,192,0,100));
+      if (amp_vol == amp_off) {
+        // amp if offline
+        display_vol = amp_off;
+      } else {
+        // re-map volume data to 0-100%, show volume pop-up
+        display_vol = Math.round(mapNumber(Number(amp_vol),0,192,0,100));
+      }
     } else {
-      display_vol = -1; // invalid data
+      display_vol = -2; // invalid data
     }
     showVolumePopup(display_vol); 
   });
@@ -920,7 +926,8 @@ function showVolumePopup(vol) {
   let text_name = "vol-text";
   let grid_name = "vol-grid";
   let bar_name = "vol-bar";
-  let voltext, volgrid, volbar, volpopwin = document.getElementById(win_name);
+  let voltext, volgrid, volbar;
+  let volpopwin = document.getElementById(win_name);
   if (!volpopwin) { // window does not exist
     // draw window
     volpopwin = document.createElement("div");
@@ -948,6 +955,8 @@ function showVolumePopup(vol) {
   }
   // set volume display
   switch(vol) {
+    case -2:
+      break;
     case -1:
       volgrid.style.display = "none";
       voltext.innerHTML = "---";

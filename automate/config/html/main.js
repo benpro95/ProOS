@@ -8,6 +8,7 @@ let selectedVM = "";
 let dynMenuActive = 0;
 let bookmarkState = 0;
 let resizeState = false;
+let messagePopupTimer;
 let fcSocket = null;
 let volPopupTimer;
 let serverCmdData;
@@ -16,11 +17,11 @@ var timeStamp;
 let sysModel;
 
 // global constants
+const serverSite = "Automate";
 const BKM_INACTIVE = 0;
 const BKM_OPEN_MODE = 1;
 const BKM_EDIT_MODE = 2;
 const resizeTimeout = 750; // in ms
-const serverSite = "Automate";
 
 //////////////////////
 
@@ -92,6 +93,53 @@ function checkElemIsVisibleByID(id){
     }
   }
   return _elmvis;
+}
+
+// remove element by ID
+function removeWindow(id) {
+  let win = document.getElementById(id);
+  if (win) { // window exists
+    document.body.removeChild(win);
+  }
+}
+
+function showPopup(message) {
+  let msgtext;
+  let win_name = "msg-popup";
+  let text_name = "msg-text";
+  let msgpopwin = document.getElementById(win_name);
+  if (!msgpopwin) { // window does not exist
+    // draw window
+    msgpopwin = document.createElement("div");
+    msgpopwin.classList.add("popup-alert");
+    msgpopwin.id = win_name;
+    // volume text box
+    msgtext = document.createElement("div");
+    msgtext.id = text_name;
+    msgpopwin.appendChild(msgtext);
+    // add to page
+    document.body.appendChild(msgpopwin);
+  } else {
+    // select elements in existing window
+    msgtext = document.getElementById(text_name);
+  }
+  // set error text
+  msgtext.innerHTML = message;
+  // reset hide window timeout
+  clearTimeout(messagePopupTimer);
+  // hide window after delay
+  messagePopupTimer = setTimeout(() => {
+    if (msgpopwin) { // window exists
+      // fade out window
+      msgpopwin.classList.add('fade-out');
+      // wait for the transition to end before removing window
+      msgpopwin.addEventListener("animationend", function (event) {
+        if (event && msgpopwin) {
+          document.body.removeChild(msgpopwin);
+        }
+      });
+    }
+  }, 4000); // hide delay in (ms)
 }
 
 // open URL in new tab
@@ -227,7 +275,6 @@ function resizeDone() {
 function starsAnimation(_state) {
   // animated stars background
   let _itr;
-  console.log('stars state: ' + _state);
   for (_itr = 1; _itr <= 12; _itr++) {
     let _elm = "star-" + _itr;
     let _class = "star-a-" + _itr;
@@ -253,11 +300,11 @@ function isObjEmpty(obj) {
 async function sendCmd(act, arg1, arg2) {
   // construct API URL
   const url = location.protocol+"//"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
-  // send request 
-  const response = await fetch(url, {
-    method: 'GET'
-  });
+  // send request
   try {
+    const response = await fetch(url, {
+      method: 'GET'
+    });
     const obj = await response.json();
     var out = null;
     var empty = isObjEmpty(obj);
@@ -265,8 +312,8 @@ async function sendCmd(act, arg1, arg2) {
       out = obj.toString();
     } 
     return out; // return data
-  } catch (err) {
-    console.log('sendCmd: ' + err);
+  } catch (error) {
+    showPopup("[SendCmd] " + error);
   }
 }
 
@@ -297,11 +344,11 @@ async function serverSend() {
 function sendBtnAlert(state) {
   let _class = "alert_btn";
   let _elem = "sendButton";
-  if (state === 'off') {
-    addClassToElem('remove',_elem,_class);
-  }
   if (state === 'on') {
     addClassToElem('add',_elem,_class);
+  }
+  if (state === 'off') {
+    addClassToElem('remove',_elem,_class);
   }
 }
 
@@ -550,19 +597,13 @@ async function showPiWiFiPrompt() {
   if (document.getElementById(winid)) {
     return;
   }
-  let result;
-  try {
-    hideDropdowns(true);
-    result = await piWiFiPrompt(winid);
-    if (result !== null) {  
-      if (result !== '') {  
-        sendCmd('main-www','confwpa',result);
-        document.getElementById("logTextBox").value = "Wi-Fi configuration updated, select client mode to apply changes.";
-      }
-    } 
-    result = "";
-  } catch(e){
-    result = "";
+  hideDropdowns(true);
+  let result = await piWiFiPrompt(winid);
+  if (result !== null) {  
+    if (result !== '') {  
+      sendCmd('main-www','confwpa',result);
+      document.getElementById("logTextBox").value = "Wi-Fi configuration updated, select client mode to apply changes.";
+    }
   }
 }
 
@@ -927,6 +968,7 @@ function showVolumePopup(vol) {
   if (!volpopwin) { // window does not exist
     // draw window
     volpopwin = document.createElement("div");
+    volpopwin.classList.add("popup-alert");
     volpopwin.id = win_name;
     // volume text box
     voltext = document.createElement("div");
@@ -973,16 +1015,13 @@ function showVolumePopup(vol) {
       // fade out window
       volpopwin.classList.add('fade-out');
       // wait for the transition to end before removing window
-      volpopwin.addEventListener('animationend', removeVolumePopup);
+      volpopwin.addEventListener("animationend", function (event) {
+        if (event && volpopwin) {
+          document.body.removeChild(volpopwin);
+        }
+      });
     }
   }, 3000); // hide delay in (ms)
-}
-
-function removeVolumePopup() {
-  let volpopwin = document.getElementById("vol-popup");
-  if (volpopwin) { // window exists
-    document.body.removeChild(volpopwin);
-  }
 }
 
 function roomOnOff(action) {
@@ -1013,12 +1052,12 @@ function subModeToggle() {
 // add / remove a class from a element
 function addClassToElem(_action,_elmid,_class) {
   let _elm = document.getElementById(_elmid);
-  if (_action === 'show' || _action === 'add') {
+  if (_action === 'add') {
     if (!(_elm.classList.contains(_class))) {
       _elm.classList.add(_class);
     }
   }
-  if (_action === 'hide' || _action === 'remove') {
+  if (_action === 'remove') {
     if (_elm.classList.contains(_class)) {
       _elm.classList.remove(_class);
     } 
@@ -1044,10 +1083,10 @@ function ctlsMenu(_mode) {
     classDisplay('hifi-grid','block');
     if (_mode === 'lr') {
       // hide subwoofer controls 
-      subMode('hide');
+      subMode('remove');
     } else {
       // subwoofer controls
-      subMode('show');
+      subMode('add');
     }
   } 
   // bedroom controls
@@ -1055,7 +1094,7 @@ function ctlsMenu(_mode) {
     // disable hifi grid
     classDisplay('hifi-grid','none');
     // hide subwoofer controls 
-    subMode('hide');
+    subMode('remove');
     // enable bedroom grid
     classDisplay('bedroom-grid','block');
   }
@@ -1712,23 +1751,23 @@ function showDynMenu(menu,tobtm) {
      _elem.style.display = 'block';
     // build URL / append data
     const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+menu+"&action=read";
-    menuDataGET(url).then((data) => { // wait for response
+    loadMenu(url).then((data) => { // wait for response
       if (menu === 'bookmarks') {
         showBookmarkSearch();
       }
       drawMenu(data,menu,tobtm);
     });  
-    async function menuDataGET(url) {
-      const response = await fetch(url, {
-        method: "GET"
-      });
-      try {
-        const obj = await response.json();
-        return obj;
-      } catch (err) {
-        console.log("readMenuData: " + err);
-      }
-    }
+  }
+}
+
+async function loadMenu(url) {
+  try {
+    const response = await fetch(url, {
+      method: "GET"
+    });
+    return obj = await response.json();
+  } catch (error) {
+    showPopup("[loadMenu] " + error);
   }
 }
 
@@ -1763,7 +1802,7 @@ function drawMenu(data,menu,tobtm) {
       scrollToBottom();
     }
   } else {
-    console.log("drawMenu: no data");
+    showPopup("[drawMenu] no data!");
   }
 }
 
@@ -1923,7 +1962,6 @@ function boxChanged() {
       }
       // build new data
       let _outstr = linearr.join('|');
-      console.log(_outstr);
       // replace existing data
       fileData[i] = _outstr;
     }
@@ -1969,9 +2007,8 @@ function savePOST(file,data) {
       if (xhr.status == 200) {
         // action on successful transmit
         afterPOSTActions(file);
-      }
-      if (xhr.status !== 200) {
-        console.log("failed to send POST: savePOST("+file+")");
+      } else {
+        showPopup("[savePOST] failed! " + file);
       }
     }
   }
@@ -1995,39 +2032,45 @@ function afterPOSTActions(action) {
 
 // load entire text file
 async function loadLog(file) {
-  try {
-    // build URL / append data
-    let _textData = " ";
-    const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+file+"&action=read";
-    // read file action
-    fetch(url, {
-      method: 'GET'
-    })
-    .then(res => {
-      return res.json()
-    })
-    .then((response) => {
-      // load JSON to text buffer
-      for(var i in response) {
-        let _line = response[i].toString();
-        // ignore empty lines
-        if (_line) {
-          if (_line !== "") {
-             _textData += _line; 
-             _textData += '\n'; 
-          }
+  // build URL / append data
+  let _textData = " ";
+  const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+file+"&action=read";
+  // read file action
+  fetch(url, {
+    method: 'GET'
+  })
+  .then((response) => {
+    // check for HTTP errors
+    if (!response.ok) {
+      // trigger the catch block
+      throw new Error;
+    }
+    // proceed to the next then if successful
+    return response.json(); 
+  })
+  .then(data => {
+    // load JSON to text buffer
+    for(var i in data) {
+      let _line = data[i].toString();
+      // ignore empty lines
+      if (_line) {
+        if (_line !== "") {
+            _textData += _line; 
+            _textData += '\n'; 
         }
       }
-      // display text on page
-      const elmid = "logTextBox";
-      document.getElementById(elmid).value = _textData;
-      // scroll to bottom of page
-      let txtArea = document.getElementById(elmid);
-      txtArea.scrollTop = txtArea.scrollHeight;
-    })
-  } catch (err) {
-    console.log(err);
-  }
+    }
+    // display text on page
+    const elmid = "logTextBox";
+    document.getElementById(elmid).value = _textData;
+    // scroll to bottom of page
+    let txtArea = document.getElementById(elmid);
+    txtArea.scrollTop = txtArea.scrollHeight;
+  })
+  .catch(error => {
+    // This catches both the thrown HTTP error and any network errors
+    showPopup("[loadLog] " + error.message);
+  });
   serverCmdData = null;
 }
 

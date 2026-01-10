@@ -156,6 +156,38 @@ input.chkbox {
 }
 
 /*
+ *  Animations
+ */
+
+@keyframes slide-transparency {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.fade-out {
+  -webkit-animation: fadeOut 1s;
+  animation: fadeOut 1s;
+  animation-fill-mode: forwards;
+}
+
+@-webkit-keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/*
  *  Button Styles
  */
 
@@ -272,7 +304,7 @@ input.chkbox {
  *  Console Log Window
  */
 
-.popup {
+.popup-win {
   border-radius: 15px;
   display: none;
   position: fixed; /* Fixes the element relative to the viewport */
@@ -1028,18 +1060,6 @@ input.chkbox {
   animation-duration: 5s;
 }
 
-@keyframes slide-transparency {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
 /*
  *  Spinner Style
  */
@@ -1080,10 +1100,10 @@ input.chkbox {
 }
 
 /*
- *  Volume Popup
+ *  Popups
  */
 
-#vol-popup {
+.popup-alert {
   border-radius: 15px;
   background-color: #000;
   border: 1px solid #fff;
@@ -1099,21 +1119,23 @@ input.chkbox {
   resize: none;
 }
 
-.fade-out {
-  -webkit-animation: fadeOut 1s;
-  animation: fadeOut 1s;
-  animation-fill-mode: forwards;
+/*
+ *  Message Popup
+ */
+
+#msg-text {
+  height: 100%;
+  text-align: center;
+  text-decoration: none;
+  font-size: 25px;
+  color: #fff;
+  margin: 5px;
 }
 
-@-webkit-keyframes fadeOut {
-  0% { opacity: 1; }
-  100% { opacity: 0; }
-}
 
-@keyframes fadeOut {
-  0% { opacity: 1; }
-  100% { opacity: 0; }
-}
+/*
+ *  Volume Popup
+ */
 
 #vol-text {
   text-align: center;

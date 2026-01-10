@@ -314,7 +314,7 @@ input.chkbox {
   border: 8px solid #202223;
   outline: 1px solid #a2a5a9;
   outline-offset: 0px;
-  z-index: 99;
+  z-index: 996;
 }
 
 .log-popup {
@@ -429,14 +429,14 @@ input.chkbox {
   padding-left: 5px;
   position: absolute;
   display: block;
-  z-index: 999;
+  z-index: 997;
 }
 
 .nav_dd_right {
   right: 165px;
   position: absolute;
   display: block;
-  z-index: 999;
+  z-index: 997;
 }
 
 #nav_right_menu {
@@ -468,7 +468,7 @@ input.chkbox {
   border-radius: 5px;
   background-color: #4d5b69;
   opacity: 0.96;
-  z-index: 999;
+  z-index: 998;
 }
 
 /* links inside the dropdown */
@@ -610,7 +610,7 @@ input.chkbox {
   height: auto;
   padding: 16px; 
   color: #fff;
-  z-index: 998;
+  z-index: 997;
 }
 
 #pass__textbox {
@@ -650,7 +650,7 @@ input.chkbox {
   height: auto;
   padding: 16px; 
   color: #fff;
-  z-index: 998;
+  z-index: 997;
 }
 
 #pinet__ssidbox {
@@ -694,7 +694,7 @@ input.chkbox {
   height: auto;
   padding: 16px; 
   color: #fff;
-  z-index: 998;
+  z-index: 997;
 }
 
 #wifi__img {
@@ -734,7 +734,7 @@ input.chkbox {
   height: auto;
   width: 360px;
   color: #fff;
-  z-index: 999; 
+  z-index: 997; 
 }
 
 .editFav__button {
@@ -828,7 +828,7 @@ input.chkbox {
   width: 455px;
   height: auto;
   padding: 7px; 
-  z-index: 998;
+  z-index: 997;
   color: #fff;
 }
 
@@ -877,7 +877,7 @@ input.chkbox {
   height: auto;
   padding: 16px; 
   color: #fff;
-  z-index: 998; 
+  z-index: 997; 
 }
 
 #color__text {
@@ -1114,7 +1114,7 @@ input.chkbox {
   left: 50%;
   margin-left: -85px;
   padding: 8px;
-  z-index: 998;
+  z-index: 999;
   overflow: hidden;
   resize: none;
 }

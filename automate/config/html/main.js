@@ -1594,12 +1594,12 @@ function showAmpInput() {
     _elem.style.display = 'none';
   } else {
     hideDropdowns(false);
+    _elem.style.display = 'block';
     // start spinner animation
     let btnText = document.getElementById('ampinp-text');
     let btnSpinner = document.getElementById('ampinp-spinner');
     btnText.style.visibility = 'hidden';
     btnSpinner.classList.add('btn-spinner');
-    _elem.style.display = 'block';
     sendCmd('main',target,'inputstate').then((data) => { // GET request
       const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // remove newlines
       // draw menu items
@@ -1613,7 +1613,7 @@ function showAmpInput() {
       _title = "PC Mode"  
       _cmd = "opt-a";
       _indtype = 'blkind';
-      if (resp == '2'){
+      if (resp == '2') {
         _indtype = 'grnind';
       }
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
@@ -1622,7 +1622,7 @@ function showAmpInput() {
       _title = "Bluetooth"  
       _cmd = "coaxial";  
       _indtype = 'blkind';
-      if (resp == '3'){ 
+      if (resp == '3') { 
         _indtype = 'grnind';
       }      
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
@@ -1631,7 +1631,7 @@ function showAmpInput() {
       _title = "Optical"  
       _cmd = "opt-b";
       _indtype = 'blkind';
-      if (resp == '1'){
+      if (resp == '1') {
         _indtype = 'grnind';
       } 
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
@@ -1640,7 +1640,7 @@ function showAmpInput() {
       _title = "Analog"  
       _cmd = "aux";
       _indtype = 'blkind';
-      if (resp == '4'){
+      if (resp == '4') {
         _indtype = 'grnind';
       }
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);

@@ -110,9 +110,7 @@ mkdir -p /mnt/extbkps/BKP_VOL/Media
 mkdir -p /mnt/extbkps/BKP_VOL/.Regions
 
 (Run these in files VM as root)
-chown -R server:server /mnt/extbkps/BKP_VOL/Data
-chown -R server:server /mnt/extbkps/BKP_VOL/Media
-chown -R server:server /mnt/extbkps/BKP_VOL/.Regions
+chown -R ben:shared /mnt/extbkps/BKP_VOL/*
 
 (Detach backup ZFS)
 zfs unmount /mnt/extbkps/BKP_VOL

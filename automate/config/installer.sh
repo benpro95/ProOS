@@ -21,7 +21,7 @@ apt-get --yes update
 apt-get install -y --no-upgrade --ignore-missing dirmngr ca-certificates bpytop \
  apt-transport-https wget unzip gnupg rsync curl screen parallel libdbus-1-dev \
  ethtool libdbus-glib-1-dev locales aptitude sudo gnupg scrub binutils nmap \
- avahi-daemon ffmpeg pip npm python3-ament-xmllint etherwake wakeonlan
+ avahi-daemon ffmpeg pip npm python3-ament-xmllint etherwake wakeonlan npm nodejs
 
 ## Remove Packages
 apt-get remove -y --purge cron anacron postfix apache2 apache2-data htop
@@ -111,6 +111,17 @@ gcc /tmp/config/ztermcom.c -o /usr/bin/ztermcom
 chmod 755 /usr/bin/ztermcom 
 chown root:root /usr/bin/ztermcom
 
+## Node.JS API Server
+mkdir -p /opt/nodeapi
+cp -r /tmp/config/nodeapi/* /opt/nodeapi/
+mv -f /opt/nodeapi/nodeapi.service /etc/systemd/system/
+chmod 644 /etc/systemd/system/nodeapi.service
+chown root:root /etc/systemd/system/nodeapi.service
+cd /opt/nodeapi
+npm install
+cd -
+systemctl restart nodeapi
+
 ## Light Web Server
 apt-get install -y --no-upgrade lighttpd php-cgi php php-common
 cp -f /tmp/config/lighttpd.conf /etc/lighttpd/
@@ -118,17 +129,19 @@ chmod 644 /etc/lighttpd/lighttpd.conf
 chown root:root /etc/lighttpd/lighttpd.conf
 cp -f /tmp/config/lighttpd.service /lib/systemd/system/
 chmod 644 /lib/systemd/system/lighttpd.service 
-chown root:root /lib/systemd/system/lighttpd.service 
+chown root:root /lib/systemd/system/lighttpd.service
+systemctl restart lighttpd
+
+## SSL Certificates
 cp -f /tmp/config/ssl_cert.pem /etc/lighttpd/
 chmod 644 /etc/lighttpd/ssl_cert.pem
 chown root:root /etc/lighttpd/ssl_cert.pem
 cp -f /tmp/config/root_ca.crt /etc/lighttpd/
 chmod 644 /etc/lighttpd/root_ca.crt
 chown root:root /etc/lighttpd/root_ca.crt
+
 lighttpd-enable-mod fastcgi fastcgi-php
 lighty-enable-mod fastcgi-php
-systemctl disable lighttpd
-systemctl restart lighttpd
 
 ## Base website files
 mkdir -p /var/www/html

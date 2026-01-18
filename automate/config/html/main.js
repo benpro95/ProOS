@@ -296,27 +296,6 @@ function isObjEmpty(obj) {
   return isEmpty;
 }
 
-// transmit a command
-async function sendCmd(act, arg1, arg2) {
-  // construct API URL
-  const url = location.protocol+"//"+location.hostname+"/exec.php?var="+arg2+"&arg="+arg1+"&action="+act;
-  // send request
-  try {
-    const response = await fetch(url, {
-      method: 'GET'
-    });
-    const obj = await response.json();
-    var out = null;
-    var empty = isObjEmpty(obj);
-    if (empty === false) {
-      out = obj.toString();
-    } 
-    return out; // return data
-  } catch (error) {
-    showPopup("[SendCmd] " + error);
-  }
-}
-
 /// text popup window ///
 
 // send server action
@@ -1740,6 +1719,114 @@ function showStatusMenu() {
   }   
 }
 
+function afterPOSTActions(action) {
+  let _send = false;
+  if (action === 'pwd') {
+    serverAction('attach_bkps');
+    _send = true;
+  }
+  if (action === 'fusearch') {
+    serverAction('files-mnt_arch_region');
+    _send = true;
+  }
+  if (_send === true) {
+    serverSend(0);
+  }
+}
+
+// load server action 
+function serverAction(cmd) {
+  serverCmdData = cmd;
+  // change color of send button
+  sendBtnAlert("on");
+}
+
+function openLogWindow() {
+  // open server log window
+  closePopup();
+  // show log form window
+  document.getElementById("logForm").style.display = "block";
+  // load log data
+  loadLog('sysout');
+}
+
+// load entire text file
+async function loadLog(file) {
+  // build URL / append data
+  let _textData = " ";
+  const url = location.protocol+"//"+location.hostname+"/api/read?file="+file;
+  // read file action
+  fetch(url, {
+    method: 'GET'
+  })
+  .then((response) => {
+    // check for HTTP errors
+    if (!response.ok) {
+      // trigger the catch block
+      throw new Error;
+    }
+    // proceed to the next then if successful
+    return response.json(); 
+  })
+  .then(data => {
+    // display text on page
+    const elmid = "logTextBox";
+    let boxtext = data.toString();
+    document.getElementById(elmid).value = boxtext;
+    // scroll to bottom of page
+    let txtArea = document.getElementById(elmid);
+    txtArea.scrollTop = txtArea.scrollHeight;
+  })
+  .catch(error => {
+    // This catches both the thrown HTTP error and any network errors
+    showPopup("[loadLog] " + error.message);
+  });
+  serverCmdData = null;
+}
+
+// transmit a command
+async function sendCmd(act, arg1, arg2) {
+  // construct API URL
+  const url = location.protocol+"//"+location.hostname+"/api?var="+arg2+"&arg="+arg1+"&action="+act;
+  // send request
+  try {
+    const response = await fetch(url, {
+      method: 'GET'
+    });
+    const obj = await response.json();
+    var out = null;
+    var empty = isObjEmpty(obj);
+    if (empty === false) {
+      out = obj.toString();
+    }
+    return out; // return data
+  } catch (error) {
+    showPopup("[SendCmd] " + error);
+  }
+}
+
+// save file API POST call
+function savePOST(file,data) {
+  const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+file+"&action=update";
+  // convert data to JSON object
+  let _json = JSON.stringify(data);
+  // submit request
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", url);
+  xhr.setRequestHeader("Content-Type", "text/plain");
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      if (xhr.status == 200) {
+        // action on successful transmit
+        afterPOSTActions(file);
+      } else {
+        showPopup("[savePOST] failed! " + file);
+      }
+    }
+  }
+  xhr.send(_json);
+}
+
 //// Dynamic Menus ////
 
 function showDynMenu(menu,tobtm) {
@@ -1992,103 +2079,6 @@ function removeDynMenus() {
 }
 
 //// End Dynamic Menus ////
-
-// save file API POST call
-function savePOST(file,data) {
-  const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+file+"&action=update";
-  // convert data to JSON object
-  let _json = JSON.stringify(data);
-  // submit request
-  const xhr = new XMLHttpRequest();
-  xhr.open("POST", url);
-  xhr.setRequestHeader("Content-Type", "text/plain");
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState === XMLHttpRequest.DONE) {
-      if (xhr.status == 200) {
-        // action on successful transmit
-        afterPOSTActions(file);
-      } else {
-        showPopup("[savePOST] failed! " + file);
-      }
-    }
-  }
-  xhr.send(_json);
-}
-
-function afterPOSTActions(action) {
-  let _send = false;
-  if (action === 'pwd') {
-    serverAction('attach_bkps');
-    _send = true;
-  }
-  if (action === 'fusearch') {
-    serverAction('files-mnt_arch_region');
-    _send = true;
-  }
-  if (_send === true) {
-    serverSend(0);
-  }
-}
-
-// load entire text file
-async function loadLog(file) {
-  // build URL / append data
-  let _textData = " ";
-  const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+file+"&action=read";
-  // read file action
-  fetch(url, {
-    method: 'GET'
-  })
-  .then((response) => {
-    // check for HTTP errors
-    if (!response.ok) {
-      // trigger the catch block
-      throw new Error;
-    }
-    // proceed to the next then if successful
-    return response.json(); 
-  })
-  .then(data => {
-    // load JSON to text buffer
-    for(var i in data) {
-      let _line = data[i].toString();
-      // ignore empty lines
-      if (_line) {
-        if (_line !== "") {
-            _textData += _line; 
-            _textData += '\n'; 
-        }
-      }
-    }
-    // display text on page
-    const elmid = "logTextBox";
-    document.getElementById(elmid).value = _textData;
-    // scroll to bottom of page
-    let txtArea = document.getElementById(elmid);
-    txtArea.scrollTop = txtArea.scrollHeight;
-  })
-  .catch(error => {
-    // This catches both the thrown HTTP error and any network errors
-    showPopup("[loadLog] " + error.message);
-  });
-  serverCmdData = null;
-}
-
-// load server action 
-function serverAction(cmd) {
-  serverCmdData = cmd;
-  // change color of send button
-  sendBtnAlert("on");
-}
-
-function openLogWindow() {
-  // open server log window
-  closePopup();
-  // show log form window
-  document.getElementById("logForm").style.display = "block";
-  // load log data
-  loadLog('sysout');
-}
 
 // show camera form window
 function openCamWindow() {

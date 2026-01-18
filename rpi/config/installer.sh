@@ -76,10 +76,10 @@ apt-get $APTARGS locales console-setup aptitude libnss-mdns libnss3-tools usbuti
  wireless-tools overlayroot iw wpasupplicant dirmngr triggerhappy default-jre-headless sed \
  build-essential autoconf make libtool binutils i2c-tools cmake yasm minicom rclone unzip \
  cryptsetup cryptsetup-bin texi2html nmap autoconf gnucobol4 avrdude arduino libao-common \
- automake cifs-utils neofetch fuse nodejs apt-utils sqlite3 shairport-sync socat libexpat1 \
- bluetooth pi-bluetooth bluez bluez-tools bluez-alsa-utils libbluetooth3 mpg321 lame sox \
- samba samba-common-bin samba-libs libupnp6 libimage-exiftool-perl libjson-glib-1.0-0 \
- alsa-base alsa-utils mpv
+ automake cifs-utils neofetch fuse apt-utils sqlite3 shairport-sync socat libexpat1 sox \
+ bluetooth pi-bluetooth bluez bluez-tools bluez-alsa-utils libbluetooth3 mpg321 lame \
+ samba samba-common-bin samba-libs libimage-exiftool-perl libjson-glib-1.0-0 \
+ libupnp6 alsa-base alsa-utils mpv npm nodejs
 
 ## AV Codecs Support
 apt-get $APTARGS gstreamer1.0-plugins-base ffmpeg gstreamer1.0-plugins-good \

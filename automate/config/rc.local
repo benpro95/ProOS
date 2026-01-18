@@ -37,6 +37,7 @@ ln -sf /dev/USB-Xmit0 /dev/zterm-tty
 /usr/bin/ztermcom i
 
 ## web server
+systemctl restart nodeapi
 systemctl restart lighttpd
 
 exit 0

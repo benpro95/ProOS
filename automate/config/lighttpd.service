@@ -3,12 +3,6 @@ Description=Lighttpd Daemon
 After=network-online.target
 Documentation=man:lighttpd https://wiki.lighttpd.net
 
-# optional: systemd socket activation for lighttpd
-#Requires=lighttpd-http-ipv4.socket lighttpd-http-ipv6.socket lighttpd-https-ipv4.socket lighttpd-https-ipv6.socket
-
-[Install]
-WantedBy=multi-user.target
-
 [Service]
 Type=simple
 PIDFile=/run/lighttpd.pid

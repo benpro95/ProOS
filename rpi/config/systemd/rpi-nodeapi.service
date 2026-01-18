@@ -1,0 +1,11 @@
+[Unit]
+Description=Automate Node.js API Backend
+Conflicts=shutdown.target
+
+[Service]
+User=www-data
+Type=simple
+ExecStart=/usr/bin/node /opt/node-api/api.js
+WorkingDirectory=/opt/node-api
+Restart=always
+RestartSec=10

@@ -1,3 +1,5 @@
+// Automate Backend API //
+
 const express = require('express');
 const fs = require('fs');
 const app = express();
@@ -9,25 +11,29 @@ const maxReadBytes = 30000;
 
 app.use(express.json());
 
+// run shell command
 app.get('/api', (req, res) => {
   const action = `${req.query.action} `;
   const arg1 = `${req.query.arg} `;
   const arg2 = `${req.query.var} `;
-  // run shell command
-  const { exec } = require('child_process');
-  exec('/usr/bin/sudo /opt/rpi/' + action + arg1 + arg2, (err, stdout, stderr) => {
-    if (err) {
-      res.json(`error: ${stderr} ${stdout}`);
-    } else {
-      res.json(`${stdout}`);
-    }
-  });
+  try {
+    const { exec } = require('child_process');
+    exec('/usr/bin/sudo /opt/rpi/' + action + arg1 + arg2, (err, stdout, stderr) => {
+      if (err) {
+        res.json(`error: ${stderr} ${stdout}`);
+      } else {
+        res.json(`${stdout}`);
+      }
+    });
+  } catch (err) {
+    res.json(`error running: ${action}`);
+  }
 });
 
+// read file contents
 app.get('/api/read', (req, res) => {
   const filename = req.query.file;
   try {
-    // read file contents
     const file = fs.readFileSync(`${rwPath}/${filename}.txt`, 'utf8');
     const lastLines = file.slice(-maxReadBytes);
     res.json(lastLines);
@@ -36,19 +42,23 @@ app.get('/api/read', (req, res) => {
   }
 });
 
+// write file contents
 app.post('/api/write', (req, res) => {
   const filename = req.query.file;
-  var body = '';
-  // write file contents
-  filePath = `${rwPath}/${filename}.txt`;
-  req.on('data', (data) => {
-    body += data;
-  });
-  req.on('end', () => {
-    fs.writeFile(filePath, body, () => {
-      res.end();
+  try {
+    var body = '';
+    filePath = `${rwPath}/${filename}.txt`;
+    req.on('data', (data) => {
+      body += data;
     });
-  });
+    req.on('end', () => {
+      fs.writeFile(filePath, body, () => {
+        res.end();
+      });
+    });
+  } catch (err) {
+    res.json(`error writing: ${filename}`);
+  }
 });
 
 app.listen(httpPort, '127.0.0.1', () => {

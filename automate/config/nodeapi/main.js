@@ -1,14 +1,15 @@
 const express = require('express');
 const fs = require('fs');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const httpPort = process.env.PORT || 3000;
+const rwPath = "/var/www/html/ram";
+const maxReadBytes = 30000;
 
 //$regex = '/^[A-Za-z0-9_.#%@&-]*$/';
 
 app.use(express.json());
 
 app.get('/api', (req, res) => {
-  // read individual parameters
   const action = `${req.query.action} `;
   const arg1 = `${req.query.arg} `;
   const arg2 = `${req.query.var} `;
@@ -24,17 +25,33 @@ app.get('/api', (req, res) => {
 });
 
 app.get('/api/read', (req, res) => {
-  // read individual parameters
   const filename = req.query.file;
   try {
-    const file = fs.readFileSync(`/var/www/html/ram/${filename}.txt`, 'utf8');
-    res.json(file);
+    // read file contents
+    const file = fs.readFileSync(`${rwPath}/${filename}.txt`, 'utf8');
+    const lastLines = file.slice(-maxReadBytes);
+    res.json(lastLines);
   } catch (err) {
     res.json(`error reading: ${filename}`);
   }
 });
 
-app.listen(PORT, '127.0.0.1', () => {
-  console.log(`Automate API running on port ${PORT}`);
+app.post('/api/write', (req, res) => {
+  const filename = req.query.file;
+  var body = '';
+  // write file contents
+  filePath = `${rwPath}/${filename}.txt`;
+  req.on('data', (data) => {
+    body += data;
+  });
+  req.on('end', () => {
+    fs.appendFile(filePath, body, () => {
+      res.end();
+    });
+  });
+});
+
+app.listen(httpPort, '127.0.0.1', () => {
+  console.log(`Automate API running on port ${httpPort}`);
 });
 

@@ -1616,7 +1616,7 @@ function showAmpInput() {
       _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
       // aux analog input
       _menubtn = "cmd";
-      _title = "Analog"  
+      _title = "Analog"
       _cmd = "aux";
       _indtype = 'blkind';
       if (resp == '4') {
@@ -1627,7 +1627,7 @@ function showAmpInput() {
       btnText.style.visibility = 'visible';
       btnSpinner.classList.remove('btn-spinner');
       // draw menu items
-      drawMenu(_menudata.split("\n"),"brinpmenu",true);
+      drawMenu(_menudata,"brinpmenu",true);
     });
   }
 }
@@ -1687,7 +1687,7 @@ function showPowerMenu(target,menu,tobtm) {
       btnText.style.visibility = 'visible';
       btnSpinner.classList.remove('btn-spinner');
       // draw menu items
-      drawMenu(_menudata.split("\n"),menu + '-menu',tobtm);
+      drawMenu(_menudata, menu + '-menu', tobtm);
     });
   }
 }
@@ -1711,7 +1711,7 @@ function showStatusMenu() {
     _elem.style.display = 'block';
     sendCmd('main','status','').then((data) => { // GET request
       // draw menu items
-      drawMenu(data.split("\n"),_menu,false);
+      drawMenu(data, _menu, false);
       // stop spinner animation
       statIcon.style.visibility = 'visible';
       statSpinner.classList.remove('right-nav-spinner');
@@ -1807,9 +1807,7 @@ async function sendCmd(act, arg1, arg2) {
 
 // save file API POST call
 function savePOST(file,data) {
-  const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+file+"&action=update";
-  // convert data to JSON object
-  let _json = JSON.stringify(data);
+  const url = location.protocol+"//"+location.hostname+"/api/write?file="+file;
   // submit request
   const xhr = new XMLHttpRequest();
   xhr.open("POST", url);
@@ -1824,7 +1822,7 @@ function savePOST(file,data) {
       }
     }
   }
-  xhr.send(_json);
+  xhr.send(data);
 }
 
 //// Dynamic Menus ////
@@ -1837,12 +1835,12 @@ function showDynMenu(menu,tobtm) {
     hideDropdowns(false);
      _elem.style.display = 'block';
     // build URL / append data
-    const url = location.protocol+"//"+location.hostname+"/exec.php?var=&arg="+menu+"&action=read";
+    const url = location.protocol+"//"+location.hostname+"/api/read?file="+menu;
     loadMenu(url).then((data) => { // wait for response
       if (menu === 'bookmarks') {
         showBookmarkSearch();
       }
-      drawMenu(data,menu,tobtm);
+      drawMenu(data, menu, tobtm);
     });  
   }
 }
@@ -1866,9 +1864,11 @@ function drawMenu(data,menu,tobtm) {
     // erase global data
     while (fileData.length) { 
       fileData.pop(); 
-    } 
-    for (var idx in data) {
-      let line = data[idx].toString();
+    }
+    let splitdat = data.split("\n");
+    let rows = splitdat.length;
+    for (let row = 0; row < rows; row++) {
+      let line = splitdat[row];
       if (line != "") {
         fileData.push(line); // write to array
         const navElement = document.getElementById(menu);
@@ -1878,7 +1878,7 @@ function drawMenu(data,menu,tobtm) {
         const col1 = linearr[1];
         const col2 = linearr[2].trim();
         // draw menu item
-        navElement.appendChild(createListItem(col0,col1,col2,idx));
+        navElement.appendChild(createListItem(col0,col1,col2,row));
         dynMenuActive = 1;
       }
     }

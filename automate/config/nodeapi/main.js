@@ -1,4 +1,5 @@
-// Automate Backend API //
+//// Automate REST API ////
+// by Ben Provenzano III //
 
 const express = require('express');
 const fs = require('fs');
@@ -18,9 +19,10 @@ app.get('/api', (req, res) => {
   const arg2 = `${req.query.var} `;
   try {
     const { exec } = require('child_process');
-    exec('/usr/bin/sudo /opt/rpi/' + action + arg1 + arg2, (err, stdout, stderr) => {
+    const command = '/usr/bin/sudo /opt/rpi/' + action + arg1 + arg2;
+    exec(command, (err, stdout, stderr) => {
       if (err) {
-        res.json(`error: ${stderr} ${stdout}`);
+        res.json(`command returned an error: ${stderr} ${stdout}`);
       } else {
         res.json(`${stdout}`);
       }
@@ -35,10 +37,10 @@ app.get('/api/read', (req, res) => {
   const filename = req.query.file;
   try {
     const file = fs.readFileSync(`${rwPath}/${filename}.txt`, 'utf8');
-    const lastLines = file.slice(-maxReadBytes);
-    res.json(lastLines);
+    const lastlines = file.slice(-maxReadBytes);
+    res.json(lastlines);
   } catch (err) {
-    res.json(`error reading: ${filename}`);
+    res.json(`error reading file: ${filename}`);
   }
 });
 
@@ -47,17 +49,17 @@ app.post('/api/write', (req, res) => {
   const filename = req.query.file;
   try {
     var body = '';
-    filePath = `${rwPath}/${filename}.txt`;
+    path = `${rwPath}/${filename}.txt`;
     req.on('data', (data) => {
       body += data;
     });
     req.on('end', () => {
-      fs.writeFile(filePath, body, () => {
+      fs.writeFile(path, body, () => {
         res.end();
       });
     });
   } catch (err) {
-    res.json(`error writing: ${filename}`);
+    res.json(`error writing file: ${filename}`);
   }
 });
 

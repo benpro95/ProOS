@@ -4,31 +4,31 @@
 ^!Tab::Return
 
 F1::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lrlightsoff&var=&action=main https://automate.home/exec.php, , hide
+Run, C:\PROGRA~1\Automate\curl.exe "http://automate.home/api?arg=lrlightsoff&var=&action=main", , hide
 return
 
 ^F1::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lroff&var=&action=main https://automate.home/exec.php, , hide
+Run, C:\PROGRA~1\Automate\curl.exe "http://automate.home/api?arg=lroff&var=&action=main", , hide
 return
 
 F2::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lrlightson&var=&action=main https://automate.home/exec.php, , hide
+Run, C:\PROGRA~1\Automate\curl.exe "http://automate.home/api?arg=lrlightson&var=&action=main", , hide
 return
 
 ^F2::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lron&var=&action=main https://automate.home/exec.php, , hide
+Run, C:\PROGRA~1\Automate\curl.exe "http://automate.home/api?arg=lron&var=&action=main", , hide
 return
 
 F3::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=shuffle&var=&action=leds https://automate.home/exec.php, , hide
+Run, C:\PROGRA~1\Automate\curl.exe "http://automate.home/api?arg=shuffle&var=&action=leds", , hide
 return
 
 !F3::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=pause&var=&action=leds https://automate.home/exec.php, , hide
+Run, C:\PROGRA~1\Automate\curl.exe "http://automate.home/api?arg=pause&var=&action=leds", , hide
 return
 
 ^F3::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=stop&var=&action=leds https://automate.home/exec.php, , hide
+Run, C:\PROGRA~1\Automate\curl.exe "http://automate.home/api?arg=stop&var=&action=leds", , hide
 return
 
 ;; Mouse Control ################
@@ -48,11 +48,11 @@ return
 F11::Volume_Mute
 
 !F11::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lrxmit&var=mute&action=main https://automate.home/exec.php, , hide
+Run, C:\PROGRA~1\Automate\curl.exe "http://automate.home/api?arg=lrxmit&var=mute&action=main", , hide
 return
 
 ^F11::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lrxmit&var=hifitoggle&action=main https://automate.home/exec.php, , hide
+Run, C:\PROGRA~1\Automate\curl.exe "http://automate.home/api?arg=lrxmit&var=hifitoggle&action=main", , hide
 return
 
 ;; Volume Down #########
@@ -60,11 +60,11 @@ return
 F12::Volume_Down
 
 !F12::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lrxmit&var=dwn&action=main https://automate.home/exec.php, , hide
+Run, C:\PROGRA~1\Automate\curl.exe "http://automate.home/api?arg=lrxmit&var=dwn&action=main", , hide
 return
 
 ^F12::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lrxmit&var=dwnc&action=main https://automate.home/exec.php, , hide
+Run, C:\PROGRA~1\Automate\curl.exe "http://automate.home/api?arg=lrxmit&var=dwnc&action=main", , hide
 return
 
 ;; Volume Up ###########
@@ -72,11 +72,11 @@ return
 Insert::Volume_Up
 
 !Insert::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lrxmit&var=up&action=main https://automate.home/exec.php, , hide
+Run, C:\PROGRA~1\Automate\curl.exe "http://automate.home/api?arg=lrxmit&var=up&action=main", , hide
 return
 
 ^Insert::
-Run, "C:\Program Files\Automate\curl.exe" -k -m 0.5 --data arg=lrxmit&var=upc&action=main https://automate.home/exec.php, , hide
+Run, C:\PROGRA~1\Automate\curl.exe "http://automate.home/api?arg=lrxmit&var=upc&action=main", , hide
 return
 
 

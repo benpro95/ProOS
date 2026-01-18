@@ -79,7 +79,7 @@ apt-get $APTARGS locales console-setup aptitude libnss-mdns libnss3-tools usbuti
  automake cifs-utils neofetch fuse apt-utils sqlite3 shairport-sync socat libexpat1 sox \
  bluetooth pi-bluetooth bluez bluez-tools bluez-alsa-utils libbluetooth3 mpg321 lame \
  samba samba-common-bin samba-libs libimage-exiftool-perl libjson-glib-1.0-0 \
- libupnp6 alsa-base alsa-utils mpv npm nodejs
+ libupnp6 alsa-base alsa-utils mpv npm nodejs perl perl-modules raspi-utils 
 
 ## AV Codecs Support
 apt-get $APTARGS gstreamer1.0-plugins-base ffmpeg gstreamer1.0-plugins-good \
@@ -114,7 +114,7 @@ fi
 apt-get $APTARGS net-tools python3 python3-pip python3-venv python3-rpi.gpio python3-gpiozero
 
 ## Light Web Server
-apt-get $APTARGS lighttpd php-common php-cgi php php-mysql perl perl-modules
+apt-get $APTARGS lighttpd
 chown www-data:www-data /var/www
 chmod 775 /var/www
 usermod -a -G www-data pi
@@ -140,7 +140,8 @@ apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp udhcpd usbmuxd
  plymouth plymouth-label plymouth-themes pulseaudio pulseaudio-utils pavucontrol pipewire pipewire-bin \
  tracker-extract tracker-miner-fs cloud-guest-utils cloud-init rpi-cloud-init-mods rpi-connect-lite \
  iptables-persistent bridge-utils ntfs-3g lxlock xscreensaver xscreensaver-data gvfs gvfs-backends \
- rpi-systemd-config rpi-swap systemd-zram-generator apparmor busybox-syslogd piwiz \
+ rpi-systemd-config rpi-swap systemd-zram-generator apparmor busybox-syslogd piwiz php-common \
+ php-cgi php php-mysql
  mesa-vulkan-drivers dphys-swapfile
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
@@ -262,31 +263,18 @@ else
 fi
 
 ## Light Web Server Configuration
-lighttpd-enable-mod fastcgi fastcgi-php
-lighty-enable-mod fastcgi-php
-ln -sf /etc/lighttpd/conf-available/10-fastcgi.conf /etc/lighttpd/conf-enabled/
-ln -sf /etc/lighttpd/conf-available/15-fastcgi-php.conf /etc/lighttpd/conf-enabled/
-ln -sf /usr/share/lighttpd/create-mime.conf.pl /usr/share/lighttpd/create-mime.assign.pl
+rm -rf /etc/lighttpd/conf-enabled/*
 cp -f $BIN/lighttpd.conf /etc/lighttpd/
 chmod 644 /etc/lighttpd/lighttpd.conf
 chown root:root /etc/lighttpd/lighttpd.conf
 
-## PHP Configuration
-PHP_VERSION=$(php -v | tac -r | tail -n 1 | cut -d " " -f 2 | cut -c 1-3)
-cp -rf $BIN/php.cgi.ini /etc/php/$PHP_VERSION/cgi/php.ini
-chmod 644 /etc/php/$PHP_VERSION/cgi/php.ini
-chown root:root /etc/php/$PHP_VERSION/cgi/php.ini
-cp -rf $BIN/php.cli.ini /etc/php/$PHP_VERSION/cli/php.ini
-chmod 644 /etc/php/$PHP_VERSION/cli/php.ini
-chown root:root /etc/php/$PHP_VERSION/cli/php.ini
-chown -R www-data:www-data /var/lib/php
-chmod -R g+rx /var/lib/php
-if [ -e "/lib/systemd/system/phpsessionclean.service" ]; then
-  systemctl disable phpsessionclean.timer
-  systemctl disable phpsessionclean.service
-  rm -f /lib/systemd/system/phpsessionclean.timer
-  rm -f /lib/systemd/system/phpsessionclean.service
-fi
+## Node.JS API Server
+mv -f /opt/nodeapi/nodeapi.service /etc/systemd/system/
+chmod 644 /etc/systemd/system/nodeapi.service
+chown root:root /etc/systemd/system/nodeapi.service
+cd /opt/nodeapi
+npm install
+cd -
 
 ## LightTPD base website files
 rm -r /var/www/html

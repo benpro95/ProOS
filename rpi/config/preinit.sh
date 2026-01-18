@@ -12,6 +12,7 @@ chmod -R 777 /var/www/html/ram/*
 chown -R www-data:www-data /var/www/html/ram/*
 
 ### Start network configuration website / automation API
+systemctl --no-block start nodeapi.service
 systemctl --no-block start lighttpd.service
 
 ## Console On Display

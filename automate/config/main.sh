@@ -29,7 +29,7 @@ function CALLAPI(){
     return
   fi
   DATA="var=$API_ARG2&arg=$API_ARG1&action=main"
-  SERVER="http://$TARGET:80/exec.php"
+  SERVER="http://$TARGET:80/api"
   ## API GET request wait then read response
   DELIM="|"
   APIRESP="$(/usr/bin/curl $CURLARGS --data $DATA $SERVER)"

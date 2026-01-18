@@ -45,7 +45,7 @@ app.post('/api/write', (req, res) => {
     body += data;
   });
   req.on('end', () => {
-    fs.appendFile(filePath, body, () => {
+    fs.writeFile(filePath, body, () => {
       res.end();
     });
   });

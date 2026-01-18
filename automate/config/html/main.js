@@ -2058,7 +2058,11 @@ function boxChanged() {
   // remove last element of array
   fileData.pop();
   // update file
-  savePOST(menuid,fileData);
+  let fileout = "";
+  for (var row = 0; row < fileData.length; row++) {
+    fileout += fileData[row] + '\n';
+  }
+  savePOST(menuid,fileout);
   // add menu ID back to array
   fileData.push(menuid);
 }

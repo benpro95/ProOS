@@ -1788,8 +1788,8 @@ async function sendCmd(act, arg1, arg2) {
 }
 
 // save file API POST call
-function savePOST(file,data) {
-  const url = location.protocol+"//"+location.hostname+"/api/write?file="+file;
+function savePOST(file, data) {
+  const url = location.protocol + "//" + location.hostname + "/api/write?file=" + file;
   // submit request
   const xhr = new XMLHttpRequest();
   xhr.open("POST", url);
@@ -1809,7 +1809,7 @@ function savePOST(file,data) {
 
 //// Dynamic Menus ////
 
-function showDynMenu(menu,tobtm) {
+function showDynMenu(menu, tobtm) {
   let _elem = document.getElementById(menu);
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
@@ -1817,7 +1817,7 @@ function showDynMenu(menu,tobtm) {
     hideDropdowns(false);
      _elem.style.display = 'block';
     // build URL / append data
-    const url = location.protocol+"//"+location.hostname+"/api/read?file="+menu;
+    const url = location.protocol+ "//" +location.hostname + "/api/read?file=" + menu;
     loadMenu(url).then((data) => { // wait for response
       if (menu === 'bookmarks') {
         showBookmarkSearch();
@@ -1839,7 +1839,7 @@ async function loadMenu(url) {
 }
 
 // draws each menu item
-function drawMenu(data,menu,tobtm) {
+function drawMenu(data, menu, tobtm) {
   // remove any current dynamic menus
   removeDynMenus();
   if (!(data === null || data === "")) {
@@ -1860,7 +1860,7 @@ function drawMenu(data,menu,tobtm) {
         const col1 = linearr[1];
         const col2 = linearr[2].trim();
         // draw menu item
-        navElement.appendChild(createListItem(col0,col1,col2,row));
+        navElement.appendChild(createListItem(col0, col1, col2, row));
         dynMenuActive = 1;
       }
     }
@@ -1875,7 +1875,7 @@ function drawMenu(data,menu,tobtm) {
   }
 }
 
-function createListItem(_col0,_col1,_col2,_id) {
+function createListItem(_col0, _col1, _col2, _id) {
   const _elm = document.createElement('a');
   // assign menu ID
   _elm.id = "menu-" + _id;
@@ -1906,12 +1906,12 @@ function createListItem(_col0,_col1,_col2,_id) {
   }
   // API call menu
   if (_col1 == 'ledmenu') {
-    _elm.addEventListener("click", function(event) {
+    _elm.addEventListener("click", function() {
       sendCmd('leds',_col0,'');
     });
   }
   if (_col1 == 'relaxmenu') {
-    _elm.addEventListener("click", function(event) {
+    _elm.addEventListener("click", function() {
       relaxSend(_col0);
     });
   } 
@@ -1934,7 +1934,7 @@ function createListItem(_col0,_col1,_col2,_id) {
       _icon.classList.add('fa-toggle-on');
       _icon.classList.add('leftjfy'); // left-justify icon
       _elm.appendChild(_icon);
-      _elm.addEventListener("click", function(event) {
+      _elm.addEventListener("click", function() {
         sendCmd('main',target,cmd);
       });
     }
@@ -1944,7 +1944,7 @@ function createListItem(_col0,_col1,_col2,_id) {
       _icon.classList.add('fa-toggle-off');
       _icon.classList.add('leftjfy'); // left-justify icon
       _elm.appendChild(_icon);
-      _elm.addEventListener("click", function(event) {
+      _elm.addEventListener("click", function() {
         sendCmd('main',target,cmd);
       });
     }
@@ -1954,13 +1954,13 @@ function createListItem(_col0,_col1,_col2,_id) {
       _icon.classList.add('fa-moon');
       _icon.classList.add('leftjfy'); // left-justify icon
       _elm.appendChild(_icon);
-      _elm.addEventListener("click", function(event) {
+      _elm.addEventListener("click", function() {
         sendCmd('main',target,cmd);
       });
     }
     if (menutype == 'cmd') { // generic remote API call on click
       allowhover = true;
-      _elm.addEventListener("click", function(event) {
+      _elm.addEventListener("click", function() {
         sendCmd('main',target,cmd);
       });
     }
@@ -1991,7 +1991,7 @@ function createListItem(_col0,_col1,_col2,_id) {
     const _color = _col0;
     _elm.classList.add('theme-colorbox');
     _elm.style.setProperty('background-color', _color);
-    _elm.addEventListener("click", function(event) {
+    _elm.addEventListener("click", function() {
       setTheme(_color);
     });
   }
@@ -2005,7 +2005,7 @@ function createListItem(_col0,_col1,_col2,_id) {
       value: _col0
     });
     // define click action
-    _elm.addEventListener("click", function(event) {
+    _elm.addEventListener("click", function() {
       clickBookmark(_id);
     });
   }
@@ -2043,7 +2043,7 @@ function boxChanged() {
   for (var row = 0; row < fileData.length; row++) {
     fileout += fileData[row] + '\n';
   }
-  savePOST(menuid,fileout);
+  savePOST(menuid, fileout);
   // add menu ID back to array
   fileData.push(menuid);
 }
@@ -2074,7 +2074,7 @@ function openCamWindow() {
 
 function goToContextRoot(_path) {
   closePopup();
-  window.location = location.protocol+"//"+location.hostname+"/"+_path;
+  window.location = location.protocol + "//" + location.hostname + "//" + _path;
 }
 
 // close all popup windows

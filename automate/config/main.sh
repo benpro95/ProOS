@@ -16,6 +16,7 @@ DESK_IP="192.168.1.14" ## Desktop PC
 BRPI_IP="192.168.1.15" ## Bedroom Pi
 BRPC_IP="192.168.1.17" ## Bedroom PC
 BRPC_MAC="90:2e:16:46:86:43" ## Bedroom PC MAC
+DELIMITER="|"
 
 ## Curl Command Line Arguments
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 3 --retry 1 --retry-delay 1 --no-keepalive"
@@ -28,7 +29,6 @@ function CALLAPI(){
   if [[ "$API_ARG1" == "" ]]; then
     return
   fi
-  DELIMITER="|"
   SERVER="http://$TARGET:80/api?var=$API_ARG2&arg=$API_ARG1&action=main"
   APIRESP=$(/usr/bin/curl $CURLARGS $SERVER)
   TMPSTR="${APIRESP#*$DELIMITER}"
@@ -43,7 +43,6 @@ function CALLPICO(){
   if [[ "$PICO_ARG" == "" ]]; then
     return
   fi
-  DELIM="|"
   SERVER="http://$PICO_IP:80/api/$PICO_ARG"
   APIRESP="$(/usr/bin/curl $CURLARGS $SERVER)"
   TMPSTR="${APIRESP#*$DELIMITER}"
@@ -64,13 +63,11 @@ function LOCAL_PING(){
 function LOCALCOM(){
   local ZTERM_CMD="${1}"
   /usr/bin/singleton ZTERM_PROC /usr/bin/ztermcom $ZTERM_CMD
-  sleep 0.1
 }
 
 function LED_PRESET(){
   local LED_PRESET_CMD="${1}"
   /opt/system/leds "$LED_PRESET_CMD"
-  sleep 0.1
 }
 
 function WAKE_BRPC() {
@@ -252,7 +249,6 @@ case "$CMD_IN" in
     ;;
   "hifistateoff")
     CALLAPI "$LRXMIT_IP" "extcom" "02122" ## Subwoofer Amp Off
-    sleep 0.5
     CALLAPI "$LRXMIT_IP" "extcom" "02103" ## Preamp Off
     ;;
   "hifistateon")

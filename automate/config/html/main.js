@@ -286,16 +286,6 @@ function starsAnimation(_state) {
   }
 }
 
-// returns (true) if object is empty
-function isObjEmpty(obj) {
-  var isEmpty = true;
-  for (keys in obj) {
-     isEmpty = false;
-     break;
-  }
-  return isEmpty;
-}
-
 /// text popup window ///
 
 // send server action
@@ -1267,7 +1257,7 @@ function enableEditAddMode() {
 }
 
 function clickBookmark(id) {
-  const elmid = "menu-" + id.toString();
+  const elmid = "menu-" + id;
   const elem = document.getElementById(elmid);
   const url = Object.values(elem.url).join("");
   const name = elem.innerText;
@@ -1545,7 +1535,7 @@ function closeBookmarkPrompt() {
   }); 
   // un-highlight selected item
   for (var idx = 0; idx <= fileData.length; idx++) {
-    const _menuid = "menu-" + idx.toString();
+    const _menuid = "menu-" + idx;
     const elem = document.getElementById(_menuid);
     if (elem) {
       if(elem.classList.contains('dd-selected')) {
@@ -1561,9 +1551,7 @@ function closeBookmarkPrompt() {
 
 // concat and add delimiters to dynamic menu data
 function buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title) {
-  return _menubtn + '~' + _host + '~' + _cmd
-                  + '|' + _indtype 
-                  + '|' + _title + '\n';
+  return _menubtn + '~' + _host + '~' + _cmd + '|' + _indtype + '|' + _title + '\n';
 }
 
 function showAmpInput() {
@@ -1771,8 +1759,7 @@ async function loadLog(file) {
   .then(data => {
     // display text on page
     const elmid = "logTextBox";
-    let boxtext = data.toString();
-    document.getElementById(elmid).value = boxtext;
+    document.getElementById(elmid).value = data;
     // scroll to bottom of page
     let txtArea = document.getElementById(elmid);
     txtArea.scrollTop = txtArea.scrollHeight;
@@ -1793,13 +1780,8 @@ async function sendCmd(act, arg1, arg2) {
     const response = await fetch(url, {
       method: 'GET'
     });
-    const obj = await response.json();
-    var out = null;
-    var empty = isObjEmpty(obj);
-    if (empty === false) {
-      out = obj.toString();
-    }
-    return out; // return data
+    const out = await response.json();
+    return out; // return response
   } catch (error) {
     showPopup("[SendCmd] " + error);
   }
@@ -1896,7 +1878,7 @@ function drawMenu(data,menu,tobtm) {
 function createListItem(_col0,_col1,_col2,_id) {
   const _elm = document.createElement('a');
   // assign menu ID
-  _elm.id = "menu-" + _id.toString();
+  _elm.id = "menu-" + _id;
   // set menu text
   _elm.innerText = _col2;
   // checkbox menu
@@ -1945,9 +1927,9 @@ function createListItem(_col0,_col1,_col2,_id) {
     const menutype = field[0]; // menu button type
     const target   = field[1]; // target server 
     const cmd      = field[2]; // target command
-    let hoverOff = true;
+    let allowhover = false;
     if (menutype == 'oncmd') { // power-on remote API call on click
-      hoverOff = false;
+      allowhover = true;
       _icon.classList.add('fa');
       _icon.classList.add('fa-toggle-on');
       _icon.classList.add('leftjfy'); // left-justify icon
@@ -1957,7 +1939,7 @@ function createListItem(_col0,_col1,_col2,_id) {
       });
     }
     if (menutype == 'offcmd') { // power-off remote API call on click
-      hoverOff = false;
+      allowhover = true;
       _icon.classList.add('fa');
       _icon.classList.add('fa-toggle-off');
       _icon.classList.add('leftjfy'); // left-justify icon
@@ -1967,7 +1949,7 @@ function createListItem(_col0,_col1,_col2,_id) {
       });
     }
     if (menutype == 'sleepmode') { // sleep PC type menu
-      hoverOff = false;
+      allowhover = true;
       _icon.classList.add('fa');
       _icon.classList.add('fa-moon');
       _icon.classList.add('leftjfy'); // left-justify icon
@@ -1977,7 +1959,7 @@ function createListItem(_col0,_col1,_col2,_id) {
       });
     }
     if (menutype == 'cmd') { // generic remote API call on click
-      hoverOff = false;
+      allowhover = true;
       _elm.addEventListener("click", function(event) {
         sendCmd('main',target,cmd);
       });
@@ -1998,8 +1980,7 @@ function createListItem(_col0,_col1,_col2,_id) {
       _dot.classList.add('ind_dot');
       _dot.classList.add('ind_dot_yellow');
     }
-    // disable hover/click on non-clickable menus
-    if (hoverOff === true){
+    if (allowhover === false){
       _elm.classList.add('no_select');
     }
     _dot.id = "ind-" + _col2;
@@ -2034,13 +2015,13 @@ function createListItem(_col0,_col1,_col2,_id) {
 function boxChanged() {
   // loop through checkbox's state
   for (var i = 0; i < (fileData.length - 1); i++) {
-    let line = fileData[i].toString();
+    let line = fileData[i];
     // split up into array (host,state,name)
     const linearr = line.split("|");
     // only write box state on 0/1 state items
     if (linearr[1] == 'chkon' || linearr[1] == 'chkoff') {
       // read elements checkbox then write state
-      const box = "chkbox-" + linearr[2].toString();
+      const box = "chkbox-" + linearr[2];
       var boxelm = document.getElementById(box);
       if (boxelm.checked === true) {
         linearr[1] = 'chkon';
@@ -2072,7 +2053,7 @@ function removeDynMenus() {
   if (dynMenuActive == 1) {
     // remove dynamic menu elements (II)
     for (var idx = 0; idx <= fileData.length; idx++) {
-      const _menuid = "menu-" + idx.toString();
+      const _menuid = "menu-" + idx;
       const menuRemove = document.getElementById(_menuid);
       if (menuRemove != null) {
         menuRemove.remove();

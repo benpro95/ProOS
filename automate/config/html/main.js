@@ -4,15 +4,14 @@
 // global variables //
 let ctlMode;
 let ctlCommand;
-let selectedVM = "";
+let fileData = [];
+let serverCmdData;
+let fcSocket = null;
 let dynMenuActive = 0;
 let bookmarkState = 0;
 let resizeState = false;
 let messagePopupTimer;
-let fcSocket = null;
 let volPopupTimer;
-let serverCmdData;
-let fileData = [];
 let timeStamp;
 let sysModel;
 
@@ -644,18 +643,18 @@ async function piWiFiPrompt(_winid){
         }        
     });
     // key focused on SSID box
-    pinetssidbox.addEventListener('keyup',function handleSSID(e){ 
-        if(e.keyCode == 13){ //if user enters "enter"-key on password-field
+    pinetssidbox.addEventListener('keyup', function handleSSID(ssid_evnt){ 
+        if(ssid_evnt.key === 'Enter'){ //if user enters "enter"-key on password-field
           pinetpassbox.focus(); // focus on password field
-        }else if(e.keyCode==27){ //user enters "Escape" on password-field
+        } else if (ssid_evnt.key === 'Escape'){ //user enters "Escape" on password-field
           cancelWiFi();
         }
     });
     // key focused on password box
-    pinetpassbox.addEventListener('keyup',function handlePass(e){ 
-        if(e.keyCode == 13){ //if user enters "enter"-key on password-field
+    pinetpassbox.addEventListener('keyup', function handlePass(pass_evnt){ 
+        if(pass_evnt.key === 'Enter'){ //if user enters "enter"-key on password-field
           sendWiFiData();
-        }else if(e.keyCode==27){ //user enters "Escape" on password-field
+        } else if (pass_evnt.key === 'Escape'){ //user enters "Escape" on password-field
           cancelWiFi();
         }
     });
@@ -746,21 +745,21 @@ function passwordPrompt(){
   document.body.appendChild(pwprompt); 
   pwinput.focus(); //focus on the password-input-field so user does not need to click
   return new Promise(function(resolve, reject) {
-      pwprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
-        if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
+      pwprompt.addEventListener('click', function handleButtonClicks(click_evnt) { //lets handle the buttons
+        if (click_evnt.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
         pwprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
-        if (e.target === pwokbutton) { //click on ok-button
+        if (click_evnt.target === pwokbutton) { //click on ok-button
           resolve(pwinput.value); //return the value of the password
         } else {
           reject(new Error('User cancelled')); //return an error
         }
         document.body.removeChild(pwprompt);  //as we are done clean up by removing the password-prompt
       });
-      pwinput.addEventListener('keyup',function handleEnter(e){ //users dont like to click on buttons
-          if(e.keyCode == 13){ //if user enters "enter"-key on password-field
+      pwinput.addEventListener('keyup',function handleEnter(up_events){ //users dont like to click on buttons
+          if(up_events.key === 'Enter') { //if user enters "enter"-key on password-field
               resolve(pwinput.value); //return password-value
               document.body.removeChild(pwprompt); //clean up by removing the password-prompt
-          }else if(e.keyCode==27){ //user enters "Escape" on password-field
+          } else if (up_events.key === 'Escape') { //user enters "Escape" on password-field
               document.body.removeChild(pwprompt); //clean up the password-prompt
               reject(new Error("User cancelled")); //return an error
           }

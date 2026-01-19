@@ -209,7 +209,7 @@ input.chkbox {
   background-color: var(--main-color);
   background-image: linear-gradient(to top left,
                                     rgba(0, 0, 0, .2),
-                                    rgba(0, 0, 0, .2) 15%,
+                                    rgba(0, 0, 0, .2) 20%,
                                     rgba(0, 0, 0, 0));
   box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
               inset -2px -2px 3px rgba(0, 0, 0, .6);         
@@ -218,7 +218,7 @@ input.chkbox {
 .button:hover {
   background-image: linear-gradient(to top left,
                                     rgba(0, 0, 0, .2),
-                                    rgba(0, 0, 0, .2) 25%,
+                                    rgba(0, 0, 0, .2) 30%,
                                     rgba(0, 0, 0, 0));
   box-shadow: inset 4px 4px 6px rgba(255, 255, 255, .6),
               inset -4px -4px 6px rgba(0, 0, 0, .6);

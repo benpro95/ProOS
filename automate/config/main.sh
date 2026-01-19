@@ -28,13 +28,11 @@ function CALLAPI(){
   if [[ "$API_ARG1" == "" ]]; then
     return
   fi
-  DATA="var=$API_ARG2&arg=$API_ARG1&action=main"
-  SERVER="http://$TARGET:80/api"
-  ## API GET request wait then read response
-  DELIM="|"
-  APIRESP="$(/usr/bin/curl $CURLARGS --data $DATA $SERVER)"
-  TMPSTR="${APIRESP#*$DELIM}"
-  RESPOUT="${TMPSTR%$DELIM*}"
+  DELIMITER="|"
+  SERVER="http://$TARGET:80/api?var=$API_ARG2&arg=$API_ARG1&action=main"
+  APIRESP=$(/usr/bin/curl $CURLARGS $SERVER)
+  TMPSTR="${APIRESP#*$DELIMITER}"
+  RESPOUT="${TMPSTR%$DELIMITER*}"
   echo "$RESPOUT"
 }
 
@@ -45,12 +43,11 @@ function CALLPICO(){
   if [[ "$PICO_ARG" == "" ]]; then
     return
   fi
-  SERVER="http://$PICO_IP:80/api/$PICO_ARG"
-  ## API GET request wait then read response
   DELIM="|"
+  SERVER="http://$PICO_IP:80/api/$PICO_ARG"
   APIRESP="$(/usr/bin/curl $CURLARGS $SERVER)"
-  TMPSTR="${APIRESP#*$DELIM}"
-  RESPOUT="${TMPSTR%$DELIM*}"
+  TMPSTR="${APIRESP#*$DELIMITER}"
+  RESPOUT="${TMPSTR%$DELIMITER*}"
   echo "$RESPOUT"
 }
 
@@ -537,30 +534,6 @@ echo " "
 echo "$SERVERARG sent." &>> $LOGFILE
 ## Write Trigger File
 touch $RAMDISK/$SERVERARG.txt
-exit
-;;
-
-active)
-echo "Active services."
-systemctl list-units --type=service --state=active &>> $LOGFILE
-exit
-;;
-
-running)
-echo "Running services."
-systemctl list-units --type=service --state=running &>> $LOGFILE
-exit
-;;
-
-timers)
-## List Active Timers
-systemctl list-timers --all &>> $LOGFILE
-exit
-;;
-
-loadtimes)
-## Display list of system daemons and startup times
-systemd-analyze blame &>> $LOGFILE
 exit
 ;;
 

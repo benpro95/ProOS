@@ -37,8 +37,7 @@ app.get('/api/read', (req, res) => {
   const filename = req.query.file;
   try {
     const file = fs.readFileSync(`${rwPath}/${filename}.txt`, 'utf8');
-    const lastlines = file.slice(-maxReadBytes);
-    res.json(lastlines);
+    res.json(file.slice(-maxReadBytes));
   } catch (err) {
     res.json(`error reading file: ${filename}`);
   }

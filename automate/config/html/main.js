@@ -13,7 +13,7 @@ let fcSocket = null;
 let volPopupTimer;
 let serverCmdData;
 let fileData = [];
-var timeStamp;
+let timeStamp;
 let sysModel;
 
 // global constants
@@ -58,9 +58,9 @@ function handleClicks(event) {
 
 function hideDropdowns(eraseDynMenus) {
   // hide all dropdown menus
-  classDisplay("dd-content","none");
+  classDisplay("dd-content", "none");
   // hide / reset bookmarks menu
-  classDisplay("bookmark-buttons","none");
+  classDisplay("bookmark-buttons", "none");
   const elem = document.getElementById("bookmarks");
   if (elem) {
     elem.classList.remove("bookmark-editmode");
@@ -154,14 +154,14 @@ function GoToHomePage() {
     hidePages();
     loadPage();
   } else {
-    window.location = 'https://'+serverSite+'.home';   
+    window.location = 'https://' + serverSite + '.home';   
   }
 }
 
 function hidePages() {
-  classDisplay('pi-grid','none'); 
-  classDisplay('ledpi-grid','none'); 
-  classDisplay('server-grid','none');
+  classDisplay('pi-grid', 'none'); 
+  classDisplay('ledpi-grid', 'none'); 
+  classDisplay('server-grid', 'none');
 }
 
 // runs on page load
@@ -178,13 +178,13 @@ function loadPage() {
     }
     ctlsMenu(ctlMode);
     // server home page
-    classDisplay('server-grid','block');
+    classDisplay('server-grid', 'block');
   } else { // pi's
     if (sysModel === 'Pi') {
-      classDisplay('pi-grid','block');
+      classDisplay('pi-grid', 'block');
     }
     if (sysModel === 'LEDpi') {
-      classDisplay('ledpi-grid','block');
+      classDisplay('ledpi-grid', 'block');
     }    
   }
   // set theme
@@ -279,9 +279,9 @@ function starsAnimation(_state) {
     let _elm = "star-" + _itr;
     let _class = "star-a-" + _itr;
     if (_state === true) {
-      addClassToElem('add',_elm,_class);
+      addClassToElem('add', _elm, _class);
     } else {
-      addClassToElem('remove',_elm,_class);
+      addClassToElem('remove', _elm, _class);
     }
   }
 }
@@ -301,7 +301,7 @@ async function serverSend() {
       sendCmd('main-www','server',serverCmdData);
     }
     // display command sent
-    document.getElementById("logTextBox").value += "\n"+ serverCmdData + " command sent.";
+    document.getElementById("logTextBox").value += "\n" + serverCmdData + " command sent.";
     // scroll to bottom of page
     let txtArea = document.getElementById("logTextBox");
     txtArea.scrollTop = txtArea.scrollHeight;
@@ -314,10 +314,10 @@ function sendBtnAlert(state) {
   let _class = "alert_btn";
   let _elem = "sendButton";
   if (state === 'on') {
-    addClassToElem('add',_elem,_class);
+    addClassToElem('add', _elem, _class);
   }
   if (state === 'off') {
-    addClassToElem('remove',_elem,_class);
+    addClassToElem('remove', _elem, _class);
   }
 }
 
@@ -329,29 +329,29 @@ function clearPendingCmd() {
 
 function openServerOptions(){
   closeServerOptions();
-  classDisplay("svropt__prompt","block");
-  classDisplay("svropt__main","block");
+  classDisplay("svropt__prompt", "block");
+  classDisplay("svropt__main", "block");
 }
 
 function openRegionsOptions(){
   closeServerOptions();
-  classDisplay("svropt__prompt","block");
-  classDisplay("svropt__regions","block");
+  classDisplay("svropt__prompt", "block");
+  classDisplay("svropt__regions", "block");
 }
 
 function openBackupOptions(){
   closeServerOptions();
-  classDisplay("svropt__prompt","block");
-  classDisplay("svropt__backup","block");
+  classDisplay("svropt__prompt", "block");
+  classDisplay("svropt__backup", "block");
 }
 
 function closeServerOptions(){
   hideDropdowns(true);
   clearPendingCmd();
-  classDisplay("svropt__prompt","none");
-  classDisplay("svropt__main","none");
-  classDisplay("svropt__regions","none");
-  classDisplay("svropt__backup","none");
+  classDisplay("svropt__prompt", "none");
+  classDisplay("svropt__main", "none");
+  classDisplay("svropt__regions", "none");
+  classDisplay("svropt__backup", "none");
 }
 
 /// END- text popup window ///
@@ -396,8 +396,8 @@ async function aboutPrompt(){
   aboutprompt.appendChild(aboutcancelb); //append cancel-button
   document.body.appendChild(aboutprompt); //append the password-prompt so it gets visible
   new Promise(function() {
-    aboutprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
-      if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
+    aboutprompt.addEventListener('click', function handleButtonClicks(btn_evnt) { //lets handle the buttons
+      if (btn_evnt.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
       aboutprompt.removeEventListener('click', handleButtonClicks); //removes eventhandler on cancel or ok
       document.body.removeChild(aboutprompt);  //as we are done clean up by removing the password-prompt
     });
@@ -469,15 +469,15 @@ async function showTempHumidity(){
   getTemperatureData();
   // button actions
   new Promise(function() {
-    tempprompt.addEventListener('click', function handleButtonClicks(e) {
-      if (e.target.tagName !== 'BUTTON') { return; } 
+    tempprompt.addEventListener('click', function handleButtonClicks(btn_evnt) {
+      if (btn_evnt.target.tagName !== 'BUTTON') { return; } 
         // close button
-        if (e.target === tempcancelb) {
+        if (btn_evnt.target === tempcancelb) {
           tempprompt.removeEventListener('click', handleButtonClicks); 
           document.body.removeChild(tempprompt);  
         }
         // refresh button
-        if (e.target === temprefreshb) {
+        if (btn_evnt.target === temprefreshb) {
           getTemperatureData();
         }
     });
@@ -485,40 +485,40 @@ async function showTempHumidity(){
 }
 
 function getTemperatureData() {
-  sendCmd('main','brxmit','roomth').then((data) => {
-    const resp = data.replace(/(\r\n|\n|\r)/gm, "");
+  sendCmd('main', 'brxmit', 'roomth').then((data) => {
+    const resp = cleanString(data);
     // extract numerics
     const resp_arr = resp.split("~");
     let temp_elm = document.getElementById("thermo__1");
     let humd_elm = document.getElementById("thermo__2");
     if (resp_arr.length == 2) {
       // valid response
-      pushTempDataToThermos(resp_arr,temp_elm,humd_elm);
+      pushTempDataToThermos(resp_arr, temp_elm, humd_elm);
     } else {
       // retry request
       setTimeout(function(){
-        retryGetTempData(temp_elm,humd_elm);
+        retryGetTempData(temp_elm, humd_elm);
       }, 500); // in ms
     }
   });
 }
 
-function retryGetTempData(temp_elm,humd_elm) {
+function retryGetTempData(temp_elm, humd_elm) {
   console.log("re-trying DHT data refresh...");
-  sendCmd('main','brxmit','roomth').then((data) => {
-    const resp = data.replace(/(\r\n|\n|\r)/gm, "");
+  sendCmd('main', 'brxmit', 'roomth').then((data) => {
+    const resp = cleanString(data);
     // extract numerics
     const resp_arr = resp.split("~");
     // validate response
     if (resp_arr.length == 2) {
-      pushTempDataToThermos(resp_arr,temp_elm,humd_elm);
+      pushTempDataToThermos(resp_arr, temp_elm, humd_elm);
     } else {
-      pushTempErrorThermos(temp_elm,humd_elm);
+      pushTempErrorThermos(temp_elm, humd_elm);
     }
   });
 }
 
-function pushTempDataToThermos(resp_arr,temp_elm,humd_elm) {
+function pushTempDataToThermos(resp_arr, temp_elm, humd_elm) {
   // thermometer limits
   const minTemp = 25;
   const maxTemp = 100;
@@ -543,11 +543,11 @@ function pushTempDataToThermos(resp_arr,temp_elm,humd_elm) {
     if (hvalue <= minHumidity) { hvalue = minHumidity; }
     humd_elm.style.height = (hvalue - minHumidity) / (maxHumitidy - minHumidity) * 100 + "%";
   } else {
-    pushTempErrorThermos(temp_elm,humd_elm);
+    pushTempErrorThermos(temp_elm, humd_elm);
   }
 }
 
-function pushTempErrorThermos(temp_elm,humd_elm) {
+function pushTempErrorThermos(temp_elm, humd_elm) {
   // verify elements exist
   if (!(temp_elm && humd_elm)) {
     return;
@@ -689,11 +689,11 @@ async function wifiPrompt(){
   wifiprompt.appendChild(wificancelb);
   document.body.appendChild(wifiprompt);
   new Promise(function() {
-      wifiprompt.addEventListener('click', function handleButtonClicks(e) {
-        if (e.target.tagName !== 'BUTTON') { return; }
-          wifiprompt.removeEventListener('click', handleButtonClicks);
-          document.body.removeChild(wifiprompt);
-      });
+    wifiprompt.addEventListener('click', function handleButtonClicks(btn_evnt) {
+      if (btn_evnt.target.tagName !== 'BUTTON') { return; }
+        wifiprompt.removeEventListener('click', handleButtonClicks);
+        document.body.removeChild(wifiprompt);
+    });
   });   
 }
 
@@ -704,7 +704,7 @@ async function getPassword(_type){
     result = await passwordPrompt();
     if (result !== null) {  
       if (result !== '') {
-        savePOST(_type,[result]);
+        savePOST(_type, [result]);
       }
     }
     result = "";
@@ -804,15 +804,15 @@ async function colorPrompt(){
   document.body.appendChild(colorprompt); 
   let _colorval;
   new Promise(function() {
-      colorinput.addEventListener('input', function colorEventListener() {
+      colorinput.addEventListener('input', function colorEventListener(inp_evnt) {
         _colorval = colorinput.value; // save color values
         // cleanup listener
-        if (e.target.tagName !== 'INPUT') { return; }
+        if (inp_evnt.target.tagName !== 'INPUT') { return; }
         colorinput.removeEventListener('click', colorEventListener); 
       });
-      colorprompt.addEventListener('click', function handleButtonClicks(e) { //lets handle the buttons
-        if (e.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
-        if (e.target === colorsetb) { 
+      colorprompt.addEventListener('click', function handleButtonClicks(btn_evnt) {
+        if (btn_evnt.target.tagName !== 'BUTTON') { return; } //nothing to do - user clicked somewhere else
+        if (btn_evnt.target === colorsetb) { 
           // set button action
           updateColor(_colorval);
         } else { // close button
@@ -832,7 +832,7 @@ function updateColor(_hexin) {
   _host = _proto + location.hostname + ":7890";
   // Connect to a Fadecandy server
   fcSocket = new WebSocket(_host);
-  fcSocket.onopen = function(event) {
+  fcSocket.onopen = function() {
     color = hexToRgb(_hexin);
     let rounds = 32;
     for (let i = 0; i < rounds; i++) {
@@ -887,16 +887,16 @@ function writeFrame(red, green, blue) {
 /// END DYNAMIC WINDOWS ///
 
 function relaxSend(_cmd) {
-  sendCmd('main','relax',_cmd);
+  sendCmd('main', 'relax', _cmd);
 }
 
 // volume controls
 function sendVol(_cmd) {
   if (ctlCommand == 'lr' ){
-    sendCmd('main','lrxmit',_cmd); // living room system 
+    sendCmd('main', 'lrxmit', _cmd); // living room system 
   }
   if (ctlCommand == 'subs' ){
-    sendCmd('main','lrxmit','sub'+_cmd); // living room subwoofers
+    sendCmd('main', 'lrxmit', 'sub' + _cmd); // living room subwoofers
   }  
   if (ctlCommand == 'br' ){
     setAmpVolume(_cmd); // bedroom system
@@ -912,8 +912,8 @@ function mapNumber(num, inMin, inMax, outMin, outMax) {
 }
 
 function setAmpVolume(_state) {
-  sendCmd('main','brpi','vol'+_state).then((data) => { // GET request
-    let amp_vol = data.replace(/(\r\n|\n|\r)/gm, '');
+  sendCmd('main', 'brpi', 'vol' + _state).then((data) => { // GET request
+    let amp_vol = cleanString(data);
     if (isNumeric(amp_vol) == true) {
       // re-map volume data to 0-100%, show volume pop-up
       let display_vol = Math.round(mapNumber(Number(amp_vol),0,192,0,100));
@@ -996,12 +996,12 @@ function showVolumePopup(vol) {
 function roomOnOff(action) {
   if (ctlCommand == 'lr') {
     // living room
-    sendCmd('main','lr' + action,'');
+    sendCmd('main', 'lr' + action, '');
     return;
   }
   if (ctlCommand == 'br') {
     // bedroom
-    sendCmd('main','br' + action,'');
+    sendCmd('main', 'br' + action, '');
     return;
   }
 }
@@ -1019,7 +1019,7 @@ function subModeToggle() {
 }
 
 // add / remove a class from a element
-function addClassToElem(_action,_elmid,_class) {
+function addClassToElem(_action, _elmid, _class) {
   let _elm = document.getElementById(_elmid);
   if (_action === 'add') {
     if (!(_elm.classList.contains(_class))) {
@@ -1035,10 +1035,10 @@ function addClassToElem(_action,_elmid,_class) {
 
 function subMode(_action) {
   // hide subwoofer mode indicator
-  addClassToElem(_action,'voldwnbtn','submode_btn');
-  addClassToElem(_action,'volmutebtn','submode_btn');
-  addClassToElem(_action,'volupbtn','submode_btn');
-  addClassToElem(_action,'subwooferbtn','submode_btn');
+  addClassToElem(_action, 'voldwnbtn', 'submode_btn');
+  addClassToElem(_action, 'volmutebtn', 'submode_btn');
+  addClassToElem(_action, 'volupbtn', 'submode_btn');
+  addClassToElem(_action, 'subwooferbtn', 'submode_btn');
 }
 
 // controls menu actions
@@ -1047,9 +1047,9 @@ function ctlsMenu(_mode) {
   // living room controls
   if ((_mode === 'lr') || (_mode === 'subs')) {
     // disable bedroom grid
-    classDisplay('bedroom-grid','none');
+    classDisplay('bedroom-grid', 'none');
     // enable hifi grid
-    classDisplay('hifi-grid','block');
+    classDisplay('hifi-grid', 'block');
     if (_mode === 'lr') {
       // hide subwoofer controls 
       subMode('remove');
@@ -1061,18 +1061,18 @@ function ctlsMenu(_mode) {
   // bedroom controls
   if (_mode === 'br') { 
     // disable hifi grid
-    classDisplay('hifi-grid','none');
+    classDisplay('hifi-grid', 'none');
     // hide subwoofer controls 
     subMode('remove');
     // enable bedroom grid
-    classDisplay('bedroom-grid','block');
+    classDisplay('bedroom-grid', 'block');
   }
   // save state 
   localStorage.setItem("ctls-mode", _mode);
 }
 
 // toggle dropdown menu's
-function showMenu(_menu,_scrolltobtm) {
+function showMenu(_menu, _scrolltobtm) {
   let _elem = document.getElementById(_menu);
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
@@ -1086,7 +1086,7 @@ function showMenu(_menu,_scrolltobtm) {
 }
 
 function scrollToBottom() {
-  window.scrollTo(0,document.body.scrollHeight);
+  window.scrollTo(0, document.body.scrollHeight);
 }
 
 //// Bookmarks Menu ////
@@ -1100,7 +1100,7 @@ function showBookmarks() {
   // draw bookmarks
   showDynMenu('bookmarks');
   // show add / edit buttons
-  classDisplay("bookmark-buttons","block");
+  classDisplay("bookmark-buttons", "block");
   // link open mode
   bookmarkState = BKM_OPEN_MODE;
 }
@@ -1132,20 +1132,20 @@ function showBookmarkSearch() {
     searchBox.focus();
     new Promise(function() {
       // add input listener
-      searchMenuItem.addEventListener('input', function searchInputListener(a) {
+      searchMenuItem.addEventListener('input', function searchInputListener(int_evnt) {
         filterBookmarkItems(searchBox.value);
         // cleanup listener
-        if (a.target.tagName !== 'INPUT') { return; }
+        if (int_evnt.target.tagName !== 'INPUT') { return; }
         searchMenuItem.removeEventListener('click', searchInputListener); 
       });
       // search icon button listener
-      searchMenuItem.addEventListener('click', function handleSearchButtonClick(b) {
+      searchMenuItem.addEventListener('click', function handleSearchButtonClick(btn_evnt) {
         // reset search
         filterBookmarkItems("");
         searchBox.value = "";
         searchBox.focus();
         // cleanup listener
-        if (b.target.tagName !== 'BUTTON') { return; }
+        if (btn_evnt.target.tagName !== 'BUTTON') { return; }
         searchMenuItem.removeEventListener('click', handleSearchButtonClick);
       });
     });
@@ -1234,7 +1234,7 @@ function addBookmark() {
     value: "about:blank"
   });
   // define click action
-  _elm.addEventListener("click", function(event) {
+  _elm.addEventListener("click", function() {
     clickBookmark(_newid);
   });
   // highlight selected item
@@ -1242,7 +1242,7 @@ function addBookmark() {
   // insert item below 
   navElement.insertBefore(_elm,navElement.firstChild);
   // add new window
-  drawBookmarkPrompt(true,null,null,_elm);
+  drawBookmarkPrompt(true, null, null, _elm);
 }
 
 function enableEditAddMode() {
@@ -1272,12 +1272,12 @@ function clickBookmark(id) {
       // edit bookmark item
       closeBookmarkPrompt();
       elem.classList.add("dd-selected"); // highlight selected item
-      drawBookmarkPrompt(false,url,name,elem);
+      drawBookmarkPrompt(false, url, name, elem);
     }
   }
 }
 
-async function drawBookmarkPrompt(add,url,name,elem){
+async function drawBookmarkPrompt(add, url, name, elem){
   // create empty window
   let editFavPrompt = document.createElement("div"); 
   editFavPrompt.className = "editFav__win";
@@ -1366,27 +1366,27 @@ async function drawBookmarkPrompt(add,url,name,elem){
   document.body.appendChild(editFavPrompt);
   // handle button actions
   new Promise(function() {
-    editFavPrompt.addEventListener('click', function handleButtonClicks(e) { 
-    if (e.target.tagName !== 'BUTTON') { return; }
+    editFavPrompt.addEventListener('click', function handleButtonClicks(btn_event) { 
+    if (btn_event.target.tagName !== 'BUTTON') { return; }
       // move up button action
-      if (e.target === editFavUpBtn) {
+      if (btn_event.target === editFavUpBtn) {
         shiftMenuUp(elem);
       }
       // move down button action
-      if (e.target === editFavDownBtn) {
+      if (btn_event.target === editFavDownBtn) {
         shiftMenuDown(elem);
       }         
       // cancel button action
-      if (e.target === editFavCancelBtn) {
+      if (btn_event.target === editFavCancelBtn) {
         editFavPrompt.removeEventListener('click', handleButtonClicks);
         hideDropdowns(true);
       }
       // lookup URL action
-      if (e.target === editFavLookupBtn) {
+      if (btn_event.target === editFavLookupBtn) {
         lookupURL();
       }
       // save button action
-      if (e.target === editFavSaveBtn) {
+      if (btn_event.target === editFavSaveBtn) {
         // do not allow empty URL or name
         var stopsave = false;
         if (editFavName.value == null || editFavName.value == "") {
@@ -1424,7 +1424,7 @@ async function drawBookmarkPrompt(add,url,name,elem){
         closeBookmarkPrompt();
       }
       // delete button action
-      if (e.target === editFavDeleteBtn) {
+      if (btn_event.target === editFavDeleteBtn) {
         elem.remove();
         // save to file
         saveBookmarks();
@@ -1452,8 +1452,12 @@ function addHTTPtoURL(linkin) {
   return linkout;
 }
 
-function base64URLSafeEncode(buffer) 
-{
+// remove newlines
+function cleanString(str) {
+  return str.replace(/(\r\n|\n|\r)/gm, '');
+}
+
+function base64URLSafeEncode(buffer) {
   return btoa(buffer)
     .replace(/\+/g, '-')  // Convert '+' to '-'
     .replace(/\//g, '_')  // Convert '/' to '_'
@@ -1467,7 +1471,7 @@ async function lookupURL() {
     nameBoxElem.value = "Processing...";
     // read URL box
     let urlin = urlBoxElem.value;
-    if (urlin === null || urlin === "") {
+    if (urlin == null || urlin == "") {
       // read from clipboard if URL empty
       urlin = await navigator.clipboard.readText();
     }
@@ -1476,8 +1480,8 @@ async function lookupURL() {
     urlBoxElem.value = url;
     let encoded_url = base64URLSafeEncode(url);
     // search for URLs title
-    sendCmd('main','sitelookup',encoded_url).then((data) => {
-      if (data === null || data === "") {
+    sendCmd('main', 'sitelookup', encoded_url).then((data) => {
+      if (data == null || data == "") {
         // URL lookup failed actions
         nameBoxElem.value = "Not Found";
         setTimeout(function() {
@@ -1488,11 +1492,13 @@ async function lookupURL() {
         }, 2000);
       } else { 
         // remove invalid characters, write to name box
-        nameBoxElem.value = data.replace(/(\r\n|\n|\r)/gm, '');
+        nameBoxElem.value = cleanString(data);
       }
     });
   }
 }
+
+
 
 function shiftMenuUp(elem) {
   if (elem) {
@@ -1524,22 +1530,22 @@ function saveBookmarks() {
     }
   });
   // transmit file
-  savePOST('bookmarks',[_file]);
+  savePOST('bookmarks', [_file]);
 }
 
 // close add / edit window
 function closeBookmarkPrompt() {
   // re-enable click outside of window
-  document.querySelectorAll("*:not(#editFav__prompt)").forEach(e => {
-    e.style.pointerEvents = "";
+  document.querySelectorAll("*:not(#editFav__prompt)").forEach(elem1 => {
+    elem1.style.pointerEvents = "";
   }); 
   // un-highlight selected item
   for (var idx = 0; idx <= fileData.length; idx++) {
     const _menuid = "menu-" + idx;
-    const elem = document.getElementById(_menuid);
-    if (elem) {
-      if(elem.classList.contains('dd-selected')) {
-        elem.classList.remove("dd-selected");
+    const elem2 = document.getElementById(_menuid);
+    if (elem2) {
+      if(elem2.classList.contains('dd-selected')) {
+        elem2.classList.remove("dd-selected");
       }
     }
   }
@@ -1550,7 +1556,7 @@ function closeBookmarkPrompt() {
 }
 
 // concat and add delimiters to dynamic menu data
-function buildRemoteAPIMenu(_menubtn,_host,_cmd,_indtype,_title) {
+function buildRemoteAPIMenu(_menubtn, _host, _cmd, _indtype, _title) {
   return _menubtn + '~' + _host + '~' + _cmd + '|' + _indtype + '|' + _title + '\n';
 }
 
@@ -1567,8 +1573,8 @@ function showAmpInput() {
     let btnSpinner = document.getElementById('ampinp-spinner');
     btnText.style.visibility = 'hidden';
     btnSpinner.classList.add('btn-spinner');
-    sendCmd('main',target,'inputstate').then((data) => { // GET request
-      const resp = data.replace(/(\r\n|\n|\r)/gm, ""); // remove newlines
+    sendCmd('main', target, 'inputstate').then((data) => { // GET request
+      const resp = cleanString(data); // remove newlines
       // draw menu items
       let _menubtn; // menu type
       let _cmd;     // remote host command 
@@ -1583,7 +1589,7 @@ function showAmpInput() {
       if (resp == '2') {
         _indtype = 'grnind';
       }
-      _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
+      _menudata += buildRemoteAPIMenu(_menubtn, target, _cmd, _indtype, _title);
       // coaxial input
       _menubtn = "cmd";
       _title = "Bluetooth"  
@@ -1592,7 +1598,7 @@ function showAmpInput() {
       if (resp == '3') { 
         _indtype = 'grnind';
       }      
-      _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
+      _menudata += buildRemoteAPIMenu(_menubtn, target, _cmd, _indtype, _title);
       // aux optical input
       _menubtn = "cmd";
       _title = "Optical"  
@@ -1601,7 +1607,7 @@ function showAmpInput() {
       if (resp == '1') {
         _indtype = 'grnind';
       } 
-      _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
+      _menudata += buildRemoteAPIMenu(_menubtn, target, _cmd, _indtype, _title);
       // aux analog input
       _menubtn = "cmd";
       _title = "Analog"
@@ -1610,17 +1616,17 @@ function showAmpInput() {
       if (resp == '4') {
         _indtype = 'grnind';
       }
-      _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
+      _menudata += buildRemoteAPIMenu(_menubtn, target, _cmd, _indtype, _title);
       // stop spinner animation
       btnText.style.visibility = 'visible';
       btnSpinner.classList.remove('btn-spinner');
       // draw menu items
-      drawMenu(_menudata,"brinpmenu",true);
+      drawMenu(_menudata, "brinpmenu", true);
     });
   }
 }
 
-function showPowerMenu(target,menu,tobtm) {
+function showPowerMenu(target, menu, tobtm) {
   let _elem = document.getElementById(menu + '-menu');
   if (_elem.style.display === 'block') {
     _elem.style.display = 'none';
@@ -1633,8 +1639,8 @@ function showPowerMenu(target,menu,tobtm) {
     btnSpinner.classList.add('btn-spinner');
     // show menu
     _elem.style.display = 'block';
-    sendCmd('main',target,menu).then((data) => { // GET request
-      const resp = data.replace(/(\r\n|\n|\r)/gm, ''); // remove newlines
+    sendCmd('main', target, menu).then((data) => { // GET request
+      const resp = cleanString(data); // remove newlines
       // draw menu items
       let _menubtn; // menu type
       let _cmd;     // remote host command 
@@ -1659,17 +1665,17 @@ function showPowerMenu(target,menu,tobtm) {
           _indtype = 'redind';
           _title = "Error";
       }
-      _menudata += buildRemoteAPIMenu(_menubtn,target,_cmd,_indtype,_title);
+      _menudata += buildRemoteAPIMenu(_menubtn, target, _cmd, _indtype, _title);
       // power on/off buttons (II)
       if (resp == '1') { // online
-        _menudata += buildRemoteAPIMenu('offcmd',target,menu + 'off','noind','Off');
+        _menudata += buildRemoteAPIMenu('offcmd', target, menu + 'off', 'noind', 'Off');
       }
       if (resp == '0') { // offline
-        _menudata += buildRemoteAPIMenu('oncmd',target,menu + 'on','noind','On');
+        _menudata += buildRemoteAPIMenu('oncmd', target, menu + 'on', 'noind', 'On');
       }
       /// custom menus ///
       if (resp == 'pc_awake') {
-        _menudata += buildRemoteAPIMenu('sleepmode',target,menu + 'off','noind','Sleep');
+        _menudata += buildRemoteAPIMenu('sleepmode', target, menu + 'off', 'noind', 'Sleep');
       }
       // stop spinner animation
       btnText.style.visibility = 'visible';
@@ -1697,7 +1703,7 @@ function showStatusMenu() {
     statSpinner.classList.add('right-nav-spinner');
     // show menu
     _elem.style.display = 'block';
-    sendCmd('main','status','').then((data) => { // GET request
+    sendCmd('main', 'status', '').then((data) => { // GET request
       // draw menu items
       drawMenu(data, _menu, false);
       // stop spinner animation
@@ -1741,8 +1747,7 @@ function openLogWindow() {
 // load entire text file
 async function loadLog(file) {
   // build URL / append data
-  let _textData = " ";
-  const url = location.protocol+"//"+location.hostname+"/api/read?file="+file;
+  const url = location.protocol + "//" +location.hostname + "/api/read?file=" + file;
   // read file action
   fetch(url, {
     method: 'GET'
@@ -1774,16 +1779,16 @@ async function loadLog(file) {
 // transmit a command
 async function sendCmd(act, arg1, arg2) {
   // construct API URL
-  const url = location.protocol+"//"+location.hostname+"/api?var="+arg2+"&arg="+arg1+"&action="+act;
+  const url = location.protocol + "//"+location.hostname + "/api?var=" + arg2 + "&arg=" + arg1 + "&action=" + act;
   // send request
   try {
     const response = await fetch(url, {
       method: 'GET'
     });
-    const out = await response.json();
-    return out; // return response
+    // return response
+    return out = await response.json();
   } catch (error) {
-    showPopup("[SendCmd] " + error);
+    showPopup("[sendCmd] " + error);
   }
 }
 
@@ -1832,7 +1837,8 @@ async function loadMenu(url) {
     const response = await fetch(url, {
       method: "GET"
     });
-    return obj = await response.json();
+    // return response
+    return out = await response.json();
   } catch (error) {
     showPopup("[loadMenu] " + error);
   }

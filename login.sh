@@ -12,9 +12,9 @@ KEYS="$ROOTDIR/mgmt/keys"
 ## Work folder
 WORKDIR="/opt/deploy"
 ## Read arguments
-MODULE=$1
-CMD=$2
-HOST=$3
+MODULE=${1}
+CMD=${2}
+HOST=${3}
 ## Global constants
 SSH_PORT="22"
 SSH_TIMEOUT="450ms"
@@ -256,7 +256,7 @@ DEPLOY_PI(){
         fi
     fi
   else
-    echo "Read/write root filesystem detected."   
+    echo "Read/write root filesystem detected."
   fi
   WAIT_TIME=03 ## seconds
   WAIT_COUNT=${WAIT_TIME}
@@ -272,16 +272,17 @@ DEPLOY_PI(){
   fi
   EXCLUDED="--exclude=photos --exclude=sources"
   RSYNC_ARGS="--stats --human-readable --recursive --times --checksum"
-  echo "Installing base software..."
+  ## install base software
   rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $EXCLUDED $ROOTDIR/rpi root@$HOST:/opt/
-  echo "Installing shared software..."
+  ## install shared software 
   rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $ROOTDIR/automate/config/ztermcom.c root@$HOST:/opt/rpi/
   rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS --mkpath $ROOTDIR/automate/config/nodeapi/ root@$HOST:/opt/nodeapi/
   rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS --mkpath $ROOTDIR/automate/config/html/ root@$HOST:/opt/rpi/config/html-base/
-  echo "Installing module-specific software..."
+  ## install module-specific software
   rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS $EXCLUDED $ROOTDIR/$MODULE/ root@$HOST:/opt/rpi/
-  echo "Starting installer..."
+  ## run installer on host
   ssh -t -o $SSH_ARGS root@$HOST "cd /opt/rpi/config; echo $MODULE > ./hostname; chmod +x ./installer.sh; ./installer.sh"
+  ## copy website menu items (last)
   rsync -e "ssh -o $SSH_ARGS" $RSYNC_ARGS --mkpath $ROOTDIR/automate/config/menus/*.txt root@$HOST:/var/www/html/ram/
   POST_DEPLOY_MENU
 }

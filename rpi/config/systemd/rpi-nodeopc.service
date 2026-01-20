@@ -5,6 +5,7 @@ Conflicts=shutdown.target
 [Service]
 User=root
 Type=simple
+Environment="NODE_ENV=production"
 ExecStart=/usr/bin/node server.js
 WorkingDirectory=/opt/rpi/effects/nodeopc/server
 Restart=always

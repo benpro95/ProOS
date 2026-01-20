@@ -3,7 +3,7 @@
 ## run this 1st, then module installer
 
 # Core Path
-BIN=/opt/rpi/config
+BIN="/opt/rpi/config"
 # Import Hostname
 NEWHOST=`cat $BIN/hostname`
 # Import Module Name
@@ -79,7 +79,7 @@ apt-get $APTARGS locales console-setup aptitude libnss-mdns libnss3-tools usbuti
  automake cifs-utils neofetch fuse apt-utils sqlite3 shairport-sync socat libexpat1 sox \
  bluetooth pi-bluetooth bluez bluez-tools bluez-alsa-utils libbluetooth3 mpg321 lame \
  samba samba-common-bin samba-libs libimage-exiftool-perl libjson-glib-1.0-0 \
- libupnp6 alsa-base alsa-utils mpv npm nodejs perl perl-modules raspi-utils 
+ libupnp6 alsa-base alsa-utils mpv npm nodejs perl perl-modules raspi-utils
 
 ## AV Codecs Support
 apt-get $APTARGS gstreamer1.0-plugins-base ffmpeg gstreamer1.0-plugins-good \
@@ -141,8 +141,7 @@ apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp udhcpd usbmuxd
  tracker-extract tracker-miner-fs cloud-guest-utils cloud-init rpi-cloud-init-mods rpi-connect-lite \
  iptables-persistent bridge-utils ntfs-3g lxlock xscreensaver xscreensaver-data gvfs gvfs-backends \
  rpi-systemd-config rpi-swap systemd-zram-generator apparmor busybox-syslogd piwiz php-common \
- php-cgi php php-mysql
- mesa-vulkan-drivers dphys-swapfile
+ php-cgi php php-mysql mesa-vulkan-drivers dphys-swapfile
 dpkg -l | grep unattended-upgrades
 dpkg -r unattended-upgrades
 rm -rf /etc/cron.*
@@ -153,8 +152,8 @@ apt-get autoclean -y
 apt-get clean -y
 
 ## Delete custom services
-rm -fvr /etc/systemd/system/rpi-*
-rm -fv /etc/systemd/system/usbplug.service
+rm -fr /etc/systemd/system/rpi-*
+rm -f /etc/systemd/system/usbplug.service
 
 ## Reset LED configuration
 rm -f /opt/rpi/remotes/leds

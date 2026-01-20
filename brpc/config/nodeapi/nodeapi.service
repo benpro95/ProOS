@@ -1,12 +1,15 @@
 [Unit]
-Description=Automate Node.js API Backend
+Description=Automate Node.js API Minimal Backend
 Conflicts=shutdown.target
 
 [Service]
 User=www-data
 Type=simple
 Environment="NODE_ENV=production"
-ExecStart=/usr/bin/node server.js
+ExecStart=/usr/bin/node server-min.js
 WorkingDirectory=/opt/nodeapi
 Restart=always
 RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

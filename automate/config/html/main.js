@@ -168,7 +168,7 @@ function loadPage() {
   // read device type
   sysModel = deviceType(); 
   if (sysModel === serverSite) {
-    // load control menu
+    // load control menu saved state
     let _mode = localStorage.getItem("ctls-mode")
     if (_mode === null || _mode === undefined || _mode === "") {
       ctlMode = 'lr'; // living room 
@@ -178,13 +178,10 @@ function loadPage() {
     ctlsMenu(ctlMode);
     // server home page
     classDisplay('server-grid', 'block');
-  } else { // pi's
-    if (sysModel === 'Pi') {
-      classDisplay('pi-grid', 'block');
-    }
-    if (sysModel === 'LEDpi') {
-      classDisplay('ledpi-grid', 'block');
-    }    
+  } else if (sysModel === 'Pi') {
+    classDisplay('pi-grid', 'block');
+  } else if (sysModel === 'LEDpi') {
+    classDisplay('ledpi-grid', 'block');
   }
   // set theme
   let currentTheme;
@@ -913,7 +910,7 @@ function mapNumber(num, inMin, inMax, outMin, outMax) {
 function setAmpVolume(_state) {
   sendCmd('main', 'brpi', 'vol' + _state).then((data) => { // GET request
     let amp_vol = cleanString(data);
-    if (isNumeric(amp_vol) == true) {
+    if (isNumeric(amp_vol) === true) {
       // re-map volume data to 0-100%, show volume pop-up
       let display_vol = Math.round(mapNumber(Number(amp_vol),0,192,0,100));
       showVolumePopup(display_vol); 
@@ -1452,8 +1449,10 @@ function addHTTPtoURL(linkin) {
 }
 
 // remove newlines
-function cleanString(str) {
-  return str.replace(/(\r\n|\n|\r)/gm, '');
+function cleanString(data) {
+  let str = data.toString();
+  let out = str.replace(/(\r\n|\n|\r)/gm, '');
+  return out;
 }
 
 function base64URLSafeEncode(buffer) {
@@ -1746,7 +1745,7 @@ function openLogWindow() {
 // load entire text file
 async function loadLog(file) {
   // build URL / append data
-  const url = location.protocol + "//" +location.hostname + "/api/read?file=" + file;
+  const url = location.protocol + "//" + location.hostname + "/api/read?file=" + file;
   // read file action
   fetch(url, {
     method: 'GET'
@@ -1778,7 +1777,7 @@ async function loadLog(file) {
 // transmit a command
 async function sendCmd(act, arg1, arg2) {
   // construct API URL
-  const url = location.protocol + "//"+location.hostname + "/api?var=" + arg2 + "&arg=" + arg1 + "&action=" + act;
+  const url = location.protocol + "//"+ location.hostname + "/api?var=" + arg2 + "&arg=" + arg1 + "&action=" + act;
   // send request
   try {
     const response = await fetch(url, {
@@ -2079,7 +2078,7 @@ function openCamWindow() {
 
 function goToContextRoot(_path) {
   closePopup();
-  window.location = location.protocol + "//" + location.hostname + "//" + _path;
+  window.location = location.protocol + "//" + location.hostname + "/" + _path;
 }
 
 // close all popup windows

@@ -1,3 +1,19 @@
+public void SynchronousMethod()
+{
+    // ... some synchronous work ...
+
+    // Use this to run an async method from a sync context safely
+    string result = Task.Run(() => Async("test")).GetAwaiter().GetResult();
+
+    // ... use the result ...
+}
+
+public async Task<string> Async(string input)
+{
+    await Task.Delay(1000); // Simulate I/O-bound work
+    return "Generated Code: " + input;
+}
+
 using Azure.Storage.Blobs;
 using System;
 using System.IO;

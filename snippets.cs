@@ -1,3 +1,21 @@
+using Azure.Storage.Blobs;
+using System.IO;
+using System.Threading.Tasks;
+
+public static async Task DownloadBlobFromStreamAsync(BlobClient blobClient, string localFilePath)
+{
+    // Open a stream to the blob using OpenReadAsync()
+    using (var stream = await blobClient.OpenReadAsync())
+    {
+        // Create a FileStream to write the data to a local file
+        using (FileStream fileStream = File.OpenWrite(localFilePath))
+        {
+            // Copy the blob stream to the file stream asynchronously
+            await stream.CopyToAsync(fileStream);
+        }
+    }
+}
+
 public void SynchronousMethod()
 {
     // ... some synchronous work ...
@@ -62,102 +80,7 @@ public static async Task UnzipBlobAsync(string zipBlobConnectionString, string c
     Console.WriteLine($"Successfully unzipped {zipFileName} to container {outputContainerName}");
 }
 
-static void Main(string[] args)
-{
-    var cloudStorageAccount = CloudStorageAccount.Parse(@"<connection_string_here>");
 
-    var sourceContainer = "container1";
-    var destinationContainer = "container2";
-    var sourceFilename = "picture.jpg";
-    var destinationFilename = "picture_in_container_2.jpg";
-
-    var copyResult = CopyBlob(cloudStorageAccount, sourceContainer, destinationContainer, sourceFilename, destinationFilename);
-
-    if (copyResult.Status == CopyStatus.Success)
-    {
-        DeleteBlob(cloudStorageAccount, sourceContainer, sourceFilename);
-    }
-}
-
-private static CopyState CopyBlob(CloudStorageAccount cloudStorageAccount, string sourceContainerName, string destinationContainerName, string sourceFileName, string destinationFileName)
-{
-    var blobStorageClient = cloudStorageAccount.CreateCloudBlobClient();
-
-    var sourceContainer = blobStorageClient.GetContainerReference(sourceContainerName);
-    var destinationContainer = blobStorageClient.GetContainerReference(destinationContainerName);
-
-    var sourceBlob = sourceContainer.GetBlobReference(sourceFileName);
-
-    var destinationBlob = destinationContainer.GetBlobReference(destinationFileName);
-
-    var result = destinationBlob.StartCopy(sourceBlob.Uri);
-
-    var copyResult = destinationBlob.CopyState;
-
-    return copyResult;
-}
-
-private static void DeleteBlob(CloudStorageAccount cloudStorageAccount, string containerName, string blobFileName)
-{
-    var blobStorageClient = cloudStorageAccount.CreateCloudBlobClient();
-    var container = blobStorageClient.GetContainerReference(containerName);
-    var blob = container.GetBlobReference(blobFileName);
-    blob.Delete();
-}
-
-public class GraphMailService
-{
-    private readonly IConfiguration _config;
-
-    public GraphMailService(IConfiguration config)
-    {
-        _config = config;
-    }
-
-    public async Task SendAsync(string fromAddress, string toAddress, string subject, string content)
-    {
-        string? tenantId = _config["tenantId"];
-        string? clientId = _config["clientId"];
-        string? clientSecret = _config["clientSecret"];
-
-        ClientSecretCredential credential = new(tenantId, clientId, clientSecret);
-        GraphServiceClient graphClient = new(credential);
-
-        Message message = new()
-        {
-            Subject = subject,
-            Body = new ItemBody
-            {
-                ContentType = BodyType.Text,
-                Content = content
-            },
-            ToRecipients = new List<Recipient>()
-            {
-                new Recipient
-                {
-                    EmailAddress = new EmailAddress
-                    {
-                        Address = toAddress
-                    }
-                }
-            }
-        };
-
-        bool saveToSentItems = true;
-
-        await graphClient.Users[fromAddress]
-          .SendMail(message, saveToSentItems)
-          .Request()
-          .PostAsync();
-    }
-}
-
-
-
-
-Source - https://stackoverflow.com/a
-// Posted by Ikhtesam Afrin
-// Retrieved 2026-01-16, License - CC BY-SA 4.0
 
 using Microsoft.Graph;
 using Azure.Identity;

@@ -75,15 +75,13 @@ apt-get $APTARGS locales console-setup aptitude libnss-mdns libnss3-tools usbuti
  wget bc uuid-runtime iptables jq rsync screen parallel sudo nano curl wireless-regdb autofs \
  wireless-tools overlayroot iw wpasupplicant dirmngr triggerhappy default-jre-headless sed \
  build-essential autoconf make libtool binutils i2c-tools cmake yasm minicom rclone unzip \
- cryptsetup cryptsetup-bin texi2html nmap autoconf gnucobol4 avrdude arduino libao-common \
- automake cifs-utils neofetch fuse apt-utils sqlite3 shairport-sync socat libexpat1 sox \
- bluetooth pi-bluetooth bluez bluez-tools bluez-alsa-utils libbluetooth3 mpg321 lame \
- samba samba-common-bin samba-libs libimage-exiftool-perl libjson-glib-1.0-0 \
- libupnp6 alsa-base alsa-utils mpv npm nodejs perl perl-modules raspi-utils
-
-## AV Codecs Support
-apt-get $APTARGS gstreamer1.0-plugins-base ffmpeg gstreamer1.0-plugins-good \
- gstreamer1.0-plugins-ugly gstreamer1.0-tools gstreamer1.0-libav x264 ffmpeg \
+ cryptsetup cryptsetup-bin texi2html nmap autoconf gnucobol4 avrdude libao-common sox npm \
+ automake cifs-utils neofetch fuse apt-utils sqlite3 shairport-sync socat libexpat1 lame \
+ bluetooth pi-bluetooth bluez bluez-tools bluez-alsa-utils libbluetooth3 mpg321 samba \
+ samba-common-bin samba-libs libimage-exiftool-perl libjson-glib-1.0-0 mpv libupnp6 \
+ alsa-base alsa-utils nodejs perl perl-modules raspi-utils arduino x264 ffmpeg \
+ gstreamer1.0-plugins-base ffmpeg gstreamer1.0-plugins-good \
+ gstreamer1.0-plugins-ugly gstreamer1.0-tools gstreamer1.0-libav \
  libgstreamer-plugins-base1.0-0 gstreamer1.0-alsa v4l-utils
 
 ## Development Support

@@ -79,10 +79,10 @@ apt-get $APTARGS locales console-setup aptitude libnss-mdns libnss3-tools usbuti
  automake cifs-utils neofetch fuse apt-utils sqlite3 shairport-sync socat libexpat1 lame \
  bluetooth pi-bluetooth bluez bluez-tools bluez-alsa-utils libbluetooth3 mpg321 samba \
  samba-common-bin samba-libs libimage-exiftool-perl libjson-glib-1.0-0 mpv libupnp6 \
- alsa-base alsa-utils nodejs perl perl-modules raspi-utils arduino x264 ffmpeg \
- gstreamer1.0-plugins-base ffmpeg gstreamer1.0-plugins-good \
- gstreamer1.0-plugins-ugly gstreamer1.0-tools gstreamer1.0-libav \
- libgstreamer-plugins-base1.0-0 gstreamer1.0-alsa v4l-utils
+ alsa-base alsa-utils nodejs perl perl-modules raspi-utils arduino ffmpeg v4l-utils \
+ gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly \
+ gstreamer1.0-tools gstreamer1.0-libav libgstreamer-plugins-base1.0-0 x264 \
+ gstreamer1.0-alsa rng-tools5
 
 ## Development Support
 apt-get $APTARGS libgtk2.0-dev libbluetooth-dev libpng-dev libdaemon-dev libpopt-dev \
@@ -100,16 +100,18 @@ apt-get $APTARGS xserver-xorg xorg x11-common x11-common xserver-xorg-input-evde
  xserver-xorg-legacy xvfb libxext6 libxtst6 xprintidle xdotool wmctrl openbox gpicview \
  lxde-common lxsession pcmanfm lxterminal xfce4-panel xfce4-whiskermenu-plugin
 
-## Disable Swap Space
-dphys-swapfile swapoff > /dev/null 2>&1
-update-rc.d dphys-swapfile remove
-if [ -e "/var/swap" ]; then
-  echo "Removing swap file..."
-  rm -fv /var/swap
-fi
-
 ## Python Libraries
 apt-get $APTARGS net-tools python3 python3-pip python3-venv python3-rpi.gpio python3-gpiozero
+
+if [ ! -e "/usr/bin/arduino-cli" ]; then
+  echo "Installing Arduino command line..."
+  rm -f /opt/rpi/arduino-cli
+  curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/bin sh
+  arduino-cli version
+  arduino-cli core update-index
+  arduino-cli core install arduino:avr
+  arduino-cli lib install Encoder@1.4.4
+fi
 
 ## Light Web Server
 apt-get $APTARGS lighttpd
@@ -127,8 +129,13 @@ useradd motion -g motion --shell /bin/false
 groupmod -g 1005 motion
 usermod -u 1005 motion
 
-## Random Number Generator
-apt-get $APTARGS rng-tools5
+## Disable Swap Space
+dphys-swapfile swapoff > /dev/null 2>&1
+update-rc.d dphys-swapfile remove
+if [ -e "/var/swap" ]; then
+  echo "Removing swap file..."
+  rm -fv /var/swap
+fi
 
 ## Remove Unused Packages 
 apt-get remove --purge -y cron anacron logrotate fake-hwclock ntp udhcpd usbmuxd pmount usbmount \
@@ -478,19 +485,19 @@ systemctl daemon-reload
 if [ ! -e "/etc/rpi-conf.done" ]; then
   ## Active on startup
   systemctl unmask NetworkManager-wait-online NetworkManager-dispatcher \
-   NetworkManager ModemManager systemd-journald hostapd motion
+    NetworkManager ModemManager systemd-journald hostapd motion
   systemctl enable ssh avahi-daemon proinit rpi-cleanup.timer \
-   systemd-timesyncd systemd-time-wait-sync NetworkManager ModemManager \
-   NetworkManager-wait-online NetworkManager-dispatcher
+    systemd-timesyncd systemd-time-wait-sync NetworkManager ModemManager \
+    NetworkManager-wait-online NetworkManager-dispatcher
   ## Disabled on startup
   systemctl stop triggerhappy.socket
   systemctl disable apt-daily-upgrade.timer apt-daily.timer e2scrub_all.timer \
-   sysstat-summary.timer triggerhappy.socket man-db.timer
+    sysstat-summary.timer triggerhappy.socket man-db.timer
   systemctl disable apt-daily-upgrade.service apt-daily.service autofs \
-   e2scrub_all.service e2scrub_reap.service hostapd keyboard-setup sysstat \
-   lighttpd wifiswitch motion serial-getty@ttyS0.service man-db.service \
-   serial-getty@ttyAMA0.service winbind hciuart bluetooth bthelper@hci0 \
-   bluealsa-aplay nmbd smbd samba-ad-dc triggerhappy sshswitch nfs-blkmap
+    e2scrub_all.service e2scrub_reap.service hostapd keyboard-setup sysstat \
+    lighttpd wifiswitch motion serial-getty@ttyS0.service man-db.service \
+    serial-getty@ttyAMA0.service winbind hciuart bluetooth bthelper@hci0 \
+    bluealsa-aplay nmbd smbd samba-ad-dc triggerhappy sshswitch nfs-blkmap
   echo "Initial setup (phase II) complete."
   touch /etc/rpi-conf.done
 else
@@ -542,6 +549,7 @@ chmod -R 755 /opt/rpi
 chown -R root:root /opt/rpi
 
 ## Remove Installer Files
+rm -rf /opt/rpi/RetroPie-Setup
 rm -rf /opt/rpi/config
 rm -rf /opt/rpi/pkgs
 apt autoclean

@@ -38,10 +38,6 @@ chmod 400 /etc/auto.creds
 chown root:root /etc/auto.creds
 mkdir -p /mnt/smb
 
-## Arduino configuration
-/opt/rpi/arduino-cli core install arduino:avr
-/opt/rpi/arduino-cli lib install Encoder@1.4.4
-
 ## Link main script
 ln -sf /opt/rpi/main /usr/bin/main
 

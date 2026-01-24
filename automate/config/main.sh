@@ -21,7 +21,6 @@ DELIMITER="|"
 ## Curl Command Line Arguments
 CURLARGS="--silent --fail --ipv4 --no-buffer --max-time 3 --retry 1 --retry-delay 1 --no-keepalive"
 
-## PHP API call
 function CALLAPI(){
   local TARGET="${1}"
   local API_ARG1="${2}"
@@ -30,21 +29,10 @@ function CALLAPI(){
     return
   fi
   SERVER="http://$TARGET:80/api?var=$API_ARG2&arg=$API_ARG1&action=main"
-  APIRESP=$(/usr/bin/curl $CURLARGS $SERVER)
-  TMPSTR="${APIRESP#*$DELIMITER}"
-  RESPOUT="${TMPSTR%$DELIMITER*}"
-  echo "$RESPOUT"
-}
-
-## Pico HTTP API call
-function CALLPICO(){
-  local PICO_IP="${1}"
-  local PICO_ARG="${2}"
-  if [[ "$PICO_ARG" == "" ]]; then
-    return
+  if [[ "$API_ARG2" == "pi_pico" ]]; then
+    SERVER="http://$TARGET:80/api/$API_ARG1"
   fi
-  SERVER="http://$PICO_IP:80/api/$PICO_ARG"
-  APIRESP="$(/usr/bin/curl $CURLARGS $SERVER)"
+  APIRESP=$(/usr/bin/curl $CURLARGS $SERVER)
   TMPSTR="${APIRESP#*$DELIMITER}"
   RESPOUT="${TMPSTR%$DELIMITER*}"
   echo "$RESPOUT"
@@ -347,7 +335,7 @@ case "$FIRST_ARG" in
 
 lightson)
 ## Window Lamp
-CALLPICO "$PICOLAMP1_IP" "wl_led1on"
+CALLAPI "$PICOLAMP1_IP" "wl_led1on" "pi_pico"
 ## Dresser Lamp
 BRXMIT "brlamp1on"
 exit
@@ -355,7 +343,7 @@ exit
 
 lightsoff)
 ## Window Lamp
-CALLPICO "$PICOLAMP1_IP" "wl_led1off"
+CALLAPI "$PICOLAMP1_IP" "wl_led1off" "pi_pico"
 ## Dresser Lamp
 BRXMIT "brlamp1off"
 ## Blank LEDwalls
@@ -399,7 +387,7 @@ exit
 
 lron)
 ## Window Lamp
-CALLPICO "$PICOLAMP1_IP" "wl_led1on"
+CALLAPI "$PICOLAMP1_IP" "wl_led1on" "pi_pico"
 ## LEDwalls
 LED_PRESET "abstract"
 ## PC Power On
@@ -411,7 +399,7 @@ exit
 
 lroff)
 ## Window Lamp
-CALLPICO "$PICOLAMP1_IP" "wl_led1off"
+CALLAPI "$PICOLAMP1_IP" "wl_led1off" "pi_pico"
 ## Blank LEDwalls
 /opt/system/leds stop
 ## PC Power Off
@@ -423,13 +411,13 @@ exit
 
 lrlightson)
 ## Window Lamp
-CALLPICO "$PICOLAMP1_IP" "wl_led1on"
+CALLAPI "$PICOLAMP1_IP" "wl_led1on" "pi_pico"
 exit
 ;;
 
 lrlightsoff)
 ## Window Lamp
-CALLPICO "$PICOLAMP1_IP" "wl_led1off"
+CALLAPI "$PICOLAMP1_IP" "wl_led1off" "pi_pico"
 ## Blank LEDwalls
 /opt/system/leds stop
 exit
@@ -455,7 +443,7 @@ exit
 
 ## Forward to Window Lamp Pi
 wlpi)
-CALLPICO "$PICOLAMP1_IP" "$SECOND_ARG"
+CALLAPI "$PICOLAMP1_IP" "$SECOND_ARG"  "pi_pico"
 exit
 ;;
 

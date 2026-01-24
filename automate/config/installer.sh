@@ -84,7 +84,10 @@ chown root:root /usr/bin/singleton
 ## Install Arduino Support
 if [ ! -e "/usr/bin/arduino-cli" ]; then
   curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/bin sh
+  arduino-cli version
+  arduino-cli core update-index
   arduino-cli core install arduino:avr
+  arduino-cli lib install Encoder@1.4.4
 fi
 
 ## Arduino Firmware

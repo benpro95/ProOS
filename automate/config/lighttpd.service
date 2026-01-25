@@ -57,9 +57,7 @@ AmbientCapabilities=CAP_NET_BIND_SERVICE
 # Note: RestrictSUIDSGID=yes
 #   could break CGI scripts or WebDAV setting suid/sgid permission bit on files
 
-## Allow access to serial I/O
-PrivateDevices=no
-
+PrivateDevices=yes
 KeyringMode=private
 LockPersonality=yes
 MemoryDenyWriteExecute=yes

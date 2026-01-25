@@ -29,12 +29,21 @@ function CALLAPI(){
     return
   fi
   SERVER="http://$TARGET:80/api?var=$API_ARG2&arg=$API_ARG1&action=main"
-  if [[ "$API_ARG2" == "pi_pico" ]]; then
-    SERVER="http://$TARGET:80/api/$API_ARG1"
-  fi
   APIRESP=$(/usr/bin/curl $CURLARGS $SERVER)
   TMPSTR="${APIRESP#*$DELIMITER}"
   RESPOUT="${TMPSTR%$DELIMITER*}"
+  echo "$RESPOUT"
+}
+
+function CALLPICO(){
+  local TARGET="${1}"
+  local API_ARG1="${2}"
+  local API_ARG2="${3}"
+  if [[ "$API_ARG1" == "" ]]; then
+    return
+  fi
+  SERVER="http://$TARGET:4000/api?$API_ARG1,,$API_ARG2~"
+  RESPOUT=$(/usr/bin/curl $CURLARGS $SERVER)
   echo "$RESPOUT"
 }
 
@@ -335,7 +344,7 @@ case "$FIRST_ARG" in
 
 lightson)
 ## Window Lamp
-CALLAPI "$PICOLAMP1_IP" "wl_led1on" "pi_pico"
+CALLPICO "$PICOLAMP1_IP" "1" "3"
 ## Dresser Lamp
 BRXMIT "brlamp1on"
 exit
@@ -343,7 +352,7 @@ exit
 
 lightsoff)
 ## Window Lamp
-CALLAPI "$PICOLAMP1_IP" "wl_led1off" "pi_pico"
+CALLPICO "$PICOLAMP1_IP" "1" "2"
 ## Dresser Lamp
 BRXMIT "brlamp1off"
 ## Blank LEDwalls
@@ -387,7 +396,7 @@ exit
 
 lron)
 ## Window Lamp
-CALLAPI "$PICOLAMP1_IP" "wl_led1on" "pi_pico"
+CALLPICO "$PICOLAMP1_IP" "1" "3"
 ## LEDwalls
 LED_PRESET "abstract"
 ## PC Power On
@@ -399,7 +408,7 @@ exit
 
 lroff)
 ## Window Lamp
-CALLAPI "$PICOLAMP1_IP" "wl_led1off" "pi_pico"
+CALLPICO "$PICOLAMP1_IP" "1" "2"
 ## Blank LEDwalls
 /opt/system/leds stop
 ## PC Power Off
@@ -411,15 +420,36 @@ exit
 
 lrlightson)
 ## Window Lamp
-CALLAPI "$PICOLAMP1_IP" "wl_led1on" "pi_pico"
+CALLPICO "$PICOLAMP1_IP" "1" "3"
 exit
 ;;
 
 lrlightsoff)
 ## Window Lamp
-CALLAPI "$PICOLAMP1_IP" "wl_led1off" "pi_pico"
+CALLPICO "$PICOLAMP1_IP" "1" "2"
 ## Blank LEDwalls
 /opt/system/leds stop
+exit
+;;
+
+## Forward to Window Lamp Pi
+wlpi)
+  case "$SECOND_ARG" in
+    "wl_led1")
+      CALLPICO "$PICOLAMP1_IP" "1" "4"
+      ;;
+    "wl_led1on")
+      CALLPICO "$PICOLAMP1_IP" "1" "3"
+      ;;
+    "wl_led1off")
+      CALLPICO "$PICOLAMP1_IP" "1" "2"
+      ;;
+    ## 
+    *)
+      ## invalid response
+      echo "X"
+      ;;
+  esac
 exit
 ;;
 
@@ -438,12 +468,6 @@ exit
 ## Forward to Bedroom Amplifer Pi
 brpi)
 CALLAPI "$BRPI_IP" "$SECOND_ARG" ""
-exit
-;;
-
-## Forward to Window Lamp Pi
-wlpi)
-CALLAPI "$PICOLAMP1_IP" "$SECOND_ARG"  "pi_pico"
 exit
 ;;
 

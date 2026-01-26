@@ -246,6 +246,7 @@ case "$CMD_IN" in
     ;;
   "hifistateoff")
     CALLAPI "$LRXMIT_IP" "extcom" "02122" ## Subwoofer Amp Off
+    sleep 1.0
     CALLAPI "$LRXMIT_IP" "extcom" "02103" ## Preamp Off
     ;;
   "hifistateon")
@@ -265,21 +266,25 @@ case "$CMD_IN" in
   ## DAC USB Input
   "usb")
     CALLAPI "$LRXMIT_IP" "extcom" "02107" ## Preamp Digital
+    sleep 0.5
     CALLAPI "$LRXMIT_IP" "extcom" "02130" ## DAC USB
     ;;
   ## Coaxial Input 
   "coax")
     CALLAPI "$LRXMIT_IP" "extcom" "02110" ## Preamp Digital (AirPlay Label)
+    sleep 0.5
     CALLAPI "$LRXMIT_IP" "extcom" "02131" ## DAC Coax
     ;;
   ## Optical Input 
   "opt")
     CALLAPI "$LRXMIT_IP" "extcom" "02112" ## Preamp Digital (Optical Label) 
+    sleep 0.5
     CALLAPI "$LRXMIT_IP" "extcom" "02132" ## DAC Optical
     ;;
   ## Auto Input
   "autodac")
     CALLAPI "$LRXMIT_IP" "extcom" "02107" ## Preamp Digital
+    sleep 0.5
     CALLAPI "$LRXMIT_IP" "extcom" "02133" ## DAC Auto Select
     ;;
   ## Volume Limit Mode

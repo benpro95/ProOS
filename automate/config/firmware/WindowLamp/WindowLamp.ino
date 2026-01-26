@@ -5,6 +5,7 @@
 #define serialBaudRate 115200
 #define powerBtnPin 3
 #define lamp1PowerPin 21
+#define lamp2PowerPin 4
 uint8_t debounceDelay = 75; // button debounce in (ms)
 WiFiServer WebServer(4000); // web server port
 Neotimer WiFiCheck = Neotimer(30000); // 30 second timer
@@ -28,12 +29,15 @@ uint8_t lastPowerButton = 1;
 uint8_t powerButton = 0;
 uint32_t powerButtonMillis;
 bool lamp1Status = 1; // 1=OFF, 0=ON
+bool lamp2Status = 0; // 0=OFF, 1=ON
 
 void setup() {
   serialMessageOut[0] = nullTrm;
   pinMode(powerBtnPin, INPUT_PULLUP);
   pinMode(lamp1PowerPin, OUTPUT);
   digitalWrite(lamp1PowerPin, lamp1Status); 
+  pinMode(lamp2PowerPin, OUTPUT);
+  digitalWrite(lamp2PowerPin, lamp2Status);
   Serial.begin(serialBaudRate);
   connectWiFi();
   WebServer.begin();
@@ -67,6 +71,15 @@ void toggleLamp1() {
   digitalWrite(lamp1PowerPin, lamp1Status);
 }
 
+void toggleLamp2() {
+  lamp2Status = !lamp2Status;
+  if (lamp2Status == HIGH) {
+    analogWrite(lamp2PowerPin, 255);
+  } else {
+    analogWrite(lamp2PowerPin, 0);
+  }
+}
+
 void remoteFunctions(uint16_t _ctldata, uint16_t _state) {
   switch (_ctldata) {
   case 1: // lamp #1
@@ -90,6 +103,33 @@ void remoteFunctions(uint16_t _ctldata, uint16_t _state) {
       serialMessageOut[0] = nullTrm;
       return;
     }
+    writeSerialMessage(!lamp1Status);
+    break;
+  case 2: // lamp #2
+    switch (_state) {
+    case 1: // toggle lamp
+      toggleLamp2();
+      break;
+    case 2: // lamp power off
+      if (lamp2Status == 0) {
+        toggleLamp2();
+      }
+      break;
+    case 3: // lamp power on
+      if (lamp2Status == 1) {
+        toggleLamp2();
+      }
+      break;
+    case 4: // lamp status
+      break;      
+    default:
+      serialMessageOut[0] = nullTrm;
+      return;
+    }
+    writeSerialMessage(!lamp2Status);
+    break;
+  case 3: // lamp #2 PWM
+    analogWrite(lamp2PowerPin, _state);
     writeSerialMessage(!lamp1Status);
     break;
   default:

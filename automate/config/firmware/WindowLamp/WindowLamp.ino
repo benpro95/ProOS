@@ -28,8 +28,9 @@ uint8_t HTTPReqIdx = 0;
 uint8_t lastPowerButton = 1;
 uint8_t powerButton = 0;
 uint32_t powerButtonMillis;
+// device states
+uint8_t lamp2Status = 0;
 bool lamp1Status = 1; // 1=OFF, 0=ON
-bool lamp2Status = 0; // 0=OFF, 1=ON
 
 void setup() {
   serialMessageOut[0] = nullTrm;
@@ -37,7 +38,7 @@ void setup() {
   pinMode(lamp1PowerPin, OUTPUT);
   digitalWrite(lamp1PowerPin, lamp1Status); 
   pinMode(lamp2PowerPin, OUTPUT);
-  digitalWrite(lamp2PowerPin, lamp2Status);
+  analogWrite(lamp2PowerPin, lamp2Status);
   Serial.begin(serialBaudRate);
   connectWiFi();
   WebServer.begin();
@@ -66,23 +67,10 @@ void readPowerButton() {
   lastPowerButton = reading;
 }
 
-void toggleLamp1() {
-  lamp1Status = !lamp1Status;
-  digitalWrite(lamp1PowerPin, lamp1Status);
-}
-
-void toggleLamp2() {
-  lamp2Status = !lamp2Status;
-  if (lamp2Status == HIGH) {
-    analogWrite(lamp2PowerPin, 255);
-  } else {
-    analogWrite(lamp2PowerPin, 0);
-  }
-}
-
 void remoteFunctions(uint16_t _ctldata, uint16_t _state) {
   switch (_ctldata) {
-  case 1: // lamp #1
+  case 1: 
+    // lamp #1 fixed-controls 
     switch (_state) {
     case 1: // toggle lamp
       toggleLamp1();
@@ -105,32 +93,72 @@ void remoteFunctions(uint16_t _ctldata, uint16_t _state) {
     }
     writeSerialMessage(!lamp1Status);
     break;
-  case 2: // lamp #2
+  case 2: 
+    // lamp #2 fixed-controls 
     switch (_state) {
-    case 1: // toggle lamp
-      toggleLamp2();
+    case 0: // lamp power off
+      setLamp2(0);
+      writeSerialMessage(lamp2Status);
       break;
-    case 2: // lamp power off
-      if (lamp2Status == 0) {
-        toggleLamp2();
-      }
+    case 1: // lamp 10%
+      setLamp2(5);
+      writeSerialMessage(lamp2Status);
       break;
-    case 3: // lamp power on
-      if (lamp2Status == 1) {
-        toggleLamp2();
-      }
+    case 2: // lamp 20%
+      setLamp2(10);
+      writeSerialMessage(lamp2Status);
       break;
-    case 4: // lamp status
-      break;      
+    case 3: // lamp 30%
+      setLamp2(20);
+      writeSerialMessage(lamp2Status);
+      break;
+    case 4: // lamp 40%
+      setLamp2(50);
+      writeSerialMessage(lamp2Status);
+      break;
+    case 5: // lamp 50%
+      setLamp2(80);
+      writeSerialMessage(lamp2Status);
+      break;
+    case 6: // lamp 60%
+      setLamp2(120);
+      writeSerialMessage(lamp2Status);
+      break;
+    case 7: // lamp 70%
+      setLamp2(150);
+      writeSerialMessage(lamp2Status);
+      break;
+    case 8: // lamp 80%
+      setLamp2(180);
+      writeSerialMessage(lamp2Status);
+      break;
+    case 9: // lamp 90%
+      setLamp2(220);
+      writeSerialMessage(lamp2Status);
+      break;
+    case 10: // lamp 100%
+      setLamp2(255);
+      writeSerialMessage(lamp2Status);
+      break;
+    case 20: // lamp #2 status
+      writeSerialMessage(lamp2Status);
+      break; 
     default:
       serialMessageOut[0] = nullTrm;
-      return;
     }
-    writeSerialMessage(!lamp2Status);
     break;
-  case 3: // lamp #2 PWM
-    analogWrite(lamp2PowerPin, _state);
-    writeSerialMessage(!lamp1Status);
+  case 3: 
+    // lamp #2 direct control
+    if (_state >= 0 && _state <= 255) {
+      setLamp2(_state);
+      writeSerialMessage(_state);
+    } else {
+      serialMessageOut[0] = nullTrm;
+    }
+    break;
+  case 4: 
+    // write all lamps status
+    writeAllLampsStatus();
     break;
   default:
     serialMessageOut[0] = nullTrm;
@@ -141,6 +169,25 @@ void writeSerialMessage(int16_t value) {
   serialMessageOut[0] = nullTrm;
   uint16_t length = snprintf(NULL, 0, "%d", value);
   snprintf(serialMessageOut, length + 1, "%d", value);
+}
+
+void writeAllLampsStatus() {
+  serialMessageOut[0] = nullTrm;
+  char lamp1[8], lamp2[8];
+  sprintf(lamp1, "%d", (int)!lamp1Status);
+  sprintf(lamp2, "%d", lamp2Status);
+  // concat arrays then write to output buffer
+  sprintf(serialMessageOut ,"%s~%s" ,lamp1 ,lamp2);
+}
+
+void setLamp2(uint8_t state) {
+  lamp2Status = state;
+  analogWrite(lamp2PowerPin, state);
+}
+
+void toggleLamp1() {
+  lamp1Status = !lamp1Status;
+  digitalWrite(lamp1PowerPin, lamp1Status);
 }
 
 // decode serial message

@@ -337,6 +337,34 @@ case "$CMD_IN" in
 esac
 }
 
+function WINDOW_LAMP1(){
+  local CMD_IN="$1"
+  case "$CMD_IN" in
+  "wl_led1")
+    CALLPICO "$PICOLAMP1_IP" "1" "0"
+    ;;
+  "wl_led1off")
+    CALLPICO "$PICOLAMP1_IP" "1" "2"
+    ;;
+  "wl_led1on")
+    CALLPICO "$PICOLAMP1_IP" "1" "3"
+    ;;
+  "wl_led2")
+    CALLPICO "$PICOLAMP1_IP" "2" "20"
+    ;;
+  "wl_led2off")
+    CALLPICO "$PICOLAMP1_IP" "2" "0"
+    ;;
+  "wl_led2on")
+    CALLPICO "$PICOLAMP1_IP" "2" "10"
+    ;; 
+*)
+  ## invalid response
+  echo "invalid command!"
+  ;;
+esac
+}
+
 ########################
 
 ## Read command line arguments
@@ -344,26 +372,6 @@ FIRST_ARG="${1//$'\n'/}"
 SECOND_ARG="${2//$'\n'/}"
 
 case "$FIRST_ARG" in
-
-## All Lights ##
-
-lightson)
-## Window Lamp
-CALLPICO "$PICOLAMP1_IP" "1" "3"
-## Dresser Lamp
-BRXMIT "brlamp1on"
-exit
-;;
-
-lightsoff)
-## Window Lamp
-CALLPICO "$PICOLAMP1_IP" "1" "2"
-## Dresser Lamp
-BRXMIT "brlamp1off"
-## Blank LEDwalls
-/opt/system/leds stop
-exit
-;;
 
 ## Bedroom Power ##
 
@@ -397,11 +405,50 @@ CALLAPI "$BRPC_IP" "sleep" ""
 exit
 ;;
 
+## All Lights ##
+
+lightson)
+## Window Lamp
+WINDOW_LAMP1 "wl_led1on"
+WINDOW_LAMP1 "wl_led2on"
+## Dresser Lamp
+BRXMIT "brlamp1on"
+exit
+;;
+
+lightsoff)
+## Window Lamp
+WINDOW_LAMP1 "wl_led1off"
+WINDOW_LAMP1 "wl_led2off"
+## Dresser Lamp
+BRXMIT "brlamp1off"
+## Blank LEDwalls
+/opt/system/leds stop
+exit
+;;
+
+## PC Keyboard F1/F2
+
+lrlightson)
+## Window Lamp #1
+WINDOW_LAMP1 "wl_led1on"
+exit
+;;
+
+lrlightsoff)
+## Window Lamp
+WINDOW_LAMP1 "wl_led1off"
+## Blank LEDwalls
+/opt/system/leds stop
+exit
+;;
+
 ## Living Room ##
 
 lron)
 ## Window Lamp
-CALLPICO "$PICOLAMP1_IP" "1" "3"
+WINDOW_LAMP1 "wl_led1on"
+WINDOW_LAMP1 "wl_led2on"
 ## LEDwalls
 LED_PRESET "abstract"
 ## PC Power On
@@ -413,7 +460,8 @@ exit
 
 lroff)
 ## Window Lamp
-CALLPICO "$PICOLAMP1_IP" "1" "2"
+WINDOW_LAMP1 "wl_led1off"
+WINDOW_LAMP1 "wl_led2off"
 ## Blank LEDwalls
 /opt/system/leds stop
 ## PC Power Off
@@ -423,38 +471,9 @@ LRXMIT "hifistateoff"
 exit
 ;;
 
-lrlightson)
-## Window Lamp
-CALLPICO "$PICOLAMP1_IP" "1" "3"
-exit
-;;
-
-lrlightsoff)
-## Window Lamp
-CALLPICO "$PICOLAMP1_IP" "1" "2"
-## Blank LEDwalls
-/opt/system/leds stop
-exit
-;;
-
 ## Forward to Window Lamp Pi
 wlpi)
-  case "$SECOND_ARG" in
-    "wl_led1")
-      CALLPICO "$PICOLAMP1_IP" "1" "4"
-      ;;
-    "wl_led1on")
-      CALLPICO "$PICOLAMP1_IP" "1" "3"
-      ;;
-    "wl_led1off")
-      CALLPICO "$PICOLAMP1_IP" "1" "2"
-      ;;
-    ## 
-    *)
-      ## invalid response
-      echo "X"
-      ;;
-  esac
+WINDOW_LAMP1 "$SECOND_ARG"
 exit
 ;;
 

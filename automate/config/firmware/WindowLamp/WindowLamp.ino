@@ -72,26 +72,24 @@ void remoteFunctions(uint16_t _ctldata, uint16_t _state) {
   case 1: 
     // lamp #1 fixed-controls 
     switch (_state) {
+    case 0: // lamp status
+      writeSerialMessage(!lamp1Status);
+      break;     
     case 1: // toggle lamp
       toggleLamp1();
+      writeSerialMessage(!lamp1Status);
       break;
     case 2: // lamp power off
-      if (lamp1Status == 0) {
-        toggleLamp1();
-      }
+      if (lamp1Status == 0) { toggleLamp1(); }
+      writeSerialMessage(!lamp1Status);
       break;
     case 3: // lamp power on
-      if (lamp1Status == 1) {
-        toggleLamp1();
-      }
-      break;
-    case 4: // lamp status
-      break;      
+      if (lamp1Status == 1) { toggleLamp1(); }
+      writeSerialMessage(!lamp1Status);
+      break;     
     default:
       serialMessageOut[0] = nullTrm;
-      return;
     }
-    writeSerialMessage(!lamp1Status);
     break;
   case 2: 
     // lamp #2 fixed-controls 

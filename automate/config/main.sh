@@ -384,7 +384,7 @@ BRXMIT "retropion"
 BRXMIT "brmacson"
 ## Bedroom Audio
 CALLAPI "$BRPI_IP" "ampstateon" ""
-## Bedroom TV & PC
+## Bedroom TV & PC 
 BRXMIT "brtvon"
 exit
 ;;

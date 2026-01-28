@@ -1609,8 +1609,7 @@ function showPowerMenu(target, menu, tobtm) {
     _elem.style.display = 'block';
     sendCmd('main', target, menu).then((data) => { // GET request
       const resp = cleanString(data); // remove newlines
-      const splitchar = "~";
-      const field = resp.split(splitchar);
+      const field = resp.split("~");
       const cmd1 = field[0]; 
       const cmd2 = field[1];
       // draw menu items
@@ -1644,12 +1643,12 @@ function showPowerMenu(target, menu, tobtm) {
       if (cmd1 == '0') { // offline
         _menudata += 'oncmd~' + target + '~' + menu + 'on|noind|On\n';
       }
-      /// custom menus ///
+      // custom menus // (II)
       if (cmd1 == 'pc_awake') {
         _menudata += 'sleepmode~' + target + '~' + menu + 'off|noind|Sleep\n';
       }
-      if (resp.includes(splitchar)) {
-        _menudata += target + '|slider|' + cmd2 + '\n';
+      if (resp.includes('~')) {
+        _menudata += cmd2 + '|slider|' + cmd2 + '\n';
       }
       // stop spinner animation
       btnText.style.visibility = 'visible';
@@ -1855,28 +1854,32 @@ function drawMenu(data, menu, tobtm) {
   }
 }
 
-function createListItem(_col0, _col1, _col2, _id) {
+function createListItem(col0in, col1, col2, menuid) {
+  const field = col0in.split("~");
+  const data = field[0];
+  const target = field[1];
+  const cmd = field[2];
   const _elm = document.createElement('a');
   // assign menu ID
-  _elm.id = "menu-" + _id;
+  _elm.id = "menu-" + menuid;
   // set menu text
-  _elm.innerText = _col2;
+  _elm.innerText = col2;
   // checkbox menu
-  if (_col1 == 'chkon' || _col1 == 'chkoff') {
+  if (col1 == 'chkon' || col1 == 'chkoff') {
     const _cbox = document.createElement('input');
     _cbox.type = "checkbox";
     _cbox.className = "chkbox";
-    _cbox.id = "chkbox-" + _col2;
+    _cbox.id = "chkbox-" + col2;
     // read checkbox state from file
-    if (_col1 == 'chkoff') {
+    if (col1 == 'chkoff') {
       _cbox.checked = false;
     }
-    if (_col1 == 'chkon') {
+    if (col1 == 'chkon') {
       _cbox.checked = true;
     }
     _elm.appendChild(_cbox);
     // URL on click
-    _elm.href = _col0;
+    _elm.href = data;
     // a checkbox was clicked
     _elm.addEventListener('click', function(event) {
       if (event.target.classList.contains('chkbox')) {
@@ -1885,23 +1888,23 @@ function createListItem(_col0, _col1, _col2, _id) {
     });
   }
   // API call menu
-  if (_col1 == 'ledmenu') {
+  if (col1 == 'ledmenu') {
     _elm.addEventListener("click", function() {
-      sendCmd('leds',_col0,'');
+      sendCmd('leds',data,'');
     });
   }
-  if (_col1 == 'relaxmenu') {
+  if (col1 == 'relaxmenu') {
     _elm.addEventListener("click", function() {
-      relaxSend(_col0);
+      relaxSend(data);
     });
   } 
   // link only menu
-  if (_col1 == 'link') {
-    _elm.href = _col0;
+  if (col1 == 'link') {
+    _elm.href = data;
   }
   // theme menu  
-  if (_col1 == 'thm') {
-    const _color = _col0;
+  if (col1 == 'thm') {
+    const _color = data;
     _elm.classList.add('theme-colorbox');
     _elm.style.setProperty('background-color', _color);
     _elm.addEventListener("click", function() {
@@ -1909,33 +1912,29 @@ function createListItem(_col0, _col1, _col2, _id) {
     });
   }
   // slider menu
-  if (_col1 == 'slider') {
-    _elm.href = "99999";
+  if (col1 == 'slider') {
+    _elm.href = data;
   }
   // bookmarks menu  
-  if (_col1 == 'bkmrk') {
+  if (col1 == 'bkmrk') {
     _elm.classList.add('bookmarked__item');
     // store URL
     Object.defineProperty(_elm, "url", {
       enumerable: false,
       writable: true,
-      value: _col0
+      value: data
     });
     // define click action
     _elm.addEventListener("click", function() {
-      clickBookmark(_id);
+      clickBookmark(menuid);
     });
   }
   // status menus
-  if (_col1.includes('ind')) { // indicators
+  if (col1.includes('ind')) { // indicators
     // power toggle type
     const _icon = document.createElement('span');
-    const field = _col0.split("~");
-    const menutype = field[0]; // menu button type
-    const target   = field[1]; // target server 
-    const cmd      = field[2]; // target command
     let allowhover = false;
-    if (menutype == 'oncmd') { // power-on remote API call on click
+    if (data == 'oncmd') { // power-on remote API call on click
       allowhover = true;
       _icon.classList.add('fa');
       _icon.classList.add('fa-toggle-on');
@@ -1945,7 +1944,7 @@ function createListItem(_col0, _col1, _col2, _id) {
         sendCmd('main',target,cmd);
       });
     }
-    if (menutype == 'offcmd') { // power-off remote API call on click
+    if (data == 'offcmd') { // power-off remote API call on click
       allowhover = true;
       _icon.classList.add('fa');
       _icon.classList.add('fa-toggle-off');
@@ -1955,7 +1954,7 @@ function createListItem(_col0, _col1, _col2, _id) {
         sendCmd('main',target,cmd);
       });
     }
-    if (menutype == 'sleepmode') { // sleep PC type menu
+    if (data == 'sleepmode') { // sleep PC type menu
       allowhover = true;
       _icon.classList.add('fa');
       _icon.classList.add('fa-moon');
@@ -1965,32 +1964,32 @@ function createListItem(_col0, _col1, _col2, _id) {
         sendCmd('main',target,cmd);
       });
     }
-    if (menutype == 'cmd') { // generic remote API call on click
+    if (data == 'cmd') { // generic remote API call on click
       allowhover = true;
       _elm.addEventListener("click", function() {
         sendCmd('main',target,cmd);
       });
     }
     const _dot = document.createElement('span');
-    if (_col1 == 'blkind'){
+    if (col1 == 'blkind'){
       _dot.classList.add('ind_dot');
     }
-    if (_col1 == 'grnind'){
+    if (col1 == 'grnind'){
       _dot.classList.add('ind_dot');
       _dot.classList.add('ind_dot_green');
     }
-    if (_col1 == 'redind'){
+    if (col1 == 'redind'){
       _dot.classList.add('ind_dot');
       _dot.classList.add('ind_dot_red');
     }
-    if (_col1 == 'ylwind'){
+    if (col1 == 'ylwind'){
       _dot.classList.add('ind_dot');
       _dot.classList.add('ind_dot_yellow');
     }
     if (allowhover === false){
       _elm.classList.add('no_select');
     }
-    _dot.id = "ind-" + _col2;
+    _dot.id = "ind-" + col2;
     _elm.appendChild(_dot);
   }
   return _elm;

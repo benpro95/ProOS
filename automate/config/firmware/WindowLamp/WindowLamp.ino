@@ -344,10 +344,10 @@ void webServer() {
           client.println();
           for(size_t _idx = 0; _idx < maxMessage; _idx++) {
             char _msgChr = serialMessageOut[_idx];
-            if (_msgChr != nullTrm) {
-              client.print(_msgChr); 
-            } else {
+            if (_msgChr == nullTrm) {
               break;
+            } else {
+              client.print(_msgChr); 
             }
           }
           client.print('\n');

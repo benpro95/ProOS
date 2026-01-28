@@ -1496,8 +1496,6 @@ async function lookupURL() {
   }
 }
 
-
-
 function shiftMenuUp(elem) {
   if (elem) {
     if(elem.previousElementSibling)
@@ -1553,11 +1551,6 @@ function closeBookmarkPrompt() {
   }  
 }
 
-// concat and add delimiters to dynamic menu data
-function buildRemoteAPIMenu(_menubtn, _host, _cmd, _indtype, _title) {
-  return _menubtn + '~' + _host + '~' + _cmd + '|' + _indtype + '|' + _title + '\n';
-}
-
 function showAmpInput() {
   const target = 'brpi';
   let _elem = document.getElementById("brinpmenu");
@@ -1574,47 +1567,24 @@ function showAmpInput() {
     sendCmd('main', target, 'inputstate').then((data) => { // GET request
       const resp = cleanString(data); // remove newlines
       // draw menu items
-      let _menubtn; // menu type
-      let _cmd;     // remote host command 
       let _indtype; // indicator type
-      let _title;   // menu button title
       let _menudata = "";
       // apple TV input 
-      _menubtn = "cmd";
-      _title = "PC Mode"  
-      _cmd = "opt-a";
       _indtype = 'blkind';
-      if (resp == '2') {
-        _indtype = 'grnind';
-      }
-      _menudata += buildRemoteAPIMenu(_menubtn, target, _cmd, _indtype, _title);
+      if (resp == '2') { _indtype = 'grnind'; }
+      _menudata += 'cmd~' + target + '~opt-a|' + _indtype + '|PC Mode\n';
       // coaxial input
-      _menubtn = "cmd";
-      _title = "Bluetooth"  
-      _cmd = "coaxial";  
       _indtype = 'blkind';
-      if (resp == '3') { 
-        _indtype = 'grnind';
-      }      
-      _menudata += buildRemoteAPIMenu(_menubtn, target, _cmd, _indtype, _title);
+      if (resp == '3') { _indtype = 'grnind'; }      
+      _menudata += 'cmd~' + target + '~coaxial|' + _indtype + '|Bluetooth\n';
       // aux optical input
-      _menubtn = "cmd";
-      _title = "Optical"  
-      _cmd = "opt-b";
       _indtype = 'blkind';
-      if (resp == '1') {
-        _indtype = 'grnind';
-      } 
-      _menudata += buildRemoteAPIMenu(_menubtn, target, _cmd, _indtype, _title);
+      if (resp == '1') { _indtype = 'grnind'; } 
+      _menudata += 'cmd~' + target + '~opt-b|' + _indtype + '|Optical\n';
       // aux analog input
-      _menubtn = "cmd";
-      _title = "Analog"
-      _cmd = "aux";
       _indtype = 'blkind';
-      if (resp == '4') {
-        _indtype = 'grnind';
-      }
-      _menudata += buildRemoteAPIMenu(_menubtn, target, _cmd, _indtype, _title);
+      if (resp == '4') { _indtype = 'grnind'; }
+      _menudata += 'cmd~' + target + '~aux|' + _indtype + '|Analog\n';
       // stop spinner animation
       btnText.style.visibility = 'visible';
       btnSpinner.classList.remove('btn-spinner');
@@ -1639,14 +1609,16 @@ function showPowerMenu(target, menu, tobtm) {
     _elem.style.display = 'block';
     sendCmd('main', target, menu).then((data) => { // GET request
       const resp = cleanString(data); // remove newlines
+      const splitchar = "~";
+      const field = resp.split(splitchar);
+      const cmd1 = field[0]; 
+      const cmd2 = field[1];
       // draw menu items
-      let _menubtn; // menu type
-      let _cmd;     // remote host command 
       let _indtype; // indicator type
       let _title;   // menu button title
       let _menudata = "";
       // status display (I)
-      switch(resp) {
+      switch(cmd1) {
         case '0':
           _indtype = 'blkind';
           _title = "Offline";
@@ -1658,22 +1630,26 @@ function showPowerMenu(target, menu, tobtm) {
         case 'pc_awake':
           _indtype = 'grnind';
           _title = "Online";
-          break;        
+          break;
         default:
           _indtype = 'redind';
           _title = "Error";
       }
-      _menudata += buildRemoteAPIMenu(_menubtn, target, _cmd, _indtype, _title);
+      // status indicator
+      _menudata += target + '|' + _indtype + '|' + _title + '\n';
       // power on/off buttons (II)
-      if (resp == '1') { // online
-        _menudata += buildRemoteAPIMenu('offcmd', target, menu + 'off', 'noind', 'Off');
+      if (cmd1 == '1') { // online
+        _menudata += 'offcmd~' + target + '~' + menu + 'off|noind|Off\n';
       }
-      if (resp == '0') { // offline
-        _menudata += buildRemoteAPIMenu('oncmd', target, menu + 'on', 'noind', 'On');
+      if (cmd1 == '0') { // offline
+        _menudata += 'oncmd~' + target + '~' + menu + 'on|noind|On\n';
       }
       /// custom menus ///
-      if (resp == 'pc_awake') {
-        _menudata += buildRemoteAPIMenu('sleepmode', target, menu + 'off', 'noind', 'Sleep');
+      if (cmd1 == 'pc_awake') {
+        _menudata += 'sleepmode~' + target + '~' + menu + 'off|noind|Sleep\n';
+      }
+      if (resp.includes(splitchar)) {
+        _menudata += target + '|slider|' + cmd2 + '\n';
       }
       // stop spinner animation
       btnText.style.visibility = 'visible';
@@ -1923,6 +1899,33 @@ function createListItem(_col0, _col1, _col2, _id) {
   if (_col1 == 'link') {
     _elm.href = _col0;
   }
+  // theme menu  
+  if (_col1 == 'thm') {
+    const _color = _col0;
+    _elm.classList.add('theme-colorbox');
+    _elm.style.setProperty('background-color', _color);
+    _elm.addEventListener("click", function() {
+      setTheme(_color);
+    });
+  }
+  // slider menu
+  if (_col1 == 'slider') {
+    _elm.href = "99999";
+  }
+  // bookmarks menu  
+  if (_col1 == 'bkmrk') {
+    _elm.classList.add('bookmarked__item');
+    // store URL
+    Object.defineProperty(_elm, "url", {
+      enumerable: false,
+      writable: true,
+      value: _col0
+    });
+    // define click action
+    _elm.addEventListener("click", function() {
+      clickBookmark(_id);
+    });
+  }
   // status menus
   if (_col1.includes('ind')) { // indicators
     // power toggle type
@@ -1989,29 +1992,6 @@ function createListItem(_col0, _col1, _col2, _id) {
     }
     _dot.id = "ind-" + _col2;
     _elm.appendChild(_dot);
-  }
-  // theme menu  
-  if (_col1 == 'thm') {
-    const _color = _col0;
-    _elm.classList.add('theme-colorbox');
-    _elm.style.setProperty('background-color', _color);
-    _elm.addEventListener("click", function() {
-      setTheme(_color);
-    });
-  }
-  // bookmarks menu  
-  if (_col1 == 'bkmrk') {
-    _elm.classList.add('bookmarked__item');
-    // store URL
-    Object.defineProperty(_elm, "url", {
-      enumerable: false,
-      writable: true,
-      value: _col0
-    });
-    // define click action
-    _elm.addEventListener("click", function() {
-      clickBookmark(_id);
-    });
   }
   return _elm;
 }

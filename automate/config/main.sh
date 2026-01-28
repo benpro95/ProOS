@@ -48,8 +48,7 @@ function CALLPICO(){
 }
 
 function LOCAL_PING(){
-  local LOCAL_PING_ADR="${1}"
-  if ping -4 -A -c 1 -i "$MAX_PING_WAIT" -W "$MAX_PING_WAIT" "$LOCAL_PING_ADR" > /dev/null 2> /dev/null
+  if /usr/bin/ping -4 -A -c 1 -i "$MAX_PING_WAIT" -W "$MAX_PING_WAIT" "${1}" > /dev/null 2> /dev/null
   then
     echo "1" ## Online
   else
@@ -72,7 +71,7 @@ function WAKE_BRPC() {
   then
     echo "bedroom PC already online."
   else
-    wakeonlan "$BRPC_MAC"
+    /usr/bin/wakeonlan "$BRPC_MAC"
   fi
 }
 
@@ -208,8 +207,30 @@ function LOCALCOM_RESP(){
 }
 
 function LRXMIT(){
-local CMD_IN="$1"
-case "$CMD_IN" in
+local CMD_SEP="~"
+local CMD_IN="${1}"
+local CMD_1=${CMD_IN%$CMD_SEP*}
+local CMD_2=${CMD_IN#*$CMD_SEP}
+case "$CMD_1" in
+  ## Window Lamp
+  "wl_leds")
+    CALLPICO "$PICOLAMP1_IP" "4" ""
+    ;; 
+  "wl_ledsoff")
+    CALLPICO "$PICOLAMP1_IP" "1" "2"
+    ;;
+  "wl_ledson")
+    CALLPICO "$PICOLAMP1_IP" "1" "3"
+    ;;  
+  "wl_led2")
+    CALLPICO "$PICOLAMP1_IP" "2" "20"
+    ;;
+  "wl_led2off")
+    CALLPICO "$PICOLAMP1_IP" "2" "0"
+    ;;
+  "wl_led2on")
+    CALLPICO "$PICOLAMP1_IP" "2" "10"
+    ;; 
   ### Desktop PC ###
   "wkststate")
     if [[ "$(LOCAL_PING "$DESK_IP")" == "1" ]]
@@ -340,24 +361,7 @@ esac
 function WINDOW_LAMP1(){
   local CMD_IN="$1"
   case "$CMD_IN" in
-  "wl_led1")
-    CALLPICO "$PICOLAMP1_IP" "1" "0"
-    ;;
-  "wl_led1off")
-    CALLPICO "$PICOLAMP1_IP" "1" "2"
-    ;;
-  "wl_led1on")
-    CALLPICO "$PICOLAMP1_IP" "1" "3"
-    ;;
-  "wl_led2")
-    CALLPICO "$PICOLAMP1_IP" "2" "20"
-    ;;
-  "wl_led2off")
-    CALLPICO "$PICOLAMP1_IP" "2" "0"
-    ;;
-  "wl_led2on")
-    CALLPICO "$PICOLAMP1_IP" "2" "10"
-    ;; 
+
 *)
   ## invalid response
   echo "invalid command!"
@@ -409,8 +413,8 @@ exit
 
 lightson)
 ## Window Lamp
-WINDOW_LAMP1 "wl_led1on"
-WINDOW_LAMP1 "wl_led2on"
+LRXMIT "wl_led1on"
+LRXMIT "wl_led2on"
 ## Dresser Lamp
 BRXMIT "brlamp1on"
 exit
@@ -418,8 +422,8 @@ exit
 
 lightsoff)
 ## Window Lamp
-WINDOW_LAMP1 "wl_led1off"
-WINDOW_LAMP1 "wl_led2off"
+LRXMIT "wl_led1off"
+LRXMIT "wl_led2off"
 ## Dresser Lamp
 BRXMIT "brlamp1off"
 ## Blank LEDwalls
@@ -431,13 +435,13 @@ exit
 
 lrlightson)
 ## Window Lamp #1
-WINDOW_LAMP1 "wl_led1on"
+LRXMIT "wl_led1on"
 exit
 ;;
 
 lrlightsoff)
 ## Window Lamp
-WINDOW_LAMP1 "wl_led1off"
+LRXMIT "wl_led1off"
 ## Blank LEDwalls
 /opt/system/leds stop
 exit
@@ -447,8 +451,8 @@ exit
 
 lron)
 ## Window Lamp
-WINDOW_LAMP1 "wl_led1on"
-WINDOW_LAMP1 "wl_led2on"
+LRXMIT "wl_led1on"
+LRXMIT "wl_led2on"
 ## LEDwalls
 LED_PRESET "abstract"
 ## PC Power On
@@ -460,20 +464,14 @@ exit
 
 lroff)
 ## Window Lamp
-WINDOW_LAMP1 "wl_led1off"
-WINDOW_LAMP1 "wl_led2off"
+LRXMIT "wl_led1off"
+LRXMIT "wl_led2off"
 ## Blank LEDwalls
 /opt/system/leds stop
 ## PC Power Off
 LRXMIT "wkststateoff"
 ## Main Room Audio
 LRXMIT "hifistateoff"
-exit
-;;
-
-## Forward to Window Lamp Pi
-wlpi)
-WINDOW_LAMP1 "$SECOND_ARG"
 exit
 ;;
 
@@ -542,7 +540,7 @@ case "$URL_DOMAIN" in
     else
       echo "$LINKTITLE"
     fi
-    ;;
+  ;;
 esac
 exit
 ;;
@@ -588,8 +586,8 @@ exit
 ###############################
 
 *)
-  ## command not matched above
-  echo "invalid command!"
+  ## command not matched above forward command
+  echo "invalid command !"
   exit
 ;;
 esac

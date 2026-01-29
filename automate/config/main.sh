@@ -207,7 +207,7 @@ function LOCALCOM_RESP(){
 }
 
 function LRXMIT(){
-local CMD_SEP="~"
+local CMD_SEP="-"
 local CMD_IN="${1}"
 local CMD_1=${CMD_IN%$CMD_SEP*}
 local CMD_2=${CMD_IN#*$CMD_SEP}
@@ -222,18 +222,24 @@ case "$CMD_1" in
   "wl_ledson")
     CALLPICO "$PICOLAMP1_IP" "1" "3"
     ;;  
-  "wl_led2set")
+  "wl_leds_set")
     CALLPICO "$PICOLAMP1_IP" "3" "$CMD_2"
-    ;; 
-  "wl_led2")
-    CALLPICO "$PICOLAMP1_IP" "2" "20"
     ;;
+  "wl_led1off")
+    CALLPICO "$PICOLAMP1_IP" "1" "2"
+    ;;
+  "wl_led1on")
+    CALLPICO "$PICOLAMP1_IP" "1" "3"
+    ;; 
   "wl_led2off")
     CALLPICO "$PICOLAMP1_IP" "2" "0"
     ;;
   "wl_led2on")
     CALLPICO "$PICOLAMP1_IP" "2" "10"
-    ;; 
+    ;;
+  "wl_led2")
+    CALLPICO "$PICOLAMP1_IP" "2" "20"
+    ;;
   ### Desktop PC ###
   "wkststate")
     if [[ "$(LOCAL_PING "$DESK_IP")" == "1" ]]
@@ -357,17 +363,6 @@ case "$CMD_1" in
     ;;
 *)
   echo "invalid Xmit command!"
-  ;;
-esac
-}
-
-function WINDOW_LAMP1(){
-  local CMD_IN="$1"
-  case "$CMD_IN" in
-
-*)
-  ## invalid response
-  echo "invalid command!"
   ;;
 esac
 }

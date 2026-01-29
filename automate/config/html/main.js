@@ -1647,7 +1647,7 @@ function showPowerMenu(target, menu, tobtm) {
         _menudata += 'sleepmode~' + target + '~' + menu + 'off|noind|Sleep\n';
       }
       if (menu == 'wl_leds') {
-        _menudata += sub_cmd + '|slider|\n';
+        _menudata += sub_cmd + '~' + target + '~' + menu + '|slider|\n';
       }
       // stop spinner animation
       btnText.style.visibility = 'visible';
@@ -1888,7 +1888,7 @@ function createListItem(col0_in, col1, col2, menuid) {
       });
       break;
     case 'link': 
-      // URL menu 
+      // URL menu
       _elm.href = col0;
       break;
     case 'thm': 
@@ -1901,7 +1901,19 @@ function createListItem(col0_in, col1, col2, menuid) {
       break;
     case 'slider':
       // horizontal slider menu
-      console.log(col0);
+      const maxRange = 255;
+      const slider = document.createElement('input');
+      slider.type = 'range';
+      slider.id = 'horz_slider';
+      slider.min = 0;
+      slider.max = maxRange;
+      slider.value = col0;
+      slider.step = 5;
+      slider.addEventListener('input', function(event) {
+        let cur_value = event.target.value;
+        sendCmd('main', host, cmd + '_set-' + cur_value);
+      });
+      _elm.appendChild(slider);
       break;
     case 'bkmrk': 
       // bookmarks menu 

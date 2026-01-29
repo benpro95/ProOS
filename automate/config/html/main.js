@@ -1610,14 +1610,14 @@ function showPowerMenu(target, menu, tobtm) {
     sendCmd('main', target, menu).then((data) => { // GET request
       const resp = cleanString(data); // remove newlines
       const field = resp.split("~");
-      const cmd1 = field[0]; 
-      const cmd2 = field[1];
+      const pri_cmd = field[0]; 
+      const sub_cmd = field[1];
       // draw menu items
       let _indtype; // indicator type
       let _title;   // menu button title
       let _menudata = "";
-      // status display (I)
-      switch(cmd1) {
+      // status display
+      switch(pri_cmd) {
         case '0':
           _indtype = 'blkind';
           _title = "Offline";
@@ -1634,21 +1634,20 @@ function showPowerMenu(target, menu, tobtm) {
           _indtype = 'redind';
           _title = "Error";
       }
-      // status indicator
       _menudata += target + '|' + _indtype + '|' + _title + '\n';
-      // power on/off buttons (II)
-      if (cmd1 == '1') { // online
+      // power on/off buttons
+      if (pri_cmd == '1') { // online
         _menudata += 'offcmd~' + target + '~' + menu + 'off|noind|Off\n';
       }
-      if (cmd1 == '0') { // offline
+      if (pri_cmd == '0') { // offline
         _menudata += 'oncmd~' + target + '~' + menu + 'on|noind|On\n';
       }
       // custom menus // (II)
-      if (cmd1 == 'pc_awake') {
+      if (pri_cmd == 'pc_awake') {
         _menudata += 'sleepmode~' + target + '~' + menu + 'off|noind|Sleep\n';
       }
       if (resp.includes('~')) {
-        _menudata += cmd2 + '|slider|' + cmd2 + '\n';
+        _menudata += sub_cmd + '|slider|' + sub_cmd + '\n';
       }
       // stop spinner animation
       btnText.style.visibility = 'visible';
@@ -1854,145 +1853,167 @@ function drawMenu(data, menu, tobtm) {
   }
 }
 
-function createListItem(col0in, col1, col2, menuid) {
-  const field = col0in.split("~");
-  const data = field[0];
-  const target = field[1];
-  const cmd = field[2];
-  const _elm = document.createElement('a');
+function createListItem(col0_in, col1, col2, menuid) {
+  console.log(col0_in, col1, col2);
+  let _elm = document.createElement('a');
+  let _dot = document.createElement('span');
+  let field = col0_in.split("~");
+  let col0 = field[0];
+  let host = field[1];
+  let cmd = field[2];
   // assign menu ID
   _elm.id = "menu-" + menuid;
   // set menu text
   _elm.innerText = col2;
-  // checkbox menu
-  if (col1 == 'chkon' || col1 == 'chkoff') {
-    const _cbox = document.createElement('input');
-    _cbox.type = "checkbox";
-    _cbox.className = "chkbox";
-    _cbox.id = "chkbox-" + col2;
-    // read checkbox state from file
-    if (col1 == 'chkoff') {
-      _cbox.checked = false;
-    }
-    if (col1 == 'chkon') {
-      _cbox.checked = true;
-    }
-    _elm.appendChild(_cbox);
-    // URL on click
-    _elm.href = data;
-    // a checkbox was clicked
-    _elm.addEventListener('click', function(event) {
-      if (event.target.classList.contains('chkbox')) {
-        boxChanged();
-      }
-    });
-  }
-  // API call menu
-  if (col1 == 'ledmenu') {
-    _elm.addEventListener("click", function() {
-      sendCmd('leds',data,'');
-    });
-  }
-  if (col1 == 'relaxmenu') {
-    _elm.addEventListener("click", function() {
-      relaxSend(data);
-    });
-  } 
-  // link only menu
-  if (col1 == 'link') {
-    _elm.href = data;
-  }
-  // theme menu  
-  if (col1 == 'thm') {
-    const _color = data;
-    _elm.classList.add('theme-colorbox');
-    _elm.style.setProperty('background-color', _color);
-    _elm.addEventListener("click", function() {
-      setTheme(_color);
-    });
-  }
-  // slider menu
-  if (col1 == 'slider') {
-    _elm.href = data;
-  }
-  // bookmarks menu  
-  if (col1 == 'bkmrk') {
-    _elm.classList.add('bookmarked__item');
-    // store URL
-    Object.defineProperty(_elm, "url", {
-      enumerable: false,
-      writable: true,
-      value: data
-    });
-    // define click action
-    _elm.addEventListener("click", function() {
-      clickBookmark(menuid);
-    });
-  }
-  // status menus
-  if (col1.includes('ind')) { // indicators
-    // power toggle type
-    const _icon = document.createElement('span');
-    let allowhover = false;
-    if (data == 'oncmd') { // power-on remote API call on click
-      allowhover = true;
-      _icon.classList.add('fa');
-      _icon.classList.add('fa-toggle-on');
-      _icon.classList.add('leftjfy'); // left-justify icon
-      _elm.appendChild(_icon);
+  // configure menu item
+  switch (col1) {
+    case 'chkon': 
+      // check-box checked
+      drawCheckBoxItem(_elm, col0, true);
+      break;
+    case 'chkoff': 
+      // check-box unchecked
+      drawCheckBoxItem(_elm, col0, false);
+      break;
+    case 'ledmenu': 
+      // LEDs menu
       _elm.addEventListener("click", function() {
-        sendCmd('main',target,cmd);
+        sendCmd('leds',col0,'');
       });
-    }
-    if (data == 'offcmd') { // power-off remote API call on click
-      allowhover = true;
-      _icon.classList.add('fa');
-      _icon.classList.add('fa-toggle-off');
-      _icon.classList.add('leftjfy'); // left-justify icon
-      _elm.appendChild(_icon);
+      break;
+    case 'relaxmenu': 
+      // relax menu
       _elm.addEventListener("click", function() {
-        sendCmd('main',target,cmd);
+        relaxSend(col0);
       });
-    }
-    if (data == 'sleepmode') { // sleep PC type menu
-      allowhover = true;
-      _icon.classList.add('fa');
-      _icon.classList.add('fa-moon');
-      _icon.classList.add('leftjfy'); // left-justify icon
-      _elm.appendChild(_icon);
+      break;
+    case 'link': 
+      // URL menu 
+      _elm.href = col0;
+      break;
+    case 'thm': 
+      // theme menu 
+      _elm.classList.add('theme-colorbox');
+      _elm.style.setProperty('background-color', col0);
       _elm.addEventListener("click", function() {
-        sendCmd('main',target,cmd);
+        setTheme(col0);
       });
-    }
-    if (data == 'cmd') { // generic remote API call on click
-      allowhover = true;
+      break;
+    case 'slider':
+      // horizontal slider menu
+      _elm.href = col0 + "%";
+      break;
+    case 'bkmrk': 
+      // bookmarks menu 
+      _elm.classList.add('bookmarked__item');
+      Object.defineProperty(_elm, "url", {
+        enumerable: false,
+        writable: true,
+        value: col0
+      });
       _elm.addEventListener("click", function() {
-        sendCmd('main',target,cmd);
+        clickBookmark(menuid);
       });
-    }
-    const _dot = document.createElement('span');
-    if (col1 == 'blkind'){
+      break;
+    case 'noind': 
+      // no indicator type status menu
+      drawStatusItem(_elm, col0, host, cmd);
+      break;
+    case 'blkind': 
+      // black indicator type status menu
       _dot.classList.add('ind_dot');
-    }
-    if (col1 == 'grnind'){
+      _dot.id = "ind-" + col2;
+      drawStatusItem(_elm, col0, host, cmd);
+      _elm.appendChild(_dot);
+      break;
+    case 'grnind': 
+      // green indicator type status menu
       _dot.classList.add('ind_dot');
       _dot.classList.add('ind_dot_green');
-    }
-    if (col1 == 'redind'){
+      _dot.id = "ind-" + col2;
+      drawStatusItem(_elm, col0, host, cmd);
+      _elm.appendChild(_dot);
+      break;
+    case 'redind': 
+      // red indicator type status menu
       _dot.classList.add('ind_dot');
       _dot.classList.add('ind_dot_red');
-    }
-    if (col1 == 'ylwind'){
+      _dot.id = "ind-" + col2;
+      drawStatusItem(_elm, col0, host, cmd);
+      _elm.appendChild(_dot);
+      break;
+    case 'ylwind': 
+      // yellow indicator type status menu
       _dot.classList.add('ind_dot');
       _dot.classList.add('ind_dot_yellow');
-    }
-    if (allowhover === false){
-      _elm.classList.add('no_select');
-    }
-    _dot.id = "ind-" + col2;
-    _elm.appendChild(_dot);
+      _dot.id = "ind-" + col2;
+      drawStatusItem(_elm, col0, host, cmd);
+      _elm.appendChild(_dot);
+      break;
   }
   return _elm;
+}
+
+function drawCheckBoxItem(elm, url, state) {
+  const _cbox = document.createElement('input');
+  _cbox.type = "checkbox";
+  _cbox.className = "chkbox";
+  _cbox.id = "chkbox-" + col2;
+  // read checkbox state from file
+  _cbox.checked = state;
+  elm.appendChild(_cbox);
+  // URL on click
+  elm.href = url;
+  // a checkbox was clicked
+  elm.addEventListener('click', function(event) {
+    if (event.target.classList.contains('chkbox')) {
+      boxChanged();
+    }
+  });
+}
+
+function drawStatusItem(elm, col0, host, cmd) {
+  const _icon = document.createElement('span');
+  let allowhover = false;
+  if (col0 == 'oncmd') { // power-on remote API call on click
+    allowhover = true;
+    _icon.classList.add('fa');
+    _icon.classList.add('fa-toggle-on');
+    _icon.classList.add('leftjfy'); // left-justify icon
+    elm.appendChild(_icon);
+    elm.addEventListener("click", function() {
+      sendCmd('main', host, cmd);
+    });
+  }
+  if (col0 == 'offcmd') { // power-off remote API call on click
+    allowhover = true;
+    _icon.classList.add('fa');
+    _icon.classList.add('fa-toggle-off');
+    _icon.classList.add('leftjfy'); // left-justify icon
+    elm.appendChild(_icon);
+    elm.addEventListener("click", function() {
+      sendCmd('main', host, cmd);
+    });
+  }
+  if (col0 == 'sleepmode') { // sleep PC type menu
+    allowhover = true;
+    _icon.classList.add('fa');
+    _icon.classList.add('fa-moon');
+    _icon.classList.add('leftjfy'); // left-justify icon
+    elm.appendChild(_icon);
+    elm.addEventListener("click", function() {
+      sendCmd('main', host, cmd);
+    });
+  }
+  if (col0 == 'cmd') { // generic remote API call on click
+    allowhover = true;
+    elm.addEventListener("click", function() {
+      sendCmd('main', host, cmd);
+    });
+  }
+  if (allowhover === false){
+    elm.classList.add('no_select');
+  }
 }
 
 function boxChanged() {

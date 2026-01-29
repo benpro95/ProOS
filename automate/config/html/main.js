@@ -1642,12 +1642,12 @@ function showPowerMenu(target, menu, tobtm) {
       if (pri_cmd == '0') { // offline
         _menudata += 'oncmd~' + target + '~' + menu + 'on|noind|On\n';
       }
-      // custom menus // (II)
+      // custom buttons / items
       if (pri_cmd == 'pc_awake') {
         _menudata += 'sleepmode~' + target + '~' + menu + 'off|noind|Sleep\n';
       }
-      if (resp.includes('~')) {
-        _menudata += sub_cmd + '|slider|' + sub_cmd + '\n';
+      if (menu == 'wl_leds') {
+        _menudata += sub_cmd + '|slider|\n';
       }
       // stop spinner animation
       btnText.style.visibility = 'visible';
@@ -1869,11 +1869,11 @@ function createListItem(col0_in, col1, col2, menuid) {
   switch (col1) {
     case 'chkon': 
       // check-box checked
-      drawCheckBoxItem(_elm, col0, true);
+      drawCheckBoxItem(_elm, col0, col2, true);
       break;
     case 'chkoff': 
       // check-box unchecked
-      drawCheckBoxItem(_elm, col0, false);
+      drawCheckBoxItem(_elm, col0, col2, false);
       break;
     case 'ledmenu': 
       // LEDs menu
@@ -1901,7 +1901,7 @@ function createListItem(col0_in, col1, col2, menuid) {
       break;
     case 'slider':
       // horizontal slider menu
-      _elm.href = col0 + "%";
+      console.log(col0);
       break;
     case 'bkmrk': 
       // bookmarks menu 
@@ -1954,11 +1954,11 @@ function createListItem(col0_in, col1, col2, menuid) {
   return _elm;
 }
 
-function drawCheckBoxItem(elm, url, state) {
+function drawCheckBoxItem(elm, url, boxid, state) {
   const _cbox = document.createElement('input');
   _cbox.type = "checkbox";
   _cbox.className = "chkbox";
-  _cbox.id = "chkbox-" + col2;
+  _cbox.id = "chkbox-" + boxid;
   // read checkbox state from file
   _cbox.checked = state;
   elm.appendChild(_cbox);

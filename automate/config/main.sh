@@ -222,6 +222,9 @@ case "$CMD_1" in
   "wl_ledson")
     CALLPICO "$PICOLAMP1_IP" "1" "3"
     ;;  
+  "wl_led2set")
+    CALLPICO "$PICOLAMP1_IP" "3" "$CMD_2"
+    ;; 
   "wl_led2")
     CALLPICO "$PICOLAMP1_IP" "2" "20"
     ;;
